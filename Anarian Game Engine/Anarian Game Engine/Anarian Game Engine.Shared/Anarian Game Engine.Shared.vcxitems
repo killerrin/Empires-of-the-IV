@@ -14,15 +14,44 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Anarian Game Engine.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)AnarianGameEngine.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Camera.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GameObject.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GameTimer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IMaterial.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IMeshObject.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IMoveable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IRenderable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IRenderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IScene.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IUpdatable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)LogFileManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PNTVertex.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ResourceManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SceneManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SceneNode.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)targetver.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Anarian Game Engine.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)AnarianGameEngine.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Camera.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GameObject.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GameTimer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)IMaterial.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)IMeshObject.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)IMoveable.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)IRenderable.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)IRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)IScene.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)IUpdatable.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)LogFileManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ResourceManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)SceneManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)SceneNode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectCapability Include="SourceItemsFromImports" />
