@@ -49,6 +49,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)GameObject.h">
       <Filter>Data Structures</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Color.h">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXMaterial.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
@@ -59,21 +65,6 @@
       <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)IRenderer.cpp">
-      <Filter>Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)IUpdatable.cpp">
-      <Filter>Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)IRenderable.cpp">
-      <Filter>Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)IMoveable.cpp">
-      <Filter>Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)IMaterial.cpp">
-      <Filter>Interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)IMeshObject.cpp">
       <Filter>Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)LogFileManager.cpp">
@@ -96,6 +87,9 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)GameObject.cpp">
       <Filter>Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMaterial.cpp">
+      <Filter>Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

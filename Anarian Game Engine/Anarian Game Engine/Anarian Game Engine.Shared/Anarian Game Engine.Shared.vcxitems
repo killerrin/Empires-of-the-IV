@@ -16,6 +16,8 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)AnarianGameEngine.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Camera.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Color.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXMaterial.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameTimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IMaterial.h" />
@@ -36,15 +38,11 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianGameEngine.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Camera.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMaterial.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GameObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GameTimer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)IMaterial.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)IMeshObject.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)IMoveable.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)IRenderable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IScene.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)IUpdatable.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)LogFileManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

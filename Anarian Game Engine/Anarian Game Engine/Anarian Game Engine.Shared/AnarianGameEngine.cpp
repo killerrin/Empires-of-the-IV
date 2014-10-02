@@ -10,6 +10,7 @@
 #include "AnarianGameEngine.h"
 
 using namespace Anarian;
+using namespace DirectX;
 
 AnarianGameEngine::AnarianGameEngine()
 {

@@ -5,7 +5,7 @@
 namespace Anarian{
 	class GameObject : IUpdatable, IRenderable
 	{
-	private:
+	protected:
 		std::vector<IMaterial*> m_materials;
 		std::vector<IMeshObject*> m_meshes;
 

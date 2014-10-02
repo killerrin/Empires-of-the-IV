@@ -1,4 +1,7 @@
 #pragma once
+// Define Anarian_DirectX_Mode for DirectX
+// Define Anarian_OpenGL_Mode for OpenGL
+
 
 namespace Anarian
 {
