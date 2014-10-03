@@ -3,11 +3,12 @@
 #include "..\Common\DeviceResources.h"
 #include "ShaderStructures.h"
 #include "..\Common\StepTimer.h"
+#include "IRenderer.h"
 
 namespace Anarian
 {
 	// This sample renderer instantiates a basic rendering pipeline.
-	class Sample3DSceneRenderer
+	class Sample3DSceneRenderer : public IRenderer
 	{
 	public:
 		Sample3DSceneRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources);

@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "AnarianMain.h"
+
 #include "Common\DirectXHelper.h"
 
 using namespace Anarian;
@@ -15,8 +16,7 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	m_deviceResources->RegisterDeviceNotify(this);
 
 	// TODO: Replace this with your app's content initialization.
-	m_sceneRenderer = std::unique_ptr<Sample3DSceneRenderer>(new Sample3DSceneRenderer(m_deviceResources));
-
+	m_sceneRenderer = new Sample3DSceneRenderer(m_deviceResources);
 	m_fpsTextRenderer = std::unique_ptr<SampleFpsTextRenderer>(new SampleFpsTextRenderer(m_deviceResources));
 
 	// TODO: Change the timer settings if you want something other than the default variable timestep mode.
@@ -31,13 +31,15 @@ AnarianMain::~AnarianMain()
 {
 	// Deregister device notification
 	m_deviceResources->RegisterDeviceNotify(nullptr);
+
+	delete m_sceneRenderer;
 }
 
 // Updates application state when the window size changes (e.g. device orientation change)
 void AnarianMain::CreateWindowSizeDependentResources() 
 {
 	// TODO: Replace this with the size-dependent initialization of your app's content.
-	m_sceneRenderer->CreateWindowSizeDependentResources();
+	((Sample3DSceneRenderer*)m_sceneRenderer)->CreateWindowSizeDependentResources();
 }
 
 void AnarianMain::StartRenderLoop()
@@ -81,7 +83,7 @@ void AnarianMain::Update()
 	m_timer.Tick([&]()
 	{
 		// TODO: Replace this with your app's content update functions.
-		m_sceneRenderer->Update(m_timer);
+		((Sample3DSceneRenderer*)m_sceneRenderer)->Update(m_timer);
 		m_fpsTextRenderer->Update(m_timer);
 	});
 }
@@ -90,7 +92,7 @@ void AnarianMain::Update()
 void AnarianMain::ProcessInput()
 {
 	// TODO: Add per frame input handling here.
-	m_sceneRenderer->TrackingUpdate(m_pointerLocationX);
+	((Sample3DSceneRenderer*)m_sceneRenderer)->TrackingUpdate(m_pointerLocationX);
 }
 
 // Renders the current frame according to the current application state.
@@ -103,23 +105,9 @@ bool AnarianMain::Render()
 		return false;
 	}
 
-	auto context = m_deviceResources->GetD3DDeviceContext();
-
-	// Reset the viewport to target the whole screen.
-	auto viewport = m_deviceResources->GetScreenViewport();
-	context->RSSetViewports(1, &viewport);
-
-	// Reset render targets to the screen.
-	ID3D11RenderTargetView *const targets[1] = { m_deviceResources->GetBackBufferRenderTargetView() };
-	context->OMSetRenderTargets(1, targets, m_deviceResources->GetDepthStencilView());
-
-	// Clear the back buffer and depth stencil view.
-	context->ClearRenderTargetView(m_deviceResources->GetBackBufferRenderTargetView(), DirectX::Colors::CornflowerBlue);
-	context->ClearDepthStencilView(m_deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
 	// Render the scene objects.
 	// TODO: Replace this with your app's content rendering functions.
-	m_sceneRenderer->Render();
+	((Sample3DSceneRenderer*)m_sceneRenderer)->Render();
 	m_fpsTextRenderer->Render();
 
 	return true;
@@ -128,14 +116,14 @@ bool AnarianMain::Render()
 // Notifies renderers that device resources need to be released.
 void AnarianMain::OnDeviceLost()
 {
-	m_sceneRenderer->ReleaseDeviceDependentResources();
+	//m_sceneRenderer->ReleaseDeviceDependentResources();
 	m_fpsTextRenderer->ReleaseDeviceDependentResources();
 }
 
 // Notifies renderers that device resources may now be recreated.
 void AnarianMain::OnDeviceRestored()
 {
-	m_sceneRenderer->CreateDeviceDependentResources();
+	//m_sceneRenderer->CreateDeviceDependentResources();
 	m_fpsTextRenderer->CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
 }

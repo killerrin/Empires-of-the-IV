@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)AnarianMain.h" />
@@ -18,6 +18,42 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Content\SampleFpsTextRenderer.h">
       <Filter>Content</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Color.h">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)IRenderer.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)IMaterial.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)IMeshObject.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PNTVertex.h">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXMaterial.h">
+      <Filter>Rendering\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXMesh.h">
+      <Filter>Rendering\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicLoader.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicReaderWriter.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicMath.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicShapes.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DDSTextureLoader.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianMain.cpp" />
@@ -30,6 +66,24 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\SampleFpsTextRenderer.cpp">
       <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)IRenderer.cpp">
+      <Filter>Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMaterial.cpp">
+      <Filter>Rendering\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMesh.cpp">
+      <Filter>Rendering\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\BasicReaderWriter.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\BasicLoader.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\DDSTextureLoader.cpp">
+      <Filter>Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +100,21 @@
     </Filter>
     <Filter Include="Content">
       <UniqueIdentifier>{cea092bb-1387-4daf-81a8-a1a76ea3aef0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data Structures">
+      <UniqueIdentifier>{addf15dc-830e-4ed6-b363-a694f2140339}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interfaces">
+      <UniqueIdentifier>{667ac312-2c59-49db-aefa-f12c33288fc2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{b2bd6090-3726-49c1-9d08-9cbed052544c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\DirectX">
+      <UniqueIdentifier>{38e6626b-e089-4b40-b0fe-a22fcfb1a53a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{ee69b2f5-aa01-41cf-891b-0f5993e6b653}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

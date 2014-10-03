@@ -14,10 +14,11 @@ namespace Anarian
 		AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResources);
 		~AnarianMain();
 		void CreateWindowSizeDependentResources();
-		void StartTracking() { m_sceneRenderer->StartTracking(); }
+		void StartTracking() { ((Sample3DSceneRenderer*)m_sceneRenderer)->StartTracking(); }
 		void TrackingUpdate(float positionX) { m_pointerLocationX = positionX; }
-		void StopTracking() { m_sceneRenderer->StopTracking(); }
-		bool IsTracking() { return m_sceneRenderer->IsTracking(); }
+		void StopTracking() { ((Sample3DSceneRenderer*)m_sceneRenderer)->StopTracking(); }
+
+		bool IsTracking() { return ((Sample3DSceneRenderer*)m_sceneRenderer)->IsTracking(); }
 		void StartRenderLoop();
 		void StopRenderLoop();
 		Concurrency::critical_section& GetCriticalSection() { return m_criticalSection; }
@@ -35,7 +36,7 @@ namespace Anarian
 		std::shared_ptr<DX::DeviceResources> m_deviceResources;
 
 		// TODO: Replace with your own content renderers.
-		std::unique_ptr<Sample3DSceneRenderer> m_sceneRenderer;
+		IRenderer* m_sceneRenderer;
 		std::unique_ptr<SampleFpsTextRenderer> m_fpsTextRenderer;
 
 		Windows::Foundation::IAsyncAction^ m_renderLoopWorker;

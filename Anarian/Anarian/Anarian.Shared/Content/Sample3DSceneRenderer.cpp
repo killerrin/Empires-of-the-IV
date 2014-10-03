@@ -2,14 +2,17 @@
 #include "Sample3DSceneRenderer.h"
 
 #include "..\Common\DirectXHelper.h"
+#include "..\Color.h"
+#include "..\PNTVertex.h"
 
 using namespace Anarian;
-
 using namespace DirectX;
 using namespace Windows::Foundation;
 
 // Loads vertex and pixel shaders from files and instantiates the cube geometry.
 Sample3DSceneRenderer::Sample3DSceneRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
+	IRenderer(Color::CornFlowerBlue()),
+
 	m_loadingComplete(false),
 	m_degreesPerSecond(45),
 	m_indexCount(0),
@@ -115,7 +118,22 @@ void Sample3DSceneRenderer::Render()
 		return;
 	}
 
+	IRenderer::Render();
+
 	auto context = m_deviceResources->GetD3DDeviceContext();
+
+	// Reset the viewport to target the whole screen.
+	auto viewport = m_deviceResources->GetScreenViewport();
+	context->RSSetViewports(1, &viewport);
+
+	// Reset render targets to the screen.
+	ID3D11RenderTargetView *const targets[1] = { m_deviceResources->GetBackBufferRenderTargetView() };
+	context->OMSetRenderTargets(1, targets, m_deviceResources->GetDepthStencilView());
+
+	// Clear the back buffer and depth stencil view.
+	context->ClearRenderTargetView(m_deviceResources->GetBackBufferRenderTargetView(), m_backgroundColor[0]);
+	context->ClearDepthStencilView(m_deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
 
 	// Prepare the constant buffer to send it to the graphics device.
 	context->UpdateSubresource(
@@ -236,64 +254,50 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 	auto createCubeTask = (createPSTask && createVSTask).then([this] () {
 
 		// Load mesh vertices. Each vertex has a position and a color.
-		static const VertexPositionColor cubeVertices[] = 
-		{
-			{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f)},
-			{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f)},
-			{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f)},
-			{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f, 1.0f, 1.0f)},
-			{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f)},
-			{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT3(1.0f, 0.0f, 1.0f)},
-			{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 0.0f)},
-			{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f)},
-		};
+		std::vector<VertexPositionColor> cubeVertices = std::vector<VertexPositionColor>();
+			cubeVertices.push_back({ XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f) });
+			cubeVertices.push_back({ XMFLOAT3(-0.5f, -0.5f, 0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f) });
+			cubeVertices.push_back({ XMFLOAT3(-0.5f, 0.5f, -0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f) });
+			cubeVertices.push_back({ XMFLOAT3(-0.5f, 0.5f, 0.5f), XMFLOAT3(0.0f, 1.0f, 1.0f) });
+			cubeVertices.push_back({ XMFLOAT3(0.5f, -0.5f, -0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f) });
+			cubeVertices.push_back({ XMFLOAT3(0.5f, -0.5f, 0.5f), XMFLOAT3(1.0f, 0.0f, 1.0f) });
+			cubeVertices.push_back({ XMFLOAT3(0.5f, 0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 0.0f) });
+			cubeVertices.push_back({ XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f) });
 
-		D3D11_SUBRESOURCE_DATA vertexBufferData = {0};
-		vertexBufferData.pSysMem = cubeVertices;
+		D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
+		vertexBufferData.pSysMem = &cubeVertices[0];
 		vertexBufferData.SysMemPitch = 0;
 		vertexBufferData.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(cubeVertices), D3D11_BIND_VERTEX_BUFFER);
+		CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(VertexPositionColor) * cubeVertices.size(), D3D11_BIND_VERTEX_BUFFER);
 		DX::ThrowIfFailed(
 			m_deviceResources->GetD3DDevice()->CreateBuffer(
-				&vertexBufferDesc,
-				&vertexBufferData,
-				&m_vertexBuffer
-				)
+			&vertexBufferDesc,
+			&vertexBufferData,
+			&m_vertexBuffer
+			)
 			);
 
-		// Load mesh indices. Each trio of indices represents
-		// a triangle to be rendered on the screen.
-		// For example: 0,2,1 means that the vertices with indexes
-		// 0, 2 and 1 from the vertex buffer compose the 
-		// first triangle of this mesh.
-		static const unsigned short cubeIndices [] =
-		{
-			0,2,1, // -x
-			1,2,3,
+		std::vector<short> cubeIndices = std::vector<short>();
+			cubeIndices.push_back(0);	 cubeIndices.push_back(2);	 cubeIndices.push_back(1); // -x
+			cubeIndices.push_back(1);	 cubeIndices.push_back(2);	 cubeIndices.push_back(3);
+			cubeIndices.push_back(4);	 cubeIndices.push_back(5);	 cubeIndices.push_back(6); // +x
+			cubeIndices.push_back(5);	 cubeIndices.push_back(7);	 cubeIndices.push_back(6);
+			cubeIndices.push_back(0);	 cubeIndices.push_back(1);	 cubeIndices.push_back(5); // -y
+			cubeIndices.push_back(0);	 cubeIndices.push_back(5);	 cubeIndices.push_back(4);
+			cubeIndices.push_back(2);	 cubeIndices.push_back(6);	 cubeIndices.push_back(7); // +y
+			cubeIndices.push_back(2);	 cubeIndices.push_back(7);	 cubeIndices.push_back(3);
+			cubeIndices.push_back(0);	 cubeIndices.push_back(4);	 cubeIndices.push_back(6); // -z
+			cubeIndices.push_back(0);	 cubeIndices.push_back(6);	 cubeIndices.push_back(2);
+			cubeIndices.push_back(1);	 cubeIndices.push_back(3);	 cubeIndices.push_back(7); // +z
+			cubeIndices.push_back(1);	 cubeIndices.push_back(7);	 cubeIndices.push_back(5);
 
-			4,5,6, // +x
-			5,7,6,
+		m_indexCount = cubeIndices.size();
 
-			0,1,5, // -y
-			0,5,4,
-
-			2,6,7, // +y
-			2,7,3,
-
-			0,4,6, // -z
-			0,6,2,
-
-			1,3,7, // +z
-			1,7,5,
-		};
-
-		m_indexCount = ARRAYSIZE(cubeIndices);
-
-		D3D11_SUBRESOURCE_DATA indexBufferData = {0};
-		indexBufferData.pSysMem = cubeIndices;
+		D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
+		indexBufferData.pSysMem = &cubeIndices[0];
 		indexBufferData.SysMemPitch = 0;
 		indexBufferData.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC indexBufferDesc(sizeof(cubeIndices), D3D11_BIND_INDEX_BUFFER);
+		CD3D11_BUFFER_DESC indexBufferDesc(sizeof(short) * cubeIndices.size(), D3D11_BIND_INDEX_BUFFER);
 		DX::ThrowIfFailed(
 			m_deviceResources->GetD3DDevice()->CreateBuffer(
 				&indexBufferDesc,
