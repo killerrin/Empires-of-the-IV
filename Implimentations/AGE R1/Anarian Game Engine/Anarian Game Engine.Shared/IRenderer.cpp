@@ -4,11 +4,13 @@ using namespace Anarian;
 
 IRenderer::IRenderer()
 {
+	m_backgroundColor = Color::CornFlowerBlue();
 }
 
 
 IRenderer::~IRenderer()
 {
+	//m_sceneManager = nullptr;
 }
 
 void IRenderer::Render()

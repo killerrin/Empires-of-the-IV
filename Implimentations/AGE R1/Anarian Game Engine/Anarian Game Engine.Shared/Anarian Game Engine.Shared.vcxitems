@@ -17,7 +17,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)AnarianGameEngine.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Camera.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Color.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeviceResources.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXConstantBuffers.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DirectXMaterial.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXMesh.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXRenderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXSample.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameTimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IMaterial.h" />
@@ -38,7 +43,10 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianGameEngine.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Camera.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)DeviceResources.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMaterial.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMesh.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GameObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GameTimer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IRenderer.cpp" />

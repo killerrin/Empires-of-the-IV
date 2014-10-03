@@ -53,7 +53,22 @@
       <Filter>Data Structures</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)DirectXMaterial.h">
-      <Filter>Rendering</Filter>
+      <Filter>Rendering\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXMesh.h">
+      <Filter>Rendering\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXRenderer.h">
+      <Filter>Rendering\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXSample.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DeviceResources.h">
+      <Filter>Rendering\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)DirectXConstantBuffers.h">
+      <Filter>Rendering\DirectX</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -89,7 +104,16 @@
       <Filter>Data Structures</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMaterial.cpp">
-      <Filter>Rendering</Filter>
+      <Filter>Rendering\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMesh.cpp">
+      <Filter>Rendering\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)DirectXRenderer.cpp">
+      <Filter>Rendering\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)DeviceResources.cpp">
+      <Filter>Rendering\DirectX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -107,6 +131,9 @@
     </Filter>
     <Filter Include="Rendering">
       <UniqueIdentifier>{214eca01-8e78-455e-bdcd-1ce3bdf3cb43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering\DirectX">
+      <UniqueIdentifier>{a8f5cc1c-8029-49f7-b008-0d315bb1bef8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
-#ifdef Anarian_DirectX_Mode
 #include "pch.h"
+#ifdef Anarian_DirectX_Mode
 #include "DirectXMaterial.h"
 using namespace Anarian;
 using namespace DirectX;
