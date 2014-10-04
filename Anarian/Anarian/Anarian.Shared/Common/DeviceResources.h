@@ -2,7 +2,7 @@
 
 namespace DX
 {
-    // Provides an interface for an application that owns DeviceResources to be notified of the device being lost or created.
+	// Provides an interface for an application that owns DeviceResources to be notified of the device being lost or created.
 	interface IDeviceNotify
 	{
 		virtual void OnDeviceLost() = 0;

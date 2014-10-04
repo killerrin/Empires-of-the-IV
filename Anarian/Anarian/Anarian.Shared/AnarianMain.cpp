@@ -1,7 +1,9 @@
 ﻿#include "pch.h"
 #include "AnarianMain.h"
-
 #include "Common\DirectXHelper.h"
+
+
+#include "MeshFactory.h"
 
 using namespace Anarian;
 using namespace Windows::Foundation;
@@ -18,6 +20,9 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	// TODO: Replace this with your app's content initialization.
 	m_sceneRenderer = new Sample3DSceneRenderer(m_deviceResources);
 	m_fpsTextRenderer = std::unique_ptr<SampleFpsTextRenderer>(new SampleFpsTextRenderer(m_deviceResources));
+
+	// Initialize the factory
+	MeshFactory::Instance();
 
 	// TODO: Change the timer settings if you want something other than the default variable timestep mode.
 	// e.g. for 60 FPS fixed timestep update logic, call:

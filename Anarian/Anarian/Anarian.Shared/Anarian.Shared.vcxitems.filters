@@ -54,6 +54,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\DDSTextureLoader.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)MeshFactory.h">
+      <Filter>Factories</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianMain.cpp" />
@@ -85,6 +88,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\DDSTextureLoader.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MeshFactory.cpp">
+      <Filter>Factories</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)Content\SamplePixelShader.hlsl">
@@ -115,6 +121,9 @@
     </Filter>
     <Filter Include="Utilities">
       <UniqueIdentifier>{ee69b2f5-aa01-41cf-891b-0f5993e6b653}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Factories">
+      <UniqueIdentifier>{e11b82be-cb4c-4012-88b9-2f7c45cdaaa8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

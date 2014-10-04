@@ -20,6 +20,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMaterial.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MeshFactory.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AnarianMain.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianMain.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Color.h" />
@@ -33,6 +34,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)IMaterial.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IMeshObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IRenderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MeshFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
