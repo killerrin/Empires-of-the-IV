@@ -4,12 +4,9 @@
 namespace Anarian {
 	class IMaterial
 	{
+		friend class MaterialFactory;
 	protected:
-		Color m_meshColor;
-		Color m_diffuseColor;
-		Color m_specularColor;
-		float m_specularExponent;
-	public:
+		IMaterial() { };
 		IMaterial(
 			Color meshColor,
 			Color diffuseColor,
@@ -22,6 +19,12 @@ namespace Anarian {
 			m_specularColor = specularColor;
 			m_specularExponent = specularExponent;
 		}
-		virtual ~IMaterial(){};
+
+		Color m_meshColor;
+		Color m_diffuseColor;
+		Color m_specularColor;
+		float m_specularExponent;
+	public:
+		virtual ~IMaterial() { };
 	};
 }

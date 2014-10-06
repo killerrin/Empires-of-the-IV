@@ -1,9 +1,11 @@
 ﻿#include "pch.h"
+
 #include "AnarianMain.h"
 #include "Common\DirectXHelper.h"
 
-
+#include "RendererFactory.h"
 #include "MeshFactory.h"
+#include "MaterialFactory.h"
 
 using namespace Anarian;
 using namespace Windows::Foundation;
@@ -17,12 +19,22 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	// Register to be notified if the Device is lost or recreated
 	m_deviceResources->RegisterDeviceNotify(this);
 
-	// TODO: Replace this with your app's content initialization.
-	m_sceneRenderer = new Sample3DSceneRenderer(m_deviceResources);
-	m_fpsTextRenderer = std::unique_ptr<SampleFpsTextRenderer>(new SampleFpsTextRenderer(m_deviceResources));
+	// Initialize the Managers
+	m_resourceManager = new ResourceManager();
+	m_sceneManager = new SceneManager();
 
-	// Initialize the factory
+	// Initialize the factories
+	RendererFactory::Instance();
 	MeshFactory::Instance();
+	MaterialFactory::Instance();
+
+	// TODO: Replace this with your app's content initialization.
+	m_sceneRenderer = RendererFactory::Instance()->ConstructRenderer(Color::CornFlowerBlue());
+	((Sample3DSceneRenderer*)m_sceneRenderer)->Initialize(m_deviceResources, m_sceneManager);
+
+
+
+	m_fpsTextRenderer = std::unique_ptr<SampleFpsTextRenderer>(new SampleFpsTextRenderer(m_deviceResources));
 
 	// TODO: Change the timer settings if you want something other than the default variable timestep mode.
 	// e.g. for 60 FPS fixed timestep update logic, call:
@@ -37,6 +49,16 @@ AnarianMain::~AnarianMain()
 	// Deregister device notification
 	m_deviceResources->RegisterDeviceNotify(nullptr);
 
+	// Delete the Managers
+	delete m_resourceManager;
+	delete m_sceneManager;
+
+	// Delete the Factories
+	delete RendererFactory::Instance();
+	delete MeshFactory::Instance();
+	delete MaterialFactory::Instance();
+
+	// Delete the Renderer
 	delete m_sceneRenderer;
 }
 
@@ -97,7 +119,7 @@ void AnarianMain::Update()
 void AnarianMain::ProcessInput()
 {
 	// TODO: Add per frame input handling here.
-	((Sample3DSceneRenderer*)m_sceneRenderer)->TrackingUpdate(m_pointerLocationX);
+	((Sample3DSceneRenderer*)m_sceneRenderer)->TrackingUpdate(m_pointerLocationX, m_pointerLocationY);
 }
 
 // Renders the current frame according to the current application state.
@@ -112,6 +134,7 @@ bool AnarianMain::Render()
 
 	// Render the scene objects.
 	// TODO: Replace this with your app's content rendering functions.
+
 	((Sample3DSceneRenderer*)m_sceneRenderer)->Render();
 	m_fpsTextRenderer->Render();
 

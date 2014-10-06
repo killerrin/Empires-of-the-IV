@@ -14,26 +14,42 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Camera.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\BasicLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\BasicReaderWriter.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\DDSTextureLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMaterial.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMesh.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)IRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GameObject.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)GameTimer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MaterialFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MeshFactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)RendererFactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)ResourceManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)SceneManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)SceneNode.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AnarianMain.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianMain.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Camera.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Color.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicLoader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicMath.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicReaderWriter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicShapes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\DDSTextureLoader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ConstantBuffers.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DirectXMaterial.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)DirectXMesh.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GameObject.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GameTimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IMaterial.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IMeshObject.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IMoveable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IRenderable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IRenderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IScene.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)IUpdatable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MaterialFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MeshFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp">
@@ -48,6 +64,10 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\SampleFpsTextRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Sample3DSceneRenderer.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PNTVertex.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)RendererFactory.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ResourceManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SceneManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)SceneNode.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)Content\SamplePixelShader.hlsl">
@@ -59,5 +79,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)ConstantBuffers.hlsli" />
   </ItemGroup>
 </Project>

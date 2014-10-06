@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include "ResourceManager.h"
+#include "SceneManager.h"
+
 #include "Common\StepTimer.h"
 #include "Common\DeviceResources.h"
 #include "Content\Sample3DSceneRenderer.h"
@@ -15,7 +18,7 @@ namespace Anarian
 		~AnarianMain();
 		void CreateWindowSizeDependentResources();
 		void StartTracking() { ((Sample3DSceneRenderer*)m_sceneRenderer)->StartTracking(); }
-		void TrackingUpdate(float positionX) { m_pointerLocationX = positionX; }
+		void TrackingUpdate(float positionX, float positionY) { m_pointerLocationX = positionX; m_pointerLocationY = positionY; }
 		void StopTracking() { ((Sample3DSceneRenderer*)m_sceneRenderer)->StopTracking(); }
 
 		bool IsTracking() { return ((Sample3DSceneRenderer*)m_sceneRenderer)->IsTracking(); }
@@ -35,6 +38,10 @@ namespace Anarian
 		// Cached pointer to device resources.
 		std::shared_ptr<DX::DeviceResources> m_deviceResources;
 
+		// Managers
+		ResourceManager* m_resourceManager;
+		SceneManager* m_sceneManager;
+
 		// TODO: Replace with your own content renderers.
 		IRenderer* m_sceneRenderer;
 		std::unique_ptr<SampleFpsTextRenderer> m_fpsTextRenderer;
@@ -46,6 +53,6 @@ namespace Anarian
 		DX::StepTimer m_timer;
 
 		// Track current input pointer position.
-		float m_pointerLocationX;
+		float m_pointerLocationX, m_pointerLocationY;
 	};
 }

@@ -6,6 +6,15 @@ cbuffer ModelViewProjectionConstantBuffer : register(b0)
 	matrix projection;
 };
 
+cbuffer ConstantBufferChangesEveryPrim : register (b1)
+{
+	matrix world;
+	float4 meshColor;
+	float4 diffuseColor;
+	float4 specularColor;
+	float  specularExponent;
+};
+
 // Per-vertex data used as input to the vertex shader.
 struct VertexShaderInput
 {
@@ -17,9 +26,9 @@ struct VertexShaderInput
 // Per-pixel color data passed through the pixel shader.
 struct PixelShaderInput
 {
-	float4 position : SV_POSITION;
-	float4 color : COLOR0;		//float2 textureUV : TEXCOORD0; 
-								//float4 diffuseColor : TEXCOORD1;
+	float4 position : SV_POSITION;	//	float4 position : SV_POSITION;
+	float2 textureUV : TEXCOORD0;	//	float4 color : COLOR0;
+	float4 diffuseColor : TEXCOORD1;//						
 };
 
 // Simple shader to do vertex processing on the GPU.
@@ -34,8 +43,10 @@ PixelShaderInput main(VertexShaderInput input)
 	pos = mul(pos, projection);
 	output.position = pos;
 
-	// Pass the color through without modification.
-	output.color = float4(1.0f, 0.0f, 0.0f, 1.0f); // input.normal, 1.0f);
+	// Fill out the pixel shader input and pass it.
+	output.position = pos;
+	output.textureUV = input.textureUV;
+	output.diffuseColor = meshColor;
 
 	return output;
 }

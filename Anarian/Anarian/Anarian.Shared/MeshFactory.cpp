@@ -24,7 +24,7 @@ MeshFactory::MeshFactory()
 
 MeshFactory::~MeshFactory()
 {
-	delete m_instance;
+	//delete m_instance;
 }
 
 IMeshObject* MeshFactory::ConstructCube()
@@ -40,59 +40,36 @@ IMeshObject* MeshFactory::ConstructCube()
 	std::vector<Anarian::Verticies::PNTVertex> cubeVertices = std::vector<Anarian::Verticies::PNTVertex>();
 	cubeVertices.reserve(24);
 
-	cubeVertices.push_back(
-	{ XMFLOAT3(-0.5f, -0.5f, 0.5f),		XMFLOAT3(0.0f, 0.0f, 1.0f),		XMFLOAT2(0.0f, 0.0f) });
-	cubeVertices.push_back(
-	{ XMFLOAT3(0.5f, -0.5f, 0.5f),		XMFLOAT3(0.0f, 0.0f, 1.0f),		XMFLOAT2(0.0f, 1.0f) });
-	cubeVertices.push_back(
-	{ XMFLOAT3(-0.5f, 0.5f, 0.5f),		XMFLOAT3(0.0f, 0.0f, 1.0f),		XMFLOAT2(1.0f, 0.0f) });
-	cubeVertices.push_back(
-	{ XMFLOAT3(0.5f, 0.5f, 0.5f),		XMFLOAT3(0.0f, 0.0f, 1.0f),		XMFLOAT2(1.0f, 1.0f) });
+	//						 Position							Normal							Texture Coordinates
+	cubeVertices.push_back({ XMFLOAT3(-0.5f, -0.5f, 0.5f),		XMFLOAT3(0.0f, 0.0f, 1.0f),		XMFLOAT2(0.0f, 0.0f) });
+	cubeVertices.push_back({ XMFLOAT3(0.5f, -0.5f, 0.5f),		XMFLOAT3(0.0f, 0.0f, 1.0f),		XMFLOAT2(0.0f, 1.0f) });
+	cubeVertices.push_back({ XMFLOAT3(-0.5f, 0.5f, 0.5f),		XMFLOAT3(0.0f, 0.0f, 1.0f),		XMFLOAT2(1.0f, 0.0f) });
+	cubeVertices.push_back({ XMFLOAT3(0.5f, 0.5f, 0.5f),		XMFLOAT3(0.0f, 0.0f, 1.0f),		XMFLOAT2(1.0f, 1.0f) });
 
-	cubeVertices.push_back(
-	{ XMFLOAT3(-0.5f, -0.5f, -0.5f),	XMFLOAT3(0.0f, 0.0f, -1.0f),	XMFLOAT2(0.0f, 0.0f) });   // side 2
-	cubeVertices.push_back(
-	{ XMFLOAT3(-0.5f, 0.5f, -0.5f),		XMFLOAT3(0.0f, 0.0f, -1.0f),	XMFLOAT2(0.0f, 1.0f) });
-	cubeVertices.push_back(
-	{ XMFLOAT3(0.5f, -0.5f, -0.5f),		XMFLOAT3(0.0f, 0.0f, -1.0f),	XMFLOAT2(1.0f, 0.0f) });
-	cubeVertices.push_back(
-	{ XMFLOAT3(0.5f, 0.5f, -0.5f),		XMFLOAT3(0.0f, 0.0f, -1.0f),	XMFLOAT2(1.0f, 1.0f) });
+	cubeVertices.push_back({ XMFLOAT3(-0.5f, -0.5f, -0.5f),		XMFLOAT3(0.0f, 0.0f, -1.0f),	XMFLOAT2(0.0f, 0.0f) });   // side 2
+	cubeVertices.push_back({ XMFLOAT3(-0.5f, 0.5f, -0.5f),		XMFLOAT3(0.0f, 0.0f, -1.0f),	XMFLOAT2(0.0f, 1.0f) });
+	cubeVertices.push_back({ XMFLOAT3(0.5f, -0.5f, -0.5f),		XMFLOAT3(0.0f, 0.0f, -1.0f),	XMFLOAT2(1.0f, 0.0f) });
+	cubeVertices.push_back({ XMFLOAT3(0.5f, 0.5f, -0.5f),		XMFLOAT3(0.0f, 0.0f, -1.0f),	XMFLOAT2(1.0f, 1.0f) });
 
-	cubeVertices.push_back(
-	{ XMFLOAT3(-0.5f, 0.5f, -0.5f),		XMFLOAT3(0.0f, 1.0f, 0.0f),		XMFLOAT2(0.0f, 0.0f) });   // side 3
-	cubeVertices.push_back(
-	{ XMFLOAT3(-0.5f, 0.5f, 0.5f),		XMFLOAT3(0.0f, 1.0f, 0.0f),		XMFLOAT2(0.0f, 1.0f) });
-	cubeVertices.push_back(
-	{ XMFLOAT3(0.5f, 0.5f, -0.5f),		XMFLOAT3(0.0f, 1.0f, 0.0f),		XMFLOAT2(1.0f, 0.0f) });
-	cubeVertices.push_back(
-	{ XMFLOAT3(0.5f, 0.5f, 0.5f),		XMFLOAT3(0.0f, 1.0f, 0.0f),		XMFLOAT2(1.0f, 1.0f) });
+	cubeVertices.push_back({ XMFLOAT3(-0.5f, 0.5f, -0.5f),		XMFLOAT3(0.0f, 1.0f, 0.0f),		XMFLOAT2(0.0f, 0.0f) });   // side 3
+	cubeVertices.push_back({ XMFLOAT3(-0.5f, 0.5f, 0.5f),		XMFLOAT3(0.0f, 1.0f, 0.0f),		XMFLOAT2(0.0f, 1.0f) });
+	cubeVertices.push_back({ XMFLOAT3(0.5f, 0.5f, -0.5f),		XMFLOAT3(0.0f, 1.0f, 0.0f),		XMFLOAT2(1.0f, 0.0f) });
+	cubeVertices.push_back({ XMFLOAT3(0.5f, 0.5f, 0.5f),		XMFLOAT3(0.0f, 1.0f, 0.0f),		XMFLOAT2(1.0f, 1.0f) });
 
-	cubeVertices.push_back(
-	{ XMFLOAT3(-0.5f, -0.5f, -0.5f),	XMFLOAT3(0.0f, -1.0f, 0.0f),	XMFLOAT2(0.0f, 0.0f) });    // side 4
-	cubeVertices.push_back(
-	{ XMFLOAT3(0.5f, -0.5f, -0.5f),		XMFLOAT3(0.0f, -1.0f, 0.0f),	XMFLOAT2(0.0f, 1.0f) });
-	cubeVertices.push_back(
-	{ XMFLOAT3(-0.5f, -0.5f, 0.5f),		XMFLOAT3(0.0f, -1.0f, 0.0f),	XMFLOAT2(1.0f, 0.0f) });
-	cubeVertices.push_back(
-	{ XMFLOAT3(0.5f, -0.5f, 0.5f),		XMFLOAT3(0.0f, -1.0f, 0.0f),	XMFLOAT2(1.0f, 1.0f) });
+	cubeVertices.push_back({ XMFLOAT3(-0.5f, -0.5f, -0.5f),		XMFLOAT3(0.0f, -1.0f, 0.0f),	XMFLOAT2(0.0f, 0.0f) });    // side 4
+	cubeVertices.push_back({ XMFLOAT3(0.5f, -0.5f, -0.5f),		XMFLOAT3(0.0f, -1.0f, 0.0f),	XMFLOAT2(0.0f, 1.0f) });
+	cubeVertices.push_back({ XMFLOAT3(-0.5f, -0.5f, 0.5f),		XMFLOAT3(0.0f, -1.0f, 0.0f),	XMFLOAT2(1.0f, 0.0f) });
+	cubeVertices.push_back({ XMFLOAT3(0.5f, -0.5f, 0.5f),		XMFLOAT3(0.0f, -1.0f, 0.0f),	XMFLOAT2(1.0f, 1.0f) });
 
-	cubeVertices.push_back(
-	{ XMFLOAT3(0.5f, -0.5f, -0.5f),		XMFLOAT3(1.0f, 0.0f, 0.0f),		XMFLOAT2(0.0f, 0.0f) });   // side 5
-	cubeVertices.push_back(
-	{ XMFLOAT3(0.5f, 0.5f, -0.5f),		XMFLOAT3(1.0f, 0.0f, 0.0f),		XMFLOAT2(0.0f, 1.0f) });
-	cubeVertices.push_back(
-	{ XMFLOAT3(0.5f, -0.5f, 0.5f),		XMFLOAT3(1.0f, 0.0f, 0.0f),		XMFLOAT2(1.0f, 0.0f) });
-	cubeVertices.push_back(
-	{ XMFLOAT3(0.5f, 0.5f, 0.5f),		XMFLOAT3(1.0f, 0.0f, 0.0f),		XMFLOAT2(1.0f, 1.0f) });
+	cubeVertices.push_back({ XMFLOAT3(0.5f, -0.5f, -0.5f),		XMFLOAT3(1.0f, 0.0f, 0.0f),		XMFLOAT2(0.0f, 0.0f) });   // side 5
+	cubeVertices.push_back({ XMFLOAT3(0.5f, 0.5f, -0.5f),		XMFLOAT3(1.0f, 0.0f, 0.0f),		XMFLOAT2(0.0f, 1.0f) });
+	cubeVertices.push_back({ XMFLOAT3(0.5f, -0.5f, 0.5f),		XMFLOAT3(1.0f, 0.0f, 0.0f),		XMFLOAT2(1.0f, 0.0f) });
+	cubeVertices.push_back({ XMFLOAT3(0.5f, 0.5f, 0.5f),		XMFLOAT3(1.0f, 0.0f, 0.0f),		XMFLOAT2(1.0f, 1.0f) });
 
-	cubeVertices.push_back(
-	{ XMFLOAT3(-0.5f, -0.5f, -0.5f),	XMFLOAT3(-1.0f, 0.0f, 0.0f),	XMFLOAT2(0.0f, 0.0f) });   // side 6
-	cubeVertices.push_back(
-	{ XMFLOAT3(-0.5f, -0.5f, 0.5f),		XMFLOAT3(-1.0f, 0.0f, 0.0f),	XMFLOAT2(0.0f, 1.0f) });
-	cubeVertices.push_back(
-	{ XMFLOAT3(-0.5f, 0.5f, -0.5f),		XMFLOAT3(-1.0f, 0.0f, 0.0f),	XMFLOAT2(1.0f, 0.0f) });
-	cubeVertices.push_back(
-	{ XMFLOAT3(-0.5f, 0.5f, 0.5f),		XMFLOAT3(-1.0f, 0.0f, 0.0f),	XMFLOAT2(1.0f, 1.0f) });
+	cubeVertices.push_back({ XMFLOAT3(-0.5f, -0.5f, -0.5f),		XMFLOAT3(-1.0f, 0.0f, 0.0f),	XMFLOAT2(0.0f, 0.0f) });   // side 6
+	cubeVertices.push_back({ XMFLOAT3(-0.5f, -0.5f, 0.5f),		XMFLOAT3(-1.0f, 0.0f, 0.0f),	XMFLOAT2(0.0f, 1.0f) });
+	cubeVertices.push_back({ XMFLOAT3(-0.5f, 0.5f, -0.5f),		XMFLOAT3(-1.0f, 0.0f, 0.0f),	XMFLOAT2(1.0f, 0.0f) });
+	cubeVertices.push_back({ XMFLOAT3(-0.5f, 0.5f, 0.5f),		XMFLOAT3(-1.0f, 0.0f, 0.0f),	XMFLOAT2(1.0f, 1.0f) });
 
 	// Create the Indices
 	std::vector<short> cubeIndices = std::vector<short>();

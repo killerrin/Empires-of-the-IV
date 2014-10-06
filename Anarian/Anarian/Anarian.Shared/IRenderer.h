@@ -4,13 +4,15 @@
 namespace Anarian {
 	class IRenderer
 	{
+		friend class RendererFactory;
 	protected:
+		IRenderer(Color color) { m_backgroundColor = color; };
+
 		Color m_backgroundColor;
 	public:
-		IRenderer(Color color);
-		virtual ~IRenderer();
+		virtual ~IRenderer() { };
+		virtual void Render() { };
 
-		virtual void Render();
-		void SetBackgroundColor(Color color);
+		void SetBackgroundColor(Color color) { m_backgroundColor = color; };
 	};
 }

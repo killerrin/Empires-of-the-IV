@@ -19,7 +19,7 @@ DirectXMesh::~DirectXMesh()
 	if (m_indexBuffer != nullptr)
 		m_indexBuffer.ReleaseAndGetAddressOf();
 
-	IMeshObject::~IMeshObject();
+	//IMeshObject::~IMeshObject();
 }
 
 void DirectXMesh::CreateBuffers(ID3D11Device *device)

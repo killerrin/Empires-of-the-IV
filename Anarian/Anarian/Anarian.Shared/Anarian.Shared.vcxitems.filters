@@ -39,23 +39,62 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)DirectXMesh.h">
       <Filter>Rendering\DirectX</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicLoader.h">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicReaderWriter.h">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicMath.h">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicShapes.h">
-      <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DDSTextureLoader.h">
-      <Filter>Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)MeshFactory.h">
       <Filter>Factories</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)MaterialFactory.h">
+      <Filter>Factories</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)RendererFactory.h">
+      <Filter>Factories</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ResourceManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)IScene.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)SceneNode.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Camera.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)SceneManager.h">
+      <Filter>Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)IRenderable.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)IMoveable.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)IUpdatable.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)GameTimer.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicLoader.h">
+      <Filter>Utilities\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicMath.h">
+      <Filter>Utilities\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicReaderWriter.h">
+      <Filter>Utilities\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicShapes.h">
+      <Filter>Utilities\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Common\DDSTextureLoader.h">
+      <Filter>Utilities\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)GameObject.h">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ConstantBuffers.h">
+      <Filter>Shaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -70,26 +109,47 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\SampleFpsTextRenderer.cpp">
       <Filter>Content</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)IRenderer.cpp">
-      <Filter>Interfaces</Filter>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMaterial.cpp">
       <Filter>Rendering\DirectX</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMesh.cpp">
       <Filter>Rendering\DirectX</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Common\BasicReaderWriter.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)MeshFactory.cpp">
+      <Filter>Factories</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MaterialFactory.cpp">
+      <Filter>Factories</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)RendererFactory.cpp">
+      <Filter>Factories</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)ResourceManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)SceneNode.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Camera.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)SceneManager.cpp">
+      <Filter>Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)GameTimer.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\BasicLoader.cpp">
-      <Filter>Utilities</Filter>
+      <Filter>Utilities\Loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Common\BasicReaderWriter.cpp">
+      <Filter>Utilities\Loaders</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\DDSTextureLoader.cpp">
-      <Filter>Utilities</Filter>
+      <Filter>Utilities\Loaders</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)MeshFactory.cpp">
-      <Filter>Factories</Filter>
+    <ClCompile Include="$(MSBuildThisFileDirectory)GameObject.cpp">
+      <Filter>Data Structures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -125,5 +185,19 @@
     <Filter Include="Factories">
       <UniqueIdentifier>{e11b82be-cb4c-4012-88b9-2f7c45cdaaa8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Managers">
+      <UniqueIdentifier>{dfc99fd6-4045-46e7-9915-d9ccaafd5d65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\Loaders">
+      <UniqueIdentifier>{dfb5125f-8429-44a2-aa7b-6972137add79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{01b8ab7c-ba4f-4406-9ea6-ca2954946eec}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)ConstantBuffers.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

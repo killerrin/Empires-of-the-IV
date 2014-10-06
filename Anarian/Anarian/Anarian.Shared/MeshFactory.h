@@ -4,9 +4,9 @@
 namespace Anarian {
 	class MeshFactory
 	{
-		MeshFactory();
 	private:
 		static MeshFactory* m_instance;
+		MeshFactory();
 	public:
 		static MeshFactory* Instance();
 		~MeshFactory();

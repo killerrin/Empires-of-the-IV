@@ -524,7 +524,7 @@ void DX::DeviceResources::SetCompositionScale(float compositionScaleX, float com
 void DX::DeviceResources::ValidateDevice()
 {
 	// The D3D Device is no longer valid if the default adapter changed since the device
-    // was created or if the device has been removed.
+	// was created or if the device has been removed.
 
 	// First, get the information for the default adapter from when the device was created.
 

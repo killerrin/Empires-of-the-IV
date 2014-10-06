@@ -1,27 +1,41 @@
 ﻿#include "pch.h"
+#include "..\SceneManager.h"
 #include "Sample3DSceneRenderer.h"
 
 #include "..\Common\DirectXHelper.h"
 #include "..\Color.h"
 #include "..\PNTVertex.h"
+
 #include "..\DirectXMesh.h"
+#include "..\DirectXMaterial.h"
+
+#include "..\ConstantBuffers.h"
 
 using namespace Anarian;
 using namespace DirectX;
 using namespace Windows::Foundation;
 
 // Loads vertex and pixel shaders from files and instantiates the cube geometry.
-Sample3DSceneRenderer::Sample3DSceneRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
-	IRenderer(Color::CornFlowerBlue()),
+Sample3DSceneRenderer::Sample3DSceneRenderer(Color color) :
+	IRenderer(color),
 
 	m_loadingComplete(false),
 	m_degreesPerSecond(45),
-	m_indexCount(0),
-	m_tracking(false),
-	m_deviceResources(deviceResources)
+	m_tracking(false)
 {
+
+}
+void Sample3DSceneRenderer::Initialize(const std::shared_ptr<DX::DeviceResources>& deviceResources, SceneManager* sceneManager)
+{
+	m_deviceResources = deviceResources;
+	m_sceneManager = sceneManager;
+
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
+}
+void Sample3DSceneRenderer::SetSceneManager(SceneManager* sceneManager)
+{
+	m_sceneManager = sceneManager;
 }
 
 // Initializes view parameters when the window size changes.
@@ -77,17 +91,20 @@ void Sample3DSceneRenderer::Update(DX::StepTimer const& timer)
 		// Convert degrees to radians, then convert seconds to rotation angle
 		float radiansPerSecond = XMConvertToRadians(m_degreesPerSecond);
 		double totalRotation = timer.GetTotalSeconds() * radiansPerSecond;
+
 		float radians = static_cast<float>(fmod(totalRotation, XM_2PI));
 
-		Rotate(radians);
+		Rotate(radians, radians);
 	}
 }
 
 // Rotate the 3D cube model a set amount of radians.
-void Sample3DSceneRenderer::Rotate(float radians)
+void Sample3DSceneRenderer::Rotate(float radiansX, float radiansY)
 {
 	// Prepare to pass the updated model matrix to the shader
-	XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(XMMatrixRotationY(radians)));
+	XMStoreFloat4x4(&m_constantBufferData.model,
+		XMMatrixTranspose(XMMatrixRotationX(radiansX) * XMMatrixRotationY(radiansY))
+		);
 }
 
 void Sample3DSceneRenderer::StartTracking()
@@ -96,12 +113,13 @@ void Sample3DSceneRenderer::StartTracking()
 }
 
 // When tracking, the 3D cube can be rotated around its Y axis by tracking pointer position relative to the output screen width.
-void Sample3DSceneRenderer::TrackingUpdate(float positionX)
+void Sample3DSceneRenderer::TrackingUpdate(float positionX, float positionY)
 {
 	if (m_tracking)
 	{
-		float radians = XM_2PI * 2.0f * positionX / m_deviceResources->GetOutputSize().Width;
-		Rotate(radians);
+		float radiansX = XM_2PI * 2.0f * positionX / m_deviceResources->GetOutputSize().Width;
+		float radiansY = XM_2PI * 2.0f * positionY / m_deviceResources->GetOutputSize().Height;
+		Rotate(radiansX, radiansY);
 	}
 }
 
@@ -136,6 +154,9 @@ void Sample3DSceneRenderer::Render()
 	context->ClearDepthStencilView(m_deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 
+	ConstantBufferChangesEveryPrim cBuffChangesEveryPrim;
+	((DirectXMaterial*)material)->Render(context, &cBuffChangesEveryPrim, 0);
+
 	// Prepare the constant buffer to send it to the graphics device.
 	context->UpdateSubresource(
 		m_constantBuffer.Get(),
@@ -146,33 +167,23 @@ void Sample3DSceneRenderer::Render()
 		0
 		);
 
-	//// Each vertex is one instance of the Anarian::Verticies::PNTVertex struct.
-	//UINT stride = sizeof(Anarian::Verticies::PNTVertex);
-	//UINT offset = 0;
-	//context->IASetVertexBuffers(
-	//	0,
-	//	1,
-	//	((DirectXMesh*)mesh)->VertexBuffer().GetAddressOf(),//m_vertexBuffer.GetAddressOf(),
-	//	&stride,
-	//	&offset
-	//	);
-	//
-	//context->IASetIndexBuffer(
-	//	((DirectXMesh*)mesh)->IndexBuffer().Get(), //m_indexBuffer.Get(),
-	//	DXGI_FORMAT_R16_UINT, // Each index is one 16-bit unsigned integer (short).
-	//	0
-	//	);
-	//
-	//context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->UpdateSubresource(
+		m_constantBufferChangesEveryPrim.Get(),
+		0,
+		NULL,
+		&cBuffChangesEveryPrim,
+		0,
+		0
+		);
 
 	context->IASetInputLayout(m_inputLayout.Get());
 
-	// Attach our vertex shader.
-	context->VSSetShader(
-		m_vertexShader.Get(),
-		nullptr,
-		0
-		);
+	//// Attach our vertex shader.
+	//context->VSSetShader(
+	//	m_vertexShader.Get(),
+	//	nullptr,
+	//	0
+	//	);
 
 	// Send the constant buffer to the graphics device.
 	context->VSSetConstantBuffers(
@@ -181,20 +192,23 @@ void Sample3DSceneRenderer::Render()
 		m_constantBuffer.GetAddressOf()
 		);
 
-	// Attach our pixel shader.
-	context->PSSetShader(
-		m_pixelShader.Get(),
-		nullptr,
-		0
+	context->VSSetConstantBuffers(
+		1,
+		1,
+		m_constantBufferChangesEveryPrim.GetAddressOf()
 		);
 
-	//// Draw the objects.
-	//context->DrawIndexed(
-	//	mesh->IndexCount(),//m_indexCount,
-	//	0,
+	//// Attach our pixel shader.
+	//context->PSSetShader(
+	//	m_pixelShader.Get(),
+	//	nullptr,
 	//	0
 	//	);
 
+	// Set the SamplerState
+	context->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
+
+	// Draw the Mesh
 	((DirectXMesh*)mesh)->Render(context);
 }
 
@@ -245,66 +259,52 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 				&m_constantBuffer
 				)
 			);
+
+		CD3D11_BUFFER_DESC constantBufferCEPDesc((sizeof(ConstantBufferChangesEveryPrim) + 15) / 16 * 16,
+												 D3D11_BIND_CONSTANT_BUFFER);
+		DX::ThrowIfFailed(
+			m_deviceResources->GetD3DDevice()->CreateBuffer(
+			&constantBufferCEPDesc,
+			nullptr,
+			&m_constantBufferChangesEveryPrim
+			)
+			);
 	});
 
-	// Once both shaders are loaded, create the mesh.
-	auto createCubeTask = (createPSTask && createVSTask).then([this] () {
+	auto createStatesTask = (createPSTask && createVSTask).then([this]() {
+		// Filter sampler
+		D3D11_SAMPLER_DESC sd;
+		sd.Filter = D3D11_FILTER_ANISOTROPIC;
+		sd.MaxAnisotropy = 16;							// use Anisotropic x 8. Available values = 1-16
+		sd.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;		// horizontally the texture is repeated
+		sd.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;		// vertically the texture is mirrored
+		sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;		// if it's a 3D texture, it is clamped
+		sd.BorderColor[0] = 0.0f;
+		sd.BorderColor[1] = 0.0f;
+		sd.BorderColor[2] = 0.0f;
+		sd.BorderColor[3] = 0.0f;
+		sd.MinLOD = 0.0f;
+		sd.MaxLOD = FLT_MAX;
+		sd.MipLODBias = 0.0f;							// decrease mip level of detail by 2
+
+		DX::ThrowIfFailed(
+			m_deviceResources->GetD3DDevice()->CreateSamplerState(&sd, &m_samplerState)
+			);
+	});
+
+	// Once both shaders are loaded, create the cube
+	auto createCubeTask = (createStatesTask).then([this]() {
+		// Create the Mesh
 		mesh = MeshFactory::Instance()->ConstructCube();
 		((DirectXMesh*)mesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
 
-		// Load mesh vertices. Each vertex has a position and a color.
-		std::vector<Anarian::Verticies::PNTVertex> cubeVertices = std::vector<Anarian::Verticies::PNTVertex>();
-			//						 Position							Normal							Texture Coordinates
-			cubeVertices.push_back({ XMFLOAT3(-0.5f, -0.5f, -0.5f),		XMFLOAT3(0.0f, 0.0f, 0.0f),		XMFLOAT2(1.0f, 0.0f) });
-			cubeVertices.push_back({ XMFLOAT3(-0.5f, -0.5f, 0.5f),		XMFLOAT3(0.0f, 0.0f, 1.0f),		XMFLOAT2(1.0f, 0.0f) });
-			cubeVertices.push_back({ XMFLOAT3(-0.5f, 0.5f, -0.5f),		XMFLOAT3(0.0f, 1.0f, 0.0f),		XMFLOAT2(1.0f, 0.0f) });
-			cubeVertices.push_back({ XMFLOAT3(-0.5f, 0.5f, 0.5f),		XMFLOAT3(0.0f, 1.0f, 1.0f),		XMFLOAT2(1.0f, 0.0f) });
-			cubeVertices.push_back({ XMFLOAT3(0.5f, -0.5f, -0.5f),		XMFLOAT3(1.0f, 0.0f, 0.0f),		XMFLOAT2(1.0f, 0.0f) });
-			cubeVertices.push_back({ XMFLOAT3(0.5f, -0.5f, 0.5f),		XMFLOAT3(1.0f, 0.0f, 1.0f),		XMFLOAT2(1.0f, 0.0f) });
-			cubeVertices.push_back({ XMFLOAT3(0.5f, 0.5f, -0.5f),		XMFLOAT3(1.0f, 1.0f, 0.0f),		XMFLOAT2(1.0f, 0.0f) });
-			cubeVertices.push_back({ XMFLOAT3(0.5f, 0.5f, 0.5f),		XMFLOAT3(1.0f, 1.0f, 1.0f),		XMFLOAT2(1.0f, 0.0f) });
-
-		D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
-		vertexBufferData.pSysMem = &cubeVertices[0];
-		vertexBufferData.SysMemPitch = 0;
-		vertexBufferData.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(Anarian::Verticies::PNTVertex) * cubeVertices.size(), D3D11_BIND_VERTEX_BUFFER);
-		DX::ThrowIfFailed(
-			m_deviceResources->GetD3DDevice()->CreateBuffer(
-			&vertexBufferDesc,
-			&vertexBufferData,
-			&m_vertexBuffer
-			)
-			);
-
-		std::vector<short> cubeIndices = std::vector<short>();
-			cubeIndices.push_back(0);	 cubeIndices.push_back(2);	 cubeIndices.push_back(1); // -x
-			cubeIndices.push_back(1);	 cubeIndices.push_back(2);	 cubeIndices.push_back(3);
-			cubeIndices.push_back(4);	 cubeIndices.push_back(5);	 cubeIndices.push_back(6); // +x
-			cubeIndices.push_back(5);	 cubeIndices.push_back(7);	 cubeIndices.push_back(6);
-			cubeIndices.push_back(0);	 cubeIndices.push_back(1);	 cubeIndices.push_back(5); // -y
-			cubeIndices.push_back(0);	 cubeIndices.push_back(5);	 cubeIndices.push_back(4);
-			cubeIndices.push_back(2);	 cubeIndices.push_back(6);	 cubeIndices.push_back(7); // +y
-			cubeIndices.push_back(2);	 cubeIndices.push_back(7);	 cubeIndices.push_back(3);
-			cubeIndices.push_back(0);	 cubeIndices.push_back(4);	 cubeIndices.push_back(6); // -z
-			cubeIndices.push_back(0);	 cubeIndices.push_back(6);	 cubeIndices.push_back(2);
-			cubeIndices.push_back(1);	 cubeIndices.push_back(3);	 cubeIndices.push_back(7); // +z
-			cubeIndices.push_back(1);	 cubeIndices.push_back(7);	 cubeIndices.push_back(5);
-
-		m_indexCount = cubeIndices.size();
-
-		D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
-		indexBufferData.pSysMem = &cubeIndices[0];
-		indexBufferData.SysMemPitch = 0;
-		indexBufferData.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC indexBufferDesc(sizeof(short) * cubeIndices.size(), D3D11_BIND_INDEX_BUFFER);
-		DX::ThrowIfFailed(
-			m_deviceResources->GetD3DDevice()->CreateBuffer(
-				&indexBufferDesc,
-				&indexBufferData,
-				&m_indexBuffer
-				)
-			);
+		// Create Material
+		material = MaterialFactory::Instance()->ConstructMaterial(
+														Color(0.5f, 1.0f, 0.4f, 1.0f),
+														Color(0.5f, 0.5f, 0.5f, 1.0f),
+														Color(1.0f, 0.0f, 0.0f, 1.0f),
+														1.0f);
+		((DirectXMaterial*)material)->CreateViews(nullptr, m_vertexShader.Get(), m_pixelShader.Get());
 	});
 
 	// Once the cube is loaded, the object is ready to be rendered.
@@ -316,10 +316,13 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 void Sample3DSceneRenderer::ReleaseDeviceDependentResources()
 {
 	m_loadingComplete = false;
+
 	m_vertexShader.Reset();
 	m_inputLayout.Reset();
 	m_pixelShader.Reset();
+
+	m_samplerState.Reset();
+
 	m_constantBuffer.Reset();
-	m_vertexBuffer.Reset();
-	m_indexBuffer.Reset();
+	m_constantBufferChangesEveryPrim.Reset();
 }
