@@ -46,12 +46,12 @@ void DirectXMesh::CreateBuffers(ID3D11Device *device)
 	device->CreateBuffer(&ibd, &isrd, &m_indexBuffer);
 }
 
-void DirectXMesh::Render(ID3D11DeviceContext *context)
+void DirectXMesh::Render(ID3D11DeviceContext *context, int bufferIndex)
 {
 	uint32 stride = sizeof(Anarian::Verticies::PNTVertex);
 	uint32 offset = 0;
 
-	context->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
+	context->IASetVertexBuffers(bufferIndex, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
 	context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
 
 	// set the primitive topology

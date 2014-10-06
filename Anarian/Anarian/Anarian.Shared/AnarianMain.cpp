@@ -23,6 +23,9 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	m_resourceManager = new ResourceManager();
 	m_sceneManager = new SceneManager();
 
+	// Make the GameTimer
+	m_gameTime = GameTimer();
+
 	// Initialize the factories
 	RendererFactory::Instance();
 	MeshFactory::Instance();
@@ -104,6 +107,9 @@ void AnarianMain::StopRenderLoop()
 // Updates the application state once per frame.
 void AnarianMain::Update() 
 {
+	// Update the GameTime
+	m_gameTime.Update();
+
 	ProcessInput();
 
 	// Update scene objects.

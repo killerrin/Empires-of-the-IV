@@ -17,7 +17,7 @@ namespace Anarian
 		~DirectXMesh();
 
 		void CreateBuffers(ID3D11Device *device);
-		void Render(ID3D11DeviceContext *context);
+		void Render(ID3D11DeviceContext *context, int bufferIndex = 0);
 
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> VertexBuffer() {
