@@ -13,5 +13,8 @@ namespace Anarian {
 
 		// Constructions
 		IMeshObject* ConstructCube();
+		IMeshObject* ConstructFace();
+		IMeshObject* ConstructCylinder(uint32 segments);
+		IMeshObject* ConstructSphere(uint32 segments);
 	};
 }
