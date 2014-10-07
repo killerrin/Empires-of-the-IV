@@ -43,9 +43,12 @@ namespace Anarian
 
 		// Direct3D resources for cube geometry.
 		Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_inputLayout;
+		Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_defaultRasterizerState;
+
 		Microsoft::WRL::ComPtr<ID3D11VertexShader>	m_vertexShader;
 		Microsoft::WRL::ComPtr<ID3D11PixelShader>	m_pixelShader;
 
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_tyrilMap;
 		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_constantBuffer;
 		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_constantBufferChangesEveryPrim;
 

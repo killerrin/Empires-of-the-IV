@@ -96,6 +96,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ConstantBuffers.h">
       <Filter>Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)WICTextureLoader.h">
+      <Filter>Utilities\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PlatformHelpers.h">
+      <Filter>Utilities\Loaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianMain.cpp" />
@@ -151,6 +157,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)GameObject.cpp">
       <Filter>Data Structures</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)WICTextureLoader.cpp">
+      <Filter>Utilities\Loaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)Content\SamplePixelShader.hlsl">
@@ -194,10 +203,18 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{01b8ab7c-ba4f-4406-9ea6-ca2954946eec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{416710b8-008d-4fcb-abc9-ea3855dac7e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)ConstantBuffers.hlsli">
       <Filter>Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="$(MSBuildThisFileDirectory)Assets\TyrilMap.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
 </Project>

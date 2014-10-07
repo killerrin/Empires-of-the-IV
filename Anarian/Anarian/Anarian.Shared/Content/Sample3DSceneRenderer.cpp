@@ -3,6 +3,9 @@
 #include "Sample3DSceneRenderer.h"
 
 #include "..\Common\DirectXHelper.h"
+#include "..\Common\BasicLoader.h"
+#include "..\WICTextureLoader.h"
+
 #include "..\Color.h"
 #include "..\PNTVertex.h"
 
@@ -153,6 +156,8 @@ void Sample3DSceneRenderer::Render()
 	context->ClearRenderTargetView(m_deviceResources->GetBackBufferRenderTargetView(), m_backgroundColor[0]);
 	context->ClearDepthStencilView(m_deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+	// Set the SamplerState
+	context->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
 
 	ConstantBufferChangesEveryPrim cBuffChangesEveryPrim;
 	((DirectXMaterial*)material)->Render(context, &cBuffChangesEveryPrim, 0);
@@ -178,13 +183,6 @@ void Sample3DSceneRenderer::Render()
 
 	context->IASetInputLayout(m_inputLayout.Get());
 
-	//// Attach our vertex shader.
-	//context->VSSetShader(
-	//	m_vertexShader.Get(),
-	//	nullptr,
-	//	0
-	//	);
-
 	// Send the constant buffer to the graphics device.
 	context->VSSetConstantBuffers(
 		0,
@@ -198,15 +196,8 @@ void Sample3DSceneRenderer::Render()
 		m_constantBufferChangesEveryPrim.GetAddressOf()
 		);
 
-	//// Attach our pixel shader.
-	//context->PSSetShader(
-	//	m_pixelShader.Get(),
-	//	nullptr,
-	//	0
-	//	);
-
-	// Set the SamplerState
-	context->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
+	// Set the Rasterizer State
+	context->RSSetState(m_defaultRasterizerState.Get());
 
 	// Draw the Mesh
 	((DirectXMesh*)mesh)->Render(context);
@@ -290,21 +281,51 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 		DX::ThrowIfFailed(
 			m_deviceResources->GetD3DDevice()->CreateSamplerState(&sd, &m_samplerState)
 			);
+
+		// Rasterizer State
+		D3D11_RASTERIZER_DESC rd;
+		rd.FillMode = D3D11_FILL_SOLID;
+		rd.CullMode = D3D11_CULL_FRONT;
+		rd.FrontCounterClockwise = FALSE;
+		rd.DepthClipEnable = TRUE;
+		rd.ScissorEnable = FALSE;
+		rd.AntialiasedLineEnable = FALSE;
+		rd.MultisampleEnable = FALSE;
+		rd.DepthBias = 0;
+		rd.DepthBiasClamp = 0.0f;
+		rd.SlopeScaledDepthBias = 0.0f;
+
+		DX::ThrowIfFailed(
+			m_deviceResources->GetD3DDevice()->CreateRasterizerState(&rd, &m_defaultRasterizerState)
+			);
 	});
 
 	// Once both shaders are loaded, create the cube
 	auto createCubeTask = (createStatesTask).then([this]() {
 		// Create the Mesh
-		mesh = MeshFactory::Instance()->ConstructCube();
+		mesh = MeshFactory::Instance()->ConstructSphere(32);
 		((DirectXMesh*)mesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
 
 		// Create Material
 		material = MaterialFactory::Instance()->ConstructMaterial(
-														Color(0.5f, 1.0f, 0.4f, 1.0f),
-														Color(0.5f, 0.5f, 0.5f, 1.0f),
-														Color(1.0f, 0.0f, 0.0f, 1.0f),
+														Color(0.5f, 1.0f, 0.4f, 0.5f),
+														Color(0.0f, 1.0, 0.5f, 0.5f),
+														Color(0.5f, 0.5f, 0.5f, 0.5f),
 														1.0f);
-		((DirectXMaterial*)material)->CreateViews(nullptr, m_vertexShader.Get(), m_pixelShader.Get());
+
+		// Start the async tasks to load the shaders and textures.
+		//BasicLoader^ loader = ref new BasicLoader(m_deviceResources->GetD3DDevice());
+		//loader->LoadTextureAsync("Assets\\TyrilMap.png", nullptr, &m_tyrilMap);
+		// load the texture
+		HRESULT hr = CreateWICTextureFromFile(
+			m_deviceResources->GetD3DDevice(),
+			nullptr,
+			L"Assets\\TyrilMap.png",
+			nullptr,
+			&m_tyrilMap,
+			0);
+
+		((DirectXMaterial*)material)->CreateViews(m_tyrilMap.Get(), m_vertexShader.Get(), m_pixelShader.Get());
 	});
 
 	// Once the cube is loaded, the object is ready to be rendered.
@@ -322,6 +343,7 @@ void Sample3DSceneRenderer::ReleaseDeviceDependentResources()
 	m_pixelShader.Reset();
 
 	m_samplerState.Reset();
+	m_defaultRasterizerState.Reset();
 
 	m_constantBuffer.Reset();
 	m_constantBufferChangesEveryPrim.Reset();

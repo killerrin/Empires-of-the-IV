@@ -46,7 +46,7 @@ PixelShaderInput main(VertexShaderInput input)
 	// Fill out the pixel shader input and pass it.
 	output.position = pos;
 	output.textureUV = input.textureUV;
-	output.diffuseColor = meshColor;
+	output.diffuseColor = diffuseColor;
 
 	return output;
 }

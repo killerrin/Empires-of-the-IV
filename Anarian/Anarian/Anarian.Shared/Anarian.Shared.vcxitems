@@ -28,6 +28,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)ResourceManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SceneManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SceneNode.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)WICTextureLoader.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AnarianMain.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianMain.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Camera.h" />
@@ -63,11 +64,13 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Content\Sample3DSceneRenderer.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\SampleFpsTextRenderer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\Sample3DSceneRenderer.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PlatformHelpers.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PNTVertex.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RendererFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ResourceManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SceneManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SceneNode.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)WICTextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)Content\SamplePixelShader.hlsl">
@@ -82,5 +85,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)ConstantBuffers.hlsli" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="$(MSBuildThisFileDirectory)Assets\TyrilMap.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
   </ItemGroup>
 </Project>
