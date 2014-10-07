@@ -87,10 +87,12 @@ void Sample3DSceneRenderer::CreateWindowSizeDependentResources()
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
-void Sample3DSceneRenderer::Update(DX::StepTimer const& timer)
+void Sample3DSceneRenderer::Update(DX::StepTimer const& timer, GameTimer* gameTime)
 {
 	if (!m_tracking)
 	{
+		if (gameObject == nullptr) return;
+
 		// Convert degrees to radians, then convert seconds to rotation angle
 		float radiansPerSecond = XMConvertToRadians(m_degreesPerSecond);
 		double totalRotation = timer.GetTotalSeconds() * radiansPerSecond;
@@ -98,12 +100,18 @@ void Sample3DSceneRenderer::Update(DX::StepTimer const& timer)
 		float radians = static_cast<float>(fmod(totalRotation, XM_2PI));
 
 		Rotate(radians, radians);
+
+		gameObject->Update(gameTime);
 	}
 }
 
 // Rotate the 3D cube model a set amount of radians.
 void Sample3DSceneRenderer::Rotate(float radiansX, float radiansY)
 {
+	if (gameObject == nullptr) return;
+	XMFLOAT3 rotation(radiansX, radiansY, 0.0f);
+	gameObject->Rotation(rotation);
+
 	// Prepare to pass the updated model matrix to the shader
 	XMStoreFloat4x4(&m_constantBufferData.model,
 		XMMatrixTranspose(XMMatrixRotationX(radiansX) * XMMatrixRotationY(radiansY))
@@ -159,24 +167,12 @@ void Sample3DSceneRenderer::Render()
 	// Set the SamplerState
 	context->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
 
-	ConstantBufferChangesEveryPrim cBuffChangesEveryPrim;
-	((DirectXMaterial*)material)->Render(context, &cBuffChangesEveryPrim, 0);
-
 	// Prepare the constant buffer to send it to the graphics device.
 	context->UpdateSubresource(
 		m_constantBuffer.Get(),
 		0,
 		NULL,
 		&m_constantBufferData,
-		0,
-		0
-		);
-
-	context->UpdateSubresource(
-		m_constantBufferChangesEveryPrim.Get(),
-		0,
-		NULL,
-		&cBuffChangesEveryPrim,
 		0,
 		0
 		);
@@ -200,7 +196,7 @@ void Sample3DSceneRenderer::Render()
 	context->RSSetState(m_defaultRasterizerState.Get());
 
 	// Draw the Mesh
-	((DirectXMesh*)mesh)->Render(context);
+	gameObject->Render(context, m_constantBufferChangesEveryPrim.Get());
 }
 
 void Sample3DSceneRenderer::CreateDeviceDependentResources()
@@ -303,7 +299,7 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 	// Once both shaders are loaded, create the cube
 	auto createCubeTask = (createStatesTask).then([this]() {
 		// Create the Mesh
-		mesh = MeshFactory::Instance()->ConstructSphere(32);
+		mesh = MeshFactory::Instance()->ConstructCube();
 		((DirectXMesh*)mesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
 
 		// Create Material
@@ -326,6 +322,19 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 			0);
 
 		((DirectXMaterial*)material)->CreateViews(m_tyrilMap.Get(), m_vertexShader.Get(), m_pixelShader.Get());
+	
+		// Create the Game Object
+		gameObject = new GameObject();
+		gameObject->SetMaterial(material);
+		gameObject->SetMesh(mesh);
+
+		GameObject g2 = GameObject();
+		g2.SetMaterial(material);
+		g2.SetMesh(mesh);
+		g2.Position(DirectX::XMFLOAT3(0.5f, 0.5f, 0.0f));
+		g2.Scale(DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f));
+
+		gameObject->AddChild(g2);
 	});
 
 	// Once the cube is loaded, the object is ready to be rendered.

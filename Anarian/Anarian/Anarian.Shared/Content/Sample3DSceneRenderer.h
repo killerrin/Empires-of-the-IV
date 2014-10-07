@@ -3,7 +3,9 @@
 #include "..\Common\DeviceResources.h"
 #include "ShaderStructures.h"
 #include "..\Common\StepTimer.h"
+#include "..\GameTimer.h"
 
+#include "..\GameObject.h"
 #include "..\MeshFactory.h"
 #include "..\MaterialFactory.h"
 
@@ -23,7 +25,7 @@ namespace Anarian
 		void CreateDeviceDependentResources();
 		void CreateWindowSizeDependentResources();
 		void ReleaseDeviceDependentResources();
-		void Update(DX::StepTimer const& timer);
+		void Update(DX::StepTimer const& timer, GameTimer* gameTime);
 		void Render();
 		void StartTracking();
 		void TrackingUpdate(float positionX, float positionY);
@@ -56,6 +58,7 @@ namespace Anarian
 		Microsoft::WRL::ComPtr<ID3D11SamplerState>	m_samplerState;
 
 		// Meshes and Materials
+		GameObject* gameObject;
 		IMaterial* material;
 		IMeshObject* mesh;
 

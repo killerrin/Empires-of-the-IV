@@ -116,7 +116,7 @@ void AnarianMain::Update()
 	m_timer.Tick([&]()
 	{
 		// TODO: Replace this with your app's content update functions.
-		((Sample3DSceneRenderer*)m_sceneRenderer)->Update(m_timer);
+		((Sample3DSceneRenderer*)m_sceneRenderer)->Update(m_timer, &m_gameTime);
 		m_fpsTextRenderer->Update(m_timer);
 	});
 }
