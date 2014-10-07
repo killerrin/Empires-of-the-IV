@@ -1,4 +1,2 @@
 Hook up Camera to renderer
-Hook up SceneManager to renderer
-Render Scene utilizing SceneManager
 Clean up Renderer

@@ -3,6 +3,12 @@
 #include "AnarianMain.h"
 #include "Common\DirectXHelper.h"
 
+
+#include "WICTextureLoader.h"
+#include "GameObject.h"
+#include "DirectXMaterial.h"
+#include "DirectXMesh.h"
+
 #include "RendererFactory.h"
 #include "MeshFactory.h"
 #include "MaterialFactory.h"
@@ -23,6 +29,8 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	m_resourceManager = new ResourceManager();
 	m_sceneManager = new SceneManager();
 
+	m_sceneManager->SetCurrentScene(new IScene());
+
 	// Make the GameTimer
 	m_gameTime = GameTimer();
 
@@ -32,10 +40,8 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	MaterialFactory::Instance();
 
 	// TODO: Replace this with your app's content initialization.
-	m_sceneRenderer = RendererFactory::Instance()->ConstructRenderer(Color::CornFlowerBlue());
-	((Sample3DSceneRenderer*)m_sceneRenderer)->Initialize(m_deviceResources, m_sceneManager);
-
-
+	m_sceneRenderer = RendererFactory::Instance()->ConstructRenderer(m_sceneManager, Color::CornFlowerBlue());
+	((Sample3DSceneRenderer*)m_sceneRenderer)->Initialize(m_deviceResources);
 
 	m_fpsTextRenderer = std::unique_ptr<SampleFpsTextRenderer>(new SampleFpsTextRenderer(m_deviceResources));
 

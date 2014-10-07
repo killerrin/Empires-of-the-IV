@@ -18,8 +18,8 @@ namespace Anarian
 	{
 		friend class RendererFactory;
 	public:
-		Sample3DSceneRenderer(Color color);
-		void Initialize(const std::shared_ptr<DX::DeviceResources>& deviceResources, SceneManager* sceneManager);
+		Sample3DSceneRenderer(SceneManager* sceneManager, Color color);
+		void Initialize(const std::shared_ptr<DX::DeviceResources>& deviceResources);
 		void SetSceneManager(SceneManager* sceneManager);
 
 		void CreateDeviceDependentResources();
@@ -40,9 +40,6 @@ namespace Anarian
 		// Cached pointer to device resources.
 		std::shared_ptr<DX::DeviceResources> m_deviceResources;
 
-		// Managers
-		SceneManager* m_sceneManager;
-
 		// Direct3D resources for cube geometry.
 		Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_inputLayout;
 		Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_defaultRasterizerState;
@@ -58,7 +55,7 @@ namespace Anarian
 		Microsoft::WRL::ComPtr<ID3D11SamplerState>	m_samplerState;
 
 		// Meshes and Materials
-		GameObject* gameObject;
+		//GameObject* gameObject;
 		IMaterial* material;
 		IMeshObject* mesh;
 

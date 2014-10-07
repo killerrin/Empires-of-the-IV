@@ -1,25 +1,27 @@
 #pragma once
 #include "Camera.h"
-#include "SceneNode.h"
+#include "GameObject.h"
 
 namespace Anarian {
 	class IScene
 	{
 	protected:
-		IScene() { 
-		
-		};
 
-		Camera	  m_camera;
-		SceneNode m_sceneNode;
+
+		Camera		m_camera;
+		GameObject* m_sceneNode;
 
 	public:
-		virtual ~IScene() {};
+		IScene() {
+
+		};
+
+		virtual ~IScene() { delete m_sceneNode; };
 
 		Camera*		GetCamera() { return &m_camera; };
 		void		SetCamera(Camera camera) { m_camera = camera; };
 
-		SceneNode*	GetSceneNode() { return &m_sceneNode; };
-		void		SetSceneNode(SceneNode sceneNode) { m_sceneNode = sceneNode; };
+		GameObject*	GetSceneNode() { return m_sceneNode; };
+		void		SetSceneNode(GameObject* sceneNode) { m_sceneNode = sceneNode; };
 	};
 }

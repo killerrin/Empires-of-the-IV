@@ -12,6 +12,6 @@ namespace Anarian {
 		~RendererFactory();
 
 		// Constructions
-		IRenderer* ConstructRenderer(Color backgroundColor);
+		IRenderer* ConstructRenderer(SceneManager* sceneManager, Color backgroundColor);
 	};
 }

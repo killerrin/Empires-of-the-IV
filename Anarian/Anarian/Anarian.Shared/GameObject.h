@@ -52,11 +52,11 @@ namespace Anarian{
 
 		DirectX::XMMATRIX ModelMatrix()	{ return DirectX::XMLoadFloat4x4(&m_modelMatrix); };
 		DirectX::XMMATRIX ScaleMatrix() { 
-			DirectX::XMFLOAT3 sca = ParentChildScale();
+			DirectX::XMFLOAT3 sca = WorldScale();
 			return DirectX::XMMatrixScaling(sca.x, sca.y, sca.z);
 		};
 		DirectX::XMMATRIX RotationMatrix() {
-			DirectX::XMFLOAT3 rot = ParentChildRotation();
+			DirectX::XMFLOAT3 rot = WorldRotation();
 
 			DirectX::XMMATRIX xRot = DirectX::XMMatrixRotationX(rot.x);
 			DirectX::XMMATRIX yRot = DirectX::XMMatrixRotationY(rot.y);
@@ -64,7 +64,7 @@ namespace Anarian{
 			return xRot * yRot * zRot;
 		};
 		DirectX::XMMATRIX TranslationMatrix() { 
-			DirectX::XMFLOAT3 pos = ParentChildPosition();
+			DirectX::XMFLOAT3 pos = WorldPosition();
 			return DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
 		};
 
@@ -75,11 +75,11 @@ namespace Anarian{
 			UpdatePosition();
 		};
 		DirectX::XMFLOAT3 Position() { return m_position; };
-		DirectX::XMFLOAT3 ParentChildPosition() {
+		DirectX::XMFLOAT3 WorldPosition() {
 			DirectX::XMFLOAT3 pos = m_position;
 
 			if (m_parent != nullptr) {
-				DirectX::XMFLOAT3 parentPos = m_parent->ParentChildPosition();
+				DirectX::XMFLOAT3 parentPos = m_parent->WorldPosition();
 				pos.x += parentPos.x;
 				pos.y += parentPos.y;
 				pos.z += parentPos.z;
@@ -99,11 +99,11 @@ namespace Anarian{
 			UpdatePosition();
 		}
 		DirectX::XMFLOAT3 Scale() { return m_scale; };
-		DirectX::XMFLOAT3 ParentChildScale() {
+		DirectX::XMFLOAT3 WorldScale() {
 			DirectX::XMFLOAT3 sca = m_scale;
 
 			if (m_parent != nullptr) {
-				DirectX::XMFLOAT3 parentSca = m_parent->ParentChildScale();
+				DirectX::XMFLOAT3 parentSca = m_parent->WorldScale();
 				sca.x *= parentSca.x;
 				sca.y *= parentSca.y;
 				sca.z *= parentSca.z;
@@ -124,11 +124,11 @@ namespace Anarian{
 			UpdatePosition();
 		}
 		DirectX::XMFLOAT3 Rotation() { return m_rotation; };
-		DirectX::XMFLOAT3 ParentChildRotation() {
+		DirectX::XMFLOAT3 WorldRotation() {
 			DirectX::XMFLOAT3 rot = m_rotation;
 
 			if (m_parent != nullptr) {
-				DirectX::XMFLOAT3 parentRot = m_parent->ParentChildRotation();
+				DirectX::XMFLOAT3 parentRot = m_parent->WorldRotation();
 				rot.x += parentRot.x;
 				rot.y += parentRot.y;
 				rot.z += parentRot.z;

@@ -19,8 +19,8 @@ using namespace DirectX;
 using namespace Windows::Foundation;
 
 // Loads vertex and pixel shaders from files and instantiates the cube geometry.
-Sample3DSceneRenderer::Sample3DSceneRenderer(Color color) :
-	IRenderer(color),
+Sample3DSceneRenderer::Sample3DSceneRenderer(SceneManager* sceneManager, Color color) :
+IRenderer(sceneManager, color),
 
 	m_loadingComplete(false),
 	m_degreesPerSecond(45),
@@ -28,10 +28,9 @@ Sample3DSceneRenderer::Sample3DSceneRenderer(Color color) :
 {
 
 }
-void Sample3DSceneRenderer::Initialize(const std::shared_ptr<DX::DeviceResources>& deviceResources, SceneManager* sceneManager)
+void Sample3DSceneRenderer::Initialize(const std::shared_ptr<DX::DeviceResources>& deviceResources)
 {
 	m_deviceResources = deviceResources;
-	m_sceneManager = sceneManager;
 
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
@@ -91,7 +90,7 @@ void Sample3DSceneRenderer::Update(DX::StepTimer const& timer, GameTimer* gameTi
 {
 	if (!m_tracking)
 	{
-		if (gameObject == nullptr) return;
+		if (m_sceneManager->GetCurrentScene()->GetSceneNode() == nullptr) return;
 
 		// Convert degrees to radians, then convert seconds to rotation angle
 		float radiansPerSecond = XMConvertToRadians(m_degreesPerSecond);
@@ -101,16 +100,16 @@ void Sample3DSceneRenderer::Update(DX::StepTimer const& timer, GameTimer* gameTi
 
 		Rotate(radians, radians);
 
-		gameObject->Update(gameTime);
+		m_sceneManager->GetCurrentScene()->GetSceneNode()->Update(gameTime);
 	}
 }
 
 // Rotate the 3D cube model a set amount of radians.
 void Sample3DSceneRenderer::Rotate(float radiansX, float radiansY)
 {
-	if (gameObject == nullptr) return;
+	if (m_sceneManager->GetCurrentScene()->GetSceneNode() == nullptr) return;
 	XMFLOAT3 rotation(radiansX, radiansY, 0.0f);
-	gameObject->Rotation(rotation);
+	m_sceneManager->GetCurrentScene()->GetSceneNode()->Rotation(rotation);
 
 	// Prepare to pass the updated model matrix to the shader
 	XMStoreFloat4x4(&m_constantBufferData.model,
@@ -196,7 +195,7 @@ void Sample3DSceneRenderer::Render()
 	context->RSSetState(m_defaultRasterizerState.Get());
 
 	// Draw the Mesh
-	gameObject->Render(context, m_constantBufferChangesEveryPrim.Get());
+	m_sceneManager->GetCurrentScene()->GetSceneNode()->Render(context, m_constantBufferChangesEveryPrim.Get());
 }
 
 void Sample3DSceneRenderer::CreateDeviceDependentResources()
@@ -272,7 +271,7 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 		sd.BorderColor[3] = 0.0f;
 		sd.MinLOD = 0.0f;
 		sd.MaxLOD = FLT_MAX;
-		sd.MipLODBias = 0.0f;							// decrease mip level of detail by 2
+		sd.MipLODBias = 0.0f;							// decrease mip level of detail by 0
 
 		DX::ThrowIfFailed(
 			m_deviceResources->GetD3DDevice()->CreateSamplerState(&sd, &m_samplerState)
@@ -324,7 +323,7 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 		((DirectXMaterial*)material)->CreateViews(m_tyrilMap.Get(), m_vertexShader.Get(), m_pixelShader.Get());
 	
 		// Create the Game Object
-		gameObject = new GameObject();
+		GameObject* gameObject = new GameObject();
 		gameObject->SetMaterial(material);
 		gameObject->SetMesh(mesh);
 
@@ -335,6 +334,8 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 		g2.Scale(DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f));
 
 		gameObject->AddChild(g2);
+
+		m_sceneManager->GetCurrentScene()->SetSceneNode(gameObject);
 	});
 
 	// Once the cube is loaded, the object is ready to be rendered.
