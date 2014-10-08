@@ -24,12 +24,12 @@ RendererFactory::~RendererFactory()
 	//delete m_instance;
 }
 
-IRenderer* RendererFactory::ConstructRenderer(SceneManager* sceneManager, Color backgroundColor)
+IRenderer* RendererFactory::ConstructRenderer(SceneManager* sceneManager, ResourceManager* resourceManager, Color backgroundColor)
 {
 	IRenderer* renderer;
 
 #if Anarian_DirectX_Mode
-	renderer = new Sample3DSceneRenderer(sceneManager, backgroundColor);
+	renderer = new Sample3DSceneRenderer(sceneManager, resourceManager, backgroundColor);
 #endif
 
 	return renderer;

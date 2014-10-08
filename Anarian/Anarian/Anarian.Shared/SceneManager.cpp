@@ -18,5 +18,6 @@ IScene* SceneManager::GetCurrentScene()
 }
 void SceneManager::SetCurrentScene(IScene* currentScene)
 {
+	delete m_currentScene;
 	m_currentScene = currentScene;
 }

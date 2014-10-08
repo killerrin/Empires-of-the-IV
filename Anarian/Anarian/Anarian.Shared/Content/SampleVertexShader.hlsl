@@ -1,14 +1,16 @@
-// A constant buffer that stores the three basic column-major matrices for composing geometry.
-cbuffer ModelViewProjectionConstantBuffer : register(b0)
+cbuffer ConstantBufferChangesOnResize : register(b0)
 {
-	matrix model;
-	matrix view;
-	matrix projection;
+	matrix cameraProjection;
 };
 
-cbuffer ConstantBufferChangesEveryPrim : register (b1)
+cbuffer ConstantBufferChangesEveryFrame : register(b1)
 {
-	matrix world;
+	matrix cameraView;
+};
+
+cbuffer ConstantBufferChangesEveryPrim : register (b2)
+{
+	matrix modelWorldPosition;
 	float4 meshColor;
 	float4 diffuseColor;
 	float4 specularColor;
@@ -38,9 +40,9 @@ PixelShaderInput main(VertexShaderInput input)
 	float4 pos = float4(input.position, 1.0f);
 
 	// Transform the vertex position into projected space.
-	pos = mul(pos, world);
-	pos = mul(pos, view);
-	pos = mul(pos, projection);
+	pos = mul(pos, modelWorldPosition);
+	pos = mul(pos, cameraView);
+	pos = mul(pos, cameraProjection);
 	output.position = pos;
 
 	// Fill out the pixel shader input and pass it.

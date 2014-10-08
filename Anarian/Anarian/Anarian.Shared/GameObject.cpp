@@ -19,7 +19,7 @@ GameObject::GameObject():
 	m_active = true;
 
 	m_parent = nullptr;
-	m_children = std::vector<GameObject>();
+	m_children = std::vector<GameObject*>();
 
 	m_material = nullptr;
 	m_mesh = nullptr;
@@ -31,9 +31,15 @@ GameObject::GameObject():
 	XMStoreFloat4x4(&m_modelMatrix, XMMatrixIdentity());
 }
 
-
 GameObject::~GameObject()
 {
+	// First we kill the children
+	for (int i = 0; i < m_children.size(); i++)
+	{
+		delete m_children[i];
+	}
+
+	// Then hide the bodies
 	m_children.clear();
 }
 
@@ -59,7 +65,7 @@ void GameObject::Update(GameTimer* gameTime)
 	// Finally, render the children
 	for (int i = 0; i < m_children.size(); i++)
 	{
-		m_children[i].Update(gameTime);
+		m_children[i]->Update(gameTime);
 	}
 }
 
@@ -79,7 +85,7 @@ void GameObject::Render(
 		ConstantBufferChangesEveryPrim constantBuffer;
 
 		XMStoreFloat4x4(
-			&constantBuffer.worldMatrix,
+			&constantBuffer.modelWorldMatrix,
 			XMMatrixTranspose(ModelMatrix())
 			);
 
@@ -92,6 +98,6 @@ void GameObject::Render(
 	// Finally, render the children
 	for (int i = 0; i < m_children.size(); i++)
 	{
-		m_children[i].Render(context, primitiveConstantBuffer);
+		m_children[i]->Render(context, primitiveConstantBuffer);
 	}
 }

@@ -11,7 +11,7 @@ namespace Anarian{
 		bool m_active;
 
 		GameObject* m_parent;
-		std::vector<GameObject> m_children;
+		std::vector<GameObject*> m_children;
 
 		IMaterial* m_material;
 		IMeshObject* m_mesh;
@@ -40,14 +40,18 @@ namespace Anarian{
 
 		void SetParent(GameObject* parent) { m_parent = parent; };
 		GameObject* GetParent() { return m_parent; };
-		void AddChild(GameObject gameObject) {
-			gameObject.SetParent(this);
+
+		void AddChild(GameObject* gameObject) {
+			gameObject->SetParent(this);
 			m_children.push_back(gameObject);
-		}
+		};
+		GameObject* GetChild(int index) { return m_children[index]; };
 
 		void SetMesh(IMeshObject* mesh) { m_mesh = mesh; };
+		IMeshObject* GetMesh() { return m_mesh; };
+		
 		void SetMaterial(IMaterial* material) { m_material = material; };
-
+		IMaterial* GetMaterial() { return m_material; };
 		//----------------------\\
 
 		DirectX::XMMATRIX ModelMatrix()	{ return DirectX::XMLoadFloat4x4(&m_modelMatrix); };

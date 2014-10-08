@@ -13,7 +13,8 @@ namespace Anarian {
 
 	public:
 		IScene() {
-
+			m_camera = Camera();
+			m_sceneNode = new GameObject();
 		};
 
 		virtual ~IScene() { delete m_sceneNode; };

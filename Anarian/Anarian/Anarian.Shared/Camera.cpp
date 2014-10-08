@@ -63,7 +63,7 @@ void Camera::SetViewParams(
 	m_up = up;
 
 	// Calculate the view matrix.
-	XMMATRIX view = XMMatrixLookAtLH(
+	XMMATRIX view = XMMatrixLookAtRH(
 		XMLoadFloat3(&m_eye),
 		XMLoadFloat3(&m_lookAt),
 		XMLoadFloat3(&m_up)
@@ -102,19 +102,19 @@ void Camera::SetProjParams(
 	m_farPlane = farPlane;
 	XMStoreFloat4x4(
 		&m_projectionMatrix,
-		XMMatrixPerspectiveFovLH(
-		m_fieldOfView,
-		m_aspectRatio,
-		m_nearPlane,
-		m_farPlane
+		XMMatrixPerspectiveFovRH(
+			m_fieldOfView,
+			m_aspectRatio,
+			m_nearPlane,
+			m_farPlane
 		)
-		);
+	);
 
 	//STEREO_PARAMETERS* stereoParams = nullptr;
 	//// Update the projection matrix.
 	//XMStoreFloat4x4(
 	//	&m_projectionMatrixLeft,
-	//	MatrixStereoProjectionFovLH(
+	//	MatrixStereoProjectionFovRH(
 	//	stereoParams,
 	//	STEREO_CHANNEL::LEFT,
 	//	m_fieldOfView,
@@ -127,7 +127,7 @@ void Camera::SetProjParams(
 	//
 	//XMStoreFloat4x4(
 	//	&m_projectionMatrixRight,
-	//	MatrixStereoProjectionFovLH(
+	//	MatrixStereoProjectionFovRH(
 	//	stereoParams,
 	//	STEREO_CHANNEL::RIGHT,
 	//	m_fieldOfView,

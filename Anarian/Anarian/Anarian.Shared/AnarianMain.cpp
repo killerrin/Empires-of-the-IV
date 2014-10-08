@@ -3,8 +3,9 @@
 #include "AnarianMain.h"
 #include "Common\DirectXHelper.h"
 
-
+//#include "BasicLoader.h"
 #include "WICTextureLoader.h"
+
 #include "GameObject.h"
 #include "DirectXMaterial.h"
 #include "DirectXMesh.h"
@@ -29,8 +30,6 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	m_resourceManager = new ResourceManager();
 	m_sceneManager = new SceneManager();
 
-	m_sceneManager->SetCurrentScene(new IScene());
-
 	// Make the GameTimer
 	m_gameTime = GameTimer();
 
@@ -39,8 +38,46 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	MeshFactory::Instance();
 	MaterialFactory::Instance();
 
+	//---- Testing Code
+	//-- Setup an empty scene
+	m_sceneManager->SetCurrentScene(new IScene());
+
+	// Create the Mesh
+	IMeshObject* mesh = MeshFactory::Instance()->ConstructCube();
+	((DirectXMesh*)mesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
+	m_resourceManager->AddMesh("cube", mesh);
+
+	// Create Material
+	IMaterial* material = MaterialFactory::Instance()->ConstructMaterial(
+		Color(0.5f, 1.0f, 0.4f, 0.5f),
+		Color(0.0f, 1.0, 0.5f, 0.5f),
+		Color(0.5f, 0.5f, 0.5f, 0.5f),
+		1.0f);
+	//((DirectXMaterial*)material)->CreateViews(
+	//	m_resourceManager->GetShaderResourceView("TyrilMap"),
+	//	m_resourceManager->GetVertexShader("default"),
+	//	m_resourceManager->GetPixelShader("default"));
+
+	m_resourceManager->AddMaterial("material", material);
+
+	// Create the Game Object
+	GameObject* gameObject = new GameObject();
+	gameObject->SetActive(false);
+	gameObject->SetMaterial(m_resourceManager->GetMaterial("material"));
+	gameObject->SetMesh(m_resourceManager->GetMesh("cube"));
+
+	GameObject* g2 = new GameObject();
+	g2->SetMaterial(m_resourceManager->GetMaterial("material"));
+	g2->SetMesh(m_resourceManager->GetMesh("cube"));
+	g2->Position(DirectX::XMFLOAT3(0.5f, 0.5f, 0.0f));
+	g2->Scale(DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f));
+
+	gameObject->AddChild(g2);
+	m_sceneManager->GetCurrentScene()->GetSceneNode()->AddChild(gameObject);
+
+
 	// TODO: Replace this with your app's content initialization.
-	m_sceneRenderer = RendererFactory::Instance()->ConstructRenderer(m_sceneManager, Color::CornFlowerBlue());
+	m_sceneRenderer = RendererFactory::Instance()->ConstructRenderer(m_sceneManager, m_resourceManager, Color::CornFlowerBlue());
 	((Sample3DSceneRenderer*)m_sceneRenderer)->Initialize(m_deviceResources);
 
 	m_fpsTextRenderer = std::unique_ptr<SampleFpsTextRenderer>(new SampleFpsTextRenderer(m_deviceResources));

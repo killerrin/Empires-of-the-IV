@@ -19,8 +19,8 @@ using namespace DirectX;
 using namespace Windows::Foundation;
 
 // Loads vertex and pixel shaders from files and instantiates the cube geometry.
-Sample3DSceneRenderer::Sample3DSceneRenderer(SceneManager* sceneManager, Color color) :
-IRenderer(sceneManager, color),
+Sample3DSceneRenderer::Sample3DSceneRenderer(SceneManager* sceneManager, ResourceManager* resourceManager, Color color) :
+IRenderer(sceneManager, resourceManager, color),
 
 	m_loadingComplete(false),
 	m_degreesPerSecond(45),
@@ -61,7 +61,7 @@ void Sample3DSceneRenderer::CreateWindowSizeDependentResources()
 	// this transform should not be applied.
 
 	// This sample makes use of a right-handed coordinate system using row-major matrices.
-	XMMATRIX perspectiveMatrix = XMMatrixPerspectiveFovRH(
+	m_sceneManager->GetCurrentScene()->GetCamera()->SetProjParams(
 		fovAngleY,
 		aspectRatio,
 		0.01f,
@@ -69,20 +69,26 @@ void Sample3DSceneRenderer::CreateWindowSizeDependentResources()
 		);
 
 	XMFLOAT4X4 orientation = m_deviceResources->GetOrientationTransform3D();
-
 	XMMATRIX orientationMatrix = XMLoadFloat4x4(&orientation);
 
 	XMStoreFloat4x4(
-		&m_constantBufferData.projection,
-		XMMatrixTranspose(perspectiveMatrix * orientationMatrix)
+		&m_constantBufferChangesOnResizeData.cameraProjection,
+
+		XMMatrixTranspose(m_sceneManager->GetCurrentScene()->GetCamera()->Projection() *
+		orientationMatrix)
 		);
 
 	// Eye is at (0,0.7,1.5), looking at point (0,-0.1,0) with the up-vector along the y-axis.
-	static const XMVECTORF32 eye = { 0.0f, 0.7f, 1.5f, 0.0f };
-	static const XMVECTORF32 at = { 0.0f, -0.1f, 0.0f, 0.0f };
-	static const XMVECTORF32 up = { 0.0f, 1.0f, 0.0f, 0.0f };
+	m_sceneManager->GetCurrentScene()->GetCamera()->SetViewParams(
+	{ 0.0f, 0.7f, 1.5f },
+	{ 0.0f, -0.1f, 0.0f },
+	{ 0.0f, 1.0f, 0.0f }
+	);
 
-	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtRH(eye, at, up)));
+	XMStoreFloat4x4(&m_constantBufferChangesEveryFrameData.cameraView,
+		
+		XMMatrixTranspose(m_sceneManager->GetCurrentScene()->GetCamera()->View()
+	));
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
@@ -109,12 +115,7 @@ void Sample3DSceneRenderer::Rotate(float radiansX, float radiansY)
 {
 	if (m_sceneManager->GetCurrentScene()->GetSceneNode() == nullptr) return;
 	XMFLOAT3 rotation(radiansX, radiansY, 0.0f);
-	m_sceneManager->GetCurrentScene()->GetSceneNode()->Rotation(rotation);
-
-	// Prepare to pass the updated model matrix to the shader
-	XMStoreFloat4x4(&m_constantBufferData.model,
-		XMMatrixTranspose(XMMatrixRotationX(radiansX) * XMMatrixRotationY(radiansY))
-		);
+	m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->Rotation(rotation);
 }
 
 void Sample3DSceneRenderer::StartTracking()
@@ -142,10 +143,7 @@ void Sample3DSceneRenderer::StopTracking()
 void Sample3DSceneRenderer::Render()
 {
 	// Loading is asynchronous. Only draw geometry after it's loaded.
-	if (!m_loadingComplete)
-	{
-		return;
-	}
+	if (!m_loadingComplete) { return; }
 
 	IRenderer::Render();
 
@@ -163,32 +161,55 @@ void Sample3DSceneRenderer::Render()
 	context->ClearRenderTargetView(m_deviceResources->GetBackBufferRenderTargetView(), m_backgroundColor[0]);
 	context->ClearDepthStencilView(m_deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+	// Check early return on the current scene
+	// If the scene or scene node is null, exit
+	if (m_sceneManager->GetCurrentScene() == nullptr) return;
+	if (m_sceneManager->GetCurrentScene()->GetSceneNode() == nullptr) return;
+
+
+	// If the early return checks pass successfully, then we are clear to begin
+	// the process of setting buffers and rendering the scene starting from the
+	// main scene node.
+
 	// Set the SamplerState
 	context->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
+	context->IASetInputLayout(m_inputLayout.Get());
 
-	// Prepare the constant buffer to send it to the graphics device.
+	// Set the constant buffer to the graphics device.
+	context->VSSetConstantBuffers(
+		0,
+		1,
+		m_constantBufferChangesOnResize.GetAddressOf()
+		);
+	context->VSSetConstantBuffers(
+		1,
+		1,
+		m_constantBufferChangesEveryFrame.GetAddressOf()
+		);
+
+	context->VSSetConstantBuffers(
+		2,
+		1,
+		m_constantBufferChangesEveryPrim.GetAddressOf()
+		);
+
+	// Send the data to the Constant Buffer
 	context->UpdateSubresource(
-		m_constantBuffer.Get(),
+		m_constantBufferChangesOnResize.Get(),
 		0,
 		NULL,
-		&m_constantBufferData,
+		&m_constantBufferChangesOnResizeData,
 		0,
 		0
 		);
 
-	context->IASetInputLayout(m_inputLayout.Get());
-
-	// Send the constant buffer to the graphics device.
-	context->VSSetConstantBuffers(
+	context->UpdateSubresource(
+		m_constantBufferChangesEveryFrame.Get(),
 		0,
-		1,
-		m_constantBuffer.GetAddressOf()
-		);
-
-	context->VSSetConstantBuffers(
-		1,
-		1,
-		m_constantBufferChangesEveryPrim.GetAddressOf()
+		NULL,
+		&m_constantBufferChangesEveryFrameData,
+		0,
+		0
 		);
 
 	// Set the Rasterizer State
@@ -236,18 +257,32 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 				&m_pixelShader
 				)
 			);
+	});
 
-		CD3D11_BUFFER_DESC constantBufferDesc(sizeof(ModelViewProjectionConstantBuffer) , D3D11_BIND_CONSTANT_BUFFER);
+	auto createConstantBuffers = (createPSTask && createVSTask).then([this]() {
+		// Make the constant buffers
+		CD3D11_BUFFER_DESC constantBufferCORDesc((sizeof(ConstantBufferChangesOnResize) + 15) / 16 * 16,
+			D3D11_BIND_CONSTANT_BUFFER);
 		DX::ThrowIfFailed(
 			m_deviceResources->GetD3DDevice()->CreateBuffer(
-				&constantBufferDesc,
-				nullptr,
-				&m_constantBuffer
-				)
+			&constantBufferCORDesc,
+			nullptr,
+			&m_constantBufferChangesOnResize
+			)
+			);
+
+		CD3D11_BUFFER_DESC constantBufferCEFDesc((sizeof(ConstantBufferChangesEveryFrame) + 15) / 16 * 16,
+			D3D11_BIND_CONSTANT_BUFFER);
+		DX::ThrowIfFailed(
+			m_deviceResources->GetD3DDevice()->CreateBuffer(
+			&constantBufferCEFDesc,
+			nullptr,
+			&m_constantBufferChangesEveryFrame
+			)
 			);
 
 		CD3D11_BUFFER_DESC constantBufferCEPDesc((sizeof(ConstantBufferChangesEveryPrim) + 15) / 16 * 16,
-												 D3D11_BIND_CONSTANT_BUFFER);
+			D3D11_BIND_CONSTANT_BUFFER);
 		DX::ThrowIfFailed(
 			m_deviceResources->GetD3DDevice()->CreateBuffer(
 			&constantBufferCEPDesc,
@@ -257,7 +292,7 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 			);
 	});
 
-	auto createStatesTask = (createPSTask && createVSTask).then([this]() {
+	auto createStatesTask = (createConstantBuffers).then([this]() {
 		// Filter sampler
 		D3D11_SAMPLER_DESC sd;
 		sd.Filter = D3D11_FILTER_ANISOTROPIC;
@@ -297,22 +332,13 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 
 	// Once both shaders are loaded, create the cube
 	auto createCubeTask = (createStatesTask).then([this]() {
-		// Create the Mesh
-		mesh = MeshFactory::Instance()->ConstructCube();
-		((DirectXMesh*)mesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
-
-		// Create Material
-		material = MaterialFactory::Instance()->ConstructMaterial(
-														Color(0.5f, 1.0f, 0.4f, 0.5f),
-														Color(0.0f, 1.0, 0.5f, 0.5f),
-														Color(0.5f, 0.5f, 0.5f, 0.5f),
-														1.0f);
-
 		// Start the async tasks to load the shaders and textures.
 		//BasicLoader^ loader = ref new BasicLoader(m_deviceResources->GetD3DDevice());
 		//loader->LoadTextureAsync("Assets\\TyrilMap.png", nullptr, &m_tyrilMap);
-		// load the texture
-		HRESULT hr = CreateWICTextureFromFile(
+
+		// Load the texture
+		//Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_tyrilMap;
+		HRESULT hr = DirectX::CreateWICTextureFromFile(
 			m_deviceResources->GetD3DDevice(),
 			nullptr,
 			L"Assets\\TyrilMap.png",
@@ -320,22 +346,13 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 			&m_tyrilMap,
 			0);
 
-		((DirectXMaterial*)material)->CreateViews(m_tyrilMap.Get(), m_vertexShader.Get(), m_pixelShader.Get());
-	
-		// Create the Game Object
-		GameObject* gameObject = new GameObject();
-		gameObject->SetMaterial(material);
-		gameObject->SetMesh(mesh);
+		((DirectXMaterial*)m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->GetMaterial())->
+			CreateViews(
+			m_tyrilMap.Get(),
+			m_vertexShader.Get(),
+			m_pixelShader.Get());
 
-		GameObject g2 = GameObject();
-		g2.SetMaterial(material);
-		g2.SetMesh(mesh);
-		g2.Position(DirectX::XMFLOAT3(0.5f, 0.5f, 0.0f));
-		g2.Scale(DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f));
-
-		gameObject->AddChild(g2);
-
-		m_sceneManager->GetCurrentScene()->SetSceneNode(gameObject);
+		m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->SetActive(true);
 	});
 
 	// Once the cube is loaded, the object is ready to be rendered.
@@ -355,6 +372,8 @@ void Sample3DSceneRenderer::ReleaseDeviceDependentResources()
 	m_samplerState.Reset();
 	m_defaultRasterizerState.Reset();
 
-	m_constantBuffer.Reset();
+	//m_constantBuffer.Reset();
+	m_constantBufferChangesOnResize.Reset();
+	m_constantBufferChangesEveryFrame.Reset();
 	m_constantBufferChangesEveryPrim.Reset();
 }

@@ -7,9 +7,12 @@ namespace Anarian {
 	{
 		friend class RendererFactory;
 	protected:
-		IRenderer(SceneManager* sceneManager, Color color) { m_sceneManager = sceneManager; m_backgroundColor = color; };
+		IRenderer(SceneManager* sceneManager, ResourceManager* resourceManager, Color color) {
+			m_sceneManager = sceneManager; 
+			m_backgroundColor = color; };
 
 		SceneManager* m_sceneManager;
+		ResourceManager* m_resourceManager;
 		Color m_backgroundColor;
 	public:
 		virtual ~IRenderer() { };
@@ -17,6 +20,9 @@ namespace Anarian {
 
 		SceneManager* GetSceneManager() { return m_sceneManager; };
 		void SetSceneManager(SceneManager* sceneManager) { m_sceneManager = sceneManager; };
+
+		ResourceManager* GetResourceManager() { return m_resourceManager; };
+		void SetResourceManager(ResourceManager* resourceManager) { m_resourceManager = resourceManager; };
 
 		Color GetBackgroundColor() { return m_backgroundColor; };
 		void SetBackgroundColor(Color color) { m_backgroundColor = color; };
