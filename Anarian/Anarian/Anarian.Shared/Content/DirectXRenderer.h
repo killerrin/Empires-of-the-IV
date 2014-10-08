@@ -1,7 +1,8 @@
 ﻿#pragma once
+#define FirstAvailableConstantBufferIndexSlot 3;
+
 
 #include "..\Common\DeviceResources.h"
-#include "ShaderStructures.h"
 #include "..\ConstantBuffers.h"
 #include "..\Common\StepTimer.h"
 #include "..\GameTimer.h"
@@ -10,7 +11,7 @@
 #include "..\MeshFactory.h"
 #include "..\MaterialFactory.h"
 
-#include "IRenderer.h"
+#include "..\IRenderer.h"
 
 ///	ToDo:
 ///	Create a VertexShader class (contains ID3D11InputLayout && ID3D11VertexShader
@@ -21,11 +22,11 @@
 namespace Anarian
 {
 	// This sample renderer instantiates a basic rendering pipeline.
-	class Sample3DSceneRenderer : public IRenderer
+	class DirectXRenderer : public IRenderer
 	{
 		friend class RendererFactory;
 	public:
-		Sample3DSceneRenderer(const std::shared_ptr<SceneManager>& sceneManager, const std::shared_ptr<ResourceManager>& resourceManager, Color color);
+		DirectXRenderer(const std::shared_ptr<SceneManager>& sceneManager, const std::shared_ptr<ResourceManager>& resourceManager, Color color);
 		void Initialize(const std::shared_ptr<DX::DeviceResources>& deviceResources);
 		void SetSceneManager(SceneManager* sceneManager);
 

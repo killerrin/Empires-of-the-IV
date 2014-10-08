@@ -28,7 +28,6 @@ Camera* Camera::MainCamera()
 	return m_mainCamera;
 }
 
-
 Camera::~Camera()
 {
 }

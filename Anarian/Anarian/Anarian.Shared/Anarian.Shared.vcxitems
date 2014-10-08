@@ -61,9 +61,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\DirectXHelper.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\StepTimer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Content\SampleFpsTextRenderer.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Content\Sample3DSceneRenderer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Content\DirectXRenderer.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\SampleFpsTextRenderer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)Content\Sample3DSceneRenderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Content\DirectXRenderer.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PlatformHelpers.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PNTVertex.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RendererFactory.h" />

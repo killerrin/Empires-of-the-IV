@@ -73,7 +73,7 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 
 	// TODO: Replace this with your app's content initialization.
 	m_sceneRenderer = RendererFactory::Instance()->ConstructRenderer(m_sceneManager, m_resourceManager, Color::CornFlowerBlue());
-	((Sample3DSceneRenderer*)m_sceneRenderer)->Initialize(m_deviceResources);
+	((DirectXRenderer*)m_sceneRenderer)->Initialize(m_deviceResources);
 
 	m_fpsTextRenderer = std::unique_ptr<SampleFpsTextRenderer>(new SampleFpsTextRenderer(m_deviceResources));
 
@@ -107,7 +107,7 @@ AnarianMain::~AnarianMain()
 void AnarianMain::CreateWindowSizeDependentResources() 
 {
 	// TODO: Replace this with the size-dependent initialization of your app's content.
-	((Sample3DSceneRenderer*)m_sceneRenderer)->CreateWindowSizeDependentResources();
+	((DirectXRenderer*)m_sceneRenderer)->CreateWindowSizeDependentResources();
 }
 
 void AnarianMain::StartRenderLoop()
@@ -154,7 +154,7 @@ void AnarianMain::Update()
 	m_timer.Tick([&]()
 	{
 		// TODO: Replace this with your app's content update functions.
-		((Sample3DSceneRenderer*)m_sceneRenderer)->Update(m_timer, &m_gameTime);
+		((DirectXRenderer*)m_sceneRenderer)->Update(m_timer, &m_gameTime);
 		m_fpsTextRenderer->Update(m_timer);
 	});
 }
@@ -163,7 +163,7 @@ void AnarianMain::Update()
 void AnarianMain::ProcessInput()
 {
 	// TODO: Add per frame input handling here.
-	((Sample3DSceneRenderer*)m_sceneRenderer)->TrackingUpdate(m_pointerLocationX, m_pointerLocationY);
+	((DirectXRenderer*)m_sceneRenderer)->TrackingUpdate(m_pointerLocationX, m_pointerLocationY);
 }
 
 // Renders the current frame according to the current application state.
@@ -179,7 +179,7 @@ bool AnarianMain::Render()
 	// Render the scene objects.
 	// TODO: Replace this with your app's content rendering functions.
 
-	((Sample3DSceneRenderer*)m_sceneRenderer)->Render();
+	((DirectXRenderer*)m_sceneRenderer)->Render();
 	m_fpsTextRenderer->Render();
 
 	return true;

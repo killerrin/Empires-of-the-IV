@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "..\SceneManager.h"
-#include "Sample3DSceneRenderer.h"
+#include "DirectXRenderer.h"
 
 #include "..\Common\DirectXHelper.h"
 #include "..\Common\BasicLoader.h"
@@ -19,7 +19,7 @@ using namespace DirectX;
 using namespace Windows::Foundation;
 
 // Loads vertex and pixel shaders from files and instantiates the cube geometry.
-Sample3DSceneRenderer::Sample3DSceneRenderer(const std::shared_ptr<SceneManager>& sceneManager, const std::shared_ptr<ResourceManager>& resourceManager, Color color) :
+DirectXRenderer::DirectXRenderer(const std::shared_ptr<SceneManager>& sceneManager, const std::shared_ptr<ResourceManager>& resourceManager, Color color) :
 IRenderer(sceneManager.get(), resourceManager.get(), color),
 
 	m_loadingComplete(false),
@@ -28,20 +28,20 @@ IRenderer(sceneManager.get(), resourceManager.get(), color),
 {
 
 }
-void Sample3DSceneRenderer::Initialize(const std::shared_ptr<DX::DeviceResources>& deviceResources)
+void DirectXRenderer::Initialize(const std::shared_ptr<DX::DeviceResources>& deviceResources)
 {
 	m_deviceResources = deviceResources;
 
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
 }
-void Sample3DSceneRenderer::SetSceneManager(SceneManager* sceneManager)
+void DirectXRenderer::SetSceneManager(SceneManager* sceneManager)
 {
 	m_sceneManager = sceneManager;
 }
 
 // Initializes view parameters when the window size changes.
-void Sample3DSceneRenderer::CreateWindowSizeDependentResources()
+void DirectXRenderer::CreateWindowSizeDependentResources()
 {
 	Size outputSize = m_deviceResources->GetOutputSize();
 	float aspectRatio = outputSize.Width / outputSize.Height;
@@ -92,7 +92,7 @@ void Sample3DSceneRenderer::CreateWindowSizeDependentResources()
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
-void Sample3DSceneRenderer::Update(DX::StepTimer const& timer, GameTimer* gameTime)
+void DirectXRenderer::Update(DX::StepTimer const& timer, GameTimer* gameTime)
 {
 	if (!m_tracking)
 	{
@@ -111,20 +111,20 @@ void Sample3DSceneRenderer::Update(DX::StepTimer const& timer, GameTimer* gameTi
 }
 
 // Rotate the 3D cube model a set amount of radians.
-void Sample3DSceneRenderer::Rotate(float radiansX, float radiansY)
+void DirectXRenderer::Rotate(float radiansX, float radiansY)
 {
 	if (m_sceneManager->GetCurrentScene()->GetSceneNode() == nullptr) return;
 	XMFLOAT3 rotation(radiansX, radiansY, 0.0f);
 	m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->Rotation(rotation);
 }
 
-void Sample3DSceneRenderer::StartTracking()
+void DirectXRenderer::StartTracking()
 {
 	m_tracking = true;
 }
 
 // When tracking, the 3D cube can be rotated around its Y axis by tracking pointer position relative to the output screen width.
-void Sample3DSceneRenderer::TrackingUpdate(float positionX, float positionY)
+void DirectXRenderer::TrackingUpdate(float positionX, float positionY)
 {
 	if (m_tracking)
 	{
@@ -134,13 +134,13 @@ void Sample3DSceneRenderer::TrackingUpdate(float positionX, float positionY)
 	}
 }
 
-void Sample3DSceneRenderer::StopTracking()
+void DirectXRenderer::StopTracking()
 {
 	m_tracking = false;
 }
 
 // Renders one frame using the vertex and pixel shaders.
-void Sample3DSceneRenderer::Render()
+void DirectXRenderer::Render()
 {
 	// Loading is asynchronous. Only draw geometry after it's loaded.
 	if (!m_loadingComplete) { return; }
@@ -162,9 +162,8 @@ void Sample3DSceneRenderer::Render()
 	context->ClearDepthStencilView(m_deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	// Check early return on the current scene
-	// If the scene or scene node is null, exit
+	// If the scene is null, exit
 	if (m_sceneManager->GetCurrentScene() == nullptr) return;
-	if (m_sceneManager->GetCurrentScene()->GetSceneNode() == nullptr) return;
 
 
 	// If the early return checks pass successfully, then we are clear to begin
@@ -176,25 +175,12 @@ void Sample3DSceneRenderer::Render()
 	context->IASetInputLayout(m_inputLayout.Get());
 
 	// Set the constant buffer to the graphics device.
-	context->VSSetConstantBuffers(
-		0,
-		1,
-		m_constantBufferChangesOnResize.GetAddressOf()
-		);
-	context->VSSetConstantBuffers(
-		1,
-		1,
-		m_constantBufferChangesEveryFrame.GetAddressOf()
-		);
-
-	context->VSSetConstantBuffers(
-		2,
-		1,
-		m_constantBufferChangesEveryPrim.GetAddressOf()
-		);
+	context->VSSetConstantBuffers(0, 1,	m_constantBufferChangesOnResize.GetAddressOf());
+	context->VSSetConstantBuffers(1, 1,	m_constantBufferChangesEveryFrame.GetAddressOf());
+	context->VSSetConstantBuffers(2, 1,	m_constantBufferChangesEveryPrim.GetAddressOf());
 
 	// Send the data to the Constant Buffer
-	context->UpdateSubresource(
+	m_deviceResources->GetD3DDeviceContext()->UpdateSubresource(
 		m_constantBufferChangesOnResize.Get(),
 		0,
 		NULL,
@@ -202,7 +188,6 @@ void Sample3DSceneRenderer::Render()
 		0,
 		0
 		);
-
 	context->UpdateSubresource(
 		m_constantBufferChangesEveryFrame.Get(),
 		0,
@@ -219,7 +204,7 @@ void Sample3DSceneRenderer::Render()
 	m_sceneManager->GetCurrentScene()->GetSceneNode()->Render(context, m_constantBufferChangesEveryPrim.Get());
 }
 
-void Sample3DSceneRenderer::CreateDeviceDependentResources()
+void DirectXRenderer::CreateDeviceDependentResources()
 {
 	// Load shaders asynchronously.
 	auto loadVSTask = DX::ReadDataAsync(L"SampleVertexShader.cso");
@@ -361,19 +346,21 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
 	});
 }
 
-void Sample3DSceneRenderer::ReleaseDeviceDependentResources()
+void DirectXRenderer::ReleaseDeviceDependentResources()
 {
 	m_loadingComplete = false;
 
-	m_vertexShader.Reset();
+	m_defaultRasterizerState.Reset();
+	m_samplerState.Reset();
+
 	m_inputLayout.Reset();
+	m_vertexShader.Reset();
 	m_pixelShader.Reset();
 
-	m_samplerState.Reset();
-	m_defaultRasterizerState.Reset();
-
-	//m_constantBuffer.Reset();
 	m_constantBufferChangesOnResize.Reset();
 	m_constantBufferChangesEveryFrame.Reset();
 	m_constantBufferChangesEveryPrim.Reset();
+
+	// Release texture resource
+	m_tyrilMap.Reset();
 }

@@ -6,7 +6,7 @@
 
 #include "Common\StepTimer.h"
 #include "Common\DeviceResources.h"
-#include "Content\Sample3DSceneRenderer.h"
+#include "Content\DirectXRenderer.h"
 #include "Content\SampleFpsTextRenderer.h"
 
 // Renders Direct2D and 3D content on the screen.
@@ -18,11 +18,11 @@ namespace Anarian
 		AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResources);
 		~AnarianMain();
 		void CreateWindowSizeDependentResources();
-		void StartTracking() { ((Sample3DSceneRenderer*)m_sceneRenderer)->StartTracking(); }
+		void StartTracking() { ((DirectXRenderer*)m_sceneRenderer)->StartTracking(); }
 		void TrackingUpdate(float positionX, float positionY) { m_pointerLocationX = positionX; m_pointerLocationY = positionY; }
-		void StopTracking() { ((Sample3DSceneRenderer*)m_sceneRenderer)->StopTracking(); }
+		void StopTracking() { ((DirectXRenderer*)m_sceneRenderer)->StopTracking(); }
 
-		bool IsTracking() { return ((Sample3DSceneRenderer*)m_sceneRenderer)->IsTracking(); }
+		bool IsTracking() { return ((DirectXRenderer*)m_sceneRenderer)->IsTracking(); }
 		void StartRenderLoop();
 		void StopRenderLoop();
 		Concurrency::critical_section& GetCriticalSection() { return m_criticalSection; }

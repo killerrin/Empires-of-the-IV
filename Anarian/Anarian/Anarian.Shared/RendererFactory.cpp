@@ -1,7 +1,7 @@
 #include "pch.h"
 
 #if Anarian_DirectX_Mode
-#include "Content\Sample3DSceneRenderer.h"
+#include "Content\DirectXRenderer.h"
 using namespace DirectX;
 #endif
 
@@ -29,7 +29,7 @@ IRenderer* RendererFactory::ConstructRenderer(const std::shared_ptr<SceneManager
 	IRenderer* renderer;
 
 #if Anarian_DirectX_Mode
-	renderer = new Sample3DSceneRenderer(sceneManager, resourceManager, backgroundColor);
+	renderer = new DirectXRenderer(sceneManager, resourceManager, backgroundColor);
 #endif
 
 	return renderer;

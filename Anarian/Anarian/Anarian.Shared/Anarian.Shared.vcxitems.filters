@@ -12,9 +12,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\DeviceResources.h">
       <Filter>Common</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Content\Sample3DSceneRenderer.h">
-      <Filter>Content</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Content\SampleFpsTextRenderer.h">
       <Filter>Content</Filter>
     </ClInclude>
@@ -102,15 +99,15 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PlatformHelpers.h">
       <Filter>Utilities\Loaders</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Content\DirectXRenderer.h">
+      <Filter>Rendering\DirectX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianMain.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)pch.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\DeviceResources.cpp">
       <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)Content\Sample3DSceneRenderer.cpp">
-      <Filter>Content</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\SampleFpsTextRenderer.cpp">
       <Filter>Content</Filter>
@@ -159,6 +156,9 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)WICTextureLoader.cpp">
       <Filter>Utilities\Loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Content\DirectXRenderer.cpp">
+      <Filter>Rendering\DirectX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
