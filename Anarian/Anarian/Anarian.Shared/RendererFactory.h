@@ -12,6 +12,6 @@ namespace Anarian {
 		~RendererFactory();
 
 		// Constructions
-		IRenderer* ConstructRenderer(SceneManager* sceneManager, ResourceManager* resourceManager, Color backgroundColor);
+		IRenderer* ConstructRenderer(const std::shared_ptr<SceneManager>& sceneManager, const std::shared_ptr<ResourceManager>& resourceManager, Color backgroundColor);
 	};
 }

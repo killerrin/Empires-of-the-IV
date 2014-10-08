@@ -24,7 +24,7 @@ RendererFactory::~RendererFactory()
 	//delete m_instance;
 }
 
-IRenderer* RendererFactory::ConstructRenderer(SceneManager* sceneManager, ResourceManager* resourceManager, Color backgroundColor)
+IRenderer* RendererFactory::ConstructRenderer(const std::shared_ptr<SceneManager>& sceneManager, const std::shared_ptr<ResourceManager>& resourceManager, Color backgroundColor)
 {
 	IRenderer* renderer;
 

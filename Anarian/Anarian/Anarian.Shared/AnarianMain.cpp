@@ -27,8 +27,8 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	m_deviceResources->RegisterDeviceNotify(this);
 
 	// Initialize the Managers
-	m_resourceManager = new ResourceManager();
-	m_sceneManager = new SceneManager();
+	m_resourceManager = std::shared_ptr<ResourceManager> (new ResourceManager());
+	m_sceneManager = std::shared_ptr<SceneManager> (new SceneManager());
 
 	// Make the GameTimer
 	m_gameTime = GameTimer();
@@ -53,11 +53,6 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 		Color(0.0f, 1.0, 0.5f, 0.5f),
 		Color(0.5f, 0.5f, 0.5f, 0.5f),
 		1.0f);
-	//((DirectXMaterial*)material)->CreateViews(
-	//	m_resourceManager->GetShaderResourceView("TyrilMap"),
-	//	m_resourceManager->GetVertexShader("default"),
-	//	m_resourceManager->GetPixelShader("default"));
-
 	m_resourceManager->AddMaterial("material", material);
 
 	// Create the Game Object
@@ -95,9 +90,9 @@ AnarianMain::~AnarianMain()
 	// Deregister device notification
 	m_deviceResources->RegisterDeviceNotify(nullptr);
 
-	// Delete the Managers
-	delete m_resourceManager;
-	delete m_sceneManager;
+	// Delete the Managers -disabled because they are now SharedPointers
+	//delete m_resourceManager;
+	//delete m_sceneManager;
 
 	// Delete the Factories
 	delete RendererFactory::Instance();

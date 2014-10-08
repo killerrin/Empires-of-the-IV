@@ -19,8 +19,8 @@ using namespace DirectX;
 using namespace Windows::Foundation;
 
 // Loads vertex and pixel shaders from files and instantiates the cube geometry.
-Sample3DSceneRenderer::Sample3DSceneRenderer(SceneManager* sceneManager, ResourceManager* resourceManager, Color color) :
-IRenderer(sceneManager, resourceManager, color),
+Sample3DSceneRenderer::Sample3DSceneRenderer(const std::shared_ptr<SceneManager>& sceneManager, const std::shared_ptr<ResourceManager>& resourceManager, Color color) :
+IRenderer(sceneManager.get(), resourceManager.get(), color),
 
 	m_loadingComplete(false),
 	m_degreesPerSecond(45),

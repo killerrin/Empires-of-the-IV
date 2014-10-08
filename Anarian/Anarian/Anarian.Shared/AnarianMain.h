@@ -38,10 +38,10 @@ namespace Anarian
 
 		// Cached pointer to device resources.
 		std::shared_ptr<DX::DeviceResources> m_deviceResources;
-
+		
 		// Managers
-		ResourceManager* m_resourceManager;
-		SceneManager* m_sceneManager;
+		std::shared_ptr<ResourceManager> m_resourceManager;
+		std::shared_ptr<SceneManager> m_sceneManager;
 
 		// TODO: Replace with your own content renderers.
 		IRenderer* m_sceneRenderer;

@@ -25,7 +25,7 @@ namespace Anarian
 	{
 		friend class RendererFactory;
 	public:
-		Sample3DSceneRenderer(SceneManager* sceneManager, ResourceManager* resourceManager, Color color);
+		Sample3DSceneRenderer(const std::shared_ptr<SceneManager>& sceneManager, const std::shared_ptr<ResourceManager>& resourceManager, Color color);
 		void Initialize(const std::shared_ptr<DX::DeviceResources>& deviceResources);
 		void SetSceneManager(SceneManager* sceneManager);
 
