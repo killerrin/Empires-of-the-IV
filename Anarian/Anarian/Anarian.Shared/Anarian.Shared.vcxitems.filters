@@ -162,11 +162,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Content\SamplePixelShader.hlsl">
-      <Filter>Content</Filter>
+    <FxCompile Include="$(MSBuildThisFileDirectory)Content\PixelShader.hlsl">
+      <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="$(MSBuildThisFileDirectory)Content\SampleVertexShader.hlsl">
-      <Filter>Content</Filter>
+    <FxCompile Include="$(MSBuildThisFileDirectory)Content\VertexShader.hlsl">
+      <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
