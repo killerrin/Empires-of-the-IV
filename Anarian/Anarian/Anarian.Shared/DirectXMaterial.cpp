@@ -9,7 +9,7 @@ using namespace DirectX;
 DirectXMaterial::DirectXMaterial()
 	: IMaterial()
 {
-
+	m_textureRV = std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>();
 }
 
 DirectXMaterial::DirectXMaterial(
@@ -25,7 +25,9 @@ DirectXMaterial::DirectXMaterial(
 {
 	m_vertexShader = vertexShader;
 	m_pixelShader = pixelShader;
-	m_textureRV = textureResourceView;
+
+	m_textureRV = std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>>();
+	m_textureRV.push_back(textureResourceView);
 }
 
 
@@ -34,13 +36,13 @@ DirectXMaterial::~DirectXMaterial()
 	// Commented out as resources are going to be managed elsewhere to keep from having multiple
 	// of the same assets stored in memory
 
-	if (m_textureRV != nullptr) {
-		//m_textureRV.ReleaseAndGetAddressOf();
+	if (m_vertexShader != nullptr) {
+		//m_vertexShader.ReleaseAndGetAddressOf();
 	}
 	if (m_pixelShader != nullptr) {
 		//m_pixelShader.ReleaseAndGetAddressOf();
 	}
-	if (m_textureRV != nullptr) {
+	if (m_textureRV.size() != 0) {
 		//m_textureRV.ReleaseAndGetAddressOf();
 	}
 	
@@ -48,40 +50,45 @@ DirectXMaterial::~DirectXMaterial()
 }
 
 void DirectXMaterial::CreateViews(
-	ID3D11ShaderResourceView* textureResourceView,
 	ID3D11VertexShader* vertexShader,
 	ID3D11PixelShader* pixelShader)
 {
 	m_vertexShader = vertexShader;
 	m_pixelShader = pixelShader;
-	m_textureRV = textureResourceView;
+	
+	//m_textureRV.push_back(textureResourceView);
 }
 
 void DirectXMaterial::Render(ID3D11DeviceContext *context, ConstantBufferChangesEveryPrim* cBuffer, int bufferIndex)
 {
 	// Set constant buffers here
-	cBuffer->meshColor = m_meshColor;
-	cBuffer->specularColor = m_specularColor;
-	cBuffer->specularPower = m_specularExponent;
-	cBuffer->diffuseColor = m_diffuseColor;
+	if (bufferIndex == 0) {
+		cBuffer->meshColor = m_meshColor;
+		cBuffer->specularColor = m_specularColor;
+		cBuffer->specularPower = m_specularExponent;
+		cBuffer->diffuseColor = m_diffuseColor;
+
+		context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
+		context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
+	}
 
 	// Set shader resources here
-	context->PSSetShaderResources(bufferIndex, 1, m_textureRV.GetAddressOf());
-	context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
-	context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
+	for (int i = 0; i < m_textureRV.size(); i++) {
+		context->PSSetShaderResources(i, 1, m_textureRV[i].GetAddressOf());
+	}
 }
 
-void DirectXMaterial::Texture(ID3D11ShaderResourceView* textureResourceView)
-{
-	//m_textureRV.ReleaseAndGetAddressOf( );
-	m_textureRV = textureResourceView;
-}
-void DirectXMaterial::VertexShader(ID3D11VertexShader* vertexShader)
+void DirectXMaterial::SetVertexShader(ID3D11VertexShader* vertexShader)
 {
 	m_vertexShader = vertexShader;
 }
-void DirectXMaterial::PixelShader(ID3D11PixelShader* pixelShader)
+void DirectXMaterial::SetPixelShader(ID3D11PixelShader* pixelShader)
 {
 	m_pixelShader = pixelShader;
 }
+void DirectXMaterial::AddTexture(ID3D11ShaderResourceView* textureResourceView)
+{
+	m_textureRV.push_back(textureResourceView);
+}
+
 #endif

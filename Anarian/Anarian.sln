@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Anarian", "Anarian", "{4E9E880C-7A74-4759-BD2F-073D2CBB1F33}"
+	ProjectSection(SolutionItems) = preProject
+		ToDo.txt = ToDo.txt
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Anarian.Shared", "Anarian\Anarian.Shared\Anarian.Shared.vcxitems", "{C0933019-9C41-44CE-9DAF-4713717EA603}"
 EndProject

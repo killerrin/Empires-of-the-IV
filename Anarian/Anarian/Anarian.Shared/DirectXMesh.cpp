@@ -9,16 +9,20 @@ using namespace DirectX;
 DirectXMesh::DirectXMesh()
 	:IMeshObject()
 {
+	m_vertexBuffer		= std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> ();
+	m_indexBuffer		= std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>> ();
 }
 
 
 DirectXMesh::~DirectXMesh()
 {
-	if (m_vertexBuffer != nullptr)
-		m_vertexBuffer.ReleaseAndGetAddressOf();
-	if (m_indexBuffer != nullptr)
-		m_indexBuffer.ReleaseAndGetAddressOf();
+	for (int i = 0; i < m_vertexBuffer.size(); i++) {
+		m_vertexBuffer[i].ReleaseAndGetAddressOf();
+	}
 
+	for (int i = 0; i < m_indexBuffer.size(); i++) {
+		m_indexBuffer[i].ReleaseAndGetAddressOf();
+	}
 	//IMeshObject::~IMeshObject();
 }
 
@@ -29,21 +33,39 @@ void DirectXMesh::CreateBuffers(ID3D11Device *device)
 	if (m_indices.size() == 0)
 		return;
 
-	// Create the Vertex Buffer
-	D3D11_BUFFER_DESC bd = { 0 };
-	bd.ByteWidth = sizeof(Anarian::Verticies::PNTVertex) * m_vertices.size();
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	// This will throw Null Refrence later on due to ineven numbers
+	// So its better to just not allow it
+	if (m_vertices.size() != m_indices.size())
+		return;
 
-	D3D11_SUBRESOURCE_DATA srd = { &m_vertices[0], 0, 0 };
-	device->CreateBuffer(&bd, &srd, &m_vertexBuffer);
+	// Create the Vertex Buffer
+	for (int i = 0; i < m_vertices.size(); i++) {
+		D3D11_BUFFER_DESC bd = { 0 };
+		bd.ByteWidth = sizeof(Anarian::Verticies::PNTVertex) * m_vertices[i].size();
+		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+		Microsoft::WRL::ComPtr<ID3D11Buffer> vBuff;
+
+		D3D11_SUBRESOURCE_DATA srd = { &m_vertices[i][0], 0, 0 };
+		device->CreateBuffer(&bd, &srd, &vBuff);
+
+		m_vertexBuffer.push_back(vBuff);
+	}
+
 
 	// Create the Index Buffer
-	D3D11_BUFFER_DESC ibd = { 0 };
-	ibd.ByteWidth = sizeof(short) * m_indices.size();
-	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	for (int i = 0; i < m_indices.size(); i++) {
+		D3D11_BUFFER_DESC ibd = { 0 };
+		ibd.ByteWidth = sizeof(short) * m_indices[i].size();
+		ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-	D3D11_SUBRESOURCE_DATA isrd = { &m_indices[0], 0, 0 };
-	device->CreateBuffer(&ibd, &isrd, &m_indexBuffer);
+		Microsoft::WRL::ComPtr<ID3D11Buffer> iBuff;
+
+		D3D11_SUBRESOURCE_DATA isrd = { &m_indices[i][0], 0, 0 };
+		device->CreateBuffer(&ibd, &isrd, &iBuff);
+
+		m_indexBuffer.push_back(iBuff);
+	}
 }
 
 void DirectXMesh::Render(ID3D11DeviceContext *context, int bufferIndex)
@@ -51,13 +73,16 @@ void DirectXMesh::Render(ID3D11DeviceContext *context, int bufferIndex)
 	uint32 stride = sizeof(Anarian::Verticies::PNTVertex);
 	uint32 offset = 0;
 
-	context->IASetVertexBuffers(bufferIndex, 1, m_vertexBuffer.GetAddressOf(), &stride, &offset);
-	context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
-
-	// set the primitive topology
+	// Set the primitive topology
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// draw
-	context->DrawIndexed(m_indexCount, 0, 0);
+	for (int i = 0; i < m_vertexBuffer.size(); i++) {
+		// Set the buffers
+		context->IASetVertexBuffers(bufferIndex, 1, m_vertexBuffer[i].GetAddressOf(), &stride, &offset);
+		context->IASetIndexBuffer(m_indexBuffer[i].Get(), DXGI_FORMAT_R16_UINT, 0);
+
+		// Draw
+		context->DrawIndexed(m_indices[i].size(), 0, 0);
+	}
 }
 #endif

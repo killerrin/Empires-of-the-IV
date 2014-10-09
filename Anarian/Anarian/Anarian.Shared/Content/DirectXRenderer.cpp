@@ -318,24 +318,28 @@ void DirectXRenderer::CreateDeviceDependentResources()
 	// Once both shaders are loaded, create the cube
 	auto createCubeTask = (createStatesTask).then([this]() {
 		// Start the async tasks to load the shaders and textures.
-		//BasicLoader^ loader = ref new BasicLoader(m_deviceResources->GetD3DDevice());
-		//loader->LoadTextureAsync("Assets\\TyrilMap.png", nullptr, &m_tyrilMap);
+		BasicLoader^ loader = ref new BasicLoader(m_deviceResources->GetD3DDevice());
+		loader->LoadTexture("Assets\\TyrilMap.png", nullptr, &m_tyrilMap);
 
 		// Load the texture
 		//Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_tyrilMap;
-		HRESULT hr = DirectX::CreateWICTextureFromFile(
-			m_deviceResources->GetD3DDevice(),
-			nullptr,
-			L"Assets\\TyrilMap.png",
-			nullptr,
-			&m_tyrilMap,
-			0);
+		//HRESULT hr = DirectX::CreateWICTextureFromFile(
+		//	m_deviceResources->GetD3DDevice(),
+		//	nullptr,
+		//	L"Assets\\TyrilMap.png",
+		//	nullptr,
+		//	&m_tyrilMap,
+		//	0);
 
+		// Add the Shaders
 		((DirectXMaterial*)m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->GetMaterial())->
 			CreateViews(
-			m_tyrilMap.Get(),
 			m_vertexShader.Get(),
 			m_pixelShader.Get());
+
+		// Add the texture
+		((DirectXMaterial*)m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->GetMaterial())->
+			AddTexture(m_tyrilMap.Get());
 
 		m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->SetActive(true);
 	});

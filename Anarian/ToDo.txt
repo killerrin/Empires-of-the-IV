@@ -1,2 +1,4 @@
-Hook up Camera to renderer
-Clean up Renderer
+#Optional (Split the ShaderResourceView to its own class)
+#Optional (Split Pixel and Vertex shaders to their own Interface classes)
+
+Implement an OBJ loader using http://www.braynzarsoft.net/index.php?p=D3D11OBJMODEL#still

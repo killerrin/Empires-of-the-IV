@@ -9,8 +9,8 @@ namespace Anarian
 	{
 		friend class MeshFactory;
 	private:
-		Microsoft::WRL::ComPtr<ID3D11Buffer>  m_vertexBuffer;
-		Microsoft::WRL::ComPtr<ID3D11Buffer>  m_indexBuffer;
+		std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>  m_vertexBuffer;
+		std::vector<Microsoft::WRL::ComPtr<ID3D11Buffer>>  m_indexBuffer;
 
 	public:
 		DirectXMesh();
@@ -20,11 +20,11 @@ namespace Anarian
 		void Render(ID3D11DeviceContext *context, int bufferIndex = 0);
 
 
-		Microsoft::WRL::ComPtr<ID3D11Buffer> VertexBuffer() {
-			return m_vertexBuffer;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> VertexBuffer(int index) {
+			return m_vertexBuffer[index];
 		};
-		Microsoft::WRL::ComPtr<ID3D11Buffer> IndexBuffer() {
-			return m_indexBuffer;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> IndexBuffer(int index) {
+			return m_indexBuffer[index];
 		};
 	};
 }

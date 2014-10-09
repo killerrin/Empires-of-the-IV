@@ -88,11 +88,11 @@ IMeshObject* MeshFactory::ConstructCube()
 	cubeIndices.push_back(22);	cubeIndices.push_back(21);	cubeIndices.push_back(23);
 
 	// Apply cross-platform variables
-	cubeMesh->m_vertices = cubeVertices;
-	cubeMesh->m_indices = cubeIndices;
+	cubeMesh->m_vertices.push_back(cubeVertices);
+	cubeMesh->m_indices.push_back(cubeIndices);
 
-	cubeMesh->m_vertexCount = cubeVertices.size();
-	cubeMesh->m_indexCount = cubeIndices.size();
+	//cubeMesh->m_vertexCount = cubeVertices.size();
+	//cubeMesh->m_indexCount = cubeIndices.size();
 
 	return cubeMesh;
 }
@@ -125,11 +125,11 @@ IMeshObject* MeshFactory::ConstructFace()
 	faceIndices.push_back(0);	faceIndices.push_back(3);	faceIndices.push_back(2);
 
 	// Apply cross-platform variables
-	faceMesh->m_vertices = faceVertices;
-	faceMesh->m_indices = faceIndices;
+	faceMesh->m_vertices.push_back(faceVertices);
+	faceMesh->m_indices.push_back(faceIndices);
 
-	faceMesh->m_vertexCount = faceVertices.size();	// m_vertexCount = 4;
-	faceMesh->m_indexCount = faceIndices.size();	// m_indexCount = 12;
+	//faceMesh->m_vertexCount = faceVertices.size();	// m_vertexCount = 4;
+	//faceMesh->m_indexCount = faceIndices.size();	// m_indexCount = 12;
 
 	return faceMesh;
 }
@@ -230,11 +230,11 @@ IMeshObject* MeshFactory::ConstructCylinder(uint32 segments)
 	//cylinderMesh->m_indexCount = p;
 
 	// Apply cross-platform variables
-	cylinderMesh->m_vertices = point;
-	cylinderMesh->m_indices = index;
+	cylinderMesh->m_vertices.push_back(point);
+	cylinderMesh->m_indices.push_back(index);
 
-	cylinderMesh->m_vertexCount = point.size();
-	cylinderMesh->m_indexCount = index.size();
+	//cylinderMesh->m_vertexCount = point.size();
+	//cylinderMesh->m_indexCount = index.size();
 
 	return cylinderMesh;
 }
@@ -311,11 +311,11 @@ IMeshObject* MeshFactory::ConstructSphere(uint32 segments)
 	//sphereMesh->m_indexCount = p;
 
 	// Apply cross-platform variables
-	sphereMesh->m_vertices = point;
-	sphereMesh->m_indices = index;
+	sphereMesh->m_vertices.push_back(point);
+	sphereMesh->m_indices.push_back(index);
 
-	sphereMesh->m_vertexCount = point.size();
-	sphereMesh->m_indexCount = index.size();
+	//sphereMesh->m_vertexCount = point.size();
+	//sphereMesh->m_indexCount = index.size();
 
 	return sphereMesh;
 }
