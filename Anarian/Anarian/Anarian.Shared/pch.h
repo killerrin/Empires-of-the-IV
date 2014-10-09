@@ -19,4 +19,6 @@
 #include <vector>
 #include <map>
 
+#include <fstream>
+
 #include "App.xaml.h"

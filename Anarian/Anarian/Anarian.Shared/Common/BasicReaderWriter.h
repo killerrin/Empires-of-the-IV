@@ -22,6 +22,8 @@ internal:
         _In_ Windows::Storage::StorageFolder^ folder
         );
 
+	//----
+
     Platform::Array<byte>^ ReadData(
         _In_ Platform::String^ filename
         );
@@ -29,6 +31,14 @@ internal:
     concurrency::task<Platform::Array<byte>^> ReadDataAsync(
         _In_ Platform::String^ filename
         );
+
+	//----
+
+	Platform::String^ ReadTextFile(
+		_In_ Platform::String^ filename
+		);
+
+	//----
 
     uint32 WriteData(
         _In_ Platform::String^ filename,
@@ -39,4 +49,6 @@ internal:
         _In_ Platform::String^ filename,
         _In_ const Platform::Array<byte>^ fileData
         );
+
+	//----
 };
