@@ -38,6 +38,10 @@ internal:
 		_In_ Platform::String^ filename
 		);
 
+	concurrency::task<Platform::String^> ReadTextFileAsync(
+		_In_ Platform::String^ filename
+		);
+
 	//----
 
     uint32 WriteData(

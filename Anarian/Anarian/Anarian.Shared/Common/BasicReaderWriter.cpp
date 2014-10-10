@@ -137,6 +137,14 @@ Platform::String^ BasicReaderWriter::ReadTextFile(_In_ Platform::String^ filenam
 	return ref new Platform::String(output.c_str());
 }
 
+concurrency::task<Platform::String^> BasicReaderWriter::ReadTextFileAsync(_In_ Platform::String^ filename)
+{
+	return task<StorageFile^>(m_location->GetFileAsync(filename)).then([=](StorageFile^ file)
+	{
+		return FileIO::ReadTextAsync(file);
+	});
+}
+
 
 uint32 BasicReaderWriter::WriteData(
 	_In_ Platform::String^ filename,
