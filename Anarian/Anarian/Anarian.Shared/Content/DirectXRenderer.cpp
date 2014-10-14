@@ -348,8 +348,8 @@ void DirectXRenderer::CreateDeviceDependentResources()
 			m_pixelShader.Get());
 
 		// Add the texture
-		((DirectXMaterial*)m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->GetMaterial())->
-			AddTexture(m_tyrilMap.Get());
+		//((DirectXMaterial*)m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->GetMaterial())->
+		//	AddTexture(m_tyrilMap.Get());
 
 		m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->SetActive(true);
 	});

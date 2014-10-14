@@ -3,7 +3,7 @@
 #include "AnarianMain.h"
 #include "Common\DirectXHelper.h"
 
-//#include "BasicLoader.h"
+#include "Common\BasicLoader.h"
 #include "WICTextureLoader.h"
 
 #include "GameObject.h"
@@ -44,11 +44,14 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	//-- Setup an empty scene
 	m_sceneManager->SetCurrentScene(new IScene());
 
+	//-- Create the asset loader
+	BasicLoader^ loader = ref new BasicLoader(m_deviceResources->GetD3DDevice());
+
 	// Create the Mesh
 	// Obj Loader
 	IMeshObject* mesh = nullptr;
 	IMaterial* objMaterial = nullptr;
-	if (TinyObjectLoaderConverter::LoadObj("Assets//Elf//Elf.objxx", &mesh, &objMaterial, "Assets//Elf//")) {
+	if (TinyObjectLoaderConverter::LoadObj("Assets//Elf//", "Elf.objxx", &mesh, &objMaterial, loader)) {
 		//mesh = MeshFactory::Instance()->ConstructCube();
 		//MeshFactory::Instance()->ConstructFace(mesh); // Add a face to the mesh
 	}
@@ -65,7 +68,7 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 		Color(0.0f, 1.0, 0.5f, 0.5f),
 		Color(0.5f, 0.5f, 0.5f, 0.5f),
 		1.0f);
-	m_resourceManager->AddMaterial("material", material);
+	m_resourceManager->AddMaterial("material", objMaterial);
 
 	// Create the Game Object
 	GameObject* gameObject = new GameObject();
