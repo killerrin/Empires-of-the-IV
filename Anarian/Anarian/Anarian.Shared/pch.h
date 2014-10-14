@@ -1,4 +1,6 @@
 ﻿#pragma once
+#define _CRT_SECURE_NO_WARNINGS
+//#define EnableDebug
 
 #include <wrl.h>
 #include <wrl/client.h>
@@ -20,5 +22,6 @@
 #include <map>
 
 #include <fstream>
+#include <windows.h>
 
 #include "App.xaml.h"

@@ -6,6 +6,14 @@ namespace Anarian {
 			DirectX::XMFLOAT3 position;
 			DirectX::XMFLOAT3 normal;
 			DirectX::XMFLOAT2 textureCoordinate;
+
+			PNTVertex() {};
+			PNTVertex(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 norm, DirectX::XMFLOAT2 texCoord) 
+			{
+				position = pos;
+				normal = norm;
+				textureCoordinate = texCoord;
+			};
 		};
 
 #ifdef 	Anarian_DirectX_Mode

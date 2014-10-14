@@ -12,6 +12,7 @@ namespace Anarian {
 		~MaterialFactory();
 
 		// Constructions
+		IMaterial* ConstructEmpty();
 		IMaterial* ConstructMaterial(
 			Color meshColor,
 			Color diffuseColor,

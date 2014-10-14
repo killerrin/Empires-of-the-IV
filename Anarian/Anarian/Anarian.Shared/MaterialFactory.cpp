@@ -25,11 +25,7 @@ MaterialFactory::~MaterialFactory()
 	//delete m_instance;
 }
 
-IMaterial* MaterialFactory::ConstructMaterial(
-	Color meshColor,
-	Color diffuseColor,
-	Color specularColor,
-	float specularExponent)
+IMaterial* MaterialFactory::ConstructEmpty()
 {
 	IMaterial* material;
 
@@ -37,6 +33,17 @@ IMaterial* MaterialFactory::ConstructMaterial(
 #if Anarian_DirectX_Mode
 	material = new DirectXMaterial();
 #endif
+
+	return material;
+}
+
+IMaterial* MaterialFactory::ConstructMaterial(
+	Color meshColor,
+	Color diffuseColor,
+	Color specularColor,
+	float specularExponent)
+{
+	IMaterial* material = ConstructEmpty();
 
 	// Assign the cross platform values
 	material->m_meshColor = meshColor;

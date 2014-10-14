@@ -102,6 +102,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Content\DirectXRenderer.h">
       <Filter>Rendering\DirectX</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)tiny_obj_loader.h">
+      <Filter>Utilities\Loaders\OBJ Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)TinyObjectLoaderConverter.h">
+      <Filter>Utilities\Loaders\OBJ Loader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianMain.cpp" />
@@ -160,6 +166,12 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\DirectXRenderer.cpp">
       <Filter>Rendering\DirectX</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)tiny_obj_loader.cc">
+      <Filter>Utilities\Loaders\OBJ Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)TinyObjectLoaderConverter.cpp">
+      <Filter>Utilities\Loaders\OBJ Loader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)Content\PixelShader.hlsl">
@@ -206,15 +218,37 @@
     <Filter Include="Assets">
       <UniqueIdentifier>{416710b8-008d-4fcb-abc9-ea3855dac7e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets\Elf">
+      <UniqueIdentifier>{cbfe61cc-cea4-4a85-8389-90c2af293557}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\Loaders\OBJ Loader">
+      <UniqueIdentifier>{70b6123e-97ba-4b90-872c-70340dd58432}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)ConstantBuffers.hlsli">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf.mtl">
+      <Filter>Assets\Elf</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf.obj" />
+    <None Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf.objxx">
+      <Filter>Assets\Elf</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="$(MSBuildThisFileDirectory)Assets\TyrilMap.png">
       <Filter>Assets</Filter>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf_packed0_diffuse.png">
+      <Filter>Assets\Elf</Filter>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf_packed0_gloss.png">
+      <Filter>Assets\Elf</Filter>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf_packed0_normal.png">
+      <Filter>Assets\Elf</Filter>
     </Image>
   </ItemGroup>
 </Project>

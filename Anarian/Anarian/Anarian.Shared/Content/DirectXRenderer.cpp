@@ -321,6 +321,16 @@ void DirectXRenderer::CreateDeviceDependentResources()
 		BasicLoader^ loader = ref new BasicLoader(m_deviceResources->GetD3DDevice());
 		loader->LoadTexture("Assets\\TyrilMap.png", nullptr, &m_tyrilMap);
 
+
+		//IMeshObject* mesh = nullptr;
+		//IMaterial* material = nullptr;
+		//Microsoft::WRL::ComPtr<ID3D11Buffer> vertb;
+		//Microsoft::WRL::ComPtr<ID3D11Buffer> indb;
+		//uint32* vertc = nullptr;
+		//uint32* indC = nullptr;
+		//loader->LoadMesh("Elf.cmo", vertb.GetAddressOf(), indb.GetAddressOf(), mesh, vertc, indC);
+		//((DirectXMesh*)mesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
+
 		// Load the texture
 		//Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_tyrilMap;
 		//HRESULT hr = DirectX::CreateWICTextureFromFile(

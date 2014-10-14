@@ -26,5 +26,18 @@ namespace Anarian {
 		float m_specularExponent;
 	public:
 		virtual ~IMaterial() { };
+
+		// Getter setters
+		void SetMeshColor(Color color) { m_meshColor = color; };
+		Color GetMeshColor() { return m_meshColor; };
+
+		void SetDiffuseColor(Color color) { m_diffuseColor = color; };
+		Color GetDiffuseColor() { return m_diffuseColor; };
+
+		void SetSpecularColor(Color color) { m_specularColor = color; };
+		Color GetSpecularColor() { return m_specularColor; };
+
+		void SetSpecularExponent(float exponent) { m_specularExponent = exponent; };
+		float GetSpecularExponent() { return m_specularExponent; };
 	};
 }

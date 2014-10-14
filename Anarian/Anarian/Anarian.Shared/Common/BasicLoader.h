@@ -8,7 +8,7 @@
 #pragma once
 
 #include "BasicReaderWriter.h"
-
+#include "..\IMeshObject.h"
 // A simple loader class that provides support for loading shaders, textures,
 // and meshes from files on disk. Provides synchronous and asynchronous methods.
 ref class BasicLoader
@@ -121,6 +121,7 @@ internal:
 		_In_ Platform::String^ filename,
 		_Out_ ID3D11Buffer** vertexBuffer,
 		_Out_ ID3D11Buffer** indexBuffer,
+		_Out_ Anarian::IMeshObject* mesh,
 		_Out_opt_ uint32* vertexCount,
 		_Out_opt_ uint32* indexCount
 		);
@@ -129,6 +130,7 @@ internal:
 		_In_ Platform::String^ filename,
 		_Out_ ID3D11Buffer** vertexBuffer,
 		_Out_ ID3D11Buffer** indexBuffer,
+		_Out_ Anarian::IMeshObject* mesh,
 		_Out_opt_ uint32* vertexCount,
 		_Out_opt_ uint32* indexCount
 		);
@@ -169,6 +171,7 @@ private:
 		_In_ byte* meshData,
 		_Out_ ID3D11Buffer** vertexBuffer,
 		_Out_ ID3D11Buffer** indexBuffer,
+		_Out_ Anarian::IMeshObject* mesh,
 		_Out_opt_ uint32* vertexCount,
 		_Out_opt_ uint32* indexCount,
 		_In_opt_ Platform::String^ debugName

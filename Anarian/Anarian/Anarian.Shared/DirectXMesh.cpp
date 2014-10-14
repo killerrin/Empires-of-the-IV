@@ -28,6 +28,19 @@ DirectXMesh::~DirectXMesh()
 
 void DirectXMesh::CreateBuffers(ID3D11Device *device)
 {
+#ifdef EnableDebug
+	for (int j = 0; j < m_vertices.size(); j++) {
+		for (int i = 0; i < m_vertices[j].size(); i++) {
+			std::string str =
+				"(" + std::to_string(m_vertices[j][i].position.x) + ", " + std::to_string(m_vertices[j][i].position.y) + ", " + std::to_string(m_vertices[j][i].position.z) + ") | " +
+				"(" + std::to_string(m_vertices[j][i].normal.x) + ", " + std::to_string(m_vertices[j][i].normal.y) + ", " + std::to_string(m_vertices[j][i].normal.z) + ") | " +
+				"(" + std::to_string(m_vertices[j][i].textureCoordinate.x) + ", " + std::to_string(m_vertices[j][i].textureCoordinate.y) + ") \n";
+			std::wstring wstr(str.begin(), str.end());
+			OutputDebugString(wstr.c_str());
+		}
+	}
+#endif
+
 	if (m_vertices.size() == 0)
 		return;
 	if (m_indices.size() == 0)
@@ -56,7 +69,7 @@ void DirectXMesh::CreateBuffers(ID3D11Device *device)
 	// Create the Index Buffer
 	for (int i = 0; i < m_indices.size(); i++) {
 		D3D11_BUFFER_DESC ibd = { 0 };
-		ibd.ByteWidth = sizeof(short) * m_indices[i].size();
+		ibd.ByteWidth = sizeof(unsigned short) * m_indices[i].size();
 		ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> iBuff;

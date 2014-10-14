@@ -27,14 +27,32 @@ MeshFactory::~MeshFactory()
 	//delete m_instance;
 }
 
-IMeshObject* MeshFactory::ConstructCube()
+void MeshFactory::AddToVertexVector(IMeshObject* mesh, std::vector<Anarian::Verticies::PNTVertex> vertexList)
 {
-	IMeshObject* cubeMesh;
+	mesh->m_vertices.push_back(vertexList);
+}
+void MeshFactory::AddToIndexVector(IMeshObject* mesh, std::vector<unsigned short> indexList)
+{
+	mesh->m_indices.push_back(indexList);
+}
+
+IMeshObject* MeshFactory::ConstructEmpty()
+{
+	IMeshObject* emptyMesh;
 
 	// Construct the MeshObject
 #if Anarian_DirectX_Mode
-	cubeMesh = new DirectXMesh();
+	emptyMesh = new DirectXMesh();
 #endif
+
+	return emptyMesh;
+}
+
+IMeshObject* MeshFactory::ConstructCube(IMeshObject* parent)
+{
+	IMeshObject* cubeMesh;
+	if (parent == nullptr) cubeMesh = ConstructEmpty();
+	else cubeMesh = parent;
 
 	// Create the Vertices
 	std::vector<Anarian::Verticies::PNTVertex> cubeVertices = std::vector<Anarian::Verticies::PNTVertex>();
@@ -72,7 +90,7 @@ IMeshObject* MeshFactory::ConstructCube()
 	cubeVertices.push_back({ XMFLOAT3(-0.5f, 0.5f, 0.5f),		XMFLOAT3(-1.0f, 0.0f, 0.0f),	XMFLOAT2(1.0f, 1.0f) });
 
 	// Create the Indices
-	std::vector<short> cubeIndices = std::vector<short>();
+	std::vector<unsigned short> cubeIndices = std::vector<unsigned short>();
 	cubeIndices.reserve(36);
 	cubeIndices.push_back(0);	cubeIndices.push_back(1);	cubeIndices.push_back(2); // side 1
 	cubeIndices.push_back(2);	cubeIndices.push_back(1);	cubeIndices.push_back(3);
@@ -88,23 +106,17 @@ IMeshObject* MeshFactory::ConstructCube()
 	cubeIndices.push_back(22);	cubeIndices.push_back(21);	cubeIndices.push_back(23);
 
 	// Apply cross-platform variables
-	cubeMesh->m_vertices.push_back(cubeVertices);
-	cubeMesh->m_indices.push_back(cubeIndices);
-
-	//cubeMesh->m_vertexCount = cubeVertices.size();
-	//cubeMesh->m_indexCount = cubeIndices.size();
+	AddToVertexVector(cubeMesh, cubeVertices); //cubeMesh->m_vertices.push_back(cubeVertices);
+	AddToIndexVector(cubeMesh, cubeIndices);   //cubeMesh->m_indices.push_back(cubeIndices);
 
 	return cubeMesh;
 }
 
-IMeshObject* MeshFactory::ConstructFace()
+IMeshObject* MeshFactory::ConstructFace(IMeshObject* parent)
 {
-	IMeshObject* faceMesh;
-
-	// Construct the MeshObject
-#if Anarian_DirectX_Mode
-	faceMesh = new DirectXMesh();
-#endif
+	IMeshObject* faceMesh = ConstructEmpty();
+	if (parent == nullptr) faceMesh = ConstructEmpty();
+	else faceMesh = parent;
 
 	// Create the Vertices
 	std::vector<Anarian::Verticies::PNTVertex> faceVertices = std::vector<Anarian::Verticies::PNTVertex>();
@@ -117,7 +129,7 @@ IMeshObject* MeshFactory::ConstructFace()
 	faceVertices.push_back({ XMFLOAT3(0.0f, 1.0f, 0.0f),		XMFLOAT3(0.0f, 0.0f, 1.0f),		XMFLOAT2(1.0f, 0.0f) });
 
 	// Create the Indices
-	std::vector<short> faceIndices = std::vector<short>();
+	std::vector<unsigned short> faceIndices = std::vector<unsigned short>();
 	faceIndices.reserve(12);
 	faceIndices.push_back(0);	faceIndices.push_back(1);	faceIndices.push_back(2);
 	faceIndices.push_back(0);	faceIndices.push_back(2);	faceIndices.push_back(3);
@@ -125,29 +137,24 @@ IMeshObject* MeshFactory::ConstructFace()
 	faceIndices.push_back(0);	faceIndices.push_back(3);	faceIndices.push_back(2);
 
 	// Apply cross-platform variables
-	faceMesh->m_vertices.push_back(faceVertices);
-	faceMesh->m_indices.push_back(faceIndices);
-
-	//faceMesh->m_vertexCount = faceVertices.size();	// m_vertexCount = 4;
-	//faceMesh->m_indexCount = faceIndices.size();	// m_indexCount = 12;
+	AddToVertexVector(faceMesh, faceVertices);//faceMesh->m_vertices.push_back(faceVertices); // m_vertexCount = 4;
+	AddToIndexVector(faceMesh, faceIndices);//faceMesh->m_indices.push_back(faceIndices); // m_indexCount = 12;
 
 	return faceMesh;
 }
 
-IMeshObject* MeshFactory::ConstructCylinder(uint32 segments)
+IMeshObject* MeshFactory::ConstructCylinder(uint32 segments, IMeshObject* parent)
 {
-	IMeshObject* cylinderMesh;
+	IMeshObject* cylinderMesh = ConstructEmpty();
+	if (parent == nullptr) cylinderMesh = ConstructEmpty();
+	else cylinderMesh = parent;
 
-	// Construct the MeshObject
-#if Anarian_DirectX_Mode
-	cylinderMesh = new DirectXMesh();
-#endif
-
+	// Create the Mesh
 	uint32 numVertices = 6 * (segments + 1) + 1;
 	uint32 numIndices = 3 * segments * 3 * 2;
 
 	std::vector<Anarian::Verticies::PNTVertex> point(numVertices);
-	std::vector<short> index(numIndices);
+	std::vector<unsigned short> index(numIndices);
 
 	uint32 p = 0;
 	// Top center point (multiple points for texture coordinates).
@@ -202,7 +209,6 @@ IMeshObject* MeshFactory::ConstructCylinder(uint32 segments)
 		point[p].textureCoordinate = XMFLOAT2(static_cast<float>(a) / static_cast<float>(segments), 1.0f);
 		p++;
 	}
-	//cylinderMesh->m_vertexCount = p;
 
 	p = 0;
 	for (uint16 a = 0; a < 6; a += 2)
@@ -227,33 +233,27 @@ IMeshObject* MeshFactory::ConstructCylinder(uint32 segments)
 			}
 		}
 	}
-	//cylinderMesh->m_indexCount = p;
 
 	// Apply cross-platform variables
-	cylinderMesh->m_vertices.push_back(point);
-	cylinderMesh->m_indices.push_back(index);
-
-	//cylinderMesh->m_vertexCount = point.size();
-	//cylinderMesh->m_indexCount = index.size();
+	AddToVertexVector(cylinderMesh, point);//cylinderMesh->m_vertices.push_back(point);
+	AddToIndexVector(cylinderMesh, index);//cylinderMesh->m_indices.push_back(index);
 
 	return cylinderMesh;
 }
 
-IMeshObject* MeshFactory::ConstructSphere(uint32 segments)
+IMeshObject* MeshFactory::ConstructSphere(uint32 segments, IMeshObject* parent)
 {
 	IMeshObject* sphereMesh;
+	if (parent == nullptr) sphereMesh = ConstructEmpty();
+	else sphereMesh = parent;
 
-	// Construct the MeshObject
-#if Anarian_DirectX_Mode
-	sphereMesh = new DirectXMesh();
-#endif
-
+	// Create the Mesh
 	uint32 slices = segments / 2;
 	uint32 numVertices = (slices + 1) * (segments + 1) + 1;
 	uint32 numIndices = slices * segments * 3 * 2;
 
 	std::vector<Anarian::Verticies::PNTVertex> point(numVertices);
-	std::vector<short> index(numIndices);
+	std::vector<unsigned short> index(numIndices);
 
 	// To make the texture look right on the top and bottom of the sphere
 	// each slice will have 'segments + 1' vertices.  The top and bottom
@@ -273,7 +273,6 @@ IMeshObject* MeshFactory::ConstructSphere(uint32 segments)
 			p++;
 		}
 	}
-	//sphereMesh->m_vertexCount = p;
 
 	p = 0;
 	for (uint16 a = 0; a < slices; a++)
@@ -308,14 +307,10 @@ IMeshObject* MeshFactory::ConstructSphere(uint32 segments)
 			}
 		}
 	}
-	//sphereMesh->m_indexCount = p;
 
 	// Apply cross-platform variables
-	sphereMesh->m_vertices.push_back(point);
-	sphereMesh->m_indices.push_back(index);
-
-	//sphereMesh->m_vertexCount = point.size();
-	//sphereMesh->m_indexCount = index.size();
+	AddToVertexVector(sphereMesh, point);//sphereMesh->m_vertices.push_back(point);
+	AddToIndexVector(sphereMesh, index);//sphereMesh->m_indices.push_back(index);
 
 	return sphereMesh;
 }

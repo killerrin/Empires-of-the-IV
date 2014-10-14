@@ -6,10 +6,26 @@
 //// Copyright (c) Microsoft Corporation. All rights reserved
 
 #include "pch.h"
+
+#include "..\MeshFactory.h"
+#include "..\MaterialFactory.h"
+
+#include "..\DirectXMesh.h"
+#include "..\IMeshObject.h"
+#include "..\DirectXMaterial.h"
+
+#include "..\PNTVertex.h"
+using namespace Anarian;
+
 #include "BasicLoader.h"
 #include "BasicShapes.h"
 #include "DDSTextureLoader.h"
 #include "DirectXHelper.h"
+
+#include <fstream>
+#include <istream>
+#include <sstream>
+
 #include <memory>
 
 using namespace Microsoft::WRL;
@@ -311,9 +327,10 @@ void BasicLoader::CreateInputLayout(
 }
 
 void BasicLoader::CreateMesh(
-    _In_ byte* meshData,
-    _Out_ ID3D11Buffer** vertexBuffer,
-    _Out_ ID3D11Buffer** indexBuffer,
+	_In_ byte* meshData,
+	_Out_ ID3D11Buffer** vertexBuffer,
+	_Out_ ID3D11Buffer** indexBuffer,
+	_Out_ Anarian::IMeshObject* mesh,
     _Out_opt_ uint32* vertexCount,
     _Out_opt_ uint32* indexCount,
     _In_opt_ Platform::String^ debugName
@@ -331,6 +348,26 @@ void BasicLoader::CreateMesh(
     // The last segment of the BasicMesh format contains the indices of the mesh.
     uint16* indices = reinterpret_cast<uint16*>(meshData + sizeof(uint32) * 2 + sizeof(BasicVertex) * numVertices);
 
+	// Create custom mesh
+	IMeshObject* meshObj = MeshFactory::Instance()->ConstructEmpty();
+
+	std::vector<Anarian::Verticies::PNTVertex> m_verts;
+	for (int i = 0; i < numVertices; i++) {
+		m_verts.push_back({
+			DirectX::XMFLOAT3(vertices[i].pos.x, vertices[i].pos.y, vertices[i].pos.z),
+			DirectX::XMFLOAT3(vertices[i].norm.x, vertices[i].norm.y, vertices[i].norm.z),
+			DirectX::XMFLOAT2(vertices[i].tex.x, vertices[i].tex.y)
+		});
+	}
+	
+	std::vector<unsigned short> m_indices;
+	for (int i = 0; i < numIndices; i++) {
+		m_indices.push_back(indices[i]);
+	}
+
+	MeshFactory::Instance()->AddToVertexVector(meshObj, m_verts);
+	MeshFactory::Instance()->AddToIndexVector(meshObj, m_indices);
+	mesh = meshObj;
     // Create the vertex and index buffers with the mesh data.
 
     D3D11_SUBRESOURCE_DATA vertexBufferData = {0};
@@ -835,6 +872,7 @@ void BasicLoader::LoadMesh(
     _In_ Platform::String^ filename,
     _Out_ ID3D11Buffer** vertexBuffer,
     _Out_ ID3D11Buffer** indexBuffer,
+	_Out_ Anarian::IMeshObject* mesh,
     _Out_opt_ uint32* vertexCount,
     _Out_opt_ uint32* indexCount
     )
@@ -845,6 +883,7 @@ void BasicLoader::LoadMesh(
         meshData->Data,
         vertexBuffer,
         indexBuffer,
+		mesh,
         vertexCount,
         indexCount,
         filename
@@ -855,6 +894,7 @@ task<void> BasicLoader::LoadMeshAsync(
     _In_ Platform::String^ filename,
     _Out_ ID3D11Buffer** vertexBuffer,
     _Out_ ID3D11Buffer** indexBuffer,
+	_Out_ Anarian::IMeshObject* mesh,
     _Out_opt_ uint32* vertexCount,
     _Out_opt_ uint32* indexCount
     )
@@ -865,6 +905,7 @@ task<void> BasicLoader::LoadMeshAsync(
             meshData->Data,
             vertexBuffer,
             indexBuffer,
+			mesh,
             vertexCount,
             indexCount,
             filename

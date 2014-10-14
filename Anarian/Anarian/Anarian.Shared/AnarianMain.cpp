@@ -14,6 +14,8 @@
 #include "MeshFactory.h"
 #include "MaterialFactory.h"
 
+#include "TinyObjectLoaderConverter.h"
+
 using namespace Anarian;
 using namespace Windows::Foundation;
 using namespace Windows::System::Threading;
@@ -43,7 +45,17 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	m_sceneManager->SetCurrentScene(new IScene());
 
 	// Create the Mesh
-	IMeshObject* mesh = MeshFactory::Instance()->ConstructCube();
+	// Obj Loader
+	IMeshObject* mesh = nullptr;
+	IMaterial* objMaterial = nullptr;
+	if (TinyObjectLoaderConverter::LoadObj("Assets//Elf//Elf.objxx", &mesh, &objMaterial, "Assets//Elf//")) {
+		//mesh = MeshFactory::Instance()->ConstructCube();
+		//MeshFactory::Instance()->ConstructFace(mesh); // Add a face to the mesh
+	}
+	else {
+		mesh = MeshFactory::Instance()->ConstructSphere(20);
+	}
+	//mesh = MeshFactory::Instance()->ConstructEmpty();
 	((DirectXMesh*)mesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
 	m_resourceManager->AddMesh("cube", mesh);
 
@@ -61,15 +73,17 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	gameObject->SetMaterial(m_resourceManager->GetMaterial("material"));
 	gameObject->SetMesh(m_resourceManager->GetMesh("cube"));
 
+	gameObject->Scale(DirectX::XMFLOAT3(0.05f, 0.05f, 0.05f));
+	gameObject->Position(DirectX::XMFLOAT3(-2.0f, -8.0f, -5.0f));
+
 	GameObject* g2 = new GameObject();
 	g2->SetMaterial(m_resourceManager->GetMaterial("material"));
 	g2->SetMesh(m_resourceManager->GetMesh("cube"));
-	g2->Position(DirectX::XMFLOAT3(0.5f, 0.5f, 0.0f));
+	g2->Position(DirectX::XMFLOAT3(5.0f, 0.5f, 0.0f));
 	g2->Scale(DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f));
-
 	gameObject->AddChild(g2);
-	m_sceneManager->GetCurrentScene()->GetSceneNode()->AddChild(gameObject);
 
+	m_sceneManager->GetCurrentScene()->GetSceneNode()->AddChild(gameObject);
 
 	// TODO: Replace this with your app's content initialization.
 	m_sceneRenderer = RendererFactory::Instance()->ConstructRenderer(m_sceneManager, m_resourceManager, Color::CornFlowerBlue());
