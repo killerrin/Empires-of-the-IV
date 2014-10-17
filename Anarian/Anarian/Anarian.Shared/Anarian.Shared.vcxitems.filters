@@ -172,6 +172,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)TinyObjectLoaderConverter.cpp">
       <Filter>Utilities\Loaders\OBJ Loader</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)IMeshObject.cpp">
+      <Filter>Interfaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="$(MSBuildThisFileDirectory)Content\PixelShader.hlsl">

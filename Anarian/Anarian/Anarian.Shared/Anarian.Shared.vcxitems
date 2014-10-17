@@ -22,6 +22,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)DirectXMesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GameObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GameTimer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)IMeshObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MaterialFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MeshFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)RendererFactory.cpp" />

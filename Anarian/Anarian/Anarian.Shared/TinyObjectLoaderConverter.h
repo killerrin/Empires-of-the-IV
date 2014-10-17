@@ -14,8 +14,6 @@ namespace Anarian
 			);
 
 	private:
-		static void CalculateTangentBinormal(
-			DirectX::XMFLOAT3 vertex1, DirectX::XMFLOAT3 vertex2, DirectX::XMFLOAT3 vertex3,
-			DirectX::XMFLOAT3& tangent, DirectX::XMFLOAT3& binormal);
+
 	};
 }
