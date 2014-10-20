@@ -3,6 +3,53 @@
 
 using namespace Anarian;
 
+void IMeshObject::CalculateModelVectors()
+{
+	for (int x = 0; x < m_vertices.size(); x++) {
+		int faceCount, i, index;
+		Anarian::Verticies::PNTVertex vertex1, vertex2, vertex3;
+		DirectX::XMFLOAT3 tangent, binormal, normal;
+
+		// Calculate the number of faces in the model.
+		faceCount = m_vertices[x].size() / 3;
+
+		// Initialize the index to the model data.
+		index = 0;
+
+		// Go through all the faces and calculate the the tangent, binormal, and normal vectors.
+		for (i = 0; i < faceCount; i++) {
+			// Get the three vertices for this face from the model.
+			vertex1 = m_vertices[x][index];
+			index++;
+
+			vertex2 = m_vertices[x][index];
+			index++;
+
+			vertex3 = m_vertices[x][index];
+			index++;
+
+			// Calculate the tangent and binormal of that face.
+			CalculateTangentBinormal(vertex1, vertex2, vertex3, tangent, binormal);
+
+			// Calculate the new normal using the tangent and binormal.
+			CalculateNormal(tangent, binormal, normal);
+
+			// Store the normal, tangent, and binormal for this face back in the model structure.
+			m_vertices[x][index - 1].tangent = tangent;
+			m_vertices[x][index - 2].tangent = tangent;
+			m_vertices[x][index - 3].tangent = tangent;
+
+			m_vertices[x][index - 1].binormal = binormal;
+			m_vertices[x][index - 2].binormal = binormal;
+			m_vertices[x][index - 3].binormal = binormal;
+
+			//m_vertices[x][index - 1].normal = normal;
+			//m_vertices[x][index - 2].normal = normal;
+			//m_vertices[x][index - 3].normal = normal;
+		}
+	}
+}
+
 void IMeshObject::CalculateTangentBinormal(
 	Anarian::Verticies::PNTVertex vertex1, Anarian::Verticies::PNTVertex vertex2, Anarian::Verticies::PNTVertex vertex3,
 	DirectX::XMFLOAT3& tangent, DirectX::XMFLOAT3& binormal)

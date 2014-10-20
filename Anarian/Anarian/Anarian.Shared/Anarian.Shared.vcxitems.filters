@@ -253,5 +253,8 @@
     <Image Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf_packed0_normal.png">
       <Filter>Assets\Elf</Filter>
     </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf_packed0_specular.png">
+      <Filter>Assets\Elf</Filter>
+    </Image>
   </ItemGroup>
 </Project>

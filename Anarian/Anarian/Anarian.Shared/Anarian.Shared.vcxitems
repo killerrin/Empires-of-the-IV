@@ -110,6 +110,9 @@
     <Image Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf_packed0_normal.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf_packed0_specular.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
     <Image Include="$(MSBuildThisFileDirectory)Assets\TyrilMap.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>

@@ -107,7 +107,16 @@ bool TinyObjectLoaderConverter::LoadObj(
 		basicLoader->LoadTexture(ref new Platform::String(diffuseTextureFullPath.c_str()), nullptr, &diffuseTextureView);
 		((DirectXMaterial*)material)->AddTexture(diffuseTextureView);
 
-		// Load Bump Texture
+		// Load Specular Texture
+		ID3D11ShaderResourceView* specularTextureView;
+
+		std::string specTexFull = basePath + materials[i].specular_texname;
+		std::wstring specularTextureFullPath(specTexFull.begin(), specTexFull.end());
+
+		basicLoader->LoadTexture(ref new Platform::String(specularTextureFullPath.c_str()), nullptr, &specularTextureView);
+		((DirectXMaterial*)material)->AddTexture(specularTextureView);
+
+		// Load Bump (Normal) Texture
 		std::map<std::string, std::string>::const_iterator it(materials[i].unknown_parameter.begin());
 		std::map<std::string, std::string>::const_iterator itEnd(materials[i].unknown_parameter.end());
 		for (; it != itEnd; it++) {

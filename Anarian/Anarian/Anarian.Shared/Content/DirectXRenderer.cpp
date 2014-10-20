@@ -281,10 +281,10 @@ void DirectXRenderer::CreateDeviceDependentResources()
 		// Filter sampler
 		D3D11_SAMPLER_DESC sd;
 		sd.Filter = D3D11_FILTER_ANISOTROPIC;
-		sd.MaxAnisotropy = 16;							// use Anisotropic x 8. Available values = 1-16
-		sd.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;		// horizontally the texture is repeated
-		sd.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;		// vertically the texture is mirrored
-		sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;		// if it's a 3D texture, it is clamped
+		sd.MaxAnisotropy = 16;																// use Anisotropic x 8. Available values = 1-16
+		sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;		//D3D11_TEXTURE_ADDRESS_CLAMP;		// horizontally the texture is repeated
+		sd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;		//D3D11_TEXTURE_ADDRESS_CLAMP;		// vertically the texture is mirrored
+		sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;		//D3D11_TEXTURE_ADDRESS_CLAMP;		// if it's a 3D texture, it is clamped
 		sd.BorderColor[0] = 0.0f;
 		sd.BorderColor[1] = 0.0f;
 		sd.BorderColor[2] = 0.0f;
@@ -300,8 +300,8 @@ void DirectXRenderer::CreateDeviceDependentResources()
 		// Rasterizer State
 		D3D11_RASTERIZER_DESC rd;
 		rd.FillMode = D3D11_FILL_SOLID;
-		rd.CullMode = D3D11_CULL_FRONT;
-		rd.FrontCounterClockwise = FALSE;
+		rd.CullMode = D3D11_CULL_BACK;
+		rd.FrontCounterClockwise = TRUE;
 		rd.DepthClipEnable = TRUE;
 		rd.ScissorEnable = FALSE;
 		rd.AntialiasedLineEnable = FALSE;

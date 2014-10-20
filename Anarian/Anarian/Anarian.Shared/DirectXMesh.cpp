@@ -51,6 +51,9 @@ void DirectXMesh::CreateBuffers(ID3D11Device *device)
 	if (m_vertices.size() != m_indices.size())
 		return;
 
+	// Calculate the Tangent, Binormal and Normal values
+	CalculateModelVectors();
+
 	// Create the Vertex Buffer
 	for (int i = 0; i < m_vertices.size(); i++) {
 		D3D11_BUFFER_DESC bd = { 0 };

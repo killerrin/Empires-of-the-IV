@@ -8,6 +8,7 @@ Tf 1.00 1.00 1.00
 Ni 1.00
 Ks 1.00 1.00 1.00
 map_Kd Elf_packed0_diffuse.png
+map_Ks Elf_packed0_specular.png
 bump Elf_packed0_normal.png
 map_Ns Elf_packed0_gloss.png
 
