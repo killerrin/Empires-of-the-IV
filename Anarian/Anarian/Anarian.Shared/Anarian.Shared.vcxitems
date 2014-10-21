@@ -46,6 +46,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)DirectXMesh.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)GameTimer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ICollider.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IMaterial.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IMeshObject.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IMoveable.h" />
@@ -69,6 +70,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Content\DirectXRenderer.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PlatformHelpers.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)PNTVertex.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)PrimitiveType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)RendererFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ResourceManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SceneManager.h" />

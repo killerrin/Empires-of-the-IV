@@ -104,7 +104,7 @@ void DirectXRenderer::Update(DX::StepTimer const& timer, GameTimer* gameTime)
 
 		float radians = static_cast<float>(fmod(totalRotation, XM_2PI));
 
-		Rotate(radians, radians);
+		//Rotate(radians, radians);
 
 		m_sceneManager->GetCurrentScene()->GetSceneNode()->Update(gameTime);
 	}
@@ -114,8 +114,8 @@ void DirectXRenderer::Update(DX::StepTimer const& timer, GameTimer* gameTime)
 void DirectXRenderer::Rotate(float radiansX, float radiansY)
 {
 	if (m_sceneManager->GetCurrentScene()->GetSceneNode() == nullptr) return;
-	XMFLOAT3 rotation(radiansX, radiansY, 0.0f);
-	m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->Rotation(rotation);
+
+	m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->Rotation(XMFLOAT3(radiansX, radiansY, 0.0f));
 }
 
 void DirectXRenderer::StartTracking()
@@ -321,35 +321,11 @@ void DirectXRenderer::CreateDeviceDependentResources()
 		BasicLoader^ loader = ref new BasicLoader(m_deviceResources->GetD3DDevice());
 		loader->LoadTexture("Assets\\TyrilMap.png", nullptr, &m_tyrilMap);
 
-
-		//IMeshObject* mesh = nullptr;
-		//IMaterial* material = nullptr;
-		//Microsoft::WRL::ComPtr<ID3D11Buffer> vertb;
-		//Microsoft::WRL::ComPtr<ID3D11Buffer> indb;
-		//uint32* vertc = nullptr;
-		//uint32* indC = nullptr;
-		//loader->LoadMesh("Elf.cmo", vertb.GetAddressOf(), indb.GetAddressOf(), mesh, vertc, indC);
-		//((DirectXMesh*)mesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
-
-		// Load the texture
-		//Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_tyrilMap;
-		//HRESULT hr = DirectX::CreateWICTextureFromFile(
-		//	m_deviceResources->GetD3DDevice(),
-		//	nullptr,
-		//	L"Assets\\TyrilMap.png",
-		//	nullptr,
-		//	&m_tyrilMap,
-		//	0);
-
 		// Add the Shaders
 		((DirectXMaterial*)m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->GetMaterial())->
 			CreateViews(
 			m_vertexShader.Get(),
 			m_pixelShader.Get());
-
-		// Add the texture
-		//((DirectXMaterial*)m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->GetMaterial())->
-		//	AddTexture(m_tyrilMap.Get());
 
 		m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->SetActive(true);
 	});

@@ -52,15 +52,34 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	IMeshObject* mesh = nullptr;
 	IMaterial* objMaterial = nullptr;
 	if (TinyObjectLoaderConverter::LoadObj("Assets//Elf//", "Elf.objxx", &mesh, &objMaterial, loader)) {
-		//mesh = MeshFactory::Instance()->ConstructCube();
-		//MeshFactory::Instance()->ConstructFace(mesh); // Add a face to the mesh
 	}
 	else {
-		mesh = MeshFactory::Instance()->ConstructSphere(20);
+		mesh = MeshFactory::Instance()->ConstructCube();
 	}
-	//mesh = MeshFactory::Instance()->ConstructEmpty();
 	((DirectXMesh*)mesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
-	m_resourceManager->AddMesh("cube", mesh);
+	m_resourceManager->AddMesh("elf", mesh);
+	
+	// Load all the primitives into the resource manager
+	//
+	IMeshObject* sphereMesh = nullptr;
+	sphereMesh = MeshFactory::Instance()->ConstructSphere(32);
+	((DirectXMesh*)sphereMesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
+	m_resourceManager->AddMesh("sphere", sphereMesh);
+
+	IMeshObject* cylinderMesh = nullptr;
+	cylinderMesh = MeshFactory::Instance()->ConstructCylinder(32);
+	((DirectXMesh*)cylinderMesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
+	m_resourceManager->AddMesh("cylinder", cylinderMesh);
+
+	IMeshObject* cubeMesh = nullptr;
+	cubeMesh = MeshFactory::Instance()->ConstructCube();
+	((DirectXMesh*)sphereMesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
+	m_resourceManager->AddMesh("cube", cubeMesh);
+
+	IMeshObject* faceMesh = nullptr;
+	faceMesh = MeshFactory::Instance()->ConstructFace();
+	((DirectXMesh*)faceMesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
+	m_resourceManager->AddMesh("face", faceMesh);
 
 	// Create Material
 	IMaterial* material = MaterialFactory::Instance()->ConstructMaterial(
@@ -74,14 +93,14 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	GameObject* gameObject = new GameObject();
 	gameObject->SetActive(false);
 	gameObject->SetMaterial(m_resourceManager->GetMaterial("material"));
-	gameObject->SetMesh(m_resourceManager->GetMesh("cube"));
+	gameObject->SetMesh(m_resourceManager->GetMesh("elf"));
 
 	gameObject->Scale(DirectX::XMFLOAT3(0.05f, 0.05f, 0.05f));
 	gameObject->Position(DirectX::XMFLOAT3(-2.0f, -8.0f, -5.0f));
 
 	GameObject* g2 = new GameObject();
 	g2->SetMaterial(m_resourceManager->GetMaterial("material"));
-	g2->SetMesh(m_resourceManager->GetMesh("cube"));
+	g2->SetMesh(m_resourceManager->GetMesh("elf"));
 	g2->Position(DirectX::XMFLOAT3(5.0f, 0.5f, 0.0f));
 	g2->Scale(DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f));
 	gameObject->AddChild(g2);

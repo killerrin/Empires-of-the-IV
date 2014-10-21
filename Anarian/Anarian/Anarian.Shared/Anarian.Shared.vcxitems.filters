@@ -108,6 +108,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)TinyObjectLoaderConverter.h">
       <Filter>Utilities\Loaders\OBJ Loader</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ICollider.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PrimitiveType.h">
+      <Filter>Data Structures\Enumerators</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianMain.cpp" />
@@ -226,6 +232,12 @@
     </Filter>
     <Filter Include="Utilities\Loaders\OBJ Loader">
       <UniqueIdentifier>{70b6123e-97ba-4b90-872c-70340dd58432}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities\Loaders\MD5 Loader">
+      <UniqueIdentifier>{b1b524fd-6826-4e55-8d02-72c58ec35d1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data Structures\Enumerators">
+      <UniqueIdentifier>{2d90d1d5-7f9c-4e3b-8cfb-23047ea96eb9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

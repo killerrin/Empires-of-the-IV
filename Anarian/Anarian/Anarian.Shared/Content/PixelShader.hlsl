@@ -36,7 +36,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	bumpNormal = normalize(bumpNormal);
 	
 	// Invert the light direction for calculations.
-	float3 lightDirection = float3(input.positionMod.x, input.positionMod.y, input.positionMod.z) + float3(0.0f, 0.0f, 10.0f);
+	float3 lightDirection = float3(input.positionMod.x, input.positionMod.y, input.positionMod.z) - float3(20.0f, 50.0f, 30.0f);
 	lightDir = -lightDirection;
 	
 	// Calculate the amount of light on this pixel based on the bump map normal value.
