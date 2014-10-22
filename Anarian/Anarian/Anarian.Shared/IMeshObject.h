@@ -27,5 +27,7 @@ namespace Anarian{
 
 		int VertexCount(int index) { return m_indices[index].size(); };
 		int IndexCount(int index) { return m_vertices[index].size(); };
+		std::vector<std::vector<unsigned short>>* Indices() { return &m_indices; };
+		std::vector<std::vector<Anarian::Verticies::PNTVertex>>* Vertices() { return &m_vertices; };
 	};
 }

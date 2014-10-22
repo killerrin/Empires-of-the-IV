@@ -73,6 +73,7 @@ namespace Anarian
 		bool	m_loadingComplete;
 		float	m_degreesPerSecond;
 		bool	m_tracking;
+		bool	m_isShoot;
 	};
 }
 

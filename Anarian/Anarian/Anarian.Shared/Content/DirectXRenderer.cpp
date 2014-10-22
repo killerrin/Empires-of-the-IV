@@ -128,9 +128,36 @@ void DirectXRenderer::TrackingUpdate(float positionX, float positionY)
 {
 	if (m_tracking)
 	{
-		float radiansX = XM_2PI * 2.0f * positionX / m_deviceResources->GetOutputSize().Width;
-		float radiansY = XM_2PI * 2.0f * positionY / m_deviceResources->GetOutputSize().Height;
-		Rotate(radiansX, radiansY);
+		//float radiansX = XM_2PI * 2.0f * positionX / m_deviceResources->GetOutputSize().Width;
+		//float radiansY = XM_2PI * 2.0f * positionY / m_deviceResources->GetOutputSize().Height;
+		//Rotate(radiansX, radiansY);
+
+		float tempDist;
+		float closestDist = FLT_MAX;
+		int hitIndex;
+
+		XMVECTOR prwsPos, prwsDir;
+		PickRayVector(positionX, positionY, prwsPos, prwsDir);
+		
+		for (int i = 0; i < m_sceneManager->GetCurrentScene()->GetSceneNode()->ChildCount(); i++) { // Number of things on screen to search
+			if (true) //Use this If Statement to shorten the list of raycasts
+			{
+				tempDist = Pick(prwsPos, prwsDir,
+					m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(i)->GetMesh()->Vertices(),
+					m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(i)->GetMesh()->Indices(),
+					m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(i)->ModelMatrix() // If it doesn't work, try XMTransposing this
+					);
+				if (tempDist < closestDist) {
+					closestDist = tempDist;
+					hitIndex = i;
+				}
+			}
+		}
+		
+		if (closestDist < FLT_MAX) {
+			// It was hit
+			m_sceneManager->GetCurrentScene()->GetSceneNode()->GetMaterial()->SetDiffuseColor(Color::Red());
+		}
 	}
 }
 

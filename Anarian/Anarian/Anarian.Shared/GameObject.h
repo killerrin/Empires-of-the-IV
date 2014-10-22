@@ -47,11 +47,14 @@ namespace Anarian{
 		};
 		GameObject* GetChild(int index) { return m_children[index]; };
 
+		int ChildCount() { return m_children.size(); }
+
 		void SetMesh(IMeshObject* mesh) { m_mesh = mesh; };
 		IMeshObject* GetMesh() { return m_mesh; };
 		
 		void SetMaterial(IMaterial* material) { m_material = material; };
 		IMaterial* GetMaterial() { return m_material; };
+
 		//----------------------\\
 
 		DirectX::XMMATRIX ModelMatrix()	{ return DirectX::XMLoadFloat4x4(&m_modelMatrix); };
