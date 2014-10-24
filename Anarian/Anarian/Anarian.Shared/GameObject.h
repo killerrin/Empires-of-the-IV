@@ -53,7 +53,7 @@ namespace Anarian{
 		IMeshObject* GetMesh() { return m_mesh; };
 		
 		void SetMaterial(IMaterial* material) { m_material = material; };
-		IMaterial* GetMaterial() { return m_material; };
+		IMaterial* GetMaterial()			  { return m_material; };
 
 		//----------------------\\
 

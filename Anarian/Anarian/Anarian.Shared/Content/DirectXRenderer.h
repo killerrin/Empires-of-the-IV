@@ -41,6 +41,14 @@ namespace Anarian
 		bool IsTracking() { return m_tracking; }
 
 
+		void PickRayVector(float mouseX, float mouseY, DirectX::XMVECTOR& pickRayInWorldSpacePos, DirectX::XMVECTOR& pickRayInWorldSpaceDir);
+		float Pick(DirectX::XMVECTOR pickRayInWorldSpacePos,
+			DirectX::XMVECTOR pickRayInWorldSpaceDir,
+			std::vector<std::vector<Anarian::Verticies::PNTVertex>>& vertPosArray,
+			std::vector<std::vector<unsigned short>>& indexPosArray,
+			DirectX::XMMATRIX& worldSpace);
+		bool DirectXRenderer::PointInTriangle(DirectX::XMVECTOR& triV1, DirectX::XMVECTOR& triV2, DirectX::XMVECTOR& triV3, DirectX::XMVECTOR& point);
+
 	private:
 		void Rotate(float radiansX, float radiansY);
 
@@ -74,6 +82,8 @@ namespace Anarian
 		float	m_degreesPerSecond;
 		bool	m_tracking;
 		bool	m_isShoot;
+
+		bool	m_isClicking = false;
 	};
 }
 

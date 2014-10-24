@@ -48,6 +48,10 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	//---------------------------------------------------------------
 	//-- Set the final color
 	//float4 finalColor = glossMap * input.diffuseColor;
-	float4 finalcolor = diffuseMap;// *color;
-	return finalcolor;
+	float4 finalColor = diffuseMap;
+
+		// For Pick Testing
+	finalColor = input.diffuseColor;
+
+	return finalColor;
 }

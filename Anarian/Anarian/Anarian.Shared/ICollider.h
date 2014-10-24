@@ -8,9 +8,10 @@ namespace Anarian
 		PrimitiveType m_type;
 
 		ICollider(PrimitiveType type) { m_type = type; };
-		~ICollider() {};
 
 	public:
+		~ICollider() {};
+
 		bool Collides(ICollider collider) {};
 	};
 }

@@ -99,15 +99,38 @@ void Camera::SetProjParams(
 	m_aspectRatio = aspectRatio;
 	m_nearPlane = nearPlane;
 	m_farPlane = farPlane;
+
+	// Store the different perspectives
+	XMStoreFloat4x4(
+		&m_projectionMatrixRight,
+		XMMatrixPerspectiveFovRH(
+		m_fieldOfView,
+		m_aspectRatio,
+		m_nearPlane,
+		m_farPlane
+		)
+		);
+
+	XMStoreFloat4x4(
+		&m_projectionMatrixLeft,
+		XMMatrixPerspectiveFovLH(
+		m_fieldOfView,
+		m_aspectRatio,
+		m_nearPlane,
+		m_farPlane
+		)
+		);
+
+	// Store the main perspective
 	XMStoreFloat4x4(
 		&m_projectionMatrix,
 		XMMatrixPerspectiveFovRH(
-			m_fieldOfView,
-			m_aspectRatio,
-			m_nearPlane,
-			m_farPlane
+		m_fieldOfView,
+		m_aspectRatio,
+		m_nearPlane,
+		m_farPlane
 		)
-	);
+		);
 
 	//STEREO_PARAMETERS* stereoParams = nullptr;
 	//// Update the projection matrix.

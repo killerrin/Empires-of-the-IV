@@ -67,5 +67,7 @@ namespace Anarian {
 
 		static Color CornFlowerBlue()	{ return Color(0.0f, 0.2f, 0.4f, 1.0f); };
 		static Color LemonChiffon()		{ return Color(1.0f, 0.984f, 0.815f, 1.0f); };
+
+		static Color RandomColor()		{ return Color(rand() % 255, rand() % 255, rand() % 255, 1.0f); };
 	};
 }
