@@ -7,15 +7,16 @@ namespace Anarian{
 		static Camera* m_mainCamera;
 
 		DirectX::XMFLOAT4X4 m_viewMatrix;
+		DirectX::XMFLOAT4X4 m_inverseView;
+
 		DirectX::XMFLOAT4X4 m_projectionMatrix;
 		DirectX::XMFLOAT4X4 m_projectionMatrixLeft;
 		DirectX::XMFLOAT4X4 m_projectionMatrixRight;
 
-		DirectX::XMFLOAT4X4 m_inverseView;
-
 		DirectX::XMFLOAT3 m_eye;
 		DirectX::XMFLOAT3 m_lookAt;
 		DirectX::XMFLOAT3 m_up;
+
 		float             m_cameraYawAngle;
 		float             m_cameraPitchAngle;
 
