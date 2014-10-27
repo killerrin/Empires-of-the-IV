@@ -20,6 +20,7 @@
 
 #include <vector>
 #include <map>
+#include <math.h>
 
 #include <fstream>
 #include <windows.h>

@@ -133,7 +133,7 @@ void DirectXRenderer::PickRayVector(float mouseX, float mouseY, DirectX::XMVECTO
 	float PRVecX, PRVecY, PRVecZ;
 
 	//Transform 2D pick position on screen space to 3D ray in View space
-	Size outputSize = m_deviceResources->GetOutputSize();
+	Size outputSize = m_deviceResources->GetRenderTargerSize();
 	XMMATRIX camProjection = m_sceneManager->GetCurrentScene()->GetCamera()->Projection();
 	
 	XMFLOAT4X4 camProj;
@@ -278,6 +278,141 @@ bool DirectXRenderer::PointInTriangle(XMVECTOR& triV1, XMVECTOR& triV2, XMVECTOR
 	return false;
 }
 
+void DirectXRenderer::ConvertToWorldSpace(DirectX::XMFLOAT2& pointPositionInResolution, Camera* camera, _Out_ DirectX::XMFLOAT3& position, _Out_ DirectX::XMFLOAT3& direction)
+{
+	//// Attempt 1
+	//// First, we convert the Vector2 into a Vector3
+	//XMFLOAT3 point1 = XMFLOAT3(pointPositionInResolution.x, pointPositionInResolution.y, 0);
+	//XMFLOAT3 point2 = XMFLOAT3(pointPositionInResolution.x, pointPositionInResolution.y, 1);
+	//XMVECTOR v_point1 = XMLoadFloat3(&point1);
+	//XMVECTOR v_point2 = XMLoadFloat3(&point2);
+	//
+	//// Next we Invert the Matricies
+	//XMVECTOR det1;
+	//XMVECTOR det2;
+	//XMMATRIX invProj = XMMatrixInverse(&det1, camera->Projection());
+	//XMMATRIX invView = XMMatrixInverse(&det2, camera->View());
+	//
+	//// Then we Transform the points
+	////v_point1 = XMVector3Transform(v_point1, invProj);
+	////v_point2 = XMVector3Transform(v_point2, invProj);
+	////
+	////v_point1 = XMVector3Transform(v_point1, invView);
+	////v_point2 = XMVector3Transform(v_point2, invView);
+	//
+	//v_point1 = XMVector3Unproject(v_point1,
+	//	m_deviceResources->GetScreenViewport().TopLeftX,
+	//	m_deviceResources->GetScreenViewport().TopLeftY,
+	//	m_deviceResources->GetScreenViewport().Width,
+	//	m_deviceResources->GetScreenViewport().Height,
+	//	m_deviceResources->GetScreenViewport().MinDepth,
+	//	m_deviceResources->GetScreenViewport().MaxDepth,
+	//	camera->Projection(),
+	//	camera->View(),
+	//	camera->World());
+	//
+	//v_point2 = XMVector3Unproject(v_point2,
+	//	m_deviceResources->GetScreenViewport().TopLeftX,
+	//	m_deviceResources->GetScreenViewport().TopLeftY,
+	//	m_deviceResources->GetScreenViewport().Width,
+	//	m_deviceResources->GetScreenViewport().Height,
+	//	m_deviceResources->GetScreenViewport().MinDepth,
+	//	m_deviceResources->GetScreenViewport().MaxDepth,
+	//	camera->Projection(),
+	//	camera->View(),
+	//	camera->World());
+	//
+	//// Set the Out Values
+	//position.x = XMVectorGetX(v_point1);
+	//position.y = XMVectorGetY(v_point1);
+	//position.z = XMVectorGetZ(v_point1);
+	//
+	//XMVECTOR dir = (v_point2 - v_point1);
+	//XMVECTOR normDirection = XMVector3Normalize(dir);
+	//direction.x = XMVectorGetX(normDirection);
+	//direction.y = XMVectorGetY(normDirection);
+	//direction.z = XMVectorGetZ(normDirection);
+
+	//int mouseX = Mouse.getX();
+	//int mouseY = WORLD.Byte56Game.getHeight() - Mouse.getY();
+	//
+	//float windowWidth = WORLD.Byte56Game.getWidth();
+	//float windowHeight = WORLD.Byte56Game.getHeight();
+	//
+	////get the mouse position in screenSpace coords
+	//double screenSpaceX = ((float)mouseX / (windowWidth / 2) - 1.0f) * aspectRatio;
+	//double screenSpaceY = (1.0f - (float)mouseY / (windowHeight / 2));
+	//
+	//double viewRatio = Math.tan(((float)Math.PI / (180.f / ViewAngle) / 2.00f)) * zoomFactor;
+	//
+	//screenSpaceX = screenSpaceX * viewRatio;
+	//screenSpaceY = screenSpaceY * viewRatio;
+	//
+	////Find the far and near camera spaces
+	//Vector4f cameraSpaceNear = new Vector4f((float)(screenSpaceX * NearPlane), (float)(screenSpaceY * NearPlane), (float)(-NearPlane), 1);
+	//Vector4f cameraSpaceFar = new Vector4f((float)(screenSpaceX * FarPlane), (float)(screenSpaceY * FarPlane), (float)(-FarPlane), 1);
+	//
+	//
+	////Unproject the 2D window into 3D to see where in 3D we're actually clicking
+	//Matrix4f tmpView = Matrix4f(view);
+	//Matrix4f invView = (Matrix4f)tmpView.invert();
+	//
+	//Vector4f worldSpaceNear = new Vector4f();
+	//Matrix4f.transform(invView, cameraSpaceNear, worldSpaceNear);
+	//
+	//Vector4f worldSpaceFar = new Vector4f();
+	//Matrix4f.transform(invView, cameraSpaceFar, worldSpaceFar);
+	//
+	////calculate the ray position and direction
+	//Vector3f rayPosition = new Vector3f(worldSpaceNear.x, worldSpaceNear.y, worldSpaceNear.z);
+	//Vector3f rayDirection = new Vector3f(worldSpaceFar.x - worldSpaceNear.x, worldSpaceFar.y - worldSpaceNear.y, worldSpaceFar.z - worldSpaceNear.z);
+	//
+	//rayDirection.normalise();
+
+	float pressX = pointPositionInResolution.x;
+	float pressY = pointPositionInResolution.y;
+	float windowWidth = m_deviceResources->GetOutputSize().Width;
+	float windowHeight = m_deviceResources->GetOutputSize().Height;
+
+	//get the mouse position in screenSpace coords
+	double screenSpaceX = ((float)pressX / (windowWidth / 2) - 1.0f) * camera->AspectRatio();
+	double screenSpaceY = (1.0f - (float)pressY / (windowHeight / 2));
+
+	double viewRatio = tan(((float)3.14159 / (180.f / camera->FieldOfView()) / 2.00f)) * 1.0f;
+
+	screenSpaceX = screenSpaceX * viewRatio;
+	screenSpaceY = screenSpaceY * viewRatio;
+
+	//Find the far and near camera spaces
+	XMFLOAT4 cameraSpaceNear = XMFLOAT4((float)(screenSpaceX * camera->NearClipPlane()), (float)(screenSpaceY * camera->NearClipPlane()), (float)(-camera->NearClipPlane()), 1);
+	XMFLOAT4 cameraSpaceFar = XMFLOAT4((float)(screenSpaceX * camera->FarClipPlane()), (float)(screenSpaceY * camera->FarClipPlane()), (float)(-camera->FarClipPlane()), 1);
+
+	//Unproject the 2D window into 3D to see where in 3D we're actually clicking
+	XMMATRIX tmpView = camera->View();
+	XMVECTOR det1;
+	XMMATRIX invView = XMMatrixInverse(&det1, tmpView);
+
+	XMVECTOR worldSpaceNear;
+	worldSpaceNear = XMVector4Transform(XMLoadFloat4(&cameraSpaceNear), invView);
+
+	XMVECTOR worldSpaceFar;
+	worldSpaceFar = XMVector4Transform(XMLoadFloat4(&cameraSpaceFar), invView);
+
+	//calculate the ray position and direction
+	XMFLOAT3 rayPosition = XMFLOAT3(XMVectorGetX(worldSpaceNear), XMVectorGetY(worldSpaceNear), XMVectorGetZ(worldSpaceNear));
+	position.x = rayPosition.x;
+	position.y = rayPosition.y;
+	position.z = rayPosition.z;
+
+	XMVECTOR rayDir = worldSpaceFar - worldSpaceNear;
+	XMVECTOR rayDirectionNorm = XMVector4Normalize(rayDir);
+	XMFLOAT3 rayDirection = XMFLOAT3(XMVectorGetX(rayDirectionNorm), XMVectorGetY(rayDirectionNorm), XMVectorGetZ(rayDirectionNorm));
+	direction.x = rayDirection.x;
+	direction.y = rayDirection.y;
+	direction.z = rayDirection.z;
+
+}
+
 //===========================================================================================================
 //===========================================================================================================
 // When tracking, the 3D cube can be rotated around its Y axis by tracking pointer position relative to the output screen width.
@@ -288,32 +423,66 @@ void DirectXRenderer::TrackingUpdate(float positionX, float positionY)
 		//float radiansX = XM_2PI * 2.0f * positionX / m_deviceResources->GetOutputSize().Width;
 		//float radiansY = XM_2PI * 2.0f * positionY / m_deviceResources->GetOutputSize().Height;
 		//Rotate(radiansX, radiansY);
-		m_isClicking = true;
 
-		float tempDist;
 		float closestDist = FLT_MAX;
-		int hitIndex;
+		//float tempDist;
+		//int hitIndex;
 
-		XMVECTOR prwsPos, prwsDir;
-		PickRayVector(positionX, positionY, prwsPos, prwsDir);
-		
-		for (int i = 0; i < m_sceneManager->GetCurrentScene()->GetSceneNode()->ChildCount(); i++) { // Number of things on screen to search
-			if (true) //Use this If Statement to shorten the list of raycasts
-			{
-				m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(i)->UpdatePosition();
+		//XMVECTOR prwsPos, prwsDir;
+		//PickRayVector(positionX, positionY, prwsPos, prwsDir);
+		//
+		//for (int i = 0; i < m_sceneManager->GetCurrentScene()->GetSceneNode()->ChildCount(); i++) { // Number of things on screen to search
+		//	if (true) //Use this If Statement to shorten the list of raycasts
+		//	{
+		//		m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(i)->UpdatePosition();
 
-				tempDist = Pick(prwsPos, prwsDir,
-					*m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(i)->GetMesh()->Vertices(),
-					*m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(i)->GetMesh()->Indices(),
-					m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(i)->ModelMatrix() // If it doesn't work, try XMTransposing this
-					);
-				if (tempDist < closestDist) {
-					closestDist = tempDist;
-					hitIndex = i;
-				}
-			}
-		}
-		
+		//		tempDist = Pick(prwsPos, prwsDir,
+		//			*m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(i)->GetMesh()->Vertices(),
+		//			*m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(i)->GetMesh()->Indices(),
+		//			m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(i)->ModelMatrix() // If it doesn't work, try XMTransposing this
+		//			);
+		//		if (tempDist < closestDist) {
+		//			closestDist = tempDist;
+		//			hitIndex = i;
+		//		}
+		//	}
+		//}
+
+		XMFLOAT3 position = XMFLOAT3();
+		XMFLOAT3 direction = XMFLOAT3();
+
+		ConvertToWorldSpace(XMFLOAT2(positionY,
+									 positionX),
+			m_sceneManager->GetCurrentScene()->GetCamera(),
+			position,
+			direction);
+
+		std::string str("Click: " + std::to_string(position.x) + ", " + std::to_string(position.y) + ", " + std::to_string(position.z) + "\n");
+		std::wstring wstr(str.begin(), str.end());
+		OutputDebugString(wstr.c_str());
+		std::string strDir2("Direc: " + std::to_string(direction.x) + ", " + std::to_string(direction.y) + ", " + std::to_string(direction.z) + "\n");
+		std::wstring wstrDir2(strDir2.begin(), strDir2.end());
+		OutputDebugString(wstrDir2.c_str());
+
+		XMFLOAT3 position1 = XMFLOAT3();
+		XMFLOAT3 direction1 = XMFLOAT3();
+
+		ConvertToWorldSpace(XMFLOAT2(m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->Position().x,
+									 m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->Position().y),
+			m_sceneManager->GetCurrentScene()->GetCamera(),
+			position1,
+			direction1);
+
+		std::string strPos2("Posit: " + std::to_string(position1.x) + ", " + std::to_string(position1.y) + ", " + std::to_string(position1.z) + "\n \n");
+		std::wstring wstrPos2(strPos2.begin(), strPos2.end());
+		OutputDebugString(wstrPos2.c_str());
+
+		m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->Position(XMFLOAT3(
+			position.x,
+			position.y,
+			m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->Position().z
+			));
+
 		if (closestDist < FLT_MAX) {
 			// It was hit
 			std::string str("Hit!");
@@ -323,8 +492,6 @@ void DirectXRenderer::TrackingUpdate(float positionX, float positionY)
 			m_isShoot = true;
 			m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->GetMaterial()->SetDiffuseColor(Color::RandomColor());
 		}
-
-		m_isClicking = false;
 	}
 }
 

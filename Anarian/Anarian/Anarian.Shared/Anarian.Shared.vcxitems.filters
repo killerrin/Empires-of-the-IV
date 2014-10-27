@@ -114,6 +114,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PrimitiveType.h">
       <Filter>Data Structures\Enumerators</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Ray.h">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianMain.cpp" />
@@ -180,6 +183,9 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)IMeshObject.cpp">
       <Filter>Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Ray.cpp">
+      <Filter>Data Structures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

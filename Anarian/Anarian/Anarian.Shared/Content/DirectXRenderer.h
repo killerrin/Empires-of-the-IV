@@ -41,6 +41,7 @@ namespace Anarian
 		bool IsTracking() { return m_tracking; }
 
 
+		void ConvertToWorldSpace(DirectX::XMFLOAT2& pointPositionInResolution, Camera* camera, _Out_ DirectX::XMFLOAT3& position, _Out_ DirectX::XMFLOAT3& direction);
 		void PickRayVector(float mouseX, float mouseY, DirectX::XMVECTOR& pickRayInWorldSpacePos, DirectX::XMVECTOR& pickRayInWorldSpaceDir);
 		float Pick(DirectX::XMVECTOR pickRayInWorldSpacePos,
 			DirectX::XMVECTOR pickRayInWorldSpaceDir,
@@ -82,8 +83,6 @@ namespace Anarian
 		float	m_degreesPerSecond;
 		bool	m_tracking;
 		bool	m_isShoot;
-
-		bool	m_isClicking = false;
 	};
 }
 

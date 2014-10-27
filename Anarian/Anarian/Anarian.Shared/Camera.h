@@ -34,6 +34,7 @@ namespace Anarian{
 
 		void LookDirection(DirectX::XMFLOAT3 lookDirection);
 		void Eye(DirectX::XMFLOAT3 position);
+		void Up(DirectX::XMFLOAT3 up);
 
 		DirectX::XMMATRIX View();
 		DirectX::XMMATRIX Projection();
@@ -43,9 +44,14 @@ namespace Anarian{
 		DirectX::XMFLOAT3 Eye();
 		DirectX::XMFLOAT3 LookAt();
 		DirectX::XMFLOAT3 Up();
+
 		float NearClipPlane();
 		float FarClipPlane();
 		float Pitch();
 		float Yaw();
+
+		float FieldOfView();
+		float AspectRatio();
+
 	};
 }

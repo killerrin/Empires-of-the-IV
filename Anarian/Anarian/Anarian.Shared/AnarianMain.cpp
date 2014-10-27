@@ -56,6 +56,7 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	else {
 		mesh = MeshFactory::Instance()->ConstructCube();
 	}
+	mesh = MeshFactory::Instance()->ConstructSphere(32);
 	((DirectXMesh*)mesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
 	m_resourceManager->AddMesh("elf", mesh);
 	
@@ -95,7 +96,7 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	gameObject->SetMaterial(m_resourceManager->GetMaterial("material"));
 	gameObject->SetMesh(m_resourceManager->GetMesh("elf"));
 
-	gameObject->Scale(DirectX::XMFLOAT3(0.05f, 0.05f, 0.05f));
+	gameObject->Scale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)); // (0.05f, 0.05f, 0.05f));
 	gameObject->Position(DirectX::XMFLOAT3(-2.0f, -8.0f, -5.0f));
 
 	GameObject* g2 = new GameObject();

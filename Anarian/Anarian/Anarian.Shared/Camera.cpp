@@ -51,6 +51,13 @@ void Camera::Eye(XMFLOAT3 eye)
 
 //--------------------------------------------------------------------------------------
 
+void Camera::Up(XMFLOAT3 up)
+{
+	SetViewParams(m_eye, m_lookAt, up);
+}
+
+//--------------------------------------------------------------------------------------
+
 void Camera::SetViewParams(
 	XMFLOAT3 eye,
 	XMFLOAT3 lookAt,
@@ -239,3 +246,13 @@ float Camera::Yaw()
 }
 
 //--------------------------------------------------------------------------------------
+
+float Camera::FieldOfView()
+{
+	return m_fieldOfView;
+}
+
+float Camera::AspectRatio()
+{
+	return m_aspectRatio;
+}
