@@ -27,9 +27,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)IMeshObject.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)PNTVertex.h">
-      <Filter>Data Structures</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)DirectXMaterial.h">
       <Filter>Rendering\DirectX</Filter>
     </ClInclude>
@@ -50,9 +47,6 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)IScene.h">
       <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)SceneNode.h">
-      <Filter>Rendering</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Camera.h">
       <Filter>Rendering</Filter>
@@ -117,6 +111,24 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Ray.h">
       <Filter>Data Structures</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)PNTVertex.h">
+      <Filter>Data Structures\Verticies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Weight.h">
+      <Filter>Data Structures\Verticies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Joint.h">
+      <Filter>Data Structures\Verticies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Model.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)MD5Loader.h">
+      <Filter>Utilities\Loaders\MD5 Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)MD5LoaderConverter.h">
+      <Filter>Utilities\Loaders\MD5 Loader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianMain.cpp" />
@@ -144,9 +156,6 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)ResourceManager.cpp">
       <Filter>Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)SceneNode.cpp">
-      <Filter>Rendering</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Camera.cpp">
       <Filter>Rendering</Filter>
@@ -186,6 +195,15 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Ray.cpp">
       <Filter>Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Model.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MD5Loader.cpp">
+      <Filter>Utilities\Loaders\MD5 Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)MD5LoaderConverter.cpp">
+      <Filter>Utilities\Loaders\MD5 Loader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -245,6 +263,9 @@
     <Filter Include="Data Structures\Enumerators">
       <UniqueIdentifier>{2d90d1d5-7f9c-4e3b-8cfb-23047ea96eb9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data Structures\Verticies">
+      <UniqueIdentifier>{f066d5cf-bcef-45ba-95a8-ca189ad3fb7c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)ConstantBuffers.hlsli">
@@ -256,6 +277,12 @@
     <None Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf.obj" />
     <None Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf.objxx">
       <Filter>Assets\Elf</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Assets\Dance.md5anim">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Assets\Dance.md5mesh">
+      <Filter>Assets</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -273,6 +300,9 @@
     </Image>
     <Image Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf_packed0_specular.png">
       <Filter>Assets\Elf</Filter>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Assets\MocapGuy_diffuse.png">
+      <Filter>Assets</Filter>
     </Image>
   </ItemGroup>
 </Project>

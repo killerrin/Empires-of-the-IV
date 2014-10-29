@@ -13,8 +13,7 @@ namespace Anarian{
 		GameObject* m_parent;
 		std::vector<GameObject*> m_children;
 
-		IMaterial* m_material;
-		IMeshObject* m_mesh;
+		Model* m_model;
 
 		DirectX::XMFLOAT3   m_position;
 		DirectX::XMFLOAT3   m_scale;
@@ -46,14 +45,10 @@ namespace Anarian{
 			m_children.push_back(gameObject);
 		};
 		GameObject* GetChild(int index) { return m_children[index]; };
-
 		int ChildCount() { return m_children.size(); }
 
-		void SetMesh(IMeshObject* mesh) { m_mesh = mesh; };
-		IMeshObject* GetMesh() { return m_mesh; };
-		
-		void SetMaterial(IMaterial* material) { m_material = material; };
-		IMaterial* GetMaterial()			  { return m_material; };
+		void SetModel(Model** model) { m_model = *model; };
+		Model* GetModel() { return m_model; }
 
 		//----------------------\\
 

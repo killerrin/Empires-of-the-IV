@@ -19,9 +19,11 @@
 #include <ppltasks.h>
 
 #include <vector>
+#include <string>
 #include <map>
 #include <math.h>
 
+#include <iostream>
 #include <fstream>
 #include <windows.h>
 

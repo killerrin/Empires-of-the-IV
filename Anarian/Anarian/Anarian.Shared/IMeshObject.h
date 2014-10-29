@@ -1,18 +1,23 @@
 #pragma once
 #include "PNTVertex.h"
+#include "Weight.h"
+#include "Joint.h"
 
 namespace Anarian{
 	class IMeshObject
 	{
 		friend class MeshFactory;
+		friend class Model;
 	protected:
 		IMeshObject() { 
 			m_indices = std::vector<std::vector<unsigned short>>();
-			m_vertices	= std::vector<std::vector<Anarian::Verticies::PNTVertex>> ();
+			m_vertices	= std::vector<std::vector<Anarian::Verticies::PNTVertex>>();
+			m_weights = std::vector<std::vector<Anarian::Verticies::Weight>>();
 		};
-
-		std::vector<std::vector<unsigned short>> m_indices;
+		
 		std::vector<std::vector<Anarian::Verticies::PNTVertex>> m_vertices;
+		std::vector<std::vector<unsigned short>> m_indices;
+		std::vector<std::vector<Anarian::Verticies::Weight>> m_weights;
 
 		void CalculateTangentBinormal(
 			Anarian::Verticies::PNTVertex vertex1, Anarian::Verticies::PNTVertex vertex2, Anarian::Verticies::PNTVertex vertex3,

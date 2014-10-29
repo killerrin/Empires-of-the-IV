@@ -26,7 +26,7 @@ DirectXMesh::~DirectXMesh()
 	//IMeshObject::~IMeshObject();
 }
 
-void DirectXMesh::CreateBuffers(ID3D11Device *device)
+void DirectXMesh::CreateBuffers(ID3D11Device *device, UINT vertexCPUAccess, UINT indexCPUAccess)
 {
 #ifdef EnableDebug
 	for (int j = 0; j < m_vertices.size(); j++) {
@@ -51,20 +51,48 @@ void DirectXMesh::CreateBuffers(ID3D11Device *device)
 	if (m_vertices.size() != m_indices.size())
 		return;
 
+
+	// If the buffers were set once already
+	// reset and clear the lists
+	if (m_vertexBuffer.size() > 0) {
+		for (int i = 0; i < m_vertexBuffer.size(); i++) {
+			m_vertexBuffer[i].Reset();
+		}
+		m_vertexBuffer.clear();
+	}
+	if (m_indexBuffer.size() > 0) {
+		for (int i = 0; i < m_indexBuffer.size(); i++) {
+			m_indexBuffer[i].Reset();
+		}
+		m_indexBuffer.clear();
+	}
+
+	/*
+	// ============================ =========================== ============================ //
+	// ============================ Buffer Starts Creation Here ============================ //
+	// ============================ =========================== ============================ //
+	*/
+
 	// Calculate the Tangent, Binormal and Normal values
 	CalculateModelVectors();
 
 	// Create the Vertex Buffer
 	for (int i = 0; i < m_vertices.size(); i++) {
 		D3D11_BUFFER_DESC bd = { 0 };
+		bd.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_VERTEX_BUFFER;
 		bd.ByteWidth = sizeof(Anarian::Verticies::PNTVertex) * m_vertices[i].size();
-		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
+		// Set if its a Dynamic Buffer or not
+		bd.CPUAccessFlags = vertexCPUAccess;
+		if (vertexCPUAccess == D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_WRITE) {
+			bd.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
+		}
+		else { bd.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT; }
+
+		// Create the Buffer
 		Microsoft::WRL::ComPtr<ID3D11Buffer> vBuff;
-
 		D3D11_SUBRESOURCE_DATA srd = { &m_vertices[i][0], 0, 0 };
 		device->CreateBuffer(&bd, &srd, &vBuff);
-
 		m_vertexBuffer.push_back(vBuff);
 	}
 
@@ -72,16 +100,26 @@ void DirectXMesh::CreateBuffers(ID3D11Device *device)
 	// Create the Index Buffer
 	for (int i = 0; i < m_indices.size(); i++) {
 		D3D11_BUFFER_DESC ibd = { 0 };
+		ibd.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_INDEX_BUFFER;
 		ibd.ByteWidth = sizeof(unsigned short) * m_indices[i].size();
-		ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
+		// Set if its a Dynamic Buffer or not
+		ibd.CPUAccessFlags = indexCPUAccess;
+		if (indexCPUAccess == D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_WRITE) {
+			ibd.Usage = D3D11_USAGE::D3D11_USAGE_DYNAMIC;
+		}
+		else { ibd.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT; }
+
+		// Create the Buffer
 		Microsoft::WRL::ComPtr<ID3D11Buffer> iBuff;
-
 		D3D11_SUBRESOURCE_DATA isrd = { &m_indices[i][0], 0, 0 };
 		device->CreateBuffer(&ibd, &isrd, &iBuff);
 
 		m_indexBuffer.push_back(iBuff);
 	}
+
+	m_vertexCPUAccess = vertexCPUAccess;
+	m_indexCPUAccess = indexCPUAccess;
 }
 
 void DirectXMesh::Render(ID3D11DeviceContext *context, int bufferIndex)

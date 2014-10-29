@@ -5,6 +5,7 @@ namespace Anarian {
 	class IMaterial
 	{
 		friend class MaterialFactory;
+		friend class Model;
 	protected:
 		IMaterial() { };
 		IMaterial(

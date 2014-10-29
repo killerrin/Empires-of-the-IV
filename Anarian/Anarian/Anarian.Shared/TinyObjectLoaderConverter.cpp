@@ -141,6 +141,7 @@ bool TinyObjectLoaderConverter::LoadObj(
 		((DirectXMaterial*)material)->AddTexture(glossTextureView);
 	}
 
+	// Set the _Out_ Parameters
 	*m_mesh = mesh;
 	*m_material = material;
 	return true;

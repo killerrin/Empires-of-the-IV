@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "IMaterial.h"
 #include "IMeshObject.h"
+#include "Model.h"
+
 #include "GameObject.h"
 
 #ifdef Anarian_DirectX_Mode
@@ -21,8 +23,9 @@ GameObject::GameObject():
 	m_parent = nullptr;
 	m_children = std::vector<GameObject*>();
 
-	m_material = nullptr;
-	m_mesh = nullptr;
+	//m_material = nullptr;
+	//m_mesh = nullptr;
+	m_model = nullptr;
 
 	m_position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	m_scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
@@ -62,6 +65,8 @@ void GameObject::Update(GameTimer* gameTime)
 	IUpdatable::Update(gameTime);
 	UpdatePosition();
 
+	if (m_model != nullptr) m_model->Update(gameTime);
+
 	// Finally, render the children
 	for (int i = 0; i < m_children.size(); i++)
 	{
@@ -77,11 +82,12 @@ void GameObject::Render(
 	if (!m_active) { return; }
 	
 	// If there is no mesh or material, skip this object and move onto the children
-	if ((m_mesh == nullptr) || (m_material == nullptr)) { }
+	if (m_model == nullptr) { }
 	else
 	{
 		IRenderable::Render();
 
+		// Prepare the contant buffer
 		ConstantBufferChangesEveryPrim constantBuffer;
 
 		XMStoreFloat4x4(
@@ -89,10 +95,8 @@ void GameObject::Render(
 			XMMatrixTranspose(ModelMatrix())
 			);
 
-		((DirectXMaterial*)m_material)->Render(context, &constantBuffer);
-		context->UpdateSubresource(primitiveConstantBuffer, 0, nullptr, &constantBuffer, 0, 0);
-
-		((DirectXMesh*)m_mesh)->Render(context);
+		// Render the model
+		m_model->Render(context, primitiveConstantBuffer, &constantBuffer);
 	}
 
 	// Finally, render the children

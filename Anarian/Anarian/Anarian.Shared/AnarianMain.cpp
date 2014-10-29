@@ -10,11 +10,14 @@
 #include "DirectXMaterial.h"
 #include "DirectXMesh.h"
 
+#include "Model.h"
+
 #include "RendererFactory.h"
 #include "MeshFactory.h"
 #include "MaterialFactory.h"
 
 #include "TinyObjectLoaderConverter.h"
+#include "MD5LoaderConverter.h"
 
 using namespace Anarian;
 using namespace Windows::Foundation;
@@ -51,15 +54,25 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	// Obj Loader
 	IMeshObject* mesh = nullptr;
 	IMaterial* objMaterial = nullptr;
+
 	if (TinyObjectLoaderConverter::LoadObj("Assets//Elf//", "Elf.objxx", &mesh, &objMaterial, loader)) {
+		std::string str = "Model Successfully Loaded \n";
+		std::wstring wstr(str.begin(), str.end());
+		OutputDebugString(wstr.c_str());
 	}
 	else {
 		mesh = MeshFactory::Instance()->ConstructCube();
 	}
-	mesh = MeshFactory::Instance()->ConstructSphere(32);
 	((DirectXMesh*)mesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
 	m_resourceManager->AddMesh("elf", mesh);
 	
+	Model* loadmodel = nullptr;
+	if (MD5LoaderConverter::LoadMD5Mesh("Assets//Dance.md5mesh", &loadmodel, loader)) {
+		std::string str = "Model Successfully Loaded \n";
+		std::wstring wstr(str.begin(), str.end());
+		OutputDebugString(wstr.c_str());
+	}
+
 	// Load all the primitives into the resource manager
 	//
 	IMeshObject* sphereMesh = nullptr;
@@ -74,7 +87,7 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 
 	IMeshObject* cubeMesh = nullptr;
 	cubeMesh = MeshFactory::Instance()->ConstructCube();
-	((DirectXMesh*)sphereMesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
+	((DirectXMesh*)cubeMesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
 	m_resourceManager->AddMesh("cube", cubeMesh);
 
 	IMeshObject* faceMesh = nullptr;
@@ -90,18 +103,23 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 		1.0f);
 	m_resourceManager->AddMaterial("material", objMaterial);
 
+	// Create the Model
+	Model* model = new Model();
+	IMeshObject* elfMesh = m_resourceManager->GetMesh("elf");
+	IMaterial* elfMaterial = m_resourceManager->GetMaterial("material");
+	model->SetMesh(&sphereMesh);
+	model->SetMaterial(&elfMaterial);
+
 	// Create the Game Object
 	GameObject* gameObject = new GameObject();
 	gameObject->SetActive(false);
-	gameObject->SetMaterial(m_resourceManager->GetMaterial("material"));
-	gameObject->SetMesh(m_resourceManager->GetMesh("elf"));
+	gameObject->SetModel(&model);
 
 	gameObject->Scale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)); // (0.05f, 0.05f, 0.05f));
 	gameObject->Position(DirectX::XMFLOAT3(-2.0f, -8.0f, -5.0f));
 
 	GameObject* g2 = new GameObject();
-	g2->SetMaterial(m_resourceManager->GetMaterial("material"));
-	g2->SetMesh(m_resourceManager->GetMesh("elf"));
+	g2->SetModel(&model);
 	g2->Position(DirectX::XMFLOAT3(5.0f, 0.5f, 0.0f));
 	g2->Scale(DirectX::XMFLOAT3(0.5f, 0.5f, 0.5f));
 	gameObject->AddChild(g2);

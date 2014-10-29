@@ -8,6 +8,7 @@ namespace Anarian {
 		public IMaterial
 	{
 		friend class MaterialFactory;
+		friend class Model;
 	private:
 		Microsoft::WRL::ComPtr<ID3D11VertexShader>       m_vertexShader;
 		Microsoft::WRL::ComPtr<ID3D11PixelShader>        m_pixelShader;

@@ -11,6 +11,7 @@
 
 #include "..\DirectXMesh.h"
 #include "..\DirectXMaterial.h"
+#include "..\Model.h"
 
 #include "..\ConstantBuffers.h"
 
@@ -497,7 +498,7 @@ void DirectXRenderer::TrackingUpdate(float positionX, float positionY)
 			OutputDebugString(wstr.c_str());
 
 			m_isShoot = true;
-			m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->GetMaterial()->SetDiffuseColor(Color::RandomColor());
+			m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->GetModel()->GetMaterial()->SetDiffuseColor(Color::RandomColor());
 		}
 	}
 }
@@ -691,7 +692,7 @@ void DirectXRenderer::CreateDeviceDependentResources()
 		loader->LoadTexture("Assets\\TyrilMap.png", nullptr, &m_tyrilMap);
 
 		// Add the Shaders
-		((DirectXMaterial*)m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->GetMaterial())->
+		((DirectXMaterial*)m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->GetModel()->GetMaterial())->
 			CreateViews(
 			m_vertexShader.Get(),
 			m_pixelShader.Get());
