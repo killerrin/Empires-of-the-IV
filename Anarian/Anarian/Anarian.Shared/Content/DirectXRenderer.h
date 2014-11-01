@@ -34,14 +34,17 @@ namespace Anarian
 		void CreateWindowSizeDependentResources();
 		void ReleaseDeviceDependentResources();
 		void Update(DX::StepTimer const& timer, GameTimer* gameTime);
-		void Render();
+		void PreRender(bool callRender = true);
+		void Render(GameObject* gameObject, bool renderSetup = false);
+		void PostRender();
 		void StartTracking();
 		void TrackingUpdate(float positionX, float positionY);
 		void StopTracking();
 		bool IsTracking() { return m_tracking; }
 
-
-		void ConvertToWorldSpace(DirectX::XMFLOAT2& pointPositionInResolution, Camera* camera, _Out_ DirectX::XMFLOAT3& position, _Out_ DirectX::XMFLOAT3& direction);
+		DirectX::XMFLOAT2 ConvertResolutionToScreenSpace(DirectX::XMFLOAT2& pointPositionInResolution, Camera* camera);
+		void ConvertToWorldSpace(DirectX::XMFLOAT2& screenSpace, Camera* camera, _Out_ DirectX::XMFLOAT3& position, _Out_ DirectX::XMFLOAT3& direction);
+		
 		void PickRayVector(float mouseX, float mouseY, DirectX::XMVECTOR& pickRayInWorldSpacePos, DirectX::XMVECTOR& pickRayInWorldSpaceDir);
 		float Pick(DirectX::XMVECTOR pickRayInWorldSpacePos,
 			DirectX::XMVECTOR pickRayInWorldSpaceDir,

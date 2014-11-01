@@ -16,7 +16,10 @@ namespace Anarian {
 		Color m_backgroundColor;
 	public:
 		virtual ~IRenderer() { };
+
+		virtual void PreRender() { };
 		virtual void Render() { };
+		virtual void PostRender() { };
 
 		SceneManager* GetSceneManager() { return m_sceneManager; };
 		void SetSceneManager(SceneManager* sceneManager) { m_sceneManager = sceneManager; };

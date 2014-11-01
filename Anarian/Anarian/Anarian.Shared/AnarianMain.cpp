@@ -66,12 +66,12 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	((DirectXMesh*)mesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
 	m_resourceManager->AddMesh("elf", mesh);
 	
-	Model* loadmodel = nullptr;
-	if (MD5LoaderConverter::LoadMD5Mesh("Assets//Dance.md5mesh", &loadmodel, loader)) {
-		std::string str = "Model Successfully Loaded \n";
-		std::wstring wstr(str.begin(), str.end());
-		OutputDebugString(wstr.c_str());
-	}
+	//Model* loadmodel = nullptr;
+	//if (MD5LoaderConverter::LoadMD5Mesh("Assets//Dance.md5mesh", &loadmodel, loader)) {
+	//	std::string str = "Model Successfully Loaded \n";
+	//	std::wstring wstr(str.begin(), str.end());
+	//	OutputDebugString(wstr.c_str());
+	//}
 
 	// Load all the primitives into the resource manager
 	//
@@ -105,9 +105,9 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 
 	// Create the Model
 	Model* model = new Model();
-	IMeshObject* elfMesh = m_resourceManager->GetMesh("elf");
+	IMeshObject* elfMesh = m_resourceManager->GetMesh("cube");
 	IMaterial* elfMaterial = m_resourceManager->GetMaterial("material");
-	model->SetMesh(&sphereMesh);
+	model->SetMesh(&elfMesh);
 	model->SetMaterial(&elfMaterial);
 
 	// Create the Game Object
@@ -116,7 +116,7 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	gameObject->SetModel(&model);
 
 	gameObject->Scale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)); // (0.05f, 0.05f, 0.05f));
-	gameObject->Position(DirectX::XMFLOAT3(-2.0f, -8.0f, -5.0f));
+	gameObject->Position(DirectX::XMFLOAT3(0.0f, 0.0f, -5.0f));// -2.0f, -8.0f, -5.0f));
 
 	GameObject* g2 = new GameObject();
 	g2->SetModel(&model);
@@ -234,7 +234,7 @@ bool AnarianMain::Render()
 	// Render the scene objects.
 	// TODO: Replace this with your app's content rendering functions.
 
-	((DirectXRenderer*)m_sceneRenderer)->Render();
+	((DirectXRenderer*)m_sceneRenderer)->PreRender();
 	m_fpsTextRenderer->Render();
 
 	return true;
