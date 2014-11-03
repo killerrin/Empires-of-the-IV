@@ -42,6 +42,9 @@ bool TinyObjectLoaderConverter::LoadObj(
 
 	// Go through each data structure from TinyObjLoader and convert it to internal formats
 	for (size_t i = 0; i < shapes.size(); i++) {
+		// Set the name
+		mesh->Name = shapes[i].name;
+
 		// Indices
 		std::vector<unsigned short> indices = std::vector<unsigned short>();
 		assert((shapes[i].mesh.indices.size() % 3) == 0);
@@ -91,7 +94,10 @@ bool TinyObjectLoaderConverter::LoadObj(
 	}
 
 	for (size_t i = 0; i < materials.size(); i++) {
+		// Set the Name
+		material->Name = materials[i].name;
 
+		// Set Mesh Colors
 		material->SetMeshColor(Color(materials[i].ambient[0], materials[i].ambient[1], materials[i].ambient[2]));
 		material->SetDiffuseColor(Color(materials[i].diffuse[0], materials[i].diffuse[1], materials[i].diffuse[2]));
 

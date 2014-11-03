@@ -105,7 +105,7 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 
 	// Create the Model
 	Model* model = new Model();
-	IMeshObject* elfMesh = m_resourceManager->GetMesh("cube");
+	IMeshObject* elfMesh = m_resourceManager->GetMesh("elf");
 	IMaterial* elfMaterial = m_resourceManager->GetMaterial("material");
 	model->SetMesh(&elfMesh);
 	model->SetMaterial(&elfMaterial);
@@ -115,8 +115,8 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	gameObject->SetActive(false);
 	gameObject->SetModel(&model);
 
-	gameObject->Scale(DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f)); // (0.05f, 0.05f, 0.05f));
-	gameObject->Position(DirectX::XMFLOAT3(0.0f, 0.0f, -5.0f));// -2.0f, -8.0f, -5.0f));
+	gameObject->Scale(DirectX::XMFLOAT3(0.05f, 0.05f, 0.05f));
+	gameObject->Position(DirectX::XMFLOAT3(0.0f, -5.0f, -10.0f));// -2.0f, -8.0f, -5.0f));
 
 	GameObject* g2 = new GameObject();
 	g2->SetModel(&model);

@@ -15,6 +15,7 @@ namespace Anarian {
 			float specularExponent
 			)
 		{
+			Name = "";
 			m_meshColor = meshColor;
 			m_diffuseColor = diffuseColor;
 			m_specularColor = specularColor;
@@ -26,6 +27,8 @@ namespace Anarian {
 		Color m_specularColor;
 		float m_specularExponent;
 	public:
+		std::string Name;
+
 		virtual ~IMaterial() { };
 
 		// Getter setters

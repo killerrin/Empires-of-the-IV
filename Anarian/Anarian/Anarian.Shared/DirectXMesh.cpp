@@ -51,7 +51,6 @@ void DirectXMesh::CreateBuffers(ID3D11Device *device, UINT vertexCPUAccess, UINT
 	if (m_vertices.size() != m_indices.size())
 		return;
 
-
 	// If the buffers were set once already
 	// reset and clear the lists
 	if (m_vertexBuffer.size() > 0) {

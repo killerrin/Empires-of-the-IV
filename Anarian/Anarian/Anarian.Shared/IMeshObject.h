@@ -10,6 +10,7 @@ namespace Anarian{
 		friend class Model;
 	protected:
 		IMeshObject() { 
+			Name = "";
 			m_indices = std::vector<std::vector<unsigned short>>();
 			m_vertices	= std::vector<std::vector<Anarian::Verticies::PNTVertex>>();
 			m_weights = std::vector<std::vector<Anarian::Verticies::Weight>>();
@@ -26,8 +27,9 @@ namespace Anarian{
 		void CalculateNormal(DirectX::XMFLOAT3 tangent, DirectX::XMFLOAT3 binormal, DirectX::XMFLOAT3& normal);
 
 	public:
-		virtual ~IMeshObject() { };
+		std::string Name;
 
+		virtual ~IMeshObject() { };
 		void CalculateModelVectors();
 
 		int VertexCount(int index) { return m_indices[index].size(); };
