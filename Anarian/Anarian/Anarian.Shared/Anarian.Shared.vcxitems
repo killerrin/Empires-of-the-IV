@@ -114,6 +114,12 @@
     <None Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf.objxx">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="$(MSBuildThisFileDirectory)Assets\Walk.md5anim">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Assets\Walk.md5mesh">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="$(MSBuildThisFileDirectory)ConstantBuffers.hlsli" />
   </ItemGroup>
   <ItemGroup>
@@ -130,6 +136,9 @@
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="$(MSBuildThisFileDirectory)Assets\MocapGuy_diffuse.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Assets\Soldier_Body_diffuse.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="$(MSBuildThisFileDirectory)Assets\TyrilMap.png">

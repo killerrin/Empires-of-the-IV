@@ -130,7 +130,7 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	gameObject->SetModel(&model);
 
 	gameObject->Scale(DirectX::XMFLOAT3(0.05f, 0.05f, 0.05f));
-	gameObject->Position(DirectX::XMFLOAT3(0.0f, -3.0f, -3.0f));// -2.0f, -8.0f, -5.0f));
+	gameObject->Position(DirectX::XMFLOAT3(0.0f, -2.0f, -3.5f));// -2.0f, -8.0f, -5.0f));
 
 	GameObject* g2 = new GameObject();
 	g2->SetModel(&model);

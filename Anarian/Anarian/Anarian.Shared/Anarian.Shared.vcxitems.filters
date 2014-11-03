@@ -284,6 +284,12 @@
     <None Include="$(MSBuildThisFileDirectory)Assets\Dance.md5mesh">
       <Filter>Assets</Filter>
     </None>
+    <None Include="$(MSBuildThisFileDirectory)Assets\Walk.md5anim">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Assets\Walk.md5mesh">
+      <Filter>Assets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="$(MSBuildThisFileDirectory)Assets\TyrilMap.png">
@@ -302,6 +308,9 @@
       <Filter>Assets\Elf</Filter>
     </Image>
     <Image Include="$(MSBuildThisFileDirectory)Assets\MocapGuy_diffuse.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="$(MSBuildThisFileDirectory)Assets\Soldier_Body_diffuse.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>
