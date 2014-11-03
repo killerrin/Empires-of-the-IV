@@ -34,6 +34,12 @@ IMaterial* MaterialFactory::ConstructEmpty()
 	material = new DirectXMaterial();
 #endif
 
+	// Just set to Defaults
+	material->m_diffuseColor = Color::White();
+	material->m_meshColor = Color::White();
+	material->m_specularColor = Color::White();
+	material->m_specularExponent = 1.0f;
+
 	return material;
 }
 

@@ -105,7 +105,7 @@ void DirectXRenderer::Update(DX::StepTimer const& timer, GameTimer* gameTime)
 
 		float radians = static_cast<float>(fmod(totalRotation, XM_2PI));
 
-		//Rotate(radians, radians);
+		Rotate(radians, radians);
 
 		m_sceneManager->GetCurrentScene()->GetSceneNode()->Update(gameTime);
 
@@ -463,10 +463,12 @@ void DirectXRenderer::TrackingUpdate(float positionX, float positionY)
 {
 	if (m_tracking)
 	{
-		//float radiansX = XM_2PI * 2.0f * positionX / m_deviceResources->GetOutputSize().Width;
-		//float radiansY = XM_2PI * 2.0f * positionY / m_deviceResources->GetOutputSize().Height;
-		//Rotate(radiansX, radiansY);
+		float radiansX = XM_2PI * 2.0f * positionX / m_deviceResources->GetOutputSize().Width;
+		float radiansY = XM_2PI * 2.0f * positionY / m_deviceResources->GetOutputSize().Height;
+		Rotate(radiansX, radiansY);
 
+		// Return early for testing
+		return;
 		float closestDist = FLT_MAX;
 		float tempDist;
 		int hitIndex;

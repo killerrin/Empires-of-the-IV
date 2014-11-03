@@ -3,24 +3,19 @@ namespace Anarian
 {
 	namespace Verticies
 	{
-		struct Joint
+		struct Weight
 		{
-			std::string				Name;
-			int						ParentID;
-			DirectX::XMFLOAT3		Position;
-			DirectX::XMFLOAT4		Orientation;
+			int						JointID;
+			float					Bias;
+			DirectX::XMFLOAT3       Position;
 
-			Joint(){};
-			Joint(std::string _name,
-				int _parentID,
-				DirectX::XMFLOAT3 _position,
-				DirectX::XMFLOAT4 _orientation)
+			Weight() {};
+			Weight(int _jointID, float _bias, DirectX::XMFLOAT3 _position)
 			{
-				Name = _name;
-				ParentID = _parentID;
+				JointID = _jointID;
+				Bias = _bias;
 				Position = _position;
-				Orientation = _orientation;
-			}
+			};
 		};
 	}
 }

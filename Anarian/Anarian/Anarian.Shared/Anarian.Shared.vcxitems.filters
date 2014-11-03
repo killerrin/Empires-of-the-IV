@@ -114,12 +114,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)PNTVertex.h">
       <Filter>Data Structures\Verticies</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Weight.h">
-      <Filter>Data Structures\Verticies</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)Joint.h">
-      <Filter>Data Structures\Verticies</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)Model.h">
       <Filter>Rendering</Filter>
     </ClInclude>
@@ -128,6 +122,12 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)MD5LoaderConverter.h">
       <Filter>Utilities\Loaders\MD5 Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Joint.h">
+      <Filter>Data Structures\Verticies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Weight.h">
+      <Filter>Data Structures\Verticies</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

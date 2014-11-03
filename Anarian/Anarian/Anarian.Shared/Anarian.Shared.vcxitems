@@ -60,7 +60,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)IRenderer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IScene.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IUpdatable.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Joint.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Weight.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MaterialFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MeshFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
@@ -84,7 +84,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)SceneManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)TinyObjectLoaderConverter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)tiny_obj_loader.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)Weight.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Joint.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)WICTextureLoader.h" />
   </ItemGroup>
   <ItemGroup>

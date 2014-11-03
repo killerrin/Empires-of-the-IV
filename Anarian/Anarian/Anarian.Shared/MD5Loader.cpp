@@ -56,6 +56,8 @@ bool MD5Loader::LoadMD5Model(std::wstring filename, Model3D& MD5Model)
 
 					fileIn >> checkString;			// Skip the "("
 
+					//MyMod
+					// I maybe flipped the value here
 					// Store position of this joint (swap y and z axis if model was made in RH Coord Sys)
 					fileIn >> tempJoint.pos.x >> tempJoint.pos.z >> tempJoint.pos.y;
 
@@ -192,9 +194,12 @@ bool MD5Loader::LoadMD5Model(std::wstring filename, Model3D& MD5Model)
 
 							fileIn >> checkString;						// Skip "("
 
+
+							//MyMod
+							// I maybe flipped the value here
 							fileIn >> tempWeight.pos.x					// Store weight's pos in joint's local space
-								>> tempWeight.pos.z
-								>> tempWeight.pos.y;
+								>> tempWeight.pos.y
+								>> tempWeight.pos.z;
 
 							std::getline(fileIn, checkString);			// Skip rest of this line
 
