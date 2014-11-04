@@ -7,11 +7,20 @@ namespace Anarian
 	struct Light
 	{
 	public:
-		DirectX::XMFLOAT3 Direction;
 
+		DirectX::XMFLOAT3 Position;
+		float Range;
+
+		DirectX::XMFLOAT3 Direction;
+		float Cone;
+
+		DirectX::XMFLOAT3 Att;
+
+		/// ----------------------------------------------
 		/// Pads are used to ensure the Constant Buffer fits into 16 Bytes (4D Vectors)
-		float m_pad = 1.0f;
-		
+		float m_pad2 = 1.0f;
+		/// ----------------------------------------------
+
 		Color Ambient;
 		Color Diffuse;
 
@@ -19,29 +28,25 @@ namespace Anarian
 		LightType m_LightType;
 
 	public:
-		Light() {
-			m_LightType = LightType::None;
-
-			Direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
-			Ambient = Color::White();
-			Diffuse = Color::White();
-		};
+		// Default Constructor
+		Light();
 		
 		// Directional Light Constructor
-		Light(DirectX::XMFLOAT3 direction, Color ambientColor, Color diffuseColor)
-		{
-			m_LightType = LightType::DirectionalLight;
+		Light(DirectX::XMFLOAT3 direction, Color ambientColor, Color diffuseColor);
 
-			Direction = direction;
-			Ambient = ambientColor;
-			Diffuse = diffuseColor;
-		}
+		// Point Light Constructor
+		Light(DirectX::XMFLOAT3 position, float range, DirectX::XMFLOAT3 att, Color ambientColor, Color diffuseColor);
+
+		// Spotlight Constructor
+		Light(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 direction, float range, float cone, DirectX::XMFLOAT3 att, Color ambientColor, Color diffuseColor);
 
 		~Light() {};
 
 	public:
-		void SetDirection(DirectX::XMFLOAT3 dir) { Direction = dir; };
 		void SetDiffuse(Color color) { Diffuse = color; };
+		Color GetDiffuse() { return Diffuse; };
+
 		void SetAmbient(Color color) { Ambient = color; };
+		Color GetAmbient() { return Ambient; };
 	};
 }
