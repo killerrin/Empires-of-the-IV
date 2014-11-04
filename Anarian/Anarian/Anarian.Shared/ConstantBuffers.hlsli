@@ -1,3 +1,6 @@
+#include "ShaderInputs.hlsli"
+#include "GenericStructures.hlsli"
+
 SamplerState samplerState : register(s0);
 Texture2D texture0 : register(t0);
 Texture2D texture1 : register(t1);
@@ -23,28 +26,9 @@ cbuffer ConstantBufferChangesEveryPrim : register (b2)
 	float  specularExponent;
 };
 
-// Per-vertex data used as input to the vertex shader.
-struct VertexShaderInput
+cbuffer ConstantBufferChangesEveryLevel : register(b3)
 {
-	float3 position : POSITION;	
+	Light globalLight;
+}
 
-	float3 normal : NORMAL;	
-	float3 tangent : TANGENT;
-	float3 binormal : BINORMAL;
 
-	float2 textureUV : TEXCOORD0;
-};
-
-// Per-pixel color data passed through the pixel shader.
-struct PixelShaderInput
-{
-	float4 position : SV_POSITION;
-
-	float3 positionMod : POSITION;
-	float3 normal : NORMAL;
-	float3 tangent : TANGENT;
-	float3 binormal : BINORMAL;
-
-	float2 textureUV : TEXCOORD0;
-	float4 diffuseColor : TEXCOORD1;						
-};

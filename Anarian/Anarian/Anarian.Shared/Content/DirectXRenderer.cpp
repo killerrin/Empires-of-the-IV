@@ -90,6 +90,10 @@ void DirectXRenderer::CreateWindowSizeDependentResources()
 		
 		XMMatrixTranspose(m_sceneManager->GetCurrentScene()->GetCamera()->View()
 	));
+
+	// Create the Global Light
+	m_constantBufferChangesEveryLevelData.globalLight = *m_sceneManager->GetCurrentScene()->GetGlobalLight();
+
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
@@ -533,7 +537,7 @@ void DirectXRenderer::StopTracking()
 	m_tracking = false;
 }
 
-// Renders one frame using the vertex and pixel shaders.
+
 void DirectXRenderer::PreRender(bool callRender)
 {
 	// Loading is asynchronous. Only draw geometry after it's loaded.
@@ -579,9 +583,17 @@ void DirectXRenderer::Render(GameObject* gameObject, bool renderSetup)
 	context->IASetInputLayout(m_inputLayout.Get());
 
 	// Set the constant buffer to the graphics device.
+	// Vertex Shader
 	context->VSSetConstantBuffers(0, 1, m_constantBufferChangesOnResize.GetAddressOf());
 	context->VSSetConstantBuffers(1, 1, m_constantBufferChangesEveryFrame.GetAddressOf());
 	context->VSSetConstantBuffers(2, 1, m_constantBufferChangesEveryPrim.GetAddressOf());
+	//context->VSSetConstantBuffers(3, 1, m_constantBufferChangesEveryLevel.GetAddressOf());
+
+	// Pixel Shader
+	//context->PSSetConstantBuffers(0, 1, m_constantBufferChangesOnResize.GetAddressOf());
+	//context->PSSetConstantBuffers(1, 1, m_constantBufferChangesEveryFrame.GetAddressOf());
+	//context->PSSetConstantBuffers(2, 1, m_constantBufferChangesEveryPrim.GetAddressOf());
+	context->PSSetConstantBuffers(3, 1, m_constantBufferChangesEveryLevel.GetAddressOf());
 
 	// Send the data to the Constant Buffer
 	m_deviceResources->GetD3DDeviceContext()->UpdateSubresource(
@@ -597,6 +609,14 @@ void DirectXRenderer::Render(GameObject* gameObject, bool renderSetup)
 		0,
 		NULL,
 		&m_constantBufferChangesEveryFrameData,
+		0,
+		0
+		);
+	context->UpdateSubresource(
+		m_constantBufferChangesEveryLevel.Get(),
+		0,
+		NULL,
+		&m_constantBufferChangesEveryLevelData,
 		0,
 		0
 		);
@@ -687,6 +707,16 @@ void DirectXRenderer::CreateDeviceDependentResources()
 			&m_constantBufferChangesEveryPrim
 			)
 			);
+
+		CD3D11_BUFFER_DESC constantBufferCELDesc((sizeof(ConstantBufferChangesEveryLevel) + 15) / 16 * 16,
+			D3D11_BIND_CONSTANT_BUFFER);
+		DX::ThrowIfFailed(
+			m_deviceResources->GetD3DDevice()->CreateBuffer(
+			&constantBufferCELDesc,
+			nullptr,
+			&m_constantBufferChangesEveryLevel
+			)
+			);
 	});
 
 	auto createStatesTask = (createConstantBuffers).then([this]() {
@@ -762,6 +792,7 @@ void DirectXRenderer::ReleaseDeviceDependentResources()
 	m_constantBufferChangesOnResize.Reset();
 	m_constantBufferChangesEveryFrame.Reset();
 	m_constantBufferChangesEveryPrim.Reset();
+	m_constantBufferChangesEveryLevel.Reset();
 
 	// Release texture resource
 	m_tyrilMap.Reset();

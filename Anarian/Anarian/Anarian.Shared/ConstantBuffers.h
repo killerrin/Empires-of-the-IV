@@ -1,5 +1,5 @@
 #pragma once
-#include "Color.h"
+#include "Light.h"
 
 namespace Anarian {
 
@@ -20,5 +20,10 @@ namespace Anarian {
 		Color diffuseColor;
 		Color specularColor;
 		float specularPower;
+	};
+
+	struct ConstantBufferChangesEveryLevel
+	{
+		Light globalLight;
 	};
 }

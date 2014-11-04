@@ -47,6 +47,9 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	//-- Setup an empty scene
 	m_sceneManager->SetCurrentScene(new IScene());
 
+	//-- Set the Global Light
+	m_sceneManager->GetCurrentScene()->GetGlobalLight()->SetAmbient(Color::Red());
+
 	//-- Create the asset loader
 	BasicLoader^ loader = ref new BasicLoader(m_deviceResources->GetD3DDevice());
 
@@ -68,22 +71,15 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	m_resourceManager->AddMaterial("elfmaterial", objMaterial);
 	
 	Model* loadmodel = nullptr;
-	if (MD5LoaderConverter::LoadMD5Mesh("Assets//Dance.md5mesh", &loadmodel, loader)) {
-		if (loadmodel != nullptr) {
-			std::string str = "MD5 Model Successfully Loaded \n";
-			std::wstring wstr(str.begin(), str.end());
-			OutputDebugString(wstr.c_str());
+	if (MD5LoaderConverter::LoadMD5Mesh("Assets//Dance_.md5mesh", &loadmodel, loader)) {
+		std::string str = "MD5 Model Successfully Loaded \n";
+		std::wstring wstr(str.begin(), str.end());
+		OutputDebugString(wstr.c_str());
 
-			IMeshObject* dxMesh = loadmodel->GetMesh();
-			((DirectXMesh*)dxMesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
-			m_resourceManager->AddMesh("elfMD5", dxMesh);
-			m_resourceManager->AddMaterial("elfMD5material", loadmodel->GetMaterial());
-		}
-		else {
-			std::string str = "MD5 Model Is Null \n";
-			std::wstring wstr(str.begin(), str.end());
-			OutputDebugString(wstr.c_str());
-		}
+		IMeshObject* dxMesh = loadmodel->GetMesh();
+		((DirectXMesh*)dxMesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
+		m_resourceManager->AddMesh("elfMD5", dxMesh);
+		m_resourceManager->AddMaterial("elfMD5material", loadmodel->GetMaterial());
 	}
 
 	//
@@ -119,8 +115,8 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 
 	// Create the Model
 	Model* model = new Model();
-	IMeshObject* elfMesh = m_resourceManager->GetMesh("elfMD5");
-	IMaterial* elfMaterial = m_resourceManager->GetMaterial("elfMD5material");
+	IMeshObject* elfMesh = m_resourceManager->GetMesh("elf");
+	IMaterial* elfMaterial = m_resourceManager->GetMaterial("elfmaterial");
 	model->SetMesh(&elfMesh);
 	model->SetMaterial(&elfMaterial);
 
@@ -130,7 +126,7 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	gameObject->SetModel(&model);
 
 	gameObject->Scale(DirectX::XMFLOAT3(0.05f, 0.05f, 0.05f));
-	gameObject->Position(DirectX::XMFLOAT3(0.0f, -2.0f, -3.5f));// -2.0f, -8.0f, -5.0f));
+	gameObject->Position(DirectX::XMFLOAT3(0.0f, -5.0f, -6.5f));// -2.0f, -8.0f, -5.0f));
 
 	GameObject* g2 = new GameObject();
 	g2->SetModel(&model);

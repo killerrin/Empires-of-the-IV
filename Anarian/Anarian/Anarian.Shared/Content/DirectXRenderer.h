@@ -1,5 +1,5 @@
 ﻿#pragma once
-#define FirstAvailableConstantBufferIndexSlot 3;
+#define FirstAvailableConstantBufferIndexSlot 4;
 
 
 #include "..\Common\DeviceResources.h"
@@ -34,9 +34,18 @@ namespace Anarian
 		void CreateWindowSizeDependentResources();
 		void ReleaseDeviceDependentResources();
 		void Update(DX::StepTimer const& timer, GameTimer* gameTime);
+
+		///--- Rendering
+		// Clears the screen and prepares to render
 		void PreRender(bool callRender = true);
+
+		// Renders the specified game object
 		void Render(GameObject* gameObject, bool renderSetup = false);
+
+		// Preforms Post render setup
 		void PostRender();
+		///-------------
+
 		void StartTracking();
 		void TrackingUpdate(float positionX, float positionY);
 		void StopTracking();
@@ -76,10 +85,12 @@ namespace Anarian
 		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_constantBufferChangesOnResize;
 		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_constantBufferChangesEveryFrame;
 		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_constantBufferChangesEveryPrim;
+		Microsoft::WRL::ComPtr<ID3D11Buffer>		m_constantBufferChangesEveryLevel;
 
 		// System resources for cube geometry.
 		ConstantBufferChangesOnResize		m_constantBufferChangesOnResizeData;
 		ConstantBufferChangesEveryFrame		m_constantBufferChangesEveryFrameData;
+		ConstantBufferChangesEveryLevel		m_constantBufferChangesEveryLevelData;
 
 		// Variables used with the rendering loop.
 		bool	m_loadingComplete;

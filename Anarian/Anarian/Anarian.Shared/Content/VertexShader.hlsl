@@ -16,9 +16,6 @@ PixelShaderInput main(VertexShaderInput input)
 
 	// Transform the vertex position into projected space.
 	pos = mul(pos, world);
-	//pos = mul(pos, modelWorldPosition);
-	//pos = mul(pos, cameraView);
-	//pos = mul(pos, cameraProjection);
 
 	norm = mul(norm, (float3x3)world);
 	tang = mul(tang, (float3x3)world);

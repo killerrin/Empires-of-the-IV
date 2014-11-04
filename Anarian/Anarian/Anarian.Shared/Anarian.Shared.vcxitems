@@ -23,6 +23,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)GameObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)GameTimer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)IMeshObject.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Light.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MaterialFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MD5Loader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MD5LoaderConverter.cpp" />
@@ -52,6 +53,8 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)ICollider.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IMaterial.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IMeshObject.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Light.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)LightType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MD5Loader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MD5LoaderConverter.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Model.h" />
@@ -114,6 +117,9 @@
     <None Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf.objxx">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="$(MSBuildThisFileDirectory)Assets\pinky.md5mesh">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="$(MSBuildThisFileDirectory)Assets\Walk.md5anim">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -121,6 +127,8 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="$(MSBuildThisFileDirectory)ConstantBuffers.hlsli" />
+    <None Include="$(MSBuildThisFileDirectory)GenericStructures.hlsli" />
+    <None Include="$(MSBuildThisFileDirectory)ShaderInputs.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="$(MSBuildThisFileDirectory)Assets\Elf\Elf_packed0_diffuse.png">

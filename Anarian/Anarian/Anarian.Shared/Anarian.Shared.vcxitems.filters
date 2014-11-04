@@ -129,6 +129,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Weight.h">
       <Filter>Data Structures\Verticies</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Light.h">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)LightType.h">
+      <Filter>Data Structures\Enumerators</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianMain.cpp" />
@@ -204,6 +210,9 @@
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)MD5LoaderConverter.cpp">
       <Filter>Utilities\Loaders\MD5 Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Light.cpp">
+      <Filter>Data Structures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -288,6 +297,15 @@
       <Filter>Assets</Filter>
     </None>
     <None Include="$(MSBuildThisFileDirectory)Assets\Walk.md5mesh">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ShaderInputs.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)GenericStructures.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Assets\pinky.md5mesh">
       <Filter>Assets</Filter>
     </None>
   </ItemGroup>

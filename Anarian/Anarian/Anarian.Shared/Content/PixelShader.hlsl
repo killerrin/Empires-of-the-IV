@@ -36,8 +36,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	bumpNormal = normalize(bumpNormal);
 	
 	// Invert the light direction for calculations.
-	float3 lightDirection = float3(input.positionMod.x, input.positionMod.y, input.positionMod.z) - float3(20.0f, 50.0f, 30.0f);
-	lightDir = -lightDirection;
+	lightDir = -globalLight.direction;
 	
 	// Calculate the amount of light on this pixel based on the bump map normal value.
 	lightIntensity = saturate(dot(bumpNormal, lightDir));
@@ -47,11 +46,13 @@ float4 main(PixelShaderInput input) : SV_TARGET
 
 	//---------------------------------------------------------------
 	//-- Set the final color
-	//float4 finalColor = glossMap * input.diffuseColor;
-	float4 finalColor = diffuseMap;
-
-		// For Pick Testing
-	//finalColor = input.diffuseColor;
+	float4 finalColor;
+	finalColor = saturate(glossMap * diffuse);
+	
+	// For Pick Testing
+	finalColor = diffuse * globalLight.ambient;
+	finalColor += saturate(dot(globalLight.direction, input.normal) * globalLight.diffuse * diffuse);
+	finalColor.a = diffuse.a;
 
 	return finalColor;
 }
