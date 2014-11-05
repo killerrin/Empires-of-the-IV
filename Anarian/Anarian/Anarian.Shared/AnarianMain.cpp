@@ -71,13 +71,13 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	m_resourceManager->AddMaterial("elfmaterial", objMaterial);
 	
 	Model* loadmodel = nullptr;
-	if (MD5LoaderConverter::LoadMD5Mesh("Assets//Dance_.md5mesh", &loadmodel, loader)) {
+	if (MD5LoaderConverter::LoadMD5Mesh("Assets//Dance.md5mesh", &loadmodel, loader)) {
 		std::string str = "MD5 Model Successfully Loaded \n";
 		std::wstring wstr(str.begin(), str.end());
 		OutputDebugString(wstr.c_str());
 
 		IMeshObject* dxMesh = loadmodel->GetMesh();
-		((DirectXMesh*)dxMesh)->CreateBuffers(m_deviceResources->GetD3DDevice());
+		((DirectXMesh*)dxMesh)->CreateBuffers(m_deviceResources->GetD3DDevice(), D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_WRITE);
 		m_resourceManager->AddMesh("elfMD5", dxMesh);
 		m_resourceManager->AddMaterial("elfMD5material", loadmodel->GetMaterial());
 	}
@@ -115,8 +115,8 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 
 	// Create the Model
 	Model* model = new Model();
-	IMeshObject* elfMesh = m_resourceManager->GetMesh("elf");
-	IMaterial* elfMaterial = m_resourceManager->GetMaterial("elfmaterial");
+	IMeshObject* elfMesh = m_resourceManager->GetMesh("elfMD5");
+	IMaterial* elfMaterial = m_resourceManager->GetMaterial("elfMD5material");
 	model->SetMesh(&elfMesh);
 	model->SetMaterial(&elfMaterial);
 
