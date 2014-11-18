@@ -441,8 +441,9 @@ bool MD5Loader::LoadMD5Anim(std::wstring filename, Model3D& MD5Model)
 							}
 						}
 					}
-					if (!jointMatchFound)					// If the skeleton system does not match up, return false
-						return false;						// You might want to add an error message here
+					if (!jointMatchFound) {					// If the skeleton system does not match up, return false
+						//return false;						// You might want to add an error message here
+					}
 
 					std::getline(fileIn, checkString);		// Skip rest of this line
 				}

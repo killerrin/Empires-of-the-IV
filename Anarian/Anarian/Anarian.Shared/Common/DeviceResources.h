@@ -12,7 +12,12 @@ namespace DX
 	// Controls all the DirectX device resources.
 	class DeviceResources
 	{
+	private:
+		static DeviceResources* m_instance;
 	public:
+		static DeviceResources* Instance() { return m_instance; };
+		static void SetInstance(DeviceResources* instance) { m_instance = instance; };
+
 		DeviceResources();
 		void SetSwapChainPanel(Windows::UI::Xaml::Controls::SwapChainPanel^ panel);
 		void SetLogicalSize(Windows::Foundation::Size logicalSize);

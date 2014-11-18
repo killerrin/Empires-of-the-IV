@@ -135,6 +135,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)LightType.h">
       <Filter>Data Structures\Enumerators</Filter>
     </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)ModelAnimation.h">
+      <Filter>Data Structures\Verticies</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)AnimationState.h">
+      <Filter>Data Structures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianMain.cpp" />
@@ -212,6 +218,9 @@
       <Filter>Utilities\Loaders\MD5 Loader</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)Light.cpp">
+      <Filter>Data Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)AnimationState.cpp">
       <Filter>Data Structures</Filter>
     </ClCompile>
   </ItemGroup>

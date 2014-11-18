@@ -2,6 +2,9 @@
 #include "IUpdatable.h"
 #include "IRenderable.h"
 
+// Odd that I need to include this?
+#include "AnimationState.h"
+
 namespace Anarian{
 	class GameObject : IUpdatable, IRenderable
 	{
@@ -14,6 +17,7 @@ namespace Anarian{
 		std::vector<GameObject*> m_children;
 
 		Model* m_model;
+		AnimationState*		m_animationState;
 
 		DirectX::XMFLOAT3   m_position;
 		DirectX::XMFLOAT3   m_scale;
@@ -34,6 +38,9 @@ namespace Anarian{
 
 		void SetActive(bool active) { m_active = active; };
 		bool GetActive() { return m_active; };
+
+		AnimationState* GetAnimationState() { return m_animationState; };
+		void ResetAnimationState()			{ m_animationState = new AnimationState(); };
 
 		//----------------------\\
 

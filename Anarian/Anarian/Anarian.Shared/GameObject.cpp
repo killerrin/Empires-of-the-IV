@@ -3,6 +3,7 @@
 #include "IMeshObject.h"
 #include "Model.h"
 
+#include "AnimationState.h"
 #include "GameObject.h"
 
 #ifdef Anarian_DirectX_Mode
@@ -26,6 +27,7 @@ GameObject::GameObject():
 	//m_material = nullptr;
 	//m_mesh = nullptr;
 	m_model = nullptr;
+	m_animationState = new AnimationState();
 
 	m_position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	m_scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
@@ -36,6 +38,8 @@ GameObject::GameObject():
 
 GameObject::~GameObject()
 {
+	delete m_animationState;
+
 	// First we kill the children
 	for (int i = 0; i < m_children.size(); i++)
 	{
@@ -61,11 +65,13 @@ void GameObject::Update(GameTimer* gameTime)
 {
 	// If its not active, skip the rest
 	if (!m_active) { return; }
-
 	IUpdatable::Update(gameTime);
-	UpdatePosition();
 
-	if (m_model != nullptr) m_model->Update(gameTime);
+	// Update the Animation
+	if (m_model != nullptr) m_model->Update(gameTime, m_animationState);
+
+	// Update the Object
+	UpdatePosition();
 
 	// Finally, render the children
 	for (int i = 0; i < m_children.size(); i++)

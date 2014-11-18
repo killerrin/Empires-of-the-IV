@@ -12,6 +12,8 @@ using namespace Windows::UI::Core;
 using namespace Windows::UI::Xaml::Controls;
 using namespace Platform;
 
+DX::DeviceResources* DX::DeviceResources::m_instance;
+
 // Constants used to calculate screen rotations.
 namespace ScreenRotation
 {

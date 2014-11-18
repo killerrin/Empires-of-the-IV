@@ -7,6 +7,8 @@
 #include "IMaterial.h"
 #include "DirectXMaterial.h"
 
+#include "AnimationState.h"
+
 #include "PNTVertex.h"
 #include "Weight.h"
 #include "Joint.h"
@@ -28,7 +30,9 @@ namespace Anarian
 	private:
 		IMeshObject*								m_mesh;
 		IMaterial*									m_material;
+
 		std::vector<Anarian::Verticies::Joint>		m_joints;
+		std::vector<Anarian::Verticies::Weight>		m_weights;
 
 	public:
 		Model(IMeshObject* mesh = nullptr, IMaterial* material = nullptr);
@@ -44,6 +48,9 @@ namespace Anarian
 		Anarian::Verticies::Joint* GetJoint(int index) { return &m_joints[index]; };
 		void AddJoint(Anarian::Verticies::Joint joint) { m_joints.push_back(joint); };
 
+		Anarian::Verticies::Weight* GetWeight(int index) { return &m_weights[index]; };
+		void AddWeight(Anarian::Verticies::Weight weight) { m_weights.push_back(weight); };
+
 		// Helper Methods
 		bool HasJoints() { 
 			if (m_joints.size() > 0) return true;
@@ -52,10 +59,13 @@ namespace Anarian
 
 
 		/// Method Calls
-		virtual void Update(GameTimer* gameTime);
+		virtual void Update(GameTimer* gameTime, AnimationState* animationState = nullptr);
 		virtual void Render(
 			ID3D11DeviceContext *context,
 			ID3D11Buffer *primitiveConstantBuffer,
 			ConstantBufferChangesEveryPrim* constantBuffer);
+
+	private:
+		void UpdateAnimation(GameTimer* gameTime, AnimationState* animationState);
 	};
 }

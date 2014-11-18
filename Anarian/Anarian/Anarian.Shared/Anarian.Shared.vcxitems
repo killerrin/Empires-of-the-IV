@@ -14,6 +14,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)AnimationState.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Camera.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\BasicLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Common\BasicReaderWriter.cpp" />
@@ -38,6 +39,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)WICTextureLoader.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)AnarianMain.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)AnarianMain.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)AnimationState.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Camera.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Color.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Common\BasicLoader.h" />
@@ -63,6 +65,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)IRenderer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IScene.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IUpdatable.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ModelAnimation.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Weight.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MaterialFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MeshFactory.h" />
