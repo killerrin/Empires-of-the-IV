@@ -405,20 +405,27 @@ void DirectXRenderer::ConvertToWorldSpace(DirectX::XMFLOAT2& screenSpace, Camera
 	//
 	//rayDirection.normalise();
 
-	float windowWidth = m_deviceResources->GetOutputSize().Width;
-	float windowHeight = m_deviceResources->GetOutputSize().Height;
+	D3D11_VIEWPORT vp = m_deviceResources->GetScreenViewport();
+
+	float windowWidth = m_deviceResources->GetRenderTargerSize().Width;
+	float windowHeight = m_deviceResources->GetRenderTargerSize().Height;
 	XMVECTOR worldSpaceNear = XMVector3Unproject(XMVectorSet(screenSpace.x, screenSpace.y, 0, 0),
-												 0, 0,
-												 windowWidth, windowHeight,
-												 camera->NearClipPlane(), camera->FarClipPlane(),
+												 vp.TopLeftX, vp.TopLeftY,	//0, 0,
+												 vp.Width, vp.Height,	  	//windowWidth, windowHeight,
+
+												 camera->NearClipPlane(), camera->FarClipPlane(), //vp.MinDepth, vp.MaxDepth,
+
 												 XMMatrixTranspose(camera->Projection()),
 												 XMMatrixTranspose(camera->View()),
 												 XMMatrixTranspose(camera->World()));
 
+
 	XMVECTOR worldSpaceFar = XMVector3Unproject(XMVectorSet(screenSpace.x, screenSpace.y, 1, 0),
-												0, 0,
-												windowWidth, windowHeight,
-												camera->NearClipPlane(), camera->FarClipPlane(),
+												vp.TopLeftX, vp.TopLeftY,	//0, 0,
+												vp.Width, vp.Height,		//windowWidth, windowHeight,
+
+												camera->NearClipPlane(), camera->FarClipPlane(), //vp.MinDepth, vp.MaxDepth,
+
 												XMMatrixTranspose(camera->Projection()),
 												XMMatrixTranspose(camera->View()),
 												XMMatrixTranspose(camera->World()));
@@ -469,18 +476,17 @@ void DirectXRenderer::TrackingUpdate(float positionX, float positionY)
 	{
 		float radiansX = XM_2PI * 2.0f * positionX / m_deviceResources->GetOutputSize().Width;
 		float radiansY = XM_2PI * 2.0f * positionY / m_deviceResources->GetOutputSize().Height;
-		Rotate(radiansX, radiansY);
+		//Rotate(radiansX, radiansY);
+		//return; 	// Return early for testing
 
-		// Return early for testing
-		return;
 		float closestDist = FLT_MAX;
 		float tempDist;
 		int hitIndex;
 
 		XMFLOAT3 prwsPos, prwsDir;
 		ConvertToWorldSpace(
-			ConvertResolutionToScreenSpace(XMFLOAT2(positionX, positionY),
-										   m_sceneManager->GetCurrentScene()->GetCamera()),
+			XMFLOAT2(positionX, positionY), //ConvertResolutionToScreenSpace(XMFLOAT2(positionX, positionY),
+											//								m_sceneManager->GetCurrentScene()->GetCamera()),
 			m_sceneManager->GetCurrentScene()->GetCamera(),
 			prwsPos,
 			prwsDir
@@ -527,8 +533,12 @@ void DirectXRenderer::TrackingUpdate(float positionX, float positionY)
 			OutputDebugString(wstr.c_str());
 
 			m_isShoot = true;
-			m_sceneManager->GetCurrentScene()->GetSceneNode()->GetChild(0)->GetModel()->GetMaterial()->SetDiffuseColor(Color::RandomColor());
+			m_sceneManager->GetCurrentScene()->GetGlobalLight()->SetAmbient(Color::RandomColor());
 		}
+
+
+		// Update the light to it can be seen
+		m_constantBufferChangesEveryLevelData.globalLight = *m_sceneManager->GetCurrentScene()->GetGlobalLight();
 	}
 }
 
