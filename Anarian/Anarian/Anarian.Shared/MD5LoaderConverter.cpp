@@ -13,6 +13,8 @@
 
 #include "Common\BasicLoader.h"
 
+#include "ModelRawDataType.h"
+
 #include "MD5LoaderConverter.h"
 #include "MD5Loader.h"
 
@@ -20,14 +22,54 @@ using namespace Anarian;
 using namespace Verticies;
 using namespace DirectX;
 
+bool MD5LoaderConverter::LoadMD5MeshAnim(
+	_In_ std::string filename,
+	_Out_ Anarian::Model** m_model,
+	_Out_ Anarian::Verticies::ModelAnimation** m_anim,
+	_In_ BasicLoader^ basicLoader
+	)
+{
+	std::string meshName = filename + ".md5mesh";
+	std::string animName = filename + ".md5anim";
+
+	Model* loadModel = nullptr;
+	Anarian::Verticies::ModelAnimation* loadAnim = nullptr;
+
+	// Load the Mesh
+	if (MD5LoaderConverter::LoadMD5Mesh(meshName, &loadModel, basicLoader)) {
+		{
+			std::string str = "MD5 Model Successfully Loaded: " + meshName + " \n";
+			std::wstring wstr(str.begin(), str.end());
+			OutputDebugString(wstr.c_str());
+		}
+
+		// Then load the Animation
+		if (MD5LoaderConverter::LoadMD5Animation(animName, &loadAnim, basicLoader, loadModel->GetRawData())) {
+			{
+				std::string str = "MD5 Animation Successfully Loaded: " + animName + "  \n";
+				std::wstring wstr(str.begin(), str.end());
+				OutputDebugString(wstr.c_str());
+			}
+
+			// Then Set the values and return
+			*m_model = loadModel;
+			*m_anim = loadAnim;
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool MD5LoaderConverter::LoadMD5Mesh(
 	_In_ std::string filename,
 	_Out_ Anarian::Model** m_model,
 	_In_ BasicLoader^ basicLoader)
 {
 	std::wstring wfilename(filename.begin(), filename.end());
-	MD5Loader::Model3D loadedModel3D;
-	bool loadedSuccessfully = MD5Loader::LoadMD5Model(wfilename, loadedModel3D);
+	MD5Loader::Model3D* loadedModel3DRaw = new MD5Loader::Model3D();
+	bool loadedSuccessfully = MD5Loader::LoadMD5Model(wfilename, *loadedModel3DRaw);
 	
 	if (loadedSuccessfully) {
 		IMeshObject* mesh = MeshFactory::Instance()->ConstructEmpty();
@@ -35,6 +77,8 @@ bool MD5LoaderConverter::LoadMD5Mesh(
 
 		std::vector<Joint> joints = std::vector<Joint>();
 		std::vector<Weight> weights = std::vector<Weight>();
+
+		MD5Loader::Model3D loadedModel3D = *loadedModel3DRaw;
 
 		// Convert the Objects
 		for (int i = 0; i < loadedModel3D.subsets.size(); i++) {
@@ -65,6 +109,12 @@ bool MD5LoaderConverter::LoadMD5Mesh(
 			MeshFactory::Instance()->AddToVertexVector(mesh, subsetVertices);
 			
 			// Weights
+			{
+				std::string str = "WeightCount: " + std::to_string(loadedModel3D.subsets[i].weights.size()) + " \n";
+				std::wstring wstr(str.begin(), str.end());
+				OutputDebugString(wstr.c_str());
+			}
+			
 			for (int w = 0; w < loadedModel3D.subsets[i].weights.size(); w++) {
 				Weight weight = Weight();
 				weight.Bias =		loadedModel3D.subsets[i].weights[w].bias;
@@ -74,6 +124,7 @@ bool MD5LoaderConverter::LoadMD5Mesh(
 
 				weights.push_back(weight);
 			}
+
 
 			// Joints
 			for (int j = 0; j < loadedModel3D.joints.size(); j++) {
@@ -105,6 +156,8 @@ bool MD5LoaderConverter::LoadMD5Mesh(
 		for (int i = 0; i < joints.size(); i++) { model->AddJoint(joints[i]); }
 		for (int i = 0; i < weights.size(); i++) { model->AddWeight(weights[i]); }
 
+		model->SetRawData(loadedModel3DRaw, Anarian::ModelRawDataType::MD5);
+
 		// Set the value and return
 		*m_model = model;
 
@@ -119,11 +172,12 @@ bool MD5LoaderConverter::LoadMD5Mesh(
 bool MD5LoaderConverter::LoadMD5Animation(
 	_In_ std::string filename,
 	_Out_ Anarian::Verticies::ModelAnimation** m_anim,
-	_In_ BasicLoader^ basicLoader
+	_In_ BasicLoader^ basicLoader,
+	_In_ void* loadedModel3DRaw
 	)
 {
 	std::wstring wfilename(filename.begin(), filename.end());
-	MD5Loader::Model3D loadedModel3D;
+	MD5Loader::Model3D loadedModel3D = *((MD5Loader::Model3D*)loadedModel3DRaw);
 	bool loadedSuccessfully = MD5Loader::LoadMD5Anim(wfilename, loadedModel3D);
 
 	if (loadedSuccessfully) {
@@ -180,14 +234,22 @@ bool MD5LoaderConverter::LoadMD5Animation(
 				std::vector<Joint> tmpV;
 				for (int y = 0; y < loadedModel3D.animations[i].frameSkeleton[x].size(); y++) {
 					Joint tmp;
-					tmp.Name = loadedModel3D.animations[i].frameSkeleton[x][y].name;
-					tmp.Orientation = loadedModel3D.animations[i].frameSkeleton[x][y].orientation;
-					tmp.ParentID = loadedModel3D.animations[i].frameSkeleton[x][y].parentID;
-					tmp.Position = loadedModel3D.animations[i].frameSkeleton[x][y].pos;
+					tmp.Name =			loadedModel3D.animations[i].frameSkeleton[x][y].name;
+					tmp.Orientation =	loadedModel3D.animations[i].frameSkeleton[x][y].orientation;
+					tmp.ParentID =		loadedModel3D.animations[i].frameSkeleton[x][y].parentID;
+					tmp.Position =		loadedModel3D.animations[i].frameSkeleton[x][y].pos;
+
+					tmpV.push_back(tmp);
 				}
 
 				tempAnim->frameSkeleton.push_back(tmpV);
 			}
+		}
+
+		{
+			//std::string str = "z2: " + std::to_string(tempAnim->frameSkeleton[0].size()) + " \n";
+			//std::wstring wstr(str.begin(), str.end());
+			//OutputDebugString(wstr.c_str());
 		}
 
 		// Set the value and return

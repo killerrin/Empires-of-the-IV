@@ -13,6 +13,8 @@
 #include "Weight.h"
 #include "Joint.h"
 
+#include "ModelRawDataType.h"
+
 namespace Anarian
 {
 	class Model :
@@ -26,6 +28,9 @@ namespace Anarian
 		friend DirectXMesh;
 		friend DirectXMaterial;
 #endif
+	private:
+		ModelRawDataType m_rawDataType;
+		void* m_rawData;
 
 	private:
 		IMeshObject*								m_mesh;
@@ -41,6 +46,13 @@ namespace Anarian
 		/// Basic Getter Setters
 		IMeshObject* GetMesh() { return m_mesh; };
 		IMaterial* GetMaterial() { return m_material; };
+
+		void* GetRawData() { return m_rawData; };
+		ModelRawDataType GetRawDataType() { return m_rawDataType; };
+		void  SetRawData(void* raw, ModelRawDataType type) { 
+			m_rawData = raw;
+			m_rawDataType = type;
+		};
 
 		void SetMesh(IMeshObject** mesh) { m_mesh = *mesh; };
 		void SetMaterial(IMaterial** material) { m_material = *material; };

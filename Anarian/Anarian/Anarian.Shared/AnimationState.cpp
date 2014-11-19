@@ -23,6 +23,8 @@ AnimationState::~AnimationState()
 
 void AnimationState::Reset()
 {
+	m_interpolatedSkeleton = std::vector<Joint>();
+
 	m_currentAnimation = nullptr;
 	m_isLooping = false;
 	m_isPlaying = false;
@@ -32,6 +34,8 @@ void AnimationState::Reset()
 
 void AnimationState::Update(GameTimer* gameTime)
 {
+	if (m_currentAnimation == nullptr) return;
+
 	m_currentAnimationTime += gameTime->DeltaTime();			// Update the current animation time
 
 	if (m_currentAnimationTime > MaxAnimationTime()) {
@@ -53,29 +57,47 @@ void AnimationState::Update(GameTimer* gameTime)
 
 	// Clear the interpolated skeleton before we recreate it
 	m_interpolatedSkeleton.clear();
-	
-	// Compute the interpolated skeleton
-	for (int i = 0; i < m_currentAnimation->baseFrameJoints.size(); i++) {
-		Joint tempJoint;
-		Joint joint0 = m_currentAnimation->frameSkeleton[frame0][i];		// Get the i'th joint of frame0's skeleton
-		Joint joint1 = m_currentAnimation->frameSkeleton[frame1][i];		// Get the i'th joint of frame1's skeleton
 
-		tempJoint.ParentID = joint0.ParentID;											// Set the tempJoints parent id
-		
-		// Turn the two quaternions into XMVECTORs for easy computations
-		XMVECTOR joint0Orient = XMVectorSet(joint0.Orientation.x, joint0.Orientation.y, joint0.Orientation.z, joint0.Orientation.w);
-		XMVECTOR joint1Orient = XMVectorSet(joint1.Orientation.x, joint1.Orientation.y, joint1.Orientation.z, joint1.Orientation.w);
-
-		// Interpolate positions
-		tempJoint.Position.x = joint0.Position.x + (interpolation * (joint1.Position.x - joint0.Position.x));
-		tempJoint.Position.y = joint0.Position.y + (interpolation * (joint1.Position.y - joint0.Position.y));
-		tempJoint.Position.z = joint0.Position.z + (interpolation * (joint1.Position.z - joint0.Position.z));
-
-		// Interpolate orientations using spherical interpolation (Slerp)
-		XMStoreFloat4(&tempJoint.Orientation, XMQuaternionSlerp(joint0Orient, joint1Orient, interpolation));
-
-		m_interpolatedSkeleton.push_back(tempJoint);		// Push the joint back into our interpolated skeleton
+	{
+		//std::string str = "FrameSkeleton: " + std::to_string(m_currentAnimation->frameSkeleton.size()) + " \n";
+		//std::wstring wstr(str.begin(), str.end());
+		//OutputDebugString(wstr.c_str());
 	}
+
+	// Compute the interpolated skeleton
+	try {
+		for (int i = 0; i < m_currentAnimation->baseFrameJoints.size(); i++) {
+			{
+				//std::string str = "i: " + std::to_string(i) + " \n";
+				//std::wstring wstr(str.begin(), str.end());
+				//OutputDebugString(wstr.c_str());
+			}
+
+			Joint tempJoint;
+
+			//return;
+
+			Joint joint0 = m_currentAnimation->frameSkeleton[frame0][i];		// Get the i'th joint of frame0's skeleton
+			Joint joint1 = m_currentAnimation->frameSkeleton[frame1][i];		// Get the i'th joint of frame1's skeleton
+
+			tempJoint.ParentID = joint0.ParentID;								// Set the tempJoints parent id
+
+			// Turn the two quaternions into XMVECTORs for easy computations
+			XMVECTOR joint0Orient = XMVectorSet(joint0.Orientation.x, joint0.Orientation.y, joint0.Orientation.z, joint0.Orientation.w);
+			XMVECTOR joint1Orient = XMVectorSet(joint1.Orientation.x, joint1.Orientation.y, joint1.Orientation.z, joint1.Orientation.w);
+
+			// Interpolate positions
+			tempJoint.Position.x = joint0.Position.x + (interpolation * (joint1.Position.x - joint0.Position.x));
+			tempJoint.Position.y = joint0.Position.y + (interpolation * (joint1.Position.y - joint0.Position.y));
+			tempJoint.Position.z = joint0.Position.z + (interpolation * (joint1.Position.z - joint0.Position.z));
+
+			// Interpolate orientations using spherical interpolation (Slerp)
+			XMStoreFloat4(&tempJoint.Orientation, XMQuaternionSlerp(joint0Orient, joint1Orient, interpolation));
+
+			m_interpolatedSkeleton.push_back(tempJoint);		// Push the joint back into our interpolated skeleton
+		}
+	}
+	catch (std::exception ex) { }
 
 	m_currentFrame = frame1;
 }

@@ -8,7 +8,7 @@ using namespace DirectX;
 Light::Light() {
 	ZeroMemory(this, sizeof(Light));
 
-	m_LightType = LightType::None;
+	m_LightType = LightType::NoLight;
 
 	Direction = DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f);
 	Ambient = Color::White();

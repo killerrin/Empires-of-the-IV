@@ -429,6 +429,7 @@ bool MD5Loader::LoadMD5Anim(std::wstring filename, Model3D& MD5Model)
 					fileIn >> tempJoint.flags;				// Get flags
 					fileIn >> tempJoint.startIndex;			// Get joints start index
 
+					// MyMod
 					// Make sure the joint exists in the model, and the parent ID's match up
 					// because the bind pose (md5mesh) joint hierarchy and the animations (md5anim)
 					// joint hierarchy must match up
@@ -547,7 +548,9 @@ bool MD5Loader::LoadMD5Anim(std::wstring filename, Model3D& MD5Model)
 					// This is where joint hierarchy comes in. We start at the top of the hierarchy, and move down to each joints child, rotating and translating them based on their parents rotation
 					// and translation. We can assume that by the time we get to the child, the parent has already been rotated and transformed based of it's parent. We can assume this because
 					// the child should never come before the parent in the files we loaded in.
-					if (tempFrameJoint.parentID >= 0) {
+					
+					if (tempFrameJoint.parentID >= 0 ) 
+					{
 						Joint parentJoint = tempSkeleton[tempFrameJoint.parentID];
 
 						// Turn the XMFLOAT3 and 4's into vectors for easier computation
@@ -581,6 +584,12 @@ bool MD5Loader::LoadMD5Anim(std::wstring filename, Model3D& MD5Model)
 
 				// Push back our newly created frame skeleton into the animation's frameSkeleton array
 				tempAnim.frameSkeleton.push_back(tempSkeleton);
+				//MyMod
+				//{
+				//	std::string str = "tempSkeleton: " + std::to_string(tempSkeleton.size()) + " \n";
+				//	std::wstring wstr(str.begin(), str.end());
+				//	OutputDebugString(wstr.c_str());
+				//}
 
 				fileIn >> checkString;				// Skip closing bracket "}"
 			}

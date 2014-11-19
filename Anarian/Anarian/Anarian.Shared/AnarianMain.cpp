@@ -73,6 +73,8 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 	m_resourceManager->AddMaterial("elfmaterial", objMaterial);
 	
 	Model* loadmodel = nullptr;
+	Anarian::Verticies::ModelAnimation* anim = nullptr;
+
 	if (MD5LoaderConverter::LoadMD5Mesh("Assets//Dance.md5mesh", &loadmodel, loader)) {
 		std::string str = "MD5 Model Successfully Loaded \n";
 		std::wstring wstr(str.begin(), str.end());
@@ -82,13 +84,12 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 		((DirectXMesh*)dxMesh)->CreateBuffers(m_deviceResources->GetD3DDevice(), D3D11_CPU_ACCESS_FLAG::D3D11_CPU_ACCESS_WRITE);
 		m_resourceManager->AddMesh("elfMD5", dxMesh);
 		m_resourceManager->AddMaterial("elfMD5material", loadmodel->GetMaterial());
-	}
 
-	Anarian::Verticies::ModelAnimation* anim = nullptr;
-	if (MD5LoaderConverter::LoadMD5Animation("Assets//Dance.md5anim", &anim, loader)) {
-		std::string str = "MD5 Animation Successfully Loaded \n";
-		std::wstring wstr(str.begin(), str.end());
-		OutputDebugString(wstr.c_str());
+		if (MD5LoaderConverter::LoadMD5Animation("Assets//Dance.md5anim", &anim, loader, loadmodel->GetRawData())) {
+			std::string str = "MD5 Animation Successfully Loaded \n";
+			std::wstring wstr(str.begin(), str.end());
+			OutputDebugString(wstr.c_str());
+		}
 	}
 
 
@@ -137,7 +138,7 @@ AnarianMain::AnarianMain(const std::shared_ptr<DX::DeviceResources>& deviceResou
 
 	gameObject->GetAnimationState()->SetAnimation(anim);
 	gameObject->GetAnimationState()->BeginLoop();
-	//gameObject->GetAnimationState()->Play();
+	gameObject->GetAnimationState()->Play();
 
 	gameObject->Scale(DirectX::XMFLOAT3(0.05f, 0.05f, 0.05f));
 	gameObject->Position(DirectX::XMFLOAT3(0.0f, -5.0f, -6.5f));// -2.0f, -8.0f, -5.0f));

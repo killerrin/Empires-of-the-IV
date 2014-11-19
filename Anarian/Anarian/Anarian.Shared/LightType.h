@@ -1,8 +1,9 @@
+#pragma once
 namespace Anarian
 {
 	enum LightType
 	{
-		None				= -1,
+		NoLight				= -1,
 		DirectionalLight	=  0,
 		PointLight			=  1,
 		SpotLight			=  2,

@@ -66,6 +66,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)IScene.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)IUpdatable.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ModelAnimation.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)ModelRawDataType.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Weight.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MaterialFactory.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MeshFactory.h" />

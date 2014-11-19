@@ -22,6 +22,7 @@
 #include <string>
 #include <map>
 #include <math.h>
+#include <exception>
 
 #include <iostream>
 #include <fstream>
