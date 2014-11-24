@@ -110,7 +110,7 @@ bool MD5LoaderConverter::LoadMD5Mesh(
 			
 			// Weights
 			{
-				std::string str = "WeightCount: " + std::to_string(loadedModel3D.subsets[i].weights.size()) + " \n";
+				std::string str = "RawWeightCount: " + std::to_string(loadedModel3D.subsets[i].weights.size()) + " \n";
 				std::wstring wstr(str.begin(), str.end());
 				OutputDebugString(wstr.c_str());
 			}
@@ -123,6 +123,12 @@ bool MD5LoaderConverter::LoadMD5Mesh(
 				weight.Normal =		loadedModel3D.subsets[i].weights[w].normal;
 
 				weights.push_back(weight);
+
+				{
+					std::string str = "WeightCount: " + std::to_string(weights.size()) + " \n";
+					std::wstring wstr(str.begin(), str.end());
+					OutputDebugString(wstr.c_str());
+				}
 			}
 
 

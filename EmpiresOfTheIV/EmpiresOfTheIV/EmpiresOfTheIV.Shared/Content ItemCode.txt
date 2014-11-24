@@ -1,0 +1,5 @@
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Content\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>

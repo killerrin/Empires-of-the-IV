@@ -68,6 +68,10 @@ namespace Anarian
 			if (m_joints.size() > 0) return true;
 			return false;
 		}
+		bool HasWeights() {
+			if (m_weights.size() > 0) return true;
+			return false;
+		}
 
 
 		/// Method Calls

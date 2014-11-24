@@ -76,7 +76,7 @@ void Model::UpdateAnimation(GameTimer* gameTime, AnimationState* animationState)
 	{
 		std::string str = "Weights: " + std::to_string(m_weights.size()) + " \n";
 		std::wstring wstr(str.begin(), str.end());
-		OutputDebugString(wstr.c_str());
+		//OutputDebugString(wstr.c_str());
 	}
 
 	//try {
@@ -91,7 +91,7 @@ void Model::UpdateAnimation(GameTimer* gameTime, AnimationState* animationState)
 
 				// Sum up the joints and weights information to get vertex's position and normal
 				for (int j = 0; j < tempVert.m_weightCount; ++j) {
-					Weight tempWeight = m_weights[tempVert.m_startWeight + j];					
+					Weight tempWeight = m_weights[tempVert.m_startWeight + j]; //Weight(1.0f, 1.0f, XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 1.0f, 1.0f));					
 					Joint tempJoint = interpolatedSkeleton[tempWeight.JointID];
 
 					// Convert joint orientation and weight pos to vectors for easier computation
