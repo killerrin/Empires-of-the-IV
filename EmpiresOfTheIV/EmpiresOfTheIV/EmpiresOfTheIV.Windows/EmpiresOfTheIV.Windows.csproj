@@ -122,7 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Killerrin Studios Toolkit.Windows">
-      <HintPath>..\..\..\..\..\Libraries\Killerrin Studios\Killerrin Studios Toolkit\Killerrin Studios Toolkit.Windows\bin\Debug\Killerrin Studios Toolkit.Windows.dll</HintPath>
+      <HintPath>..\..\dlls\Killerrin Studios Toolkit.Windows.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MSBuildProgramFiles32)\MonoGame\v3.0\Assemblies\Windows8\MonoGame.Framework.dll</HintPath>

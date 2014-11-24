@@ -106,7 +106,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Killerrin Studios Toolkit.WindowsPhone">
-      <HintPath>..\..\..\..\..\Libraries\Killerrin Studios\Killerrin Studios Toolkit\Killerrin Studios Toolkit.WindowsPhone\bin\Debug\Killerrin Studios Toolkit.WindowsPhone.dll</HintPath>
+      <HintPath>..\..\dlls\Killerrin Studios Toolkit.WindowsPhone.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MSBuildProgramFiles32)\MonoGame\v3.0\Assemblies\WindowsPhone81\MonoGame.Framework.dll</HintPath>
