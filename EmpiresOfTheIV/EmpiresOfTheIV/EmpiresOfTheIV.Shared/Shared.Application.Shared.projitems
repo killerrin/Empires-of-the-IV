@@ -12,9 +12,11 @@
     <ApplicationDefinition Include="$(MSBuildThisFileDirectory)App.xaml">
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="$(MSBuildThisFileDirectory)Anarian\AnarianGameEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\DataStructures\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\DataStructures\GameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\DataStructures\Level.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Anarian\Helpers\PrimitiveHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\Interfaces\IMoveable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\Interfaces\IRenderable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\Interfaces\IScene.cs" />

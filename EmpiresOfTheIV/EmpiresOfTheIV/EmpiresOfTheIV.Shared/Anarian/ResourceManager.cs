@@ -36,13 +36,19 @@ namespace Anarian
             return assetNameSplit[assetNameSplit.Length - 1];
         }
 
-
         public void LoadTexture(ContentManager Content, string assetName) {
             m_textures.Add(AssetName(assetName), Content.Load<Texture2D>(assetName)); 
         }
         public void LoadModel(ContentManager Content, string assetName) {
             m_models.Add(AssetName(assetName), Content.Load<Model>(assetName));
         }
+
+        #region Add
+        public void AddTexture(Texture2D texture, string assetName)
+        {
+            m_textures.Add(assetName, texture);
+        }
+        #endregion
 
         #region Get
         public Texture2D GetTexture(string key) { return m_textures[key]; }

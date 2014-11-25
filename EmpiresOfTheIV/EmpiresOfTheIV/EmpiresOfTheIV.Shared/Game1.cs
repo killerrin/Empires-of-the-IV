@@ -10,23 +10,18 @@ using System.Diagnostics;
 using Anarian;
 using Anarian.DataStructures;
 using Anarian.Interfaces;
+using Anarian.Helpers;
 
 namespace EmpiresOfTheIV
 {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : Game
+    public class Game1 : AnarianGameEngine
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-
-        SceneManager m_sceneManager;
-        ResourceManager m_resourceManager;
-
         public Game1()
+            :base()
         {
-            graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
@@ -38,11 +33,9 @@ namespace EmpiresOfTheIV
         /// </summary>
         protected override void Initialize()
         {
-            m_sceneManager = SceneManager.Instance;
-            m_resourceManager = ResourceManager.Instance;
+            base.Initialize();
 
             graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
-            base.Initialize();
         }
 
         /// <summary>
@@ -51,8 +44,7 @@ namespace EmpiresOfTheIV
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            base.LoadContent();
 
             // Load the Assets
             m_resourceManager.LoadTexture(Content, "KillerrinStudiosLogo");
@@ -64,8 +56,7 @@ namespace EmpiresOfTheIV
             armyGuy.Scale = new Vector3(0.007f);
             armyGuy.Position = new Vector3(0.0f, -0.5f, 0.0f);
 
-            // Create the Scene
-            m_sceneManager.CurrentScene = new Level(graphics);
+            // Add to the Scene
             m_sceneManager.CurrentScene.GetSceneNode().AddChild(armyGuy);
         }
 
@@ -75,7 +66,7 @@ namespace EmpiresOfTheIV
         /// </summary>
         protected override void UnloadContent()
         {
-
+            base.UnloadContent();
         }
 
         /// <summary>
@@ -85,15 +76,7 @@ namespace EmpiresOfTheIV
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (m_sceneManager != null) {
-                if (m_sceneManager.CurrentScene != null) {
-                    m_sceneManager.CurrentScene.GetSceneNode().Rotation += new Vector3(0.0f, (0.0025f) * (float)gameTime.ElapsedGameTime.TotalMilliseconds, 0.0f);
-
-
-                    // Finally, Update the Base Scene node
-                    m_sceneManager.CurrentScene.GetSceneNode().Update(gameTime);
-                }
-            }
+            m_sceneManager.CurrentScene.GetSceneNode().Rotation += new Vector3(0.0f, (0.0025f) * (float)gameTime.ElapsedGameTime.TotalMilliseconds, 0.0f);
 
             base.Update(gameTime);
         }
@@ -104,8 +87,10 @@ namespace EmpiresOfTheIV
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            // First, call the PreDraw to prepare the screen for rendering
+            base.PreDraw(gameTime);
 
+            // Now we can begin our draw Here
             Texture2D logo = ResourceManager.Instance.GetTexture("KillerrinStudiosLogo");
 
             // Draw Texture
@@ -113,17 +98,16 @@ namespace EmpiresOfTheIV
             spriteBatch.Draw(logo, new Vector2(0.0f, 0.0f), Color.White);
             spriteBatch.End();
 
-            // Model
-            if (m_sceneManager != null) {
-                if (m_sceneManager.CurrentScene != null) {
-                    m_sceneManager.CurrentScene.GetSceneNode().Draw(
-                        gameTime,
-                        m_sceneManager.CurrentScene.GetCamera(),
-                        graphics);
-                }
-            }
+            // Draw some Points
+            PrimitiveHelper2D.DrawPoints(spriteBatch, Color.Red, 20, new Vector2(200.0f, 200.0f));
+            PrimitiveHelper2D.DrawLines(spriteBatch, Color.Red, 4, new Vector2(0.0f, 400.0f), new Vector2(200.0f, 550.0f),
+                new Vector2(400.0f, 550.0f), new Vector2(600.0f, 300.0f));
 
+            // Call Draw on the Anarian Game Engine to render the SceneGraph
             base.Draw(gameTime);
+
+            // Lastly, Call the Monogame Draw Method
+            base.PostDraw(gameTime);
         }
     }
 }
