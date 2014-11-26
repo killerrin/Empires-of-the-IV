@@ -103,6 +103,10 @@ namespace EmpiresOfTheIV
             PrimitiveHelper2D.DrawLines(spriteBatch, Color.Red, 4, new Vector2(0.0f, 400.0f), new Vector2(200.0f, 550.0f),
                 new Vector2(400.0f, 550.0f), new Vector2(600.0f, 300.0f));
 
+            PrimitiveHelper2D.DrawCircle(spriteBatch, Color.Red, 4, 25.0f, new Vector2(500.0f, 400.0f));
+            PrimitiveHelper2D.DrawArc(spriteBatch, Color.Red, 4, 120.0f, 25.0f, new Vector2(700.0f, 400.0f));
+            PrimitiveHelper2D.DrawArc(spriteBatch, Color.Red, 4, 120.0f, -25.0f, new Vector2(800.0f, 400.0f));
+
             // Call Draw on the Anarian Game Engine to render the SceneGraph
             base.Draw(gameTime);
 

@@ -16,7 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\DataStructures\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\DataStructures\GameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\DataStructures\Level.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Anarian\Helpers\PrimitiveHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Anarian\Helpers\PrimitiveHelper2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\Interfaces\IMoveable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\Interfaces\IRenderable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\Interfaces\IScene.cs" />
