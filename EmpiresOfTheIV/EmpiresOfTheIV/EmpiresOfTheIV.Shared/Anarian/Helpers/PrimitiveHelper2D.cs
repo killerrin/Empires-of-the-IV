@@ -80,7 +80,7 @@ namespace Anarian.Helpers
         }
 
         /// <summary>
-        /// Draws a Circle Outline at the specified Position, Color and Radius
+        /// Draws an arc at the specified Position, Color and Radius
         /// </summary>
         /// <param name="spriteBatch">The Spritebatch</param>
         /// <param name="color">The Color of the circle</param>
@@ -96,6 +96,29 @@ namespace Anarian.Helpers
                     (radius * 2.0f) * (float)Math.Sin((double)MathHelper.ToRadians(i))
                 );
 
+                point += position;
+
+                DrawPoints(spriteBatch, color, size, point);
+            }
+        }
+
+        /// <summary>
+        /// Draws a Sine Wave at the specified Position, Color and Radius
+        /// </summary>
+        /// <param name="spriteBatch">The Spritebatch</param>
+        /// <param name="color">The Color of the circle</param>
+        /// <param name="size">The Size of the point</param>
+        /// <param name="position">The Position on the screen</param>
+        /// <param name="amplitude">The peak deviation of the function from zero</param>
+        /// <param name="frequency">The number of oscillations (cycles) that occur each second of time</param>
+        /// <param name="maxTime">The maximum ammount of time the Sine will go from </param>
+        /// <param name="phase">Where (In Degrees) in its cycle the oscillation is at t = 0 </param>
+        public static void DrawSineWave(SpriteBatch spriteBatch, Color color, int size, Vector2 position, float amplitude, float frequency, float maxTime, float phase = 0.0f)
+        {
+            for (float i = 0.0f; i < maxTime; i += 1.0f) {
+                float y = amplitude * (float)Math.Sin((double)((2.0f * Math.PI * frequency) * i + MathHelper.ToRadians(phase)));
+
+                Vector2 point = new Vector2(i, y);
                 point += position;
 
                 DrawPoints(spriteBatch, color, size, point);

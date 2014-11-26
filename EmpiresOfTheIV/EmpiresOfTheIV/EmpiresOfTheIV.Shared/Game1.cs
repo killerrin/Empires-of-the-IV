@@ -1,11 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Input;
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+
+using KillerrinStudiosToolkit;
+
 
 using Anarian;
 using Anarian.DataStructures;
@@ -23,6 +27,7 @@ namespace EmpiresOfTheIV
             :base()
         {
             Content.RootDirectory = "Content";
+            
         }
 
         /// <summary>
@@ -69,6 +74,8 @@ namespace EmpiresOfTheIV
             base.UnloadContent();
         }
 
+        bool set = false;
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -77,6 +84,19 @@ namespace EmpiresOfTheIV
         protected override void Update(GameTime gameTime)
         {
             m_sceneManager.CurrentScene.GetSceneNode().Rotation += new Vector3(0.0f, (0.0025f) * (float)gameTime.ElapsedGameTime.TotalMilliseconds, 0.0f);
+
+            if (!set) {
+                set = true;
+#if WINDOWS_PHONE_APP
+                //CortanaHelper.CortanaFeedback("Hello, World!", GamePage.CortanaMediaElement);
+#endif
+            }
+
+            MouseState mouseState = Microsoft.Xna.Framework.Input.Mouse.GetState();
+            if (mouseState.LeftButton == ButtonState.Pressed && !set) {
+                //set = true;
+                //GamePage.PageFrame.Navigate(typeof(BlankPage));
+            } 
 
             base.Update(gameTime);
         }
@@ -109,6 +129,8 @@ namespace EmpiresOfTheIV
 
             // Call Draw on the Anarian Game Engine to render the SceneGraph
             base.Draw(gameTime);
+
+            PrimitiveHelper2D.DrawSineWave(spriteBatch, Color.Red, 4, new Vector2(0.0f, 600.0f), 100.0f, 0.006f, GraphicsDevice.Viewport.Width, 0.0f);
 
             // Lastly, Call the Monogame Draw Method
             base.PostDraw(gameTime);

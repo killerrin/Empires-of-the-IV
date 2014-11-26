@@ -22,15 +22,39 @@ namespace EmpiresOfTheIV
     /// </summary>
     public sealed partial class GamePage : SwapChainBackgroundPanel
     {
-        readonly Game1 _game;
+        readonly Game1 m_game;
+
+        private static Frame m_pageFrame;
+        public static Frame PageFrame
+        {
+            get { return m_pageFrame; }
+            private set { m_pageFrame = value; }
+        }
+
+        private static MediaElement m_cortanaElement;
+        public static MediaElement CortanaMediaElement
+        {
+            get { return m_cortanaElement; }
+            private set { m_cortanaElement = value; }
+        }
+
 
         public GamePage(string launchArguments)
         {
             this.InitializeComponent();
 
             // Create the game.
+            m_game = XamlGame<Game1>.Create(launchArguments, Window.Current.CoreWindow, this);
+        }
 
-            _game = XamlGame<Game1>.Create(launchArguments, Window.Current.CoreWindow, this);
+        private void PageFrame_Loaded(object sender, RoutedEventArgs e)
+        {
+            PageFrame = (sender as Frame);
+        }
+
+        private void cortanaElement_Loaded(object sender, RoutedEventArgs e)
+        {
+            CortanaMediaElement = (sender as MediaElement);
         }
     }
 }
