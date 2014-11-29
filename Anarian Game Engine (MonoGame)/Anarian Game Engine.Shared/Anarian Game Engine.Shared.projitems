@@ -10,6 +10,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AnarianGameEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\AnimatedModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\AnimationClip.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\AnimationClipReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\AnimationPlayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\Bone.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\ModelExtra.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\ModelExtraReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\GameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Input\Controller.cs" />
