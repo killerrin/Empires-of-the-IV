@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using Microsoft.Xna.Framework;
+
+//using AnimationAux;
 using Anarian.DataStructures.Animation.Aux;
 
 namespace Anarian.DataStructures.Animation

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace Anarian.DataStructures.Animation.Aux
+//namespace AnimationAux 
 {
     /// <summary>
     /// Class that contains additional information attached to the model and

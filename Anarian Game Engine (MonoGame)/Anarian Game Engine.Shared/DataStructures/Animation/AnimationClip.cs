@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 
 namespace Anarian.DataStructures.Animation.Aux
+//namespace AnimationAux
 {
     /// <summary>
     /// An animation clip is a set of keyframes with associated bones.

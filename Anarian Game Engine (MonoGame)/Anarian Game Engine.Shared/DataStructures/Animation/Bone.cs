@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+
+//using AnimationAux;
 using Anarian.DataStructures.Animation.Aux;
 
 namespace Anarian.DataStructures.Animation

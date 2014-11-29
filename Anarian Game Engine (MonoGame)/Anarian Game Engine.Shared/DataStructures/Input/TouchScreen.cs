@@ -69,6 +69,8 @@ namespace Anarian.DataStructures.Input
 
         public void Update(GameTime gameTime)
         {
+            if (!m_isConnected) return;
+
             m_prevTouchCollection = m_touchCollection;
             m_touchCollection = TouchPanel.GetState();
         }

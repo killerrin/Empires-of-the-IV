@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
+
+//using AnimationAux;
 using Anarian.DataStructures.Animation.Aux;
 
 namespace Anarian.DataStructures.Animation
@@ -111,6 +113,8 @@ namespace Anarian.DataStructures.Animation
                 // Add to the bones for this model
                 bones.Add(newBone);
             }
+
+            System.Diagnostics.Debug.WriteLine("{0}: Total Bones {1}", assetName, bones.Count);
         }
 
         /// <summary>
@@ -169,7 +173,7 @@ namespace Anarian.DataStructures.Animation
         /// <param name="graphics">The graphics device to draw on</param>
         /// <param name="camera">A camera to determine the view</param>
         /// <param name="world">A world matrix to place the model</param>
-        public void Draw(GraphicsDevice graphics, Camera camera, Matrix world)
+        public void Draw(GraphicsDevice graphics, Matrix view, Matrix projection, Matrix world)
         {
             if (model == null)
                 return;
@@ -203,8 +207,8 @@ namespace Anarian.DataStructures.Animation
                     if (effect is BasicEffect) {
                         BasicEffect beffect = effect as BasicEffect;
                         beffect.World = boneTransforms[modelMesh.ParentBone.Index] * world;
-                        beffect.View = camera.View;
-                        beffect.Projection = camera.Projection;
+                        beffect.View = view;
+                        beffect.Projection = projection;
                         beffect.EnableDefaultLighting();
                         beffect.PreferPerPixelLighting = true;
                     }
@@ -212,8 +216,8 @@ namespace Anarian.DataStructures.Animation
                     if (effect is SkinnedEffect) {
                         SkinnedEffect seffect = effect as SkinnedEffect;
                         seffect.World = boneTransforms[modelMesh.ParentBone.Index] * world;
-                        seffect.View = camera.View;
-                        seffect.Projection = camera.Projection;
+                        seffect.View = view;
+                        seffect.Projection = projection;
                         seffect.EnableDefaultLighting();
                         seffect.PreferPerPixelLighting = true;
                         seffect.SetBoneTransforms(skeleton);

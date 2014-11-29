@@ -51,6 +51,8 @@ namespace Anarian.DataStructures.Input
 
         public void Update(GameTime gameTime)
         {
+            if (!m_isConnected) return;
+
             m_prevGamePadState = m_gamePadState;
             m_gamePadState = GamePad.GetState(m_playerIndex);
         }

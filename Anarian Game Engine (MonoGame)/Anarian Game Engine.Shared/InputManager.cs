@@ -95,7 +95,7 @@ namespace Anarian
             // Update the Previous States
             m_prevMouseState = m_mouseState;
             m_prevKeyboardState = m_keyboardState;
-
+            
             // Update the Current States
             m_mouseState = Mouse.GetState();
             m_keyboardState = Keyboard.GetState();

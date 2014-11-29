@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 
 namespace Anarian.DataStructures.Animation.Aux
+//namespace AnimationAux 
 {
     public class ModelExtraReader : ContentTypeReader<ModelExtra>
     {

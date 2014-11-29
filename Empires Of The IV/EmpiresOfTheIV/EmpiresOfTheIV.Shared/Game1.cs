@@ -13,9 +13,11 @@ using KillerrinStudiosToolkit;
 using Anarian;
 using Anarian.DataStructures;
 using Anarian.DataStructures.Animation;
+using Anarian.DataStructures.Animation.Aux;
+//using AnimationAux;
 using Anarian.DataStructures.Input;
-using Anarian.Interfaces;
 using Anarian.Helpers;
+using Anarian.Interfaces;
 
 namespace EmpiresOfTheIV
 {
@@ -38,8 +40,7 @@ namespace EmpiresOfTheIV
         public Game1()
             :base()
         {
-            Content.RootDirectory = "Content";
-            
+            Content.RootDirectory = "Content";  
         }
 
         /// <summary>
@@ -69,16 +70,34 @@ namespace EmpiresOfTheIV
 
             // Load the Assets
             m_resourceManager.LoadTexture(Content, "KillerrinStudiosLogo");
-            m_resourceManager.LoadModel(Content, "t-pose_3");
-
+            m_resourceManager.LoadModel(Content, "t-pose_3_t");
+            
             // Create the Game Objects
             GameObject armyGuy = new GameObject();
-            armyGuy.Model3D = m_resourceManager.GetModel("t-pose_3");
+            armyGuy.Model3D = m_resourceManager.GetModel("t-pose_3_t");
             armyGuy.Scale = new Vector3(0.007f);
             armyGuy.Position = new Vector3(0.0f, -0.5f, 0.0f);
-
+            
             // Add to the Scene
             m_sceneManager.CurrentScene.SceneNode.AddChild(armyGuy);
+
+
+
+            //// Load the Animated Model
+            ////// Load the model we will display
+            //model = new AnimatedModel("t-pose_3");
+            //model.LoadContent(Content);
+            ////// Load the model that has an animation clip it in
+            //dance = new AnimatedModel("walk");
+            //dance.LoadContent(Content);
+            //
+            ////System.Diagnostics.Debug.WriteLine(dance.Clips.Count);
+            ////AnimationClip clip = dance.Clips[0];
+            ////System.Diagnostics.Debug.WriteLine(dance.Clips[0].Name);
+            ////
+            ////// And play the clip
+            ////AnimationPlayer player = model.PlayClip(clip);
+            ////player.Looping = true;
         }
 
         /// <summary>
@@ -116,8 +135,8 @@ namespace EmpiresOfTheIV
                     m_inputManager.MouseState.Position.ToVector2(),
                     GraphicsDevice.Viewport
                     );
-                bool intersects = m_sceneManager.CurrentScene.SceneNode.GetChild(0).CheckRayIntersection(ray);
-                Debug.WriteLine(intersects);
+                //bool intersects = m_sceneManager.CurrentScene.SceneNode.GetChild(0).CheckRayIntersection(ray);
+                //Debug.WriteLine(intersects);
             } 
 
             base.Update(gameTime);
