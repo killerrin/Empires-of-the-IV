@@ -121,8 +121,9 @@
     <Content Include="Assets\StoreLogo.scale-100.png" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Anarian Game Engine.Windows">
-      <HintPath>..\..\..\Anarian Game Engine\Anarian Game Engine.Windows\bin\Debug\Anarian Game Engine.Windows.dll</HintPath>
+    <Reference Include="Anarian Game Engine.Windows, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Anarian Game Engine (MonoGame)\Anarian Game Engine.Windows\bin\Debug\Anarian Game Engine.Windows.dll</HintPath>
     </Reference>
     <Reference Include="Killerrin Studios Toolkit.Windows, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

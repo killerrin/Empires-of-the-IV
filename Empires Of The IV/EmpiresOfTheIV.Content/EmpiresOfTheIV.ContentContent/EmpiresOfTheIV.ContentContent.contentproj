@@ -37,6 +37,9 @@
     <MonoGamePlatform>PSM</MonoGamePlatform>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AnimationPipeline">
+      <HintPath>..\..\dlls\AnimationPipeline\AnimationPipeline.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.EffectImporter" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.FBXImporter" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.TextureImporter" />

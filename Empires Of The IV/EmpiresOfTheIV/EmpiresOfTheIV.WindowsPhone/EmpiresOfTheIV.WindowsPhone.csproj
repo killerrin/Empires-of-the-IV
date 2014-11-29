@@ -105,8 +105,9 @@
     <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Anarian Game Engine.WindowsPhone">
-      <HintPath>..\..\..\Anarian Game Engine\Anarian Game Engine.WindowsPhone\bin\Debug\Anarian Game Engine.WindowsPhone.dll</HintPath>
+    <Reference Include="Anarian Game Engine.WindowsPhone, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Anarian Game Engine (MonoGame)\Anarian Game Engine.WindowsPhone\bin\Debug\Anarian Game Engine.WindowsPhone.dll</HintPath>
     </Reference>
     <Reference Include="Killerrin Studios Toolkit.WindowsPhone">
       <HintPath>..\..\dlls\Killerrin Studios Toolkit.WindowsPhone.dll</HintPath>

@@ -12,6 +12,8 @@ using KillerrinStudiosToolkit;
 
 using Anarian;
 using Anarian.DataStructures;
+using Anarian.DataStructures.Animation;
+using Anarian.DataStructures.Input;
 using Anarian.Interfaces;
 using Anarian.Helpers;
 
@@ -22,6 +24,17 @@ namespace EmpiresOfTheIV
     /// </summary>
     public class Game1 : AnarianGameEngine
     {
+        /// <summary>
+        /// The animated model we are displaying
+        /// </summary>
+        private AnimatedModel model = null;
+
+        /// <summary>
+        /// This model is loaded solely for the dance animation
+        /// </summary>
+        private AnimatedModel dance = null;
+
+
         public Game1()
             :base()
         {
