@@ -54,5 +54,10 @@ namespace Anarian
         public Texture2D GetTexture(string key) { return m_textures[key]; }
         public Model GetModel(string key) { return m_models[key]; }
         #endregion
+
+        public static class ReservedNames
+        {
+            public static string tex_blankTexture = "blankTexture_age";
+        }
     }
 }

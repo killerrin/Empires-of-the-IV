@@ -8,8 +8,7 @@
     mc:Ignorable="d">
 
     <Grid >
-        <Frame x:Name="pageFrame" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Loaded="PageFrame_Loaded"/>
-    
-        <MediaElement x:Name="cortanaElement" Loaded="cortanaElement_Loaded" />
+        <Frame x:Name="pageFrame" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Loaded="PageFrame_Loaded" Visibility="Collapsed"/>
+        <MediaElement x:Name="cortanaElement" Loaded="cortanaElement_Loaded" Visibility="Collapsed"/>
     </Grid>
 </SwapChainBackgroundPanel>

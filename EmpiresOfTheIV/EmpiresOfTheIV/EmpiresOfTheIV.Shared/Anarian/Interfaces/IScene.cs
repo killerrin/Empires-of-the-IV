@@ -7,9 +7,20 @@ namespace Anarian.Interfaces
 {
     public interface IScene
     {
-        Camera GetCamera();
-        void SetCamera(Camera cam);
+        //Camera GetCamera();
+        //void SetCamera(Camera cam);
 
-        GameObject GetSceneNode();
+        Camera Camera
+        {
+            get;
+            set;
+        }
+
+        //GameObject GetSceneNode();
+        GameObject SceneNode
+        {
+            get;
+            set;
+        }
     }
 }

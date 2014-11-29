@@ -21,6 +21,7 @@ namespace Anarian
 
         protected SceneManager m_sceneManager;
         protected ResourceManager m_resourceManager;
+        protected InputManager m_inputManager;
 
         protected Color m_backgroundColor;
 
@@ -41,6 +42,7 @@ namespace Anarian
         {
             m_sceneManager = SceneManager.Instance;
             m_resourceManager = ResourceManager.Instance;
+            m_inputManager = InputManager.Instance;
          
             base.Initialize();
         }
@@ -83,9 +85,11 @@ namespace Anarian
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            m_inputManager.Update(gameTime);
+
             if (m_sceneManager != null) {
                 if (m_sceneManager.CurrentScene != null) {
-                    m_sceneManager.CurrentScene.GetSceneNode().Update(gameTime);
+                    m_sceneManager.CurrentScene.SceneNode.Update(gameTime);
                 }
             }
 
@@ -106,9 +110,9 @@ namespace Anarian
             // Root Scene Node
             if (m_sceneManager != null) {
                 if (m_sceneManager.CurrentScene != null) {
-                    m_sceneManager.CurrentScene.GetSceneNode().Draw(
+                    m_sceneManager.CurrentScene.SceneNode.Draw(
                         gameTime,
-                        m_sceneManager.CurrentScene.GetCamera(),
+                        m_sceneManager.CurrentScene.Camera,
                         graphics);
                 }
             }

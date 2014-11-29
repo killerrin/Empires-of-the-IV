@@ -11,6 +11,7 @@ namespace Anarian.DataStructures
 {
     public class GameObject : IUpdatable, IRenderable
     {
+        #region Properties
         bool    m_active;
         Model   m_model;
 
@@ -24,6 +25,7 @@ namespace Anarian.DataStructures
             get { return m_model; }
             set { m_model = value; }
         }
+        #endregion
 
         #region Translations
         Vector3 m_rotation;
@@ -45,11 +47,10 @@ namespace Anarian.DataStructures
             set { m_position = value; }
         }
 
-        Matrix WorldMatrix
+        public Matrix WorldMatrix
         {
             get
             {
-
                 Matrix scale = Matrix.CreateScale(WorldScale);
 
                 Vector3 worldRotation = WorldRotation;
@@ -120,7 +121,28 @@ namespace Anarian.DataStructures
             m_children  = new List<GameObject>();
         }
 
+        public bool CheckRayIntersection(Ray ray)
+        {
+            BoundingSphere boundingSphere;
+
+            // Create the ModelTransforms
+            Matrix[] modelTransforms = new Matrix[Model3D.Bones.Count];
+            Model3D.CopyAbsoluteBoneTransformsTo(modelTransforms);
+
+            // Check intersection
+            foreach (ModelMesh mesh in Model3D.Meshes) {
+                boundingSphere = mesh.BoundingSphere.Transform(modelTransforms[mesh.ParentBone.Index] * WorldMatrix);
+                if (ray.Intersects(boundingSphere) != null) return true;
+            }
+            return false;
+        }
+
+        #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
+        void IRenderable.Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics) { Draw(gameTime, camera, graphics); }
+        #endregion
+
+        #region Update/Draw
         public void Update(GameTime gameTime)
         {
             if (!m_active) return;
@@ -129,7 +151,6 @@ namespace Anarian.DataStructures
             }
         }
 
-        void IRenderable.Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics) { Draw(gameTime, camera, graphics); }
         public void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
         {
             if (!m_active) return;
@@ -178,7 +199,7 @@ namespace Anarian.DataStructures
                 mesh.Draw();
             }
         }
-
+        #endregion
 
         #region Parent/Children
         GameObject m_parent;

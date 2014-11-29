@@ -6,10 +6,21 @@ using Anarian.Interfaces;
 
 namespace Anarian.DataStructures
 {
-    public class Level : IScene
+    public class Level : IScene, IUpdatable, IRenderable
     {
         private Camera m_camera;
         private GameObject m_sceneNode;
+        public Camera Camera
+        {
+            get { return m_camera; }
+            set { m_camera = value; }
+        }
+        public GameObject SceneNode
+        {
+            get { return m_sceneNode; }
+            protected set { m_sceneNode = value; }
+        }
+
 
         public Level(GraphicsDeviceManager graphics)
         {
@@ -25,20 +36,47 @@ namespace Anarian.DataStructures
         }
 
         #region Interface Implimentation
-        Camera IScene.GetCamera() { return Camera; }
-        void IScene.SetCamera(Camera cam) { Camera = cam; }
-        GameObject IScene.GetSceneNode() { return SceneNode; }
+        Camera IScene.Camera
+        {
+            get { return Camera; }
+            set { Camera = value; }
+        }
+
+        GameObject IScene.SceneNode
+        {
+            get { return SceneNode; }
+            set { }
+        }
+        
+        void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
+
+        /// <summary>
+        /// Draws the Level
+        /// </summary>
+        /// <param name="gameTime">The GameTime</param>
+        /// <param name="camera">Set Camera to null to use Main Camera</param>
+        /// <param name="graphics">The GraphicsDeviceManager</param>
+        void IRenderable.Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics) { Draw(gameTime, camera, graphics); }
         #endregion
 
-        public Camera Camera
+        /// <summary>
+        /// Updates the Level
+        /// </summary>
+        /// <param name="gameTime">The GameTime</param>
+        public void Update(GameTime gameTime)
         {
-            get { return m_camera; }
-            set { m_camera = value; }
+
         }
-        public GameObject SceneNode
+
+        /// <summary>
+        /// Draws the Level
+        /// </summary>
+        /// <param name="gameTime">The GameTime</param>
+        /// <param name="camera">Set Camera to null to use Main Camera</param>
+        /// <param name="graphics">The GraphicsDeviceManager</param>
+        public void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
         {
-            get { return m_sceneNode; }
-            protected set { m_sceneNode = value; }
+
         }
     }
 }

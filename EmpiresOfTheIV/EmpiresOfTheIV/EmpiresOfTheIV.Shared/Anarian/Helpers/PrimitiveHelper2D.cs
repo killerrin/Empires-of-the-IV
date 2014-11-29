@@ -56,16 +56,15 @@ namespace Anarian.Helpers
         {
             Texture2D blankTex = ResourceManager.Instance.GetTexture("blankTexture_age");
 
-            // Draw the Line
-            spriteBatch.Begin();
-
-            // Draw all the points inbetween
+            // Do the math
             Rectangle r = new Rectangle((int)p1.X, (int)p1.Y, (int)(p2 - p1).Length() + size, size);
             Vector2 v = Vector2.Normalize(p1 - p2);
             float angle = (float)Math.Acos(Vector2.Dot(v, -Vector2.UnitX));
             if (p1.Y > p2.Y) angle = MathHelper.TwoPi - angle;
-            spriteBatch.Draw(blankTex, r, null, color, angle, Vector2.Zero, SpriteEffects.None, 0);
 
+            // Draw the Line
+            spriteBatch.Begin();
+            spriteBatch.Draw(blankTex, r, null, color, angle, Vector2.Zero, SpriteEffects.None, 0);
             spriteBatch.End();
 
             // Recursively Draw Lines until there are no more left

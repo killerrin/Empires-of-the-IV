@@ -15,11 +15,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\AnarianGameEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\DataStructures\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\DataStructures\GameObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Anarian\DataStructures\Input\Controller.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Anarian\DataStructures\Input\TouchScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\DataStructures\Level.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Anarian\Enumerators\PointDirection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Anarian\Helpers\HelperUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\Helpers\PrimitiveHelper2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Anarian\InputManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\Interfaces\IMoveable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\Interfaces\IRenderable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\Interfaces\IScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Anarian\Interfaces\ISelectableEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\Interfaces\IUpdatable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\ResourceManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Anarian\SceneManager.cs" />
