@@ -28,6 +28,13 @@ namespace Anarian.DataStructures
         #endregion
 
         #region Translations
+        Vector3 m_orbitalRotation;
+        public Vector3 OrbitalRotation
+        {
+            get { return m_orbitalRotation; }
+            set { m_orbitalRotation = value; }
+        }
+        
         Vector3 m_rotation;
         public Vector3 Rotation
         {
@@ -61,9 +68,15 @@ namespace Anarian.DataStructures
 
                 Matrix translation = Matrix.CreateTranslation(WorldPosition);
 
-                return scale * rotation * translation;
+                Vector3 worldOrbitalRotation = WorldOrbitalRotation;
+                Matrix rotOX = Matrix.CreateRotationX(worldOrbitalRotation.X);
+                Matrix rotOY = Matrix.CreateRotationY(worldOrbitalRotation.Y);
+                Matrix rotOZ = Matrix.CreateRotationZ(worldOrbitalRotation.Z);
+                Matrix orbitalRotation = rotOX * rotOY * rotOZ;
+
+                return scale * rotation * translation * orbitalRotation;
             }
-            set { }
+            protected set { }
         }
 
         public Vector3 WorldPosition
@@ -77,7 +90,7 @@ namespace Anarian.DataStructures
                 }
                 return pos;
             }
-            set { }
+            protected set { }
         }
 
         public Vector3 WorldRotation
@@ -91,7 +104,21 @@ namespace Anarian.DataStructures
                 }
                 return rot;
             }
-            set { }
+            protected set { }
+        }
+
+        public Vector3 WorldOrbitalRotation
+        {
+            get
+            {
+                Vector3 rot = m_orbitalRotation;
+
+                if (m_parent != null) {
+                    rot += m_parent.WorldOrbitalRotation;
+                }
+                return rot;
+            }
+            protected set { }
         }
 
         public Vector3 WorldScale
@@ -105,7 +132,7 @@ namespace Anarian.DataStructures
                 }
                 return sca;
             }
-            set { }
+            protected set { }
         }
         #endregion
 
@@ -113,9 +140,11 @@ namespace Anarian.DataStructures
         {
             m_parent    = null;
             m_active    = true;
-            
-            m_rotation  = Vector3.Zero;
+
+            m_orbitalRotation = Vector3.Zero;
+
             m_position  = Vector3.Zero;
+            m_rotation  = Vector3.Zero;
             m_scale     = Vector3.One;
 
             m_children  = new List<GameObject>();

@@ -61,7 +61,7 @@
     <Compile Include="walk_t.FBX">
       <Name>walk_t</Name>
       <Importer>FbxImporter</Importer>
-      <Processor>AnimationProcessor</Processor>
+      <Processor>ModelProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>

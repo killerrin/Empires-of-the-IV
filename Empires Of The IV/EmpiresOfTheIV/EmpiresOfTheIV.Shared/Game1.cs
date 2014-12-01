@@ -118,7 +118,12 @@ namespace EmpiresOfTheIV
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            m_sceneManager.CurrentScene.SceneNode.Rotation += new Vector3(0.0f, (0.0025f) * (float)gameTime.ElapsedGameTime.TotalMilliseconds, 0.0f);
+            m_sceneManager.CurrentScene.SceneNode.Position =
+                new Vector3(0.5f, 0.5f, 0.5f);
+            m_sceneManager.CurrentScene.SceneNode.Rotation +=
+                new Vector3(0.0f, (0.0025f) * (float)gameTime.ElapsedGameTime.TotalMilliseconds, 0.0f);
+            m_sceneManager.CurrentScene.SceneNode.OrbitalRotation +=
+                new Vector3(MathHelper.ToRadians(1.0f), MathHelper.ToRadians(1.0f), MathHelper.ToRadians(1.0f));
 
             //if (!set) {
             //    if (GamePage.CortanaMediaElement != null) {
