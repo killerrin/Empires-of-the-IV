@@ -13,12 +13,18 @@ namespace Anarian.DataStructures
     {
         #region Properties
         bool    m_active;
+        bool    m_visible;
         Model   m_model;
 
         public bool Active
         {
             get { return m_active; }
             set { m_active = value; }
+        }
+        public bool Visible
+        {
+            get { return m_visible; }
+            set { m_visible = value; }
         }
         public Model Model3D
         {
@@ -140,6 +146,7 @@ namespace Anarian.DataStructures
         {
             m_parent    = null;
             m_active    = true;
+            m_visible   = true;
 
             m_orbitalRotation = Vector3.Zero;
 
@@ -191,8 +198,11 @@ namespace Anarian.DataStructures
             }
 
 
-            // Now that the children have been rendered,
-            // We check if we have a model, then we render it
+            // Now that the children have been rendered...
+            // We check if we are visible on the screen,
+            // We check if we have a model,
+            // Then we render it
+            if (!m_visible) return;
             if (m_model == null) return;
 
             // Render This Object
