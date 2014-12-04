@@ -30,11 +30,8 @@ namespace Anarian
 
 
         #region Properties
-        MouseState m_mouseState;
-        MouseState m_prevMouseState;
-
-        KeyboardState m_keyboardState;
-        KeyboardState m_prevKeyboardState;
+        MouseManager m_mouse;
+        KeyboardManager m_keyboard;
 
         Controller m_controller1;
         Controller m_controller2;
@@ -44,12 +41,8 @@ namespace Anarian
         TouchScreen m_touchScreen;
 
 
-        public MouseState MouseState { get { return m_mouseState; } }
-        public MouseState PrevMouseState { get { return m_prevMouseState; } }
-
-        public KeyboardState KeyboardState { get { return m_keyboardState; } }
-        public KeyboardState PrevKeyboardState { get { return m_prevKeyboardState; } }
-
+        public MouseManager Mouse { get { return m_mouse; } }
+        public KeyboardManager Keyboard { get { return m_keyboard; } }
         public TouchScreen TouchScreen { get { return m_touchScreen; } }
         public Controller GetController(PlayerIndex index)
         {
@@ -68,11 +61,8 @@ namespace Anarian
             m_touchScreen = new TouchScreen();
 
 //#if WINDOWS_APP
-            m_mouseState = Mouse.GetState();
-            m_prevMouseState = m_mouseState;
-
-            m_keyboardState = Keyboard.GetState();
-            m_prevKeyboardState = m_keyboardState;
+            m_mouse = new MouseManager();
+            m_keyboard = new KeyboardManager();
 
             m_controller1 = new Controller(PlayerIndex.One);
             m_controller2 = new Controller(PlayerIndex.Two);
@@ -92,13 +82,8 @@ namespace Anarian
             
             // Update Windows Only Inputs
 //#if WINDOWS_APP
-            // Update the Previous States
-            m_prevMouseState = m_mouseState;
-            m_prevKeyboardState = m_keyboardState;
-            
-            // Update the Current States
-            m_mouseState = Mouse.GetState();
-            m_keyboardState = Keyboard.GetState();
+            m_mouse.Update(gameTime);
+            m_keyboard.Update(gameTime);
 
             m_controller1.Update(gameTime);
             m_controller2.Update(gameTime);

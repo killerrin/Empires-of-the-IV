@@ -129,7 +129,7 @@ namespace Anarian.DataStructures
             CreateViewMatrix(
                 new Vector3(0.0f, 0.7f, 1.5f),      // eye
                 new Vector3(0.0f, 0.0f, 0.0f),      // look at
-                new Vector3(0.0f, 1.0f, 0.0f)       // up
+                Vector3.Up       // up
                 );
             CreateProjectionMatrix(
                 MathHelper.Pi * 70.0f / 180.0f,     // fov
@@ -238,6 +238,11 @@ namespace Anarian.DataStructures
             CreateViewMatrix(m_eye, m_lookAt, m_up);
         }
 
+
+        /// <summary>
+        /// Adds Yaw to the Camera
+        /// </summary>
+        /// <param name="angle">Angle in Radians</param>
         public void AddYaw(float angle)
         {
             m_yaw += angle;
@@ -248,6 +253,10 @@ namespace Anarian.DataStructures
             CreateViewMatrix(m_eye, m_lookAt, m_up);
         }
 
+        /// <summary>
+        /// Adds Pitch to the Camera
+        /// </summary>
+        /// <param name="angle">Angle in Radians</param>
         public void AddPitch(float angle)
         {
             if (Math.Abs(m_pitch + angle) >= MathHelper.ToRadians(80)) return;

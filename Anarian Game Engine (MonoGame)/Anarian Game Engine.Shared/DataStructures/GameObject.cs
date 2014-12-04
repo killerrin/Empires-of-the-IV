@@ -160,7 +160,7 @@ namespace Anarian.DataStructures
         public bool CheckRayIntersection(Ray ray)
         {
             BoundingSphere boundingSphere;
-
+            
             // Create the ModelTransforms
             Matrix[] modelTransforms = new Matrix[Model3D.Bones.Count];
             Model3D.CopyAbsoluteBoneTransformsTo(modelTransforms);

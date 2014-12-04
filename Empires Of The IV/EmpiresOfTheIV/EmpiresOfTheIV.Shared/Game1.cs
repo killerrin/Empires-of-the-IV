@@ -14,6 +14,7 @@ using Anarian;
 using Anarian.DataStructures;
 using Anarian.DataStructures.Animation;
 using Anarian.DataStructures.Animation.Aux;
+using Anarian.Enumerators;
 //using AnimationAux;
 using Anarian.DataStructures.Input;
 using Anarian.Helpers;
@@ -58,6 +59,9 @@ namespace EmpiresOfTheIV
 #if WINDOWS_APP
             this.IsMouseVisible = true;
 #endif
+
+            m_inputManager.Mouse.MouseClicked += Mouse_MouseClicked;
+
         }
 
         /// <summary>
@@ -109,6 +113,7 @@ namespace EmpiresOfTheIV
             base.UnloadContent();
         }
 
+
         bool set = false;
 
         /// <summary>
@@ -118,33 +123,44 @@ namespace EmpiresOfTheIV
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            m_sceneManager.CurrentScene.SceneNode.Position =
-                new Vector3(0.5f, 0.5f, 0.5f);
-            m_sceneManager.CurrentScene.SceneNode.Rotation +=
-                new Vector3(0.0f, (0.0025f) * (float)gameTime.ElapsedGameTime.TotalMilliseconds, 0.0f);
-            m_sceneManager.CurrentScene.SceneNode.OrbitalRotation +=
-                new Vector3(MathHelper.ToRadians(1.0f), MathHelper.ToRadians(1.0f), MathHelper.ToRadians(1.0f));
+            //m_sceneManager.CurrentScene.SceneNode.Position =
+            //    new Vector3(0.5f, 0.5f, 0.5f);
+            //m_sceneManager.CurrentScene.SceneNode.Rotation +=
+            //    new Vector3(0.0f, (0.0025f) * (float)gameTime.ElapsedGameTime.TotalMilliseconds, 0.0f);
+            //m_sceneManager.CurrentScene.SceneNode.OrbitalRotation +=
+            //    new Vector3(MathHelper.ToRadians(1.0f), MathHelper.ToRadians(1.0f), MathHelper.ToRadians(1.0f));
 
-            //if (!set) {
-            //    if (GamePage.CortanaMediaElement != null) {
-            //    #if WINDOWS_PHONE_APP
-            //        set = true;
-            //        CortanaHelper.CortanaFeedback("Hello, World!", GamePage.CortanaMediaElement);
-            //    #endif
-            //    }
-            //}
+            if (!set) {
+                if (GamePage.CortanaMediaElement != null) {
+                #if WINDOWS_PHONE_APP
+                    set = true;
+                    CortanaHelper.CortanaFeedback("Hello, World!", GamePage.CortanaMediaElement);
+                #endif
+                }
+            }
 
-            if (m_inputManager.MouseState.LeftButton == ButtonState.Pressed) {
-                Camera camera = m_sceneManager.CurrentScene.Camera;
-                Ray ray = camera.GetMouseRay(
-                    m_inputManager.MouseState.Position.ToVector2(),
-                    GraphicsDevice.Viewport
-                    );
-                //bool intersects = m_sceneManager.CurrentScene.SceneNode.GetChild(0).CheckRayIntersection(ray);
-                //Debug.WriteLine(intersects);
-            } 
 
             base.Update(gameTime);
+        }
+
+        void Mouse_MouseClicked(object sender, Anarian.Events.MouseClickedEventArgs e)
+        {
+            if (e.ButtonClicked == MouseButtonClick.LeftMouseButton) {
+                Camera camera = m_sceneManager.CurrentScene.Camera;
+                Ray ray = camera.GetMouseRay(
+                    e.Position,
+                    GraphicsDevice.Viewport
+                    );
+
+                Debug.WriteLine("Pos {0}, Dir {1}", ray.Position, ray.Direction);
+                Vector3 position = m_sceneManager.CurrentScene.SceneNode.GetChild(0).Position;
+                //position.X += ray.Position.X;
+                //position.Y = ray.Position.Y;
+                //m_sceneManager.CurrentScene.SceneNode.GetChild(0).Position = position;
+
+                bool intersects = m_sceneManager.CurrentScene.SceneNode.GetChild(0).CheckRayIntersection(ray);
+                Debug.WriteLine(intersects);
+            } 
         }
 
         /// <summary>

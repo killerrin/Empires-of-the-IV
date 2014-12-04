@@ -15,6 +15,13 @@ namespace Anarian.Helpers
 {
     public static class PrimitiveHelper2D
     {
+        public static Texture2D Texture;
+
+        #region Helper Methods
+        public static void SetDefaultTexture()
+        {
+            Texture = ResourceManager.Instance.GetTexture("blankTexture_age");
+        }
         private static Rectangle GetCenterOfPoint(int size, Vector2 position)
         {
             Rectangle rect = new Rectangle();
@@ -24,6 +31,7 @@ namespace Anarian.Helpers
             rect.Height = size;
             return rect;
         }
+        #endregion
 
         /// <summary>
         /// Draws Square Points on the screen at the specified Position, Size and Color
@@ -34,13 +42,13 @@ namespace Anarian.Helpers
         /// <param name="param">Vector2s representing position on the screen</param>
         public static void DrawPoints(SpriteBatch spriteBatch, Color color, int size, params Vector2[] param)
         {
-            Texture2D blankTex = ResourceManager.Instance.GetTexture("blankTexture_age");
+            if (Texture == null) SetDefaultTexture();
             
             spriteBatch.Begin();
             for (int i = 0; i < param.Length; i++)
             {
                 Rectangle rect = GetCenterOfPoint(size, param[i]);
-                spriteBatch.Draw(blankTex, rect, color);
+                spriteBatch.Draw(Texture, rect, color);
             }
             spriteBatch.End();
         }
@@ -54,8 +62,8 @@ namespace Anarian.Helpers
         /// <param name="param">Vector2s representing position on the screen</param>
         public static void DrawLines(SpriteBatch spriteBatch, Color color, int size, Vector2 p1, Vector2 p2, params Vector2[] param)
         {
-            Texture2D blankTex = ResourceManager.Instance.GetTexture("blankTexture_age");
-
+            if (Texture == null) SetDefaultTexture();
+            
             // Do the math
             Rectangle r = new Rectangle((int)p1.X, (int)p1.Y, (int)(p2 - p1).Length() + size, size);
             Vector2 v = Vector2.Normalize(p1 - p2);
@@ -64,7 +72,7 @@ namespace Anarian.Helpers
 
             // Draw the Line
             spriteBatch.Begin();
-            spriteBatch.Draw(blankTex, r, null, color, angle, Vector2.Zero, SpriteEffects.None, 0);
+            spriteBatch.Draw(Texture, r, null, color, angle, Vector2.Zero, SpriteEffects.None, 0);
             spriteBatch.End();
 
             // Recursively Draw Lines until there are no more left
@@ -94,7 +102,6 @@ namespace Anarian.Helpers
                     (radius * 2.0f) * (float)Math.Cos((double)MathHelper.ToRadians(i)),
                     (radius * 2.0f) * (float)Math.Sin((double)MathHelper.ToRadians(i))
                 );
-
                 point += position;
 
                 DrawPoints(spriteBatch, color, size, point);
