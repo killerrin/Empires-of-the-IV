@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 
 using Anarian.Interfaces;
+using Anarian.Enumerators;
+using Anarian.Events;
 
 namespace Anarian.DataStructures.Input
 {
@@ -35,11 +37,45 @@ namespace Anarian.DataStructures.Input
         {
             m_prevKeyboardState = m_keyboardState;
             m_keyboardState = Keyboard.GetState();
+
+            // If we have subscribers to the events, call them now
+            if (KeyboardDown != null) {
+                Keys[] keysDown = m_keyboardState.GetPressedKeys();
+                for (int i = 0; i < keysDown.Length; i++) {
+                    KeyboardDown(this, new KeyboardClickedEventArgs(keysDown[i]));
+                }
+            }
+
+            if (KeyboardClicked != null) {
+                Keys[] prevKeysDown = m_prevKeyboardState.GetPressedKeys();
+                for (int i = 0; i < prevKeysDown.Length; i++)
+                    if (KeyPressed(prevKeysDown[i]))
+                        KeyboardClicked(this, new KeyboardClickedEventArgs(prevKeysDown[i]));
+            }
         }
 
         #region Helper Methods
+        public bool KeyPressed(Keys key)
+        {
+            if (m_prevKeyboardState.IsKeyDown(key) == true &&
+                m_keyboardState.IsKeyUp(key) == true)
+                return true;
+            return false;
+        }
 
+        public bool IsKeyDown(Keys key)
+        {
+            return m_keyboardState.IsKeyDown(key);
+        }
+        public bool IsKeyUp(Keys key)
+        {
+            return m_keyboardState.IsKeyUp(key);
+        }
         #endregion
 
+        #region Events
+        public event KeyboardDownEventHandler KeyboardDown;
+        public event KeyboardClickedEventHandler KeyboardClicked;
+        #endregion
     }
 }

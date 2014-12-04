@@ -8,6 +8,7 @@ using Anarian.Enumerators;
 namespace Anarian.Events
 {
     public delegate void MouseClickedEventHandler(object sender, MouseClickedEventArgs e);
+    public delegate void MouseDownEventHandler(object sender, MouseClickedEventArgs e);
 
     public class MouseClickedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
     {

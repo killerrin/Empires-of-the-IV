@@ -60,8 +60,14 @@ namespace EmpiresOfTheIV
             this.IsMouseVisible = true;
 #endif
 
+            // Subscribe to our Events
+            // Mouse
+            m_inputManager.Mouse.MouseDown += Mouse_MouseDown;
             m_inputManager.Mouse.MouseClicked += Mouse_MouseClicked;
-
+            m_inputManager.Mouse.MouseMoved += Mouse_MouseMoved;
+            // Keybaord
+            m_inputManager.Keyboard.KeyboardDown += Keyboard_KeyboardDown;
+            m_inputManager.Keyboard.KeyboardClicked += Keyboard_KeyboardClicked;
         }
 
         /// <summary>
@@ -125,10 +131,10 @@ namespace EmpiresOfTheIV
         {
             //m_sceneManager.CurrentScene.SceneNode.Position =
             //    new Vector3(0.5f, 0.5f, 0.5f);
-            //m_sceneManager.CurrentScene.SceneNode.Rotation +=
-            //    new Vector3(0.0f, (0.0025f) * (float)gameTime.ElapsedGameTime.TotalMilliseconds, 0.0f);
             //m_sceneManager.CurrentScene.SceneNode.OrbitalRotation +=
             //    new Vector3(MathHelper.ToRadians(1.0f), MathHelper.ToRadians(1.0f), MathHelper.ToRadians(1.0f));
+            m_sceneManager.CurrentScene.SceneNode.Rotation +=
+                new Vector3(0.0f, (0.0025f) * (float)gameTime.ElapsedGameTime.TotalMilliseconds, 0.0f);
 
             if (!set) {
                 if (GamePage.CortanaMediaElement != null) {
@@ -142,26 +148,7 @@ namespace EmpiresOfTheIV
 
             base.Update(gameTime);
         }
-
-        void Mouse_MouseClicked(object sender, Anarian.Events.MouseClickedEventArgs e)
-        {
-            if (e.ButtonClicked == MouseButtonClick.LeftMouseButton) {
-                Camera camera = m_sceneManager.CurrentScene.Camera;
-                Ray ray = camera.GetMouseRay(
-                    e.Position,
-                    GraphicsDevice.Viewport
-                    );
-
-                Debug.WriteLine("Pos {0}, Dir {1}", ray.Position, ray.Direction);
-                Vector3 position = m_sceneManager.CurrentScene.SceneNode.GetChild(0).Position;
-                //position.X += ray.Position.X;
-                //position.Y = ray.Position.Y;
-                //m_sceneManager.CurrentScene.SceneNode.GetChild(0).Position = position;
-
-                bool intersects = m_sceneManager.CurrentScene.SceneNode.GetChild(0).CheckRayIntersection(ray);
-                Debug.WriteLine(intersects);
-            } 
-        }
+        
 
         /// <summary>
         /// This is called when the game should draw itself.
@@ -193,9 +180,58 @@ namespace EmpiresOfTheIV
             // Call Draw on the Anarian Game Engine to render the SceneGraph
             base.Draw(gameTime);
 
+            //// Draw the Rays
+            if (currentRay.HasValue) {
+                currentRay.Value.DrawRay(graphics, Color.Red, m_sceneManager.CurrentScene.Camera, Matrix.Identity);
+            }
 
             // Lastly, Call the Monogame Draw Method
             base.PostDraw(gameTime);
         }
+
+
+        #region Input Events
+        void Mouse_MouseDown(object sender, Anarian.Events.MouseClickedEventArgs e)
+        {
+            if (e.ButtonClicked == MouseButtonClick.RightMouseButton) {
+                Ray ray = new Ray(Vector3.Zero, Vector3.One);
+                bool intersects = m_sceneManager.CurrentScene.SceneNode.GetChild(0).CheckRayIntersection(ray);
+            }
+        }
+
+        Ray? currentRay;
+        void Mouse_MouseClicked(object sender, Anarian.Events.MouseClickedEventArgs e)
+        {
+            if (e.ButtonClicked == MouseButtonClick.LeftMouseButton) {
+                Camera camera = m_sceneManager.CurrentScene.Camera;
+                Ray ray = camera.GetMouseRay(
+                    e.Position,
+                    GraphicsDevice.Viewport
+                    );
+
+
+                bool intersects = m_sceneManager.CurrentScene.SceneNode.GetChild(0).CheckRayIntersection(ray);
+                Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
+
+                currentRay = ray;
+            }
+        }
+
+        void Mouse_MouseMoved(object sender, Anarian.Events.MouseMovedEventArgs e)
+        {
+            //Debug.WriteLine("Mouse Moved To: {0}, Delta: {1}", e.Position.ToString(), e.DeltaPosition.ToString());
+            //m_sceneManager.CurrentScene.Camera.AddYaw(e.DeltaPosition.X * 0.0005f);
+            //m_sceneManager.CurrentScene.Camera.AddPitch(e.DeltaPosition.Y * 0.0005f);
+        }
+
+        void Keyboard_KeyboardDown(object sender, Anarian.Events.KeyboardClickedEventArgs e)
+        {
+            //Debug.WriteLine("{0}, Held Down", e.KeyClicked.ToString());
+        }
+        void Keyboard_KeyboardClicked(object sender, Anarian.Events.KeyboardClickedEventArgs e)
+        {
+            //Debug.WriteLine("{0}, Pressed", e.KeyClicked.ToString());
+        }
+        #endregion
     }
 }

@@ -5,7 +5,9 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+
 using Anarian.Interfaces;
+using Anarian.Helpers;
 
 namespace Anarian.DataStructures
 {
@@ -29,7 +31,9 @@ namespace Anarian.DataStructures
         public Model Model3D
         {
             get { return m_model; }
-            set { m_model = value; }
+            set { 
+                m_model = value;
+            }
         }
         #endregion
 
@@ -142,6 +146,8 @@ namespace Anarian.DataStructures
         }
         #endregion
 
+
+        List<BoundingBox> m_boundingBoxes;
         public GameObject()
         {
             m_parent    = null;
@@ -155,20 +161,25 @@ namespace Anarian.DataStructures
             m_scale     = Vector3.One;
 
             m_children  = new List<GameObject>();
+            m_boundingBoxes = new List<BoundingBox>();
         }
 
         public bool CheckRayIntersection(Ray ray)
         {
-            BoundingSphere boundingSphere;
-            
+            // Generate the bounding boxes
+            m_boundingBoxes = new List<BoundingBox>();
+
             // Create the ModelTransforms
             Matrix[] modelTransforms = new Matrix[Model3D.Bones.Count];
             Model3D.CopyAbsoluteBoneTransformsTo(modelTransforms);
 
             // Check intersection
             foreach (ModelMesh mesh in Model3D.Meshes) {
-                boundingSphere = mesh.BoundingSphere.Transform(modelTransforms[mesh.ParentBone.Index] * WorldMatrix);
-                if (ray.Intersects(boundingSphere) != null) return true;
+                //BoundingSphere boundingSphere = mesh.BoundingSphere.Transform(modelTransforms[mesh.ParentBone.Index] * WorldMatrix);
+                BoundingBox boundingBox = mesh.GenerateBoundingBox(WorldMatrix);
+                m_boundingBoxes.Add(boundingBox);
+
+                if (ray.Intersects(boundingBox) != null) return true;
             }
             return false;
         }
@@ -236,6 +247,10 @@ namespace Anarian.DataStructures
                 }
                 // Draw the mesh, using the effects set above.
                 mesh.Draw();
+
+                for (int i = 0; i < m_boundingBoxes.Count; i++) {
+                    m_boundingBoxes[i].DrawBoundingBox(graphics, Color.Red, camera, Matrix.Identity);
+                }
             }
         }
         #endregion
