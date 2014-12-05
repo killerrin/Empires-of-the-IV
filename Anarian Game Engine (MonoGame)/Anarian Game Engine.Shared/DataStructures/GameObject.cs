@@ -17,6 +17,7 @@ namespace Anarian.DataStructures
         bool    m_active;
         bool    m_visible;
         Model   m_model;
+        List<BoundingBox> m_boundingBoxes;
 
         public bool Active
         {
@@ -31,8 +32,23 @@ namespace Anarian.DataStructures
         public Model Model3D
         {
             get { return m_model; }
-            set { 
+            set
+            {
                 m_model = value;
+
+                //// Generate the bounding boxes
+                //m_boundingBoxes = new List<BoundingBox>();
+                //
+                //// Create the ModelTransforms
+                //Matrix[] modelTransforms = new Matrix[m_model.Bones.Count];
+                //Model3D.CopyAbsoluteBoneTransformsTo(modelTransforms);
+                //
+                //// Check intersection
+                //foreach (ModelMesh mesh in m_model.Meshes) {
+                //    //BoundingSphere boundingSphere = mesh.BoundingSphere.Transform(modelTransforms[mesh.ParentBone.Index] * WorldMatrix);
+                //    BoundingBox boundingBox = mesh.GenerateBoundingBox(Matrix.Identity);
+                //    m_boundingBoxes.Add(boundingBox);
+                //}
             }
         }
         #endregion
@@ -141,8 +157,6 @@ namespace Anarian.DataStructures
         }
         #endregion
 
-
-        List<BoundingBox> m_boundingBoxes;
         public GameObject()
         {
             m_parent    = null;
@@ -163,7 +177,7 @@ namespace Anarian.DataStructures
         {
             // Generate the bounding boxes
             m_boundingBoxes = new List<BoundingBox>();
-            
+
             // Create the ModelTransforms
             Matrix[] modelTransforms = new Matrix[Model3D.Bones.Count];
             Model3D.CopyAbsoluteBoneTransformsTo(modelTransforms);
@@ -192,7 +206,6 @@ namespace Anarian.DataStructures
                 gO.Update(gameTime);
             }
         }
-
         public void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
         {
             if (!m_active) return;
@@ -235,14 +248,14 @@ namespace Anarian.DataStructures
                     effect.DiffuseColor = new Vector3(1, 1, 1);
                     effect.PreferPerPixelLighting = true;
                     effect.World = transforms[mesh.ParentBone.Index]
-                        * WorldMatrix;
-                    //* Matrix.CreateScale(20f);
+                                   * WorldMatrix;
                     effect.View = camera.View;
                     effect.Projection = camera.Projection;
                 }
                 // Draw the mesh, using the effects set above.
                 mesh.Draw();
 
+                //mesh.BoundingSphere.RenderBoundingSphere( graphics.GraphicsDevice, WorldMatrix, camera.View, camera.Projection, Color.Red);
                 for (int i = 0; i < m_boundingBoxes.Count; i++) {
                     m_boundingBoxes[i].DrawBoundingBox(graphics, Color.Red, camera, Matrix.Identity);
                 }

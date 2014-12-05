@@ -31,10 +31,6 @@ namespace EmpiresOfTheIV
         /// The animated model we are displaying
         /// </summary>
         private AnimatedModel model = null;
-
-        /// <summary>
-        /// This model is loaded solely for the dance animation
-        /// </summary>
         private AnimatedModel dance = null;
 
 
@@ -206,8 +202,7 @@ namespace EmpiresOfTheIV
                 currentRay.Value.DrawRay(graphics, Color.Red, m_sceneManager.CurrentScene.Camera, Matrix.Identity);
             }
 
-
-            Debug.WriteLine("GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
+            //Debug.WriteLine("GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
 
             // Lastly, Call the Monogame Draw Method
             base.PostDraw(gameTime);
@@ -242,9 +237,12 @@ namespace EmpiresOfTheIV
                 currentRay = ray;
             }            
             if (e.ButtonClicked == MouseButtonClick.MiddleMouseButton) {
-                Debug.WriteLine("BEFORE GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
-                GC.Collect();
-                Debug.WriteLine("AFTER GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
+                //Debug.WriteLine("BEFORE GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
+                //GC.Collect();
+                //Debug.WriteLine("AFTER GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
+                Debug.WriteLine("Middle Mouse Pressed");
+                GamePage.PageFrame.Navigate(typeof(BlankPage));
+                GamePage.PageFrame.Visibility = Windows.UI.Xaml.Visibility.Visible;
             }
             if (e.ButtonClicked == MouseButtonClick.RightMouseButton) {
                 move = !move;;

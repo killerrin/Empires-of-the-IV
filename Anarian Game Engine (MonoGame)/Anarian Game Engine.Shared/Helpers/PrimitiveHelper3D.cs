@@ -15,6 +15,25 @@ namespace Anarian.Helpers
 {
     public static class PrimitiveHelper3D
     {
+        public static void DrawRay(this Ray ray, GraphicsDeviceManager graphics, Color color, Camera camera, Matrix WorldMatrix)
+        {
+            // Inside your Game class
+            BasicEffect basicEffect;
+            Vector3 startPoint = ray.Position;
+            Vector3 endPoint = ray.Position * (ray.Direction * camera.Far);
+            
+            // Inside your Game.LoadContent method
+            basicEffect = new BasicEffect(graphics.GraphicsDevice);
+            basicEffect.World = WorldMatrix;
+            basicEffect.View = camera.View;
+            basicEffect.Projection = camera.Projection;
+            
+            // Inside your Game.Draw method
+            basicEffect.CurrentTechnique.Passes[0].Apply();
+            var vertices = new[] { new VertexPositionColor(startPoint, color), new VertexPositionColor(endPoint, color) };
+            graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
+        }
+
         public static void DrawBoundingBox(this BoundingBox boundingBox, GraphicsDeviceManager graphics, Color color, Camera camera, Matrix WorldMatrix)
         {
             // Initialize an array of indices for the box. 12 lines require 24 indices
@@ -48,25 +67,10 @@ namespace Anarian.Helpers
             }
         }
 
-
-
-        public static void DrawRay(this Ray ray, GraphicsDeviceManager graphics, Color color, Camera camera, Matrix WorldMatrix)
+        public static void RenderBoundingSphere(this BoundingSphere sphere, GraphicsDevice graphicsDevice, Matrix world, Matrix view, Matrix projection, Color color)
         {
-            // Inside your Game class
-            BasicEffect basicEffect;
-            Vector3 startPoint = ray.Position;
-            Vector3 endPoint = ray.Position * (ray.Direction * camera.Far);
-            
-            // Inside your Game.LoadContent method
-            basicEffect = new BasicEffect(graphics.GraphicsDevice);
-            basicEffect.World = WorldMatrix;
-            basicEffect.View = camera.View;
-            basicEffect.Projection = camera.Projection;
-            
-            // Inside your Game.Draw method
-            basicEffect.CurrentTechnique.Passes[0].Apply();
-            var vertices = new[] { new VertexPositionColor(startPoint, color), new VertexPositionColor(endPoint, color) };
-            graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
+            BoundingSphereRenderer.Render(sphere, graphicsDevice, world, view, projection, color);
         }
+
     }
 }
