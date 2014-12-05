@@ -42,15 +42,15 @@ namespace Anarian.DataStructures.Input
             if (KeyboardDown != null) {
                 Keys[] keysDown = m_keyboardState.GetPressedKeys();
                 for (int i = 0; i < keysDown.Length; i++) {
-                    KeyboardDown(this, new KeyboardClickedEventArgs(keysDown[i]));
+                    KeyboardDown(this, new KeyboardPressedEventArgs(keysDown[i]));
                 }
             }
 
-            if (KeyboardClicked != null) {
+            if (KeyboardPressed != null) {
                 Keys[] prevKeysDown = m_prevKeyboardState.GetPressedKeys();
                 for (int i = 0; i < prevKeysDown.Length; i++)
                     if (KeyPressed(prevKeysDown[i]))
-                        KeyboardClicked(this, new KeyboardClickedEventArgs(prevKeysDown[i]));
+                        KeyboardPressed(this, new KeyboardPressedEventArgs(prevKeysDown[i]));
             }
         }
 
@@ -75,7 +75,7 @@ namespace Anarian.DataStructures.Input
 
         #region Events
         public event KeyboardDownEventHandler KeyboardDown;
-        public event KeyboardClickedEventHandler KeyboardClicked;
+        public event KeyboardPressedEventHandler KeyboardPressed;
         #endregion
     }
 }

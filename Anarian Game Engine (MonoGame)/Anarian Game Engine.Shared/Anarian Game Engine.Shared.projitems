@@ -26,6 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Level.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\MouseButtonClick.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\PointDirection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\GamePadPressedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\MouseClickedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\MouseMovedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\KeyboardPressedEventArgs.cs" />

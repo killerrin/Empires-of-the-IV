@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
 using Anarian.Interfaces;
+using Anarian.Events;
 
 namespace Anarian.DataStructures.Input
 {
@@ -38,11 +39,12 @@ namespace Anarian.DataStructures.Input
         public void Reset()
         {
             m_gamePadCapabilities = GamePad.GetCapabilities(m_playerIndex);
-            m_isConnected = m_gamePadCapabilities.IsConnected;
             m_gamePadType = m_gamePadCapabilities.GamePadType;
 
             m_gamePadState = GamePad.GetState(m_playerIndex);
             m_prevGamePadState = m_gamePadState;
+
+            m_isConnected = m_gamePadState.IsConnected;
         }
 
         #region Interface Implimentations
@@ -59,8 +61,37 @@ namespace Anarian.DataStructures.Input
 
             // Update if it is connected or not
             m_isConnected = m_gamePadState.IsConnected;
-
+            
             // Preform Events
         }
+
+        #region Helper Methods
+        public bool ButtonPressed(Buttons button)
+        {
+            if (m_prevGamePadState.IsButtonDown(button) == true &&
+                m_gamePadState.IsButtonUp(button) == true)
+                return true;
+            return false;
+        }
+
+        public bool IsButtonDown(Buttons button)
+        {
+            return m_gamePadState.IsButtonDown(button);
+        }
+        public bool IsButtonUp(Buttons button)
+        {
+            return m_gamePadState.IsButtonUp(button);
+        }
+
+        public void SetVibration(float leftMotor, float rightMotor)
+        {
+            GamePad.SetVibration(m_playerIndex, leftMotor, rightMotor);
+        }
+        #endregion
+
+        #region Events
+        public event GamePadDownEventHandler GamePadDown;
+        public event GamePadPressedEventHandler GamePadClicked;
+        #endregion
     }
 }

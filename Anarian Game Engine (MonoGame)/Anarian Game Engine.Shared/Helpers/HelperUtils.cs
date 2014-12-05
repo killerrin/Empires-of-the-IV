@@ -52,6 +52,7 @@ namespace Anarian.Helpers
                     meshMin = Vector3.Min(meshMin, vertPosition);
                     meshMax = Vector3.Max(meshMax, vertPosition);
                 }
+
             }
 
             // transform by mesh bone matrix

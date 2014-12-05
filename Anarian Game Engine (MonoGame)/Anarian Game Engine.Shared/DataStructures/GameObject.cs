@@ -86,7 +86,6 @@ namespace Anarian.DataStructures
 
                 return scale * rotation * translation * orbitalRotation;
             }
-            protected set { }
         }
 
         public Vector3 WorldPosition
@@ -100,7 +99,6 @@ namespace Anarian.DataStructures
                 }
                 return pos;
             }
-            protected set { }
         }
 
         public Vector3 WorldRotation
@@ -114,7 +112,6 @@ namespace Anarian.DataStructures
                 }
                 return rot;
             }
-            protected set { }
         }
 
         public Vector3 WorldOrbitalRotation
@@ -128,7 +125,6 @@ namespace Anarian.DataStructures
                 }
                 return rot;
             }
-            protected set { }
         }
 
         public Vector3 WorldScale
@@ -142,7 +138,6 @@ namespace Anarian.DataStructures
                 }
                 return sca;
             }
-            protected set { }
         }
         #endregion
 
@@ -168,7 +163,7 @@ namespace Anarian.DataStructures
         {
             // Generate the bounding boxes
             m_boundingBoxes = new List<BoundingBox>();
-
+            
             // Create the ModelTransforms
             Matrix[] modelTransforms = new Matrix[Model3D.Bones.Count];
             Model3D.CopyAbsoluteBoneTransformsTo(modelTransforms);

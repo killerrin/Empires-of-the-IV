@@ -48,6 +48,8 @@ namespace Anarian.Helpers
             }
         }
 
+
+
         public static void DrawRay(this Ray ray, GraphicsDeviceManager graphics, Color color, Camera camera, Matrix WorldMatrix)
         {
             // Inside your Game class

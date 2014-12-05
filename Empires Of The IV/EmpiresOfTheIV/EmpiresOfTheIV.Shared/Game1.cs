@@ -67,7 +67,7 @@ namespace EmpiresOfTheIV
             m_inputManager.Mouse.MouseMoved += Mouse_MouseMoved;
             // Keybaord
             m_inputManager.Keyboard.KeyboardDown += Keyboard_KeyboardDown;
-            m_inputManager.Keyboard.KeyboardClicked += Keyboard_KeyboardClicked;
+            m_inputManager.Keyboard.KeyboardPressed += Keyboard_KeyboardPressed;
         }
 
         /// <summary>
@@ -86,10 +86,18 @@ namespace EmpiresOfTheIV
             GameObject armyGuy = new GameObject();
             armyGuy.Model3D = m_resourceManager.GetModel("t-pose_3_t");
             armyGuy.Scale = new Vector3(0.007f);
-            armyGuy.Position = new Vector3(0.0f, -0.5f, 0.0f);
+            armyGuy.Position = new Vector3(0.2f, -0.5f, 0.50f);
+
+
+            // Create the Game Objects
+            GameObject armyGuy2 = new GameObject();
+            armyGuy2.Model3D = m_resourceManager.GetModel("t-pose_3_t");
+            armyGuy2.Scale = new Vector3(0.007f);
+            armyGuy2.Position = new Vector3(-0.75f, -0.5f, -1.5f);
             
             // Add to the Scene
             m_sceneManager.CurrentScene.SceneNode.AddChild(armyGuy);
+            m_sceneManager.CurrentScene.SceneNode.AddChild(armyGuy2);
 
 
 
@@ -121,6 +129,7 @@ namespace EmpiresOfTheIV
 
 
         bool set = false;
+        bool move = false;
 
         /// <summary>
         /// Allows the game to run logic such as updating the world,
@@ -143,6 +152,18 @@ namespace EmpiresOfTheIV
                     CortanaHelper.CortanaFeedback("Hello, World!", GamePage.CortanaMediaElement);
                 #endif
                 }
+            }
+
+            if (move) {
+                GameObject moving = m_sceneManager.CurrentScene.SceneNode.GetChild(0);
+                GameObject moveTo = m_sceneManager.CurrentScene.SceneNode.GetChild(1);
+
+                Vector3 direction = moveTo.Position - moving.Position;
+                direction.Normalize();
+
+                Vector3 speed = direction * 0.002f;
+
+                moving.Position += speed * (float)gameTime.ElapsedGameTime.Milliseconds;
             }
 
 
@@ -185,6 +206,9 @@ namespace EmpiresOfTheIV
                 currentRay.Value.DrawRay(graphics, Color.Red, m_sceneManager.CurrentScene.Camera, Matrix.Identity);
             }
 
+
+            Debug.WriteLine("GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
+
             // Lastly, Call the Monogame Draw Method
             base.PostDraw(gameTime);
         }
@@ -196,6 +220,8 @@ namespace EmpiresOfTheIV
             if (e.ButtonClicked == MouseButtonClick.RightMouseButton) {
                 Ray ray = new Ray(Vector3.Zero, Vector3.One);
                 bool intersects = m_sceneManager.CurrentScene.SceneNode.GetChild(0).CheckRayIntersection(ray);
+
+                Debug.WriteLine("GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
             }
         }
 
@@ -214,6 +240,14 @@ namespace EmpiresOfTheIV
                 Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
 
                 currentRay = ray;
+            }            
+            if (e.ButtonClicked == MouseButtonClick.MiddleMouseButton) {
+                Debug.WriteLine("BEFORE GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
+                GC.Collect();
+                Debug.WriteLine("AFTER GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
+            }
+            if (e.ButtonClicked == MouseButtonClick.RightMouseButton) {
+                move = !move;;
             }
         }
 
@@ -224,11 +258,11 @@ namespace EmpiresOfTheIV
             //m_sceneManager.CurrentScene.Camera.AddPitch(e.DeltaPosition.Y * 0.0005f);
         }
 
-        void Keyboard_KeyboardDown(object sender, Anarian.Events.KeyboardClickedEventArgs e)
+        void Keyboard_KeyboardDown(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
             //Debug.WriteLine("{0}, Held Down", e.KeyClicked.ToString());
         }
-        void Keyboard_KeyboardClicked(object sender, Anarian.Events.KeyboardClickedEventArgs e)
+        void Keyboard_KeyboardPressed(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
             //Debug.WriteLine("{0}, Pressed", e.KeyClicked.ToString());
         }

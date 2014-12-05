@@ -8,24 +8,24 @@ using Anarian.Enumerators;
 
 namespace Anarian.Events
 {
-    public delegate void KeyboardClickedEventHandler(object sender, KeyboardClickedEventArgs e);
-    public delegate void KeyboardDownEventHandler(object sender, KeyboardClickedEventArgs e);
+    public delegate void KeyboardPressedEventHandler(object sender, KeyboardPressedEventArgs e);
+    public delegate void KeyboardDownEventHandler(object sender, KeyboardPressedEventArgs e);
 
-    public class KeyboardClickedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
+    public class KeyboardPressedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
     {
         public Keys KeyClicked { get; private set; }
 
-        public KeyboardClickedEventArgs()
+        public KeyboardPressedEventArgs()
             : base(new Exception(), false, null)
         {
             KeyClicked = Keys.None;
         }
-        public KeyboardClickedEventArgs(Keys keyboardKeyClicked)
+        public KeyboardPressedEventArgs(Keys keyboardKeyClicked)
             : base(new Exception(), false, null)
         {
             KeyClicked = keyboardKeyClicked;
         }
-        public KeyboardClickedEventArgs(Keys keyboardKeyClicked, Exception e, bool canceled, Object state)
+        public KeyboardPressedEventArgs(Keys keyboardKeyClicked, Exception e, bool canceled, Object state)
             : base(e, canceled, state)
         {
             KeyClicked = keyboardKeyClicked;
