@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Input\MouseManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Input\TouchScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Level.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Rendering\Terrain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\MouseButtonClick.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\PointDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\GamePadPressedEventArgs.cs" />

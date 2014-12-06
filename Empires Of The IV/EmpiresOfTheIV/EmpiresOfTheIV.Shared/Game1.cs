@@ -17,6 +17,7 @@ using Anarian.DataStructures.Animation.Aux;
 using Anarian.Enumerators;
 //using AnimationAux;
 using Anarian.DataStructures.Input;
+using Anarian.DataStructures.Rendering;
 using Anarian.Helpers;
 using Anarian.Interfaces;
 
@@ -33,6 +34,8 @@ namespace EmpiresOfTheIV
         private AnimatedModel model = null;
         private AnimatedModel dance = null;
 
+        //Terrain
+        Terrain m_terrain;
 
         public Game1()
             :base()
@@ -84,7 +87,6 @@ namespace EmpiresOfTheIV
             armyGuy.Scale = new Vector3(0.007f);
             armyGuy.Position = new Vector3(0.2f, -0.5f, 0.50f);
 
-
             // Create the Game Objects
             GameObject armyGuy2 = new GameObject();
             armyGuy2.Model3D = m_resourceManager.GetModel("t-pose_3_t");
@@ -95,7 +97,12 @@ namespace EmpiresOfTheIV
             m_sceneManager.CurrentScene.SceneNode.AddChild(armyGuy);
             m_sceneManager.CurrentScene.SceneNode.AddChild(armyGuy2);
 
-
+            // Load the Terrain
+            Texture2D heightMap = Content.Load<Texture2D>("heightmap");
+            Texture2D grassTexture = Content.Load<Texture2D>("grassTexture");
+            m_terrain = new Terrain(graphics, heightMap, grassTexture);
+            m_terrain.Scale = new Vector3(0.05f, 0.05f, 0.05f);
+            m_terrain.Position = new Vector3(0.0f, -2.0f, -2.0f);
 
             //// Load the Animated Model
             ////// Load the model we will display
@@ -134,12 +141,15 @@ namespace EmpiresOfTheIV
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            //m_sceneManager.CurrentScene.SceneNode.Position =
-            //    new Vector3(0.5f, 0.5f, 0.5f);
-            //m_sceneManager.CurrentScene.SceneNode.OrbitalRotation +=
-            //    new Vector3(MathHelper.ToRadians(1.0f), MathHelper.ToRadians(1.0f), MathHelper.ToRadians(1.0f));
-            m_sceneManager.CurrentScene.SceneNode.Rotation +=
-                new Vector3(0.0f, (0.0025f) * (float)gameTime.ElapsedGameTime.TotalMilliseconds, 0.0f);
+            // Example on how to move the root scene node
+            //m_sceneManager.CurrentScene.SceneNode.Rotation +=
+            //    new Vector3(0.0f, (0.00025f) * (float)gameTime.ElapsedGameTime.TotalMilliseconds, 0.0f);
+
+            m_terrain.Rotation += new Vector3(
+                0,
+                0.00025f * (float)gameTime.ElapsedGameTime.TotalMilliseconds,
+                0
+                );
 
             if (!set) {
                 if (GamePage.CortanaMediaElement != null) {
@@ -185,13 +195,6 @@ namespace EmpiresOfTheIV
             spriteBatch.End();
 
             //// Draw some Points
-            //PrimitiveHelper2D.DrawPoints(spriteBatch, Color.Red, 20, new Vector2(200.0f, 200.0f));
-            //PrimitiveHelper2D.DrawLines(spriteBatch, Color.Red, 4, new Vector2(0.0f, 400.0f), new Vector2(200.0f, 550.0f),
-            //    new Vector2(400.0f, 550.0f), new Vector2(600.0f, 300.0f));
-            //
-            //PrimitiveHelper2D.DrawCircle(spriteBatch, Color.Red, 4, 25.0f, new Vector2(500.0f, 400.0f));
-            //PrimitiveHelper2D.DrawArc(spriteBatch, Color.Red, 4, 120.0f, 25.0f, new Vector2(700.0f, 400.0f));
-            //PrimitiveHelper2D.DrawArc(spriteBatch, Color.Red, 4, 120.0f, -25.0f, new Vector2(800.0f, 400.0f));
             //PrimitiveHelper2D.DrawSineWave(spriteBatch, Color.Red, 4, new Vector2(0.0f, 600.0f), 100.0f, 0.006f, GraphicsDevice.Viewport.Width, 0.0f);
 
             // Call Draw on the Anarian Game Engine to render the SceneGraph
@@ -202,6 +205,7 @@ namespace EmpiresOfTheIV
                 currentRay.Value.DrawRay(graphics, Color.Red, m_sceneManager.CurrentScene.Camera, Matrix.Identity);
             }
 
+            m_terrain.Draw(gameTime, m_sceneManager.CurrentScene.Camera, graphics);
             //Debug.WriteLine("GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
 
             // Lastly, Call the Monogame Draw Method

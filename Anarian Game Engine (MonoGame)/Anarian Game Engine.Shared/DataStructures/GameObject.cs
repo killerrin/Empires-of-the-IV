@@ -13,7 +13,7 @@ namespace Anarian.DataStructures
 {
     public class GameObject : IUpdatable, IRenderable
     {
-        #region Properties
+        #region Fields/Properties
         bool    m_active;
         bool    m_visible;
         Model   m_model;
@@ -223,6 +223,11 @@ namespace Anarian.DataStructures
             // Then we render it
             if (!m_visible) return;
             if (m_model == null) return;
+
+            // Check Against Frustrum to cull out objects
+            for (int i = 0; i < m_boundingBoxes.Count; i++) {
+                if (!m_boundingBoxes[i].Intersects(camera.Frustum)) return;
+            }
 
             // Render This Object
             //Debug.WriteLine("Rendering Model Pos:{0}, Sca:{1}, Rot:{2}", WorldPosition, WorldScale, WorldRotation);

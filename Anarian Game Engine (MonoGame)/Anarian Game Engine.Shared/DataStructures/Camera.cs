@@ -10,6 +10,18 @@ namespace Anarian.DataStructures
 {
     public class Camera : IMoveable
     {
+        BoundingFrustum m_frustrum;
+
+        #region Matricies
+        Matrix m_view;
+        Matrix m_projection;
+        Matrix m_world;
+
+        public Matrix View { get { return m_view; } }
+        public Matrix Projection { get { return m_projection; } }
+        public Matrix World { get { return m_world; } }
+        #endregion
+
         #region View
         Vector3 m_eye;
         Vector3 m_up;
@@ -36,8 +48,10 @@ namespace Anarian.DataStructures
             m_eye = eye;
             m_lookAt = lookat;
             m_up = up;
-            m_view = Matrix.CreateLookAt(m_eye, m_lookAt, m_up);
 
+            m_view = Matrix.CreateLookAt(m_eye, m_lookAt, m_up);
+            m_frustrum = new BoundingFrustum(m_view * m_projection);
+            
             // Calculate the YawPitch from the new settings
             CalculateYawPitch();
         }
@@ -103,24 +117,16 @@ namespace Anarian.DataStructures
             m_aspectRatio = aspectRatio;
             m_zNear = near;
             m_zFar = far;
+
             m_projection = Matrix.CreatePerspectiveFieldOfView(m_fov, m_aspectRatio, m_zNear, m_zFar);
+            m_frustrum = new BoundingFrustum(m_view * m_projection);
         }
         #endregion
 
-        #region Matricies
-        Matrix m_view;
-        Matrix m_projection;
-        Matrix m_world;
-
-        public Matrix View { get { return m_view; } }
-        public Matrix Projection { get { return m_projection; } }
-        public Matrix World { get { return m_world; } }
-        #endregion
-
         #region Helper Properties
-        public BoundingFrustum GetFrustum { get { return new BoundingFrustum(View * Projection); } }
+        public BoundingFrustum Frustum { get { return m_frustrum; } }
 
-        Vector3 Direction { get { return Vector3.Normalize(m_lookAt - m_eye); } }
+        public Vector3 Direction { get { return Vector3.Normalize(m_lookAt - m_eye); } }
         public Vector3 Right { get { return Vector3.Normalize(Vector3.Cross(this.Direction, this.Up)); } }
         #endregion
 
