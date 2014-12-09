@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 
-//using AnimationAux;
 using Anarian.DataStructures.Animation.Aux;
 
 namespace Anarian.DataStructures.Animation

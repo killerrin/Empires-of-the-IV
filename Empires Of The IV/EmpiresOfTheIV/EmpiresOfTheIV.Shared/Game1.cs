@@ -15,7 +15,6 @@ using Anarian.DataStructures;
 using Anarian.DataStructures.Animation;
 using Anarian.DataStructures.Animation.Aux;
 using Anarian.Enumerators;
-//using AnimationAux;
 using Anarian.DataStructures.Input;
 using Anarian.DataStructures.Rendering;
 using Anarian.Helpers;
@@ -108,16 +107,16 @@ namespace EmpiresOfTheIV
             //model = new AnimatedModel("t-pose_3");
             //model.LoadContent(Content);
             ////// Load the model that has an animation clip it in
-            //dance = new AnimatedModel("walk");
+            //dance = new AnimatedModel("walk_t");
             //dance.LoadContent(Content);
             //
-            ////System.Diagnostics.Debug.WriteLine(dance.Clips.Count);
-            ////AnimationClip clip = dance.Clips[0];
-            ////System.Diagnostics.Debug.WriteLine(dance.Clips[0].Name);
-            ////
-            ////// And play the clip
-            ////AnimationPlayer player = model.PlayClip(clip);
-            ////player.Looping = true;
+            //System.Diagnostics.Debug.WriteLine(dance.Clips.Count);
+            //AnimationClip clip = dance.Clips[0];
+            //System.Diagnostics.Debug.WriteLine(dance.Clips[0].Name);
+            //////
+            //////// And play the clip
+            //AnimationPlayer player = dance.PlayClip(clip);
+            //player.Looping = true;
         }
 
         /// <summary>
@@ -149,6 +148,8 @@ namespace EmpiresOfTheIV
             //    0.00025f * (float)gameTime.ElapsedGameTime.TotalMilliseconds,
             //    0
             //    );
+
+            //dance.Update(gameTime);
 
             if (!set) {
                 if (GamePage.CortanaMediaElement != null) {
@@ -217,6 +218,8 @@ namespace EmpiresOfTheIV
             }
 
             m_terrain.Draw(gameTime, m_sceneManager.CurrentScene.Camera, graphics);
+
+            //dance.Draw(graphics.GraphicsDevice, m_sceneManager.CurrentScene.Camera.View, m_sceneManager.CurrentScene.Camera.Projection, Matrix.Identity);
             //Debug.WriteLine("GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
 
             // Lastly, Call the Monogame Draw Method
