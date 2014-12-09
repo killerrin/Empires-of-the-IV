@@ -197,52 +197,60 @@ namespace Anarian.DataStructures
         #region Interface Implimentation
         void IMoveable.Move(GameTime gameTime, Vector3 movement)
         {
-            MoveHorizontal(gameTime, movement.X);
-            MoveVertical(gameTime, movement.Y);
-            MoveForward(gameTime, movement.Z);
+            MoveHorizontal(movement.X);
+            MoveVertical(movement.Y);
+            MoveForward(movement.Z);
         }
 
         void IMoveable.MoveHorizontal(GameTime gameTime, float amount)
         {
-            MoveHorizontal(gameTime, amount);
+            MoveHorizontal(amount);
         }
         void IMoveable.MoveVertical(GameTime gameTime, float amount)
         {
-            MoveVertical(gameTime, amount);
+            MoveVertical(amount);
         }
         void IMoveable.MoveForward(GameTime gameTime, float amount)
         {
-            MoveForward(gameTime, amount);
+            MoveForward(amount);
         }
         #endregion
 
         #region Camera Movement
-        public void Move(GameTime gameTime, Vector3 movement)
+        public void Move(Vector3 movement)
         {
-            MoveHorizontal(gameTime, movement.X);
-            MoveVertical(gameTime, movement.Y);
-            MoveForward(gameTime, movement.Z);
+            MoveHorizontal(movement.X);
+            MoveVertical(movement.Y);
+            MoveForward(movement.Z);
         }
 
-        public void MoveHorizontal(GameTime gameTime, float amount)
+        public void MoveDepth(float amount)
+        {
+            Vector3 temp = m_eye;
+            m_eye += amount * Vector3.UnitZ;
+            m_lookAt += amount * Vector3.UnitZ;
+            CreateViewMatrix(m_eye, m_lookAt, m_up);
+        }
+        public void MoveHorizontal(float amount)
         {
             m_eye += amount * this.Right;
             m_lookAt += amount * this.Right;
             CreateViewMatrix(m_eye, m_lookAt, m_up);
         }
-        public void MoveVertical(GameTime gameTime, float amount)
+        public void MoveVertical(float amount)
         {
             m_eye += amount * this.Up;
             m_lookAt += amount * this.Up;
             CreateViewMatrix(m_eye, m_lookAt, m_up); 
         }
-        public void MoveForward(GameTime gameTime, float amount)
+        public void MoveForward(float amount)
         {
             Vector3 temp = m_eye;
             m_eye += amount * this.Direction;
             m_lookAt += amount * this.Direction;
             CreateViewMatrix(m_eye, m_lookAt, m_up);
         }
+
 
 
         /// <summary>

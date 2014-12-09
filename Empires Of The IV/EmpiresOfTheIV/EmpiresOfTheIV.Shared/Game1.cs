@@ -86,12 +86,13 @@ namespace EmpiresOfTheIV
             armyGuy.Model3D = m_resourceManager.GetModel("t-pose_3_t");
             armyGuy.Scale = new Vector3(0.007f);
             armyGuy.Position = new Vector3(0.2f, -0.5f, 0.50f);
+            //armyGuy.Visible = false;
 
             // Create the Game Objects
             GameObject armyGuy2 = new GameObject();
             armyGuy2.Model3D = m_resourceManager.GetModel("t-pose_3_t");
-            armyGuy2.Scale = new Vector3(0.007f);
-            armyGuy2.Position = new Vector3(-0.75f, -0.5f, -1.5f);
+            armyGuy2.Scale = new Vector3(0.02f);
+            armyGuy2.Position = new Vector3(0.0f, 0.5f, -1.5f);
             
             // Add to the Scene
             m_sceneManager.CurrentScene.SceneNode.AddChild(armyGuy);
@@ -101,8 +102,6 @@ namespace EmpiresOfTheIV
             Texture2D heightMap = Content.Load<Texture2D>("heightmap");
             Texture2D grassTexture = Content.Load<Texture2D>("grassTexture");
             m_terrain = new Terrain(graphics, heightMap, grassTexture);
-            m_terrain.Scale = new Vector3(0.05f, 0.05f, 0.05f);
-            m_terrain.Position = new Vector3(0.0f, -2.0f, -2.0f);
 
             //// Load the Animated Model
             ////// Load the model we will display
@@ -145,11 +144,11 @@ namespace EmpiresOfTheIV
             //m_sceneManager.CurrentScene.SceneNode.Rotation +=
             //    new Vector3(0.0f, (0.00025f) * (float)gameTime.ElapsedGameTime.TotalMilliseconds, 0.0f);
 
-            m_terrain.Rotation += new Vector3(
-                0,
-                0.00025f * (float)gameTime.ElapsedGameTime.TotalMilliseconds,
-                0
-                );
+            //m_terrain.Rotation += new Vector3(
+            //    0,
+            //    0.00025f * (float)gameTime.ElapsedGameTime.TotalMilliseconds,
+            //    0
+            //    );
 
             if (!set) {
                 if (GamePage.CortanaMediaElement != null) {
@@ -172,7 +171,19 @@ namespace EmpiresOfTheIV
                 moving.Position += speed * (float)gameTime.ElapsedGameTime.Milliseconds;
             }
 
+            Vector3 p = m_sceneManager.CurrentScene.SceneNode.GetChild(1).Position; 
+            p.X += 0.02f;
+            m_sceneManager.CurrentScene.SceneNode.GetChild(1).Position = p;
 
+            float height = m_terrain.GetHeightAtPoint(m_sceneManager.CurrentScene.SceneNode.GetChild(1).Position);
+
+            if (height != float.MaxValue) {
+                Vector3 pos = m_sceneManager.CurrentScene.SceneNode.GetChild(1).Position;
+                pos.Y = height;
+                m_sceneManager.CurrentScene.SceneNode.GetChild(1).Position = pos;
+            }
+
+            
             base.Update(gameTime);
         }
         
@@ -262,6 +273,48 @@ namespace EmpiresOfTheIV
 
         void Keyboard_KeyboardDown(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
+            Camera cam = m_sceneManager.CurrentScene.Camera;
+            
+            switch (e.KeyClicked) {
+                case Keys.W:
+                    cam.MoveForward(2.0f);
+                    break;
+                case Keys.S:
+                    cam.MoveForward(-2.0f);
+                    break;
+                case Keys.A:
+                    cam.MoveHorizontal(-2.0f);
+                    break;
+                case Keys.D:
+                    cam.MoveHorizontal(2.0f);
+                    break;
+                case Keys.Q:
+                    cam.MoveVertical(-2.0f);
+                    break;
+                case Keys.E:
+                    cam.MoveVertical(2.0f);
+                    break;
+
+                case Keys.O:
+                    cam.MoveDepth(-2.0f);
+                    break;
+                case Keys.L:
+                    cam.MoveDepth(2.0f);
+                    break;
+
+                case Keys.Up:
+                    cam.AddPitch(MathHelper.ToRadians(2));
+                    break;
+                case Keys.Down:
+                    cam.AddPitch(MathHelper.ToRadians(-2));
+                    break;
+                case Keys.Left:
+                    cam.AddYaw(MathHelper.ToRadians(2));
+                    break;
+                case Keys.Right:
+                    cam.AddYaw(MathHelper.ToRadians(-2));
+                    break;
+            }
             //Debug.WriteLine("{0}, Held Down", e.KeyClicked.ToString());
         }
         void Keyboard_KeyboardPressed(object sender, Anarian.Events.KeyboardPressedEventArgs e)

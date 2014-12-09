@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
-
+using Microsoft.Xna.Framework.Utilities;
 using Anarian.Interfaces;
 using Anarian.Helpers;
 
@@ -48,28 +48,28 @@ namespace Anarian.DataStructures.Rendering
         public Vector3 OrbitalRotation
         {
             get { return m_orbitalRotation; }
-            set { m_orbitalRotation = value; }
+            set { m_orbitalRotation = value; GenerateBoundingBox(); }
         }
         
         Vector3 m_rotation;
         public Vector3 Rotation
         {
             get { return m_rotation; }
-            set { m_rotation = value; }
+            set { m_rotation = value; GenerateBoundingBox(); }
         }
 
         Vector3 m_scale;
         public Vector3 Scale
         {
             get { return m_scale; }
-            set { m_scale = value; }
+            set { m_scale = value; GenerateBoundingBox(); }
         }
 
         Vector3 m_position;
         public Vector3 Position
         {
             get { return m_position; }
-            set { m_position = value; }
+            set { m_position = value; GenerateBoundingBox(); }
         }
 
         public Matrix WorldMatrix
@@ -98,19 +98,27 @@ namespace Anarian.DataStructures.Rendering
         #endregion
 
         #region TerrainData
-        //VertexBuffer m_terrainVertexBuffer;
-        //IndexBuffer m_terrainIndexBuffer;
-        //VertexDeclaration m_terrainVertexDeclaration;
-
         VertexPositionNormalTexture[] m_vertices;
         int[] m_indices;
 
-        int m_terrainWidth = 4;
-        int m_terrainHeight = 3;
+        Vector3[,] m_terrainVertsPos;
         float[,] m_heightData;
+
+
+        int m_terrainWidth = 4;
+        public int TerrainWidth { get { return m_terrainWidth; } }
+
+        int m_terrainHeight = 3;
+        public int TerrainHeight { get { return m_terrainHeight; } }
+
+        float m_highestHeightPoint;
+        public float HighestHeight { get { return m_highestHeightPoint * m_scale.Y; } }
 
         BasicEffect m_effect;
         public BasicEffect Effect { get { return m_effect; } }
+
+        BoundingBox m_boundingBox;
+        public BoundingBox BoundingBox { get { return m_boundingBox; } }
         #endregion
 
         public Terrain(GraphicsDeviceManager graphics, Texture2D heightMap, Texture2D texture)
@@ -142,6 +150,7 @@ namespace Anarian.DataStructures.Rendering
             CalculateNormals();
 
             SetupEffects(graphics);
+            GenerateBoundingBox();
         }
         private void LoadHeightData(Texture2D heightMap)
         {
@@ -149,26 +158,42 @@ namespace Anarian.DataStructures.Rendering
             m_terrainWidth = heightMap.Width;
             m_terrainHeight = heightMap.Height;
 
+            float tempHighestHeight = -1.0f;
+
             Color[] heightMapColors = new Color[m_terrainWidth * m_terrainHeight];
             heightMap.GetData(heightMapColors);
 
             m_heightData = new float[m_terrainWidth, m_terrainHeight];
-            for (int x = 0; x < m_terrainWidth; x++)
-                for (int y = 0; y < m_terrainHeight; y++)
+            for (int x = 0; x < m_terrainWidth; x++) {
+                for (int y = 0; y < m_terrainHeight; y++) {
                     m_heightData[x, y] = heightMapColors[x + y * m_terrainWidth].R / 5.0f;
+
+                    if (m_heightData[x, y] > tempHighestHeight) { tempHighestHeight = m_heightData[x, y]; }
+                }
+            }
+
+            m_highestHeightPoint = tempHighestHeight;
         }
         
         private void SetUpVertices()
         {
+            Vector3 centerAlign = new Vector3(-m_terrainWidth / 2.0f, 0, m_terrainHeight / 2.0f);
+            
             m_vertices = new VertexPositionNormalTexture[m_terrainWidth * m_terrainHeight];
+            m_terrainVertsPos = new Vector3[m_terrainWidth, m_terrainHeight];
+
             for (int x = 0; x < m_terrainWidth; x++) {
                 for (int y = 0; y < m_terrainHeight; y++) {
-                    m_vertices[x + y * m_terrainWidth].Position = new Vector3(x, m_heightData[x, y], -y);
+                    int vertIndex = x + y * m_terrainWidth;
+                    //Debug.WriteLine("Terrain Setup: {0}", vertIndex);
 
-                    //m_vertices[x + y * m_terrainWidth].Color = Color.White;
-                    m_vertices[x + y * m_terrainWidth].TextureCoordinate.X = (float)x / 30.0f;
-                    m_vertices[x + y * m_terrainWidth].TextureCoordinate.Y = (float)y / 30.0f;
+                    m_terrainVertsPos[x, y] = new Vector3(x, m_heightData[x, y], -y) + centerAlign;
+                    m_vertices[vertIndex].Position = m_terrainVertsPos[x, y];
+
+                    m_vertices[vertIndex].TextureCoordinate.X = (float)x / 30.0f;
+                    m_vertices[vertIndex].TextureCoordinate.Y = (float)y / 30.0f;
                 }
+                //Debug.WriteLine("\n");
             }
         }
 
@@ -226,12 +251,103 @@ namespace Anarian.DataStructures.Rendering
 
             m_effect.EnableDefaultLighting();
         }
+
+        private void GenerateBoundingBox()
+        {
+            // Get list of points
+            Matrix world = WorldMatrix;
+            List<Vector3> points = new List<Vector3>();
+
+            for (int i = 0; i < m_vertices.Length; i++) {
+                points.Add(Vector3.Transform(m_vertices[i].Position, world));
+            }
+            m_boundingBox = BoundingBox.CreateFromPoints(points);
+        }
         #endregion
 
         #region Interface Implimentation
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         void IRenderable.Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics) { Draw(gameTime, camera, graphics); }
         #endregion
+
+
+        public bool IsOnHeightmap(Vector3 point)
+        {
+            if (point.X > m_boundingBox.Min.X &&
+                point.X < m_boundingBox.Max.X &&
+                //point.Y > m_boundingBox.Min.Y ||
+                //point.Y < m_boundingBox.Max.Y ||
+                point.Z > m_boundingBox.Min.Z &&
+                point.Z < m_boundingBox.Max.Z) 
+            {
+                 return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the Height at a point on the Terrain
+        /// </summary>
+        /// <param name="point">The Vector3 Position of the point with data oriented along X/Z Axis</param>
+        /// <returns>The height for the given point on the map</returns>
+        public float GetHeightAtPoint(Vector3 point)
+        {
+            if (!IsOnHeightmap(point)) return float.MaxValue;
+
+            // Grab the X and Z for easy access
+            float pointX = point.X;
+            float pointZ = point.Z;
+
+            // Pre calculate the World Matrix
+            Matrix world = WorldMatrix;
+
+            // Hold the Grid Counters
+            int posX = -1;
+            int posZ = -1;
+            
+            // Search Along the X
+            for (int x = 0; x < m_terrainWidth; x++) {
+                Vector3 vertAtWorld = Vector3.Transform(m_terrainVertsPos[x, 0], world);
+                //Debug.WriteLine("X: {0} | Height: {1} | WorldPos: {2}", x, m_heightData[x, 0], vertAtWorld.ToString());
+
+                if (pointX <= vertAtWorld.X) {
+                    posX = x;
+
+                    //Debug.WriteLine("PointX Pos: {0} | VertAtWorld: {1} | VertGridSpace: {2}", pointX, vertAtWorld.X, posX);
+                    break;
+                }
+            }
+
+            // Search along the Z
+            for (int z = 0; z < m_terrainHeight; z++) {
+                Vector3 vertAtWorld = Vector3.Transform(m_terrainVertsPos[0, z], world);
+                //Debug.WriteLine("X: {0} | Height: {1} | WorldPos: {2}", z, m_heightData[0, z], vertAtWorld.ToString());
+
+                if (pointZ >= vertAtWorld.Z) {
+                    posZ = z;
+
+                    //Debug.WriteLine("PointZ Pos: {0} | VertAtWorld: {1} | VertGridSpace: {2}", pointZ, vertAtWorld.Z, posZ);
+                    break;
+                }
+            }
+
+            // If any of the values are still bad, return empty
+            if (posX == -1 || posZ == -1) 
+            {
+                Debug.WriteLine("A Value on the Terrain Grid could not be found: {0}, {1}", posX, posZ);
+                return float.MaxValue;
+            }
+
+            // Get the vertex position
+            Vector3 vert = Vector3.Transform(m_terrainVertsPos[posX, posZ], world);
+            
+            // Now we get the height data
+            float height = vert.Y;
+            
+            // Lerp the value between the two and return it
+            //Debug.WriteLine("Terrain Height: {0} \n", height);
+            return height;
+        }
 
         #region Update/Draw
         public void Update(GameTime gameTime)
@@ -248,9 +364,8 @@ namespace Anarian.DataStructures.Rendering
             graphics.GraphicsDevice.RasterizerState.CullMode = CullMode.None;
 
             // Begin Drawing the World
-
             // Since the world will be generated outwards from its side, we are offsetting the orgin of the world to its center
-            m_effect.World = Matrix.CreateTranslation(-m_terrainWidth / 2.0f, 0, m_terrainHeight / 2.0f) * WorldMatrix;
+            m_effect.World = WorldMatrix;
             m_effect.View = camera.View;
             m_effect.Projection = camera.Projection;
             
@@ -263,6 +378,8 @@ namespace Anarian.DataStructures.Rendering
                     m_indices, 0, m_indices.Length / 3,
                     VertexPositionNormalTexture.VertexDeclaration);
             }
+
+            //m_boundingBox.DrawBoundingBox(graphics, Color.Red, camera, Matrix.Identity);
         }
         #endregion
     }
