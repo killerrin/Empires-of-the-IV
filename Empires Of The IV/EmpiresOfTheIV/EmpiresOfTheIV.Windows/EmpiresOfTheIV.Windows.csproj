@@ -127,7 +127,7 @@
     </Reference>
     <Reference Include="AnimationAux, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\BetterSkinned-Monogame\AnimationAux Monogame\AnimationAux.Windows\bin\Debug\AnimationAux.dll</HintPath>
+      <HintPath>..\..\..\Extra Libraries\AnimationAux Monogame\AnimationAux.Windows\bin\Debug\AnimationAux.dll</HintPath>
     </Reference>
     <Reference Include="Killerrin Studios Toolkit.Windows, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -38,7 +38,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AnimationPipeline">
-      <HintPath>..\..\..\..\BetterSkinned-Monogame\Animation Pipeline\AnimationPipeline\bin\x86\Debug\AnimationPipeline.dll</HintPath>
+      <HintPath>..\..\..\Extra Libraries\Animation Pipeline\AnimationPipeline\bin\x86\Debug\AnimationPipeline.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.EffectImporter" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.FBXImporter" />
