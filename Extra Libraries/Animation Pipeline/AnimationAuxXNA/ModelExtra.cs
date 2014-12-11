@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Anarian.DataStructures.Animation.Aux
+namespace AnimationAux
 {
     /// <summary>
     /// Class that contains additional information attached to the model and
@@ -18,7 +18,7 @@ namespace Anarian.DataStructures.Animation.Aux
         /// skinned model.
         /// </summary>
         private List<int> skeleton = new List<int>();
-
+        
         /// <summary>
         /// Any associated animation clips
         /// </summary>

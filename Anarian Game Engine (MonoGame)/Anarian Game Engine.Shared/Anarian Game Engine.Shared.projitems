@@ -31,10 +31,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Events\MouseClickedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\MouseMovedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\KeyboardPressedEventArgs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BoundingSphereRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\HelperUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\PrimitiveHelper2D.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\PrimitiveHelper3D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Renderers\BoundingSphereRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Renderers\PrimitiveHelper2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Renderers\PrimitiveHelper3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IMoveable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IRenderable.cs" />
