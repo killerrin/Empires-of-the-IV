@@ -25,12 +25,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Input\TouchScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Level.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Rendering\Terrain.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enumerators\GuiState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\MouseButtonClick.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\PointDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\GamePadPressedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\MouseClickedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\MouseMovedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\KeyboardPressedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUIManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUI\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUI\Element.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUI\Label.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\HelperUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Renderers\BoundingSphereRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Renderers\PrimitiveHelper2D.cs" />
@@ -43,5 +48,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IUpdatable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ResourceManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SceneManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUI\GuiObject.cs" />
   </ItemGroup>
 </Project>

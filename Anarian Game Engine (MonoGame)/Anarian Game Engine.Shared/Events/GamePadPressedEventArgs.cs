@@ -14,21 +14,25 @@ namespace Anarian.Events
     public class GamePadPressedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
     {
         public Buttons ButtonPressed { get; private set; }
+        public PlayerIndex GamePadIndex { get; private set; }
 
         public GamePadPressedEventArgs()
             : base(new Exception(), false, null)
         {
             ButtonPressed = Buttons.BigButton;
+            GamePadIndex = PlayerIndex.One;
         }
-        public GamePadPressedEventArgs(Buttons buttonPressed)
+        public GamePadPressedEventArgs(Buttons buttonPressed, PlayerIndex playerIndex)
             : base(new Exception(), false, null)
         {
             ButtonPressed = buttonPressed;
+            GamePadIndex = playerIndex;
         }
-        public GamePadPressedEventArgs(Buttons buttonPressed, Exception e, bool canceled, Object state)
+        public GamePadPressedEventArgs(Buttons buttonPressed, PlayerIndex playerIndex, Exception e, bool canceled, Object state)
             : base(e, canceled, state)
         {
             ButtonPressed = buttonPressed;
+            GamePadIndex = playerIndex;
         }
     }
 }
