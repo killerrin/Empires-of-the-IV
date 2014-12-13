@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 
+using Anarian.Events;
 using Anarian.Interfaces;
 using Anarian.DataStructures;
 using Anarian.DataStructures.Input;
@@ -27,7 +28,6 @@ namespace Anarian
             set { }
         }
         #endregion
-
 
         #region Properties
         MouseManager m_mouse;
@@ -68,6 +68,15 @@ namespace Anarian
             m_controller2 = new Controller(PlayerIndex.Two);
             m_controller3 = new Controller(PlayerIndex.Three);
             m_controller4 = new Controller(PlayerIndex.Four);
+
+            // Subscribe to Events
+            //m_mouse.MouseDown += m_mouse_MouseDown;
+            //m_mouse.MouseClicked += m_mouse_MouseClicked;
+            //m_mouse.MouseMoved += m_mouse_MouseMoved;
+            //
+            //Controller.GamePadDown += Controller_GamePadDown;
+            //Controller.GamePadClicked += Controller_GamePadClicked;
+            //Controller.GamePadMoved += Controller_GamePadMoved;
 //#endif
         }
 
@@ -91,5 +100,43 @@ namespace Anarian
             m_controller4.Update(gameTime);
 //#endif
         }
+
+        #region Events
+        // Event Aggrigators which will combine Mouse, Keyboard, GamePad and Touch into a singular Pointer/Button Event
+
+        public event PointerDownEventHandler PointerDown;
+        public event PointerPressedEventHandler PointerPressed;
+        public event PointerMovedEventHandler PointerMoved;
+
+        public event ButtonDownEventHandler ButtonDown;
+        public event ButtonPressedEventHandler ButtonPressed;
+
+        #region Mouse
+        void m_mouse_MouseDown(object sender, MouseClickedEventArgs e)
+        {
+        }
+        void m_mouse_MouseClicked(object sender, MouseClickedEventArgs e)
+        {
+        }
+
+        void m_mouse_MouseMoved(object sender, MouseMovedEventArgs e)
+        {
+        }
+        #endregion
+
+        #region Controller
+        void Controller_GamePadDown(object sender, GamePadPressedEventArgs e)
+        {
+        }
+        
+        void Controller_GamePadClicked(object sender, GamePadPressedEventArgs e)
+        {
+        }
+
+        void Controller_GamePadMoved(object sender, GamePadMovedEventsArgs e)
+        {
+        }
+        #endregion
+        #endregion
     }
 }

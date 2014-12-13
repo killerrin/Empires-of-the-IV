@@ -73,7 +73,44 @@ namespace Anarian.DataStructures.Input
 
             m_prevTouchCollection = m_touchCollection;
             m_touchCollection = TouchPanel.GetState();
+
+            // Preform Events
+
         }
+
+        #region Helper Methods
+        public bool IsTouchDown (int id)
+        {
+            foreach (var i in m_touchCollection) {
+                if (i.Id == id) {
+                    if (i.State == TouchLocationState.Pressed ||
+                        i.State == TouchLocationState.Moved) {
+                            return true;
+                    }
+                    break;
+                }
+            }
+            return false;
+        } 
+
+        public bool WasTouchPressed (int id)
+        {
+            foreach (TouchLocation location in m_touchCollection) {
+                if (location.Id == id) {
+                    TouchLocation prevLocation;
+                    bool prevLocationAvailable = location.TryGetPreviousLocation(out prevLocation);
+
+                    if (location.State == TouchLocationState.Pressed && prevLocation.State != TouchLocationState.Pressed) {
+                        return true;
+                    }
+
+                    break;
+                }
+            }
+
+            return false;
+        }
+        #endregion
 
     }
 }

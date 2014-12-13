@@ -43,17 +43,9 @@ namespace Anarian
 
 
             // Subscribe to Controller Events
-            InputManager.Instance.GetController(PlayerIndex.One).GamePadDown += GUIManager_GamePadOneDown;
-            InputManager.Instance.GetController(PlayerIndex.One).GamePadClicked += GUIManager_GamePadOneClicked;
-
-            InputManager.Instance.GetController(PlayerIndex.Two).GamePadDown += GUIManager_GamePadTwoDown;
-            InputManager.Instance.GetController(PlayerIndex.Two).GamePadClicked += GUIManager_GamePadTwoClicked;
-
-            InputManager.Instance.GetController(PlayerIndex.Three).GamePadDown += GUIManager_GamePadThreeDown;
-            InputManager.Instance.GetController(PlayerIndex.Three).GamePadClicked += GUIManager_GamePadThreeClicked;
-
-            InputManager.Instance.GetController(PlayerIndex.Four).GamePadDown += GUIManager_GamePadFourDown;
-            InputManager.Instance.GetController(PlayerIndex.Four).GamePadClicked += GUIManager_GamePadFourClicked;
+            Controller.GamePadDown += GUIManager_GamePadDown;
+            Controller.GamePadClicked += GUIManager_GamePadClicked;
+            Controller.GamePadMoved += GUIManager_GamePadMoved;
         }
 
         #region Mouse Events
@@ -86,57 +78,19 @@ namespace Anarian
         #endregion
 
         #region Controller Events
-        #region Controller One
-        private void GUIManager_GamePadOneClicked(object sender, GamePadPressedEventArgs e)
-        {
-
-
-        }
-
-        void GUIManager_GamePadOneDown(object sender, GamePadPressedEventArgs e)
+        void GUIManager_GamePadDown(object sender, GamePadPressedEventArgs e)
         {
 
         }
-        #endregion
 
-        #region Controller Two
-        private void GUIManager_GamePadTwoClicked(object sender, GamePadPressedEventArgs e)
-        {
-
-
-        }
-
-        void GUIManager_GamePadTwoDown(object sender, GamePadPressedEventArgs e)
+        private void GUIManager_GamePadClicked(object sender, GamePadPressedEventArgs e)
         {
 
         }
-        #endregion
 
-        #region Controller Three
-        private void GUIManager_GamePadThreeClicked(object sender, GamePadPressedEventArgs e)
+        private void GUIManager_GamePadMoved(object sender, GamePadMovedEventsArgs e)
         {
-
-
         }
-
-        void GUIManager_GamePadThreeDown(object sender, GamePadPressedEventArgs e)
-        {
-
-        }
-        #endregion
-
-        #region Controller Four
-        private void GUIManager_GamePadFourClicked(object sender, GamePadPressedEventArgs e)
-        {
-
-
-        }
-
-        void GUIManager_GamePadFourDown(object sender, GamePadPressedEventArgs e)
-        {
-
-        }
-        #endregion
         #endregion
     }
 }
