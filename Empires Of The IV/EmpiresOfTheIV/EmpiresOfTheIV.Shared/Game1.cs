@@ -129,8 +129,6 @@ namespace EmpiresOfTheIV
             base.UnloadContent();
         }
 
-
-        bool set = false;
         bool move = false;
 
         /// <summary>
@@ -140,32 +138,13 @@ namespace EmpiresOfTheIV
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Example on how to move the root scene node
-            //m_sceneManager.CurrentScene.SceneNode.Rotation +=
-            //    new Vector3(0.0f, (0.00025f) * (float)gameTime.ElapsedGameTime.TotalMilliseconds, 0.0f);
-
-            //m_terrain.Rotation += new Vector3(
-            //    0,
-            //    0.00025f * (float)gameTime.ElapsedGameTime.TotalMilliseconds,
-            //    0
-            //    );
-
             dance.Update(gameTime);
 
-            if (!set) {
-                if (GamePage.CortanaMediaElement != null) {
-                #if WINDOWS_PHONE_APP
-                    set = true;
-                    CortanaHelper.CortanaFeedback("Hello, World!", GamePage.CortanaMediaElement);
-                #endif
-                }
-            }
-
-            if (move) {
+            if (move && rayPosOnTerrain.HasValue) {
                 GameObject moving = m_sceneManager.CurrentScene.SceneNode.GetChild(0);
-                GameObject moveTo = m_sceneManager.CurrentScene.SceneNode.GetChild(1);
+                //GameObject moveTo = m_sceneManager.CurrentScene.SceneNode.GetChild(1);
 
-                Vector3 direction = moveTo.Position - moving.Position;
+                Vector3 direction = rayPosOnTerrain.Value - moving.Position;
                 direction.Normalize();
 
                 Vector3 speed = direction * 0.002f;
@@ -240,6 +219,7 @@ namespace EmpiresOfTheIV
         }
 
         Ray? currentRay;
+        Vector3? rayPosOnTerrain;
         void Mouse_MouseClicked(object sender, Anarian.Events.MouseClickedEventArgs e)
         {
             if (e.ButtonClicked == MouseButtonClick.LeftMouseButton) {
@@ -249,11 +229,14 @@ namespace EmpiresOfTheIV
                     GraphicsDevice.Viewport
                     );
 
-
                 bool intersects = m_sceneManager.CurrentScene.SceneNode.GetChild(0).CheckRayIntersection(ray);
                 Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
 
                 currentRay = ray;
+
+                // Get the point on the terrain
+                rayPosOnTerrain = m_terrain.Intersects(ray);
+
             }            
             if (e.ButtonClicked == MouseButtonClick.MiddleMouseButton) {
                 //Debug.WriteLine("BEFORE GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));

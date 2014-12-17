@@ -273,16 +273,72 @@ namespace Anarian.DataStructures.Rendering
 
         public bool IsOnHeightmap(Vector3 point)
         {
-            if (point.X > m_boundingBox.Min.X &&
-                point.X < m_boundingBox.Max.X &&
+            return IsOnHeightmap(point.X, point.Z);
+        }
+       
+        public bool IsOnHeightmap(float pointX, float pointZ)
+        {
+            if (pointX > m_boundingBox.Min.X &&
+                pointX < m_boundingBox.Max.X &&
                 //point.Y > m_boundingBox.Min.Y ||
                 //point.Y < m_boundingBox.Max.Y ||
-                point.Z > m_boundingBox.Min.Z &&
-                point.Z < m_boundingBox.Max.Z) 
+                pointZ > m_boundingBox.Min.Z &&
+                pointZ < m_boundingBox.Max.Z) 
             {
                  return true;
             }
             return false;
+        }
+
+        #region Picking
+        public Vector3? Intersects(Ray ray)
+        {
+            Ray? currentRay = LinearSearch(ray);
+            if (currentRay == null) return null;
+
+            return BinarySearch(currentRay.Value);
+        }
+
+        private Ray? LinearSearch(Ray ray)
+        {
+            ray.Direction /= 50.0f;
+            Vector3 nextPoint = ray.Position + ray.Direction;
+
+            float heightAtNextPoint = GetHeightAtPoint(nextPoint.X, nextPoint.Z);
+            if (heightAtNextPoint == float.MaxValue) return null;
+
+            while (heightAtNextPoint < nextPoint.Y) {
+                ray.Position = nextPoint;
+                nextPoint = ray.Position + ray.Direction;
+
+                heightAtNextPoint = GetHeightAtPoint(nextPoint.X, nextPoint.Z);
+                if (heightAtNextPoint == float.MaxValue) return null;
+            }
+            return ray;
+        }
+        private Vector3? BinarySearch(Ray ray)
+        {
+            float accuracy = 0.01f;
+            
+            float heightAtStartingPoint = GetHeightAtPoint(ray.Position.X, ray.Position.Z);
+            if (heightAtStartingPoint == float.MaxValue) return null;
+
+            float currentError = ray.Position.Y - heightAtStartingPoint;
+            int counter = 0;
+            while (currentError > accuracy) {
+                ray.Direction /= 2.0f;
+                Vector3 nextPoint = ray.Position + ray.Direction;
+
+                float heightAtNextPoint = GetHeightAtPoint(nextPoint.X, nextPoint.Z);
+                if (heightAtNextPoint == null) return null;
+
+                if (nextPoint.Y > heightAtNextPoint) {
+                    ray.Position = nextPoint;
+                    currentError = ray.Position.Y - heightAtNextPoint;
+                }
+                if (counter++ == 1000) break;
+            }
+            return ray.Position;
         }
 
         /// <summary>
@@ -292,11 +348,18 @@ namespace Anarian.DataStructures.Rendering
         /// <returns>The height for the given point on the map</returns>
         public float GetHeightAtPoint(Vector3 point)
         {
-            if (!IsOnHeightmap(point)) return float.MaxValue;
+            return GetHeightAtPoint(point.X, point.Z);
+        }
 
-            // Grab the X and Z for easy access
-            float pointX = point.X;
-            float pointZ = point.Z;
+        /// <summary>
+        /// Gets the Height at a point on the Terrain
+        /// </summary>
+        /// <param name="pointX">The X Position of the point along the plane</param>
+        /// <param name="pointZ">The Z Position of the point along the plane</param>
+        /// <returns>The height for the given point on the map</returns>
+        public float GetHeightAtPoint(float pointX, float pointZ)
+        {
+            if (!IsOnHeightmap(pointX, pointZ)) return float.MaxValue;
 
             // Pre calculate the World Matrix
             Matrix world = WorldMatrix;
@@ -344,10 +407,11 @@ namespace Anarian.DataStructures.Rendering
             // Now we get the height data
             float height = vert.Y;
             
-            // Lerp the value between the two and return it
+            // ToDo: Lerp the value between the two and return it
             //Debug.WriteLine("Terrain Height: {0} \n", height);
             return height;
         }
+        #endregion
 
         #region Update/Draw
         public void Update(GameTime gameTime)

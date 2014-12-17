@@ -177,7 +177,7 @@ namespace Anarian.DataStructures
         {
             // Generate the bounding boxes
             m_boundingBoxes = new List<BoundingBox>();
-
+            
             // Create the ModelTransforms
             Matrix[] modelTransforms = new Matrix[Model3D.Bones.Count];
             Model3D.CopyAbsoluteBoneTransformsTo(modelTransforms);
