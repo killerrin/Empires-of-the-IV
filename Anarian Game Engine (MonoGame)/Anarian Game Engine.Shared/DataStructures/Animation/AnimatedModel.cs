@@ -23,7 +23,7 @@ namespace Anarian.DataStructures.Animation
         /// The actual underlying XNA model
         /// </summary>
         private Model model = null;
-
+        
         /// <summary>
         /// Extra data associated with the XNA model
         /// </summary>
@@ -66,6 +66,16 @@ namespace Anarian.DataStructures.Animation
         /// </summary>
         public List<AnimationClip> Clips { get { return modelExtra.Clips; } }
 
+        /// <summary>
+        /// The asset name of the Animated Model
+        /// </summary>
+        public string AssetName { get { return assetName; } }
+
+        /// <summary>
+        /// The Exta Information stored in the models tag
+        /// </summary>
+        public ModelExtra ModelExtra { get { return modelExtra; } }
+
         #endregion
 
         #region Construction and Loading
@@ -74,10 +84,26 @@ namespace Anarian.DataStructures.Animation
         /// Constructor. Creates the model from an XNA model
         /// </summary>
         /// <param name="assetName">The name of the asset for this model</param>
-        public AnimatedModel(string assetName)
+        protected AnimatedModel(string assetName)
         {
             this.assetName = assetName;
 
+        }
+
+        /// <summary>
+        /// Animated Model wrapper to convert AnimationAux.AnimatedModel data structures across cross assemblies
+        /// </summary>
+        /// <param name="oldModel">A Loaded model from the AnimationAux.AnimatedModel namespace</param>
+        public AnimatedModel(AnimationAux.AnimatedModel oldModel)
+        {
+            assetName = oldModel.AssetName;
+            model = oldModel.Model;
+
+            modelExtra = new ModelExtra(oldModel.ModelExtra);
+
+            // Finally, Obtain the Bones
+            System.Diagnostics.Debug.Assert(modelExtra != null);
+            ObtainBones();
         }
 
         /// <summary>

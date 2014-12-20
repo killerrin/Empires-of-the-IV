@@ -32,7 +32,7 @@ namespace Anarian.DataStructures
             // its Scale to Zero so that SceneNodes which get
             // added as children aren't screwed up
             m_sceneNode = new GameObject();
-            m_sceneNode.Scale = Vector3.Zero;
+            m_sceneNode.Transform.Scale = Vector3.Zero;
         }
 
         #region Interface Implimentation

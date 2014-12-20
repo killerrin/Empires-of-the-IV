@@ -12,7 +12,6 @@ namespace Anarian.DataStructures.Animation.Aux
     public class AnimationClip
     {
         #region Keyframe and Bone nested class
-
         /// <summary>
         /// An Keyframe is a rotation and translation for a moment in time.
         /// It would be easy to extend this to include scaling as well.
@@ -22,6 +21,14 @@ namespace Anarian.DataStructures.Animation.Aux
             public double Time;             // The keyframe time
             public Quaternion Rotation;     // The rotation for the bone
             public Vector3 Translation;     // The translation for the bone
+
+            public Keyframe() { }
+            public Keyframe(AnimationAux.AnimationClip.Keyframe oldKeyFrame)
+            {
+                Time = oldKeyFrame.Time;
+                Rotation = oldKeyFrame.Rotation;
+                Translation = oldKeyFrame.Translation;
+            }
 
             public Matrix Transform
             {
@@ -56,6 +63,16 @@ namespace Anarian.DataStructures.Animation.Aux
             /// </summary>
             private List<Keyframe> keyframes = new List<Keyframe>();
 
+            public Bone() { }
+            public Bone(AnimationAux.AnimationClip.Bone oldBone)
+            {
+                Name = oldBone.Name;
+
+                foreach (var oldKeyFrame in oldBone.Keyframes) {
+                    keyframes.Add(new Keyframe(oldKeyFrame));
+                }
+            }
+
             /// <summary>
             /// The bone name for these keyframes
             /// </summary>
@@ -66,7 +83,6 @@ namespace Anarian.DataStructures.Animation.Aux
             /// </summary>
             public List<Keyframe> Keyframes { get { return keyframes; } }
         }
-
         #endregion
 
         /// <summary>
@@ -83,6 +99,17 @@ namespace Anarian.DataStructures.Animation.Aux
         /// Duration of the animation clip
         /// </summary>
         public double Duration;
+
+        public AnimationClip() { }
+        public AnimationClip(AnimationAux.AnimationClip oldClip)
+        {
+            Name = oldClip.Name;
+            Duration = oldClip.Duration;
+
+            foreach (var oldBone in oldClip.Bones) {
+                bones.Add(new Bone(oldBone));
+            }
+        }
 
         /// <summary>
         /// The bones for this animation clip with their keyframes

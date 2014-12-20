@@ -16,6 +16,9 @@ namespace Anarian.DataStructures
         #region Fields/Properties
         bool    m_active;
         bool    m_visible;
+
+        Transform m_transform;
+
         Model   m_model;
         List<BoundingBox> m_boundingBoxes;
 
@@ -29,147 +32,30 @@ namespace Anarian.DataStructures
             get { return m_visible; }
             set { m_visible = value; }
         }
+
+        public Transform Transform
+        {
+            get { return m_transform; }
+            protected set { m_transform = value; }
+        }
+
         public Model Model3D
         {
             get { return m_model; }
-            set
-            {
-                m_model = value;
-
-                //// Generate the bounding boxes
-                //m_boundingBoxes = new List<BoundingBox>();
-                //
-                //// Create the ModelTransforms
-                //Matrix[] modelTransforms = new Matrix[m_model.Bones.Count];
-                //Model3D.CopyAbsoluteBoneTransformsTo(modelTransforms);
-                //
-                //// Check intersection
-                //foreach (ModelMesh mesh in m_model.Meshes) {
-                //    //BoundingSphere boundingSphere = mesh.BoundingSphere.Transform(modelTransforms[mesh.ParentBone.Index] * WorldMatrix);
-                //    BoundingBox boundingBox = mesh.GenerateBoundingBox(Matrix.Identity);
-                //    m_boundingBoxes.Add(boundingBox);
-                //}
-            }
-        }
-        #endregion
-
-        #region Translations
-        Vector3 m_orbitalRotation;
-        public Vector3 OrbitalRotation
-        {
-            get { return m_orbitalRotation; }
-            set { m_orbitalRotation = value; }
-        }
-        
-        Vector3 m_rotation;
-        public Vector3 Rotation
-        {
-            get { return m_rotation; }
-            set { m_rotation = value; }
-        }
-
-        Vector3 m_scale;
-        public Vector3 Scale {
-            get { return m_scale; }
-            set { m_scale = value; }
-        }
-
-        Vector3 m_position;
-        public Vector3 Position {
-            get { return m_position; }
-            set { m_position = value; }
-        }
-
-        public Matrix WorldMatrix
-        {
-            get
-            {
-                Matrix scale = Matrix.CreateScale(WorldScale);
-
-                Vector3 worldRotation = WorldRotation;
-                Matrix rotX = Matrix.CreateRotationX(worldRotation.X);
-                Matrix rotY = Matrix.CreateRotationY(worldRotation.Y);
-                Matrix rotZ = Matrix.CreateRotationZ(worldRotation.Z);
-                Matrix rotation = rotX * rotY * rotZ;
-
-                Matrix translation = Matrix.CreateTranslation(WorldPosition);
-
-                Vector3 worldOrbitalRotation = WorldOrbitalRotation;
-                Matrix rotOX = Matrix.CreateRotationX(worldOrbitalRotation.X);
-                Matrix rotOY = Matrix.CreateRotationY(worldOrbitalRotation.Y);
-                Matrix rotOZ = Matrix.CreateRotationZ(worldOrbitalRotation.Z);
-                Matrix orbitalRotation = rotOX * rotOY * rotOZ;
-
-                return scale * rotation * translation * orbitalRotation;
-            }
-        }
-
-        public Vector3 WorldPosition
-        {
-            get
-            {
-                Vector3 pos = m_position;
-
-                if (m_parent != null) {
-                    pos += m_parent.WorldPosition;
-                }
-                return pos;
-            }
-        }
-
-        public Vector3 WorldRotation
-        {
-            get
-            {
-                Vector3 rot = m_rotation;
-
-                if (m_parent != null) {
-                    rot += m_parent.WorldRotation;
-                }
-                return rot;
-            }
-        }
-
-        public Vector3 WorldOrbitalRotation
-        {
-            get
-            {
-                Vector3 rot = m_orbitalRotation;
-
-                if (m_parent != null) {
-                    rot += m_parent.WorldOrbitalRotation;
-                }
-                return rot;
-            }
-        }
-
-        public Vector3 WorldScale
-        {
-            get
-            {
-                Vector3 sca = m_scale;
-
-                if (m_parent != null) {
-                    sca += m_parent.WorldScale;
-                }
-                return sca;
-            }
+            set { m_model = value; }
         }
         #endregion
 
         public GameObject()
         {
-            m_parent    = null;
+            // Setup Defaults
             m_active    = true;
             m_visible   = true;
 
-            m_orbitalRotation = Vector3.Zero;
+            // Setup the Transform
+            m_transform = new Transform(this);
 
-            m_position  = Vector3.Zero;
-            m_rotation  = Vector3.Zero;
-            m_scale     = Vector3.One;
-
-            m_children  = new List<GameObject>();
+            // Setup Bounding Boxes
             m_boundingBoxes = new List<BoundingBox>();
         }
 
@@ -185,7 +71,7 @@ namespace Anarian.DataStructures
             // Check intersection
             foreach (ModelMesh mesh in Model3D.Meshes) {
                 //BoundingSphere boundingSphere = mesh.BoundingSphere.Transform(modelTransforms[mesh.ParentBone.Index] * WorldMatrix);
-                BoundingBox boundingBox = mesh.GenerateBoundingBox(WorldMatrix);
+                BoundingBox boundingBox = mesh.GenerateBoundingBox(m_transform.WorldMatrix);
                 m_boundingBoxes.Add(boundingBox);
 
                 if (ray.Intersects(boundingBox) != null) return true;
@@ -202,9 +88,14 @@ namespace Anarian.DataStructures
         public void Update(GameTime gameTime)
         {
             if (!m_active) return;
-            foreach (GameObject gO in m_children) {
-                gO.Update(gameTime);
+
+            // Then do the Children
+            foreach (var child in m_transform.GetChildren()) {
+                child.GameObject.Update(gameTime);
             }
+
+            // Update the Transform
+            m_transform.Update(gameTime);
         }
         public void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
         {
@@ -212,8 +103,8 @@ namespace Anarian.DataStructures
 
 
             // Render the Children
-            foreach (GameObject gO in m_children) {
-                if (gO != null) gO.Draw(gameTime, camera, graphics);
+            foreach (var child in m_transform.GetChildren()) {
+                if (child != null) child.GameObject.Draw(gameTime, camera, graphics);
             }
 
 
@@ -252,8 +143,8 @@ namespace Anarian.DataStructures
                     //effect.LightingEnabled = false;// EnableDefaultLighting();
                     effect.DiffuseColor = new Vector3(1, 1, 1);
                     effect.PreferPerPixelLighting = true;
-                    effect.World = transforms[mesh.ParentBone.Index]
-                                   * WorldMatrix;
+                    effect.World = transforms[mesh.ParentBone.Index] * 
+                                   m_transform.WorldMatrix;
                     effect.View = camera.View;
                     effect.Projection = camera.Projection;
                 }
@@ -266,23 +157,6 @@ namespace Anarian.DataStructures
                 }
             }
         }
-        #endregion
-
-        #region Parent/Children
-        GameObject m_parent;
-        GameObject Parent { 
-            get { return m_parent; }
-            set { m_parent = value; }
-        }
-
-        List<GameObject> m_children;
-        public List<GameObject> GetChildren() { return m_children; }
-        public void AddChild(GameObject child) {
-            child.Parent = this;
-            m_children.Add(child); 
-        }
-        public void RemoveChild(int index) { m_children.RemoveAt(index); }
-        public GameObject GetChild(int index) { return m_children[index]; }
         #endregion
     }
 }

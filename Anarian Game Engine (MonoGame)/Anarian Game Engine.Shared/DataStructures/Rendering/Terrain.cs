@@ -6,6 +6,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Utilities;
+
+using Anarian.DataStructures;
 using Anarian.Interfaces;
 using Anarian.Helpers;
 
@@ -16,6 +18,8 @@ namespace Anarian.DataStructures.Rendering
         #region Fields/Properties
         bool m_active;
         bool m_visible;
+
+        Transform m_transform;
 
         Texture2D m_heightMap;
         Texture2D m_texture;
@@ -31,6 +35,12 @@ namespace Anarian.DataStructures.Rendering
             set { m_visible = value; }
         }
 
+        public Transform Transform
+        {
+            get { return m_transform; }
+            protected set { m_transform = value; }
+        }
+
         public Texture2D HeightMap
         {
             get { return m_heightMap; }
@@ -40,60 +50,6 @@ namespace Anarian.DataStructures.Rendering
         {
             get { return m_texture; }
             set { m_texture = value; }
-        }
-        #endregion
-
-        #region Translations
-        Vector3 m_orbitalRotation;
-        public Vector3 OrbitalRotation
-        {
-            get { return m_orbitalRotation; }
-            set { m_orbitalRotation = value; GenerateBoundingBox(); }
-        }
-        
-        Vector3 m_rotation;
-        public Vector3 Rotation
-        {
-            get { return m_rotation; }
-            set { m_rotation = value; GenerateBoundingBox(); }
-        }
-
-        Vector3 m_scale;
-        public Vector3 Scale
-        {
-            get { return m_scale; }
-            set { m_scale = value; GenerateBoundingBox(); }
-        }
-
-        Vector3 m_position;
-        public Vector3 Position
-        {
-            get { return m_position; }
-            set { m_position = value; GenerateBoundingBox(); }
-        }
-
-        public Matrix WorldMatrix
-        {
-            get
-            {
-                Matrix scale = Matrix.CreateScale(Scale);
-
-                Vector3 worldRotation = Rotation;
-                Matrix rotX = Matrix.CreateRotationX(worldRotation.X);
-                Matrix rotY = Matrix.CreateRotationY(worldRotation.Y);
-                Matrix rotZ = Matrix.CreateRotationZ(worldRotation.Z);
-                Matrix rotation = rotX * rotY * rotZ;
-
-                Matrix translation = Matrix.CreateTranslation(Position);
-
-                Vector3 worldOrbitalRotation = OrbitalRotation;
-                Matrix rotOX = Matrix.CreateRotationX(worldOrbitalRotation.X);
-                Matrix rotOY = Matrix.CreateRotationY(worldOrbitalRotation.Y);
-                Matrix rotOZ = Matrix.CreateRotationZ(worldOrbitalRotation.Z);
-                Matrix orbitalRotation = rotOX * rotOY * rotOZ;
-
-                return scale * rotation * translation * orbitalRotation;
-            }
         }
         #endregion
 
@@ -112,7 +68,7 @@ namespace Anarian.DataStructures.Rendering
         public int TerrainHeight { get { return m_terrainHeight; } }
 
         float m_highestHeightPoint;
-        public float HighestHeight { get { return m_highestHeightPoint * m_scale.Y; } }
+        public float HighestHeight { get { return m_highestHeightPoint * m_transform.WorldScale.Y; } }
 
         BasicEffect m_effect;
         public BasicEffect Effect { get { return m_effect; } }
@@ -127,11 +83,8 @@ namespace Anarian.DataStructures.Rendering
             m_active = true;
             m_visible = true;
 
-            m_orbitalRotation = Vector3.Zero;
-
-            m_position = Vector3.Zero;
-            m_rotation = Vector3.Zero;
-            m_scale = Vector3.One;
+            // Setup the Transform
+            m_transform = new Transform();
 
             // Store the Texture
             m_texture = texture;
@@ -255,7 +208,7 @@ namespace Anarian.DataStructures.Rendering
         private void GenerateBoundingBox()
         {
             // Get list of points
-            Matrix world = WorldMatrix;
+            Matrix world = m_transform.WorldMatrix;
             List<Vector3> points = new List<Vector3>();
 
             for (int i = 0; i < m_vertices.Length; i++) {
@@ -362,7 +315,7 @@ namespace Anarian.DataStructures.Rendering
             if (!IsOnHeightmap(pointX, pointZ)) return float.MaxValue;
 
             // Pre calculate the World Matrix
-            Matrix world = WorldMatrix;
+            Matrix world = m_transform.WorldMatrix;
 
             // Hold the Grid Counters
             int posX = -1;
@@ -429,7 +382,7 @@ namespace Anarian.DataStructures.Rendering
 
             // Begin Drawing the World
             // Since the world will be generated outwards from its side, we are offsetting the orgin of the world to its center
-            m_effect.World = WorldMatrix;
+            m_effect.World = m_transform.WorldMatrix;
             m_effect.View = camera.View;
             m_effect.Projection = camera.Projection;
             

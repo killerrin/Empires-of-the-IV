@@ -116,7 +116,6 @@ namespace Anarian.DataStructures.Animation
         /// The bone absolute transform
         /// </summary>
         public Matrix AbsoluteTransform = Matrix.Identity;
-
         #endregion
 
         #region Operations
@@ -151,6 +150,10 @@ namespace Anarian.DataStructures.Animation
 
             ComputeAbsoluteTransform();
             SkinTransform = Matrix.Invert(AbsoluteTransform);
+        }
+
+        public Bone(AnimationAux.Bone bone)
+        {
         }
 
         /// <summary>

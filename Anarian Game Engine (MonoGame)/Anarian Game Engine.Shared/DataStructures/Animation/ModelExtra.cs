@@ -23,7 +23,6 @@ namespace Anarian.DataStructures.Animation.Aux
         /// Any associated animation clips
         /// </summary>
         public List<AnimationClip> clips = new List<AnimationClip>();
-
         #endregion
 
         #region Properties
@@ -40,5 +39,17 @@ namespace Anarian.DataStructures.Animation.Aux
         public List<AnimationClip> Clips { get { return clips; } set { clips = value; } }
 
         #endregion
+
+        public ModelExtra() { }
+        public ModelExtra(AnimationAux.ModelExtra oldModelExtra)
+        {
+            foreach (var oldSkeleton in oldModelExtra.Skeleton) {
+                skeleton.Add(oldSkeleton);
+            }
+
+            foreach (var oldClip in oldModelExtra.Clips) {
+                clips.Add(new AnimationClip(oldClip));
+            }
+        }
     }
 }
