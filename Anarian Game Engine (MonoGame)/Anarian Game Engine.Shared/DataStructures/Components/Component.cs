@@ -4,7 +4,7 @@ using System.Text;
 using System.Diagnostics;
 using Anarian.Enumerators;
 
-namespace Anarian.DataStructures
+namespace Anarian.DataStructures.Components
 {
     public class Component
     {

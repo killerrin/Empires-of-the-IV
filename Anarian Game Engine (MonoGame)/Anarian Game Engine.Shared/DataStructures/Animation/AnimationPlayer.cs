@@ -16,7 +16,6 @@ namespace Anarian.DataStructures.Animation
     public class AnimationPlayer
     {
         #region Fields
-
         /// <summary>
         /// Current position in time in the clip
         /// </summary>
@@ -51,7 +50,6 @@ namespace Anarian.DataStructures.Animation
         #endregion
 
         #region Properties
-
         /// <summary>
         /// The position in the animation
         /// </summary>
@@ -127,8 +125,6 @@ namespace Anarian.DataStructures.Animation
         #endregion
 
         #region Update and Transport Controls
-
-
         /// <summary>
         /// Reset back to time zero.
         /// </summary>
@@ -151,8 +147,6 @@ namespace Anarian.DataStructures.Animation
         #endregion
 
         #region BoneInfo class
-
-
         /// <summary>
         /// Information about a bone we are animating. This class connects a bone
         /// in the clip to a bone in the model.
@@ -319,6 +313,5 @@ namespace Anarian.DataStructures.Animation
         }
 
         #endregion
-
     }
 }

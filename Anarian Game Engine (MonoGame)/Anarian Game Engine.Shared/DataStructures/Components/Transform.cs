@@ -8,7 +8,7 @@ using Anarian.Enumerators;
 
 using Microsoft.Xna.Framework;
 
-namespace Anarian.DataStructures
+namespace Anarian.DataStructures.Components
 {
     public class Transform : Component,
                              IUpdatable, IMoveable

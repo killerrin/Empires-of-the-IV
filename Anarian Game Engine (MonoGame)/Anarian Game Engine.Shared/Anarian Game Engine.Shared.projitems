@@ -18,7 +18,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\ModelExtra.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\ModelExtraReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Camera.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Component.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Components\Component.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Components\Transform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\GameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Input\Controller.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Input\KeyboardManager.cs" />
@@ -26,7 +27,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Input\TouchScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Level.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Rendering\Terrain.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Transform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\ComponentTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\GuiState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\MouseButtonClick.cs" />

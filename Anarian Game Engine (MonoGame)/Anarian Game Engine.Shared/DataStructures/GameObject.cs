@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 
+using Anarian.DataStructures.Components;
 using Anarian.Interfaces;
 using Anarian.Helpers;
 

@@ -175,8 +175,6 @@ namespace Anarian.DataStructures.Animation
 
         #endregion
 
-        #region Updating
-
         /// <summary>
         /// Update animation for the model.
         /// </summary>
@@ -188,16 +186,13 @@ namespace Anarian.DataStructures.Animation
             }
         }
 
-        #endregion
-
-        #region Drawing
-
         /// <summary>
         /// Draw the model
         /// </summary>
         /// <param name="graphics">The graphics device to draw on</param>
-        /// <param name="camera">A camera to determine the view</param>
-        /// <param name="world">A world matrix to place the model</param>
+        /// <param name="view"> The Camera View</param>
+        /// <param name="projection">The Camera Projection</param>
+        /// <param name="world">The World Matrix of the Model</param>
         public void Draw(GraphicsDevice graphics, Matrix view, Matrix projection, Matrix world)
         {
             if (model == null)
@@ -252,9 +247,5 @@ namespace Anarian.DataStructures.Animation
                 modelMesh.Draw();
             }
         }
-
-
-        #endregion
-
     }
 }
