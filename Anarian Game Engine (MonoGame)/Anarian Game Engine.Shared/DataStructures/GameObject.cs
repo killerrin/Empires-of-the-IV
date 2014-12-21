@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,13 +15,14 @@ namespace Anarian.DataStructures
     public class GameObject : IUpdatable, IRenderable
     {
         #region Fields/Properties
-        bool    m_active;
-        bool    m_visible;
+        protected bool    m_active;
+        protected bool    m_visible;
 
-        Transform m_transform;
+        protected List<BoundingBox> m_boundingBoxes;
+        protected List<Component> m_components;
 
-        Model   m_model;
-        List<BoundingBox> m_boundingBoxes;
+        protected Transform m_transform;
+
 
         public bool Active
         {
@@ -40,10 +41,10 @@ namespace Anarian.DataStructures
             protected set { m_transform = value; }
         }
 
-        public Model Model3D
+        public List<Component> Components
         {
-            get { return m_model; }
-            set { m_model = value; }
+            get { return m_components; }
+            protected set { m_components = value; }
         }
         #endregion
 
@@ -58,24 +59,94 @@ namespace Anarian.DataStructures
 
             // Setup Bounding Boxes
             m_boundingBoxes = new List<BoundingBox>();
+
+            // Setup the other Components
+            m_components = new List<Component>();
         }
 
-        public bool CheckRayIntersection(Ray ray)
+        #region Component Management
+        /// <summary>
+        /// Adds a Default Component of Type
+        /// </summary>
+        /// <param name="type">The Type of Component we are going to add</param>
+        /// <returns>The newly created Component, Null if can't be created</returns>
+        public Component AddComponent(Type type)
         {
-            // Generate the bounding boxes
-            m_boundingBoxes = new List<BoundingBox>();
-            
-            // Create the ModelTransforms
-            Matrix[] modelTransforms = new Matrix[Model3D.Bones.Count];
-            Model3D.CopyAbsoluteBoneTransformsTo(modelTransforms);
+            Component component;
+            if (type == typeof(Health)) { component = new Health(this); }
+            else if (type == typeof(Mana)) { component = new Mana(this); }
+            else if (type == typeof(Transform)) { component = new Transform(this); }
+            else { component = null; }
 
-            // Check intersection
-            foreach (ModelMesh mesh in Model3D.Meshes) {
-                //BoundingSphere boundingSphere = mesh.BoundingSphere.Transform(modelTransforms[mesh.ParentBone.Index] * WorldMatrix);
-                BoundingBox boundingBox = mesh.GenerateBoundingBox(m_transform.WorldMatrix);
-                m_boundingBoxes.Add(boundingBox);
+            if (component != null) {
+                m_components.Add(component);
+            }
+            return component;
+        }
+        
+        /// <summary>
+        /// Adds a Component to the Component List
+        /// </summary>
+        /// <param name="component">The Component we want to add</param>
+        public void AddComponent(Component component) 
+        {
+            // Associate the component with this
+            component.GameObject = this; 
+            m_components.Add(component); 
+        }
 
-                if (ray.Intersects(boundingBox) != null) return true;
+        /// <summary>
+        /// Gets the first available Component of specified Type
+        /// </summary>
+        /// <param name="type">The Type we are looking for</param>
+        /// <returns>The First Available Component of Type, Null if no component is found</returns>
+        public Component GetComponent(Type type)
+        {
+            for (int i = 0; i < m_components.Count; i++ ) {
+                Type compType = m_components[i].GetType();
+                if (compType == type)
+                    return m_components[i];
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Gets a List of Component of specified Type
+        /// </summary>
+        /// <param name="type">The Type we are looking for</param>
+        /// <returns>A List of Components matching the type</returns>
+        public List<Component> GetComponents(Type type)
+        {
+            List<Component> componentList = new List<Component>();
+            for (int i = 0; i < m_components.Count; i++) {
+                Type compType = m_components[i].GetType();
+                if (compType == type) {
+                    componentList.Add(m_components[i]);
+                }
+            }
+            return componentList;
+        }
+
+        /// <summary>
+        /// Removes the specified Component
+        /// </summary>
+        /// <param name="component">The Component we wish to remove</param>
+        public void RemoveComponent(Component component)
+        {
+            for (int i = 0; i < m_components.Count; i++) {
+                if (component == m_components[i]) {
+                    m_components.RemoveAt(i);
+                    return;
+                }
+            }
+        }
+        #endregion
+
+        public virtual bool CheckRayIntersection(Ray ray)
+        {
+            foreach (var bound in m_boundingBoxes) {
+                float? result = ray.Intersects(bound);
+                if (result.HasValue) return true;
             }
             return false;
         }
@@ -86,7 +157,7 @@ namespace Anarian.DataStructures
         #endregion
 
         #region Update/Draw
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
             if (!m_active) return;
 
@@ -97,66 +168,30 @@ namespace Anarian.DataStructures
 
             // Update the Transform
             m_transform.Update(gameTime);
+
+            // Update every other Component
+            foreach (var component in m_components) {
+                component.Update(gameTime);
+            }
         }
-        public void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
+        public virtual void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
         {
             if (!m_active) return;
-
 
             // Render the Children
             foreach (var child in m_transform.GetChildren()) {
                 if (child != null) child.GameObject.Draw(gameTime, camera, graphics);
             }
 
-
-            // Now that the children have been rendered...
-            // We check if we are visible on the screen,
-            // We check if we have a model,
-            // Then we render it
-            if (!m_visible) return;
-            if (m_model == null) return;
-
-            // Check Against Frustrum to cull out objects
-            for (int i = 0; i < m_boundingBoxes.Count; i++) {
-                if (!m_boundingBoxes[i].Intersects(camera.Frustum)) return;
-            }
-
-            // Render This Object
+            // Begin Setting up the GameObject for Rendering in the inherited classes
             //Debug.WriteLine("Rendering Model Pos:{0}, Sca:{1}, Rot:{2}", WorldPosition, WorldScale, WorldRotation);
-            
+
             // Since we are also using 2D, Reset the
             // Graphics Device to Render 3D Models properly
             GraphicsDevice graphicsDevice = graphics.GraphicsDevice;
             graphicsDevice.BlendState = BlendState.Opaque;
             graphicsDevice.DepthStencilState = DepthStencilState.Default;
             graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;
-
-            // Copy any parent transforms.
-            Matrix[] transforms = new Matrix[m_model.Bones.Count];
-            m_model.CopyAbsoluteBoneTransformsTo(transforms);
-
-            // Draw the model. A model can have multiple meshes, so loop.
-            foreach (ModelMesh mesh in m_model.Meshes) {
-                // This is where the mesh orientation is set, as well 
-                // as our camera and projection.
-                foreach (BasicEffect effect in mesh.Effects) {
-                    effect.EnableDefaultLighting();
-                    //effect.LightingEnabled = false;// EnableDefaultLighting();
-                    effect.DiffuseColor = new Vector3(1, 1, 1);
-                    effect.PreferPerPixelLighting = true;
-                    effect.World = transforms[mesh.ParentBone.Index] * 
-                                   m_transform.WorldMatrix;
-                    effect.View = camera.View;
-                    effect.Projection = camera.Projection;
-                }
-                // Draw the mesh, using the effects set above.
-                mesh.Draw();
-
-                //mesh.BoundingSphere.RenderBoundingSphere( graphics.GraphicsDevice, WorldMatrix, camera.View, camera.Projection, Color.Red);
-                for (int i = 0; i < m_boundingBoxes.Count; i++) {
-                    m_boundingBoxes[i].DrawBoundingBox(graphics, Color.Red, camera, Matrix.Identity);
-                }
-            }
         }
         #endregion
     }

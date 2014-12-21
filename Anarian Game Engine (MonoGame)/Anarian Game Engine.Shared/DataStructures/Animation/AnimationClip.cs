@@ -30,6 +30,13 @@ namespace Anarian.DataStructures.Animation.Aux
                 Translation = oldKeyFrame.Translation;
             }
 
+            public Keyframe(Keyframe oldKeyFrame)
+            {
+                Time = oldKeyFrame.Time;
+                Rotation = oldKeyFrame.Rotation;
+                Translation = oldKeyFrame.Translation;
+            }
+
             public Matrix Transform
             {
                 get
@@ -73,6 +80,15 @@ namespace Anarian.DataStructures.Animation.Aux
                 }
             }
 
+            public Bone(Bone oldBone)
+            {
+                Name = oldBone.Name;
+
+                foreach (var oldKeyFrame in oldBone.Keyframes) {
+                    keyframes.Add(new Keyframe(oldKeyFrame));
+                }
+            }
+
             /// <summary>
             /// The bone name for these keyframes
             /// </summary>
@@ -102,6 +118,15 @@ namespace Anarian.DataStructures.Animation.Aux
 
         public AnimationClip() { }
         public AnimationClip(AnimationAux.AnimationClip oldClip)
+        {
+            Name = oldClip.Name;
+            Duration = oldClip.Duration;
+
+            foreach (var oldBone in oldClip.Bones) {
+                bones.Add(new Bone(oldBone));
+            }
+        }
+        public AnimationClip(AnimationClip oldClip)
         {
             Name = oldClip.Name;
             Duration = oldClip.Duration;

@@ -227,7 +227,6 @@ namespace Anarian.DataStructures.Animation
             #endregion
 
             #region Position and Keyframes
-
             /// <summary>
             /// Set the bone based on the supplied position value
             /// </summary>
@@ -306,7 +305,6 @@ namespace Anarian.DataStructures.Animation
             {
                 // Find this bone
                 assignedBone = model.FindBone(ClipBone.Name);
-
             }
 
             #endregion

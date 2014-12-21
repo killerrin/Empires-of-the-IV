@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
 using Anarian.Enumerators;
+using Microsoft.Xna.Framework;
+using Anarian.Interfaces;
 
 namespace Anarian.DataStructures.Components
 {
-    public class Component
+    public class Component : IUpdatable
     {
         #region Fields/Properties
         protected string m_name;
@@ -14,6 +16,13 @@ namespace Anarian.DataStructures.Components
         {
             get { return m_name; }
             protected set { m_name = value; }
+        }
+
+        protected bool m_active;
+        public bool Active
+        {
+            get { return m_active; }
+            set { m_active = value; }
         }
 
         protected ComponentTypes m_componentType;
@@ -27,13 +36,15 @@ namespace Anarian.DataStructures.Components
         public GameObject GameObject
         {
             get { return m_gameObject; }
-            protected set { m_gameObject = value; }
+            internal set { m_gameObject = value; }
         }
         #endregion
 
         public Component(GameObject gameObject)
         {
             m_name = "";
+            m_active = true;
+
             m_componentType = ComponentTypes.None;
 
             m_gameObject = gameObject;
@@ -41,9 +52,17 @@ namespace Anarian.DataStructures.Components
         public Component(GameObject gameObject, ComponentTypes componentType)
         {
             m_name = componentType.ToString();
+            m_active = true;
+
             m_componentType = componentType;
 
             m_gameObject = gameObject;
         }
+
+        #region Interfaces
+        void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
+        #endregion
+
+        public virtual void Update(GameTime gameTime) { }
     }
 }

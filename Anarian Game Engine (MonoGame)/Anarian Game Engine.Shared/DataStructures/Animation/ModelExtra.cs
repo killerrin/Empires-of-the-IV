@@ -51,5 +51,16 @@ namespace Anarian.DataStructures.Animation.Aux
                 clips.Add(new AnimationClip(oldClip));
             }
         }
+
+        public ModelExtra(ModelExtra oldModelExtra)
+        {
+            foreach (var oldSkeleton in oldModelExtra.Skeleton) {
+                skeleton.Add(oldSkeleton);
+            }
+
+            foreach (var oldClip in oldModelExtra.Clips) {
+                clips.Add(new AnimationClip(oldClip));
+            }
+        }
     }
 }

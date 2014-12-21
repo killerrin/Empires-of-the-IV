@@ -18,6 +18,10 @@ namespace Anarian.DataStructures.Animation
     public class AnimatedModel
     {
         #region Fields
+        /// <summary>
+        /// The model asset name
+        /// </summary>
+        private string assetName = "";
 
         /// <summary>
         /// The actual underlying XNA model
@@ -33,11 +37,6 @@ namespace Anarian.DataStructures.Animation
         /// The model bones
         /// </summary>
         private List<Bone> bones = new List<Bone>();
-
-        /// <summary>
-        /// The model asset name
-        /// </summary>
-        private string assetName = "";
 
         /// <summary>
         /// An associated animation clip player
@@ -76,6 +75,12 @@ namespace Anarian.DataStructures.Animation
         /// </summary>
         public ModelExtra ModelExtra { get { return modelExtra; } }
 
+        public AnimationPlayer AnimationPlayer
+        {
+            get { return player; }
+            set { player = value; }
+        }
+
         #endregion
 
         #region Construction and Loading
@@ -98,7 +103,7 @@ namespace Anarian.DataStructures.Animation
         {
             assetName = oldModel.AssetName;
             model = oldModel.Model;
-
+            
             modelExtra = new ModelExtra(oldModel.ModelExtra);
 
             // Finally, Obtain the Bones

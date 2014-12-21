@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AnarianGameEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\AnimatedGameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\AnimatedModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\AnimationClip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\AnimationClipReader.cs" />
@@ -19,6 +20,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\ModelExtraReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Components\Component.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Components\Health.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Components\Mana.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Components\Transform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\GameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Input\Controller.cs" />
@@ -27,6 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Input\TouchScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Level.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Rendering\Terrain.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\StaticGameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\ComponentTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\GuiState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\MouseButtonClick.cs" />

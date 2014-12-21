@@ -175,14 +175,6 @@ namespace Anarian.DataStructures.Components
         #endregion
         #endregion
 
-        public Transform():base(null)
-        {
-            m_position = Vector3.Zero;
-            m_rotation = Vector3.Zero;
-            m_scale = Vector3.One;
-
-            Setup(null);
-        }
         public Transform(GameObject gameObject)
             :base(gameObject, ComponentTypes.Transform)
         {
@@ -227,7 +219,7 @@ namespace Anarian.DataStructures.Components
         void IMoveable.MoveForward(GameTime gameTime, float amount) { MoveForward(gameTime, amount); }
         #endregion
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             CreateAllMatrices();
         }

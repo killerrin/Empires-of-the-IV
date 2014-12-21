@@ -8,38 +8,17 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Utilities;
 
 using Anarian.DataStructures;
+using Anarian.DataStructures.Components;
 using Anarian.Interfaces;
 using Anarian.Helpers;
 
 namespace Anarian.DataStructures.Rendering
 {
-    public class Terrain : IUpdatable, IRenderable
+    public class Terrain : GameObject, IUpdatable, IRenderable
     {
         #region Fields/Properties
-        bool m_active;
-        bool m_visible;
-
-        Transform m_transform;
-
         Texture2D m_heightMap;
         Texture2D m_texture;
-
-        public bool Active
-        {
-            get { return m_active; }
-            set { m_active = value; }
-        }
-        public bool Visible
-        {
-            get { return m_visible; }
-            set { m_visible = value; }
-        }
-
-        public Transform Transform
-        {
-            get { return m_transform; }
-            protected set { m_transform = value; }
-        }
 
         public Texture2D HeightMap
         {
@@ -72,20 +51,11 @@ namespace Anarian.DataStructures.Rendering
 
         BasicEffect m_effect;
         public BasicEffect Effect { get { return m_effect; } }
-
-        BoundingBox m_boundingBox;
-        public BoundingBox BoundingBox { get { return m_boundingBox; } }
         #endregion
 
         public Terrain(GraphicsDeviceManager graphics, Texture2D heightMap, Texture2D texture)
+            :base()
         {
-            // Default Variables
-            m_active = true;
-            m_visible = true;
-
-            // Setup the Transform
-            m_transform = new Transform();
-
             // Store the Texture
             m_texture = texture;
 
@@ -214,7 +184,8 @@ namespace Anarian.DataStructures.Rendering
             for (int i = 0; i < m_vertices.Length; i++) {
                 points.Add(Vector3.Transform(m_vertices[i].Position, world));
             }
-            m_boundingBox = BoundingBox.CreateFromPoints(points);
+
+            m_boundingBoxes.Add(BoundingBox.CreateFromPoints(points));
         }
         #endregion
 
@@ -223,27 +194,53 @@ namespace Anarian.DataStructures.Rendering
         void IRenderable.Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics) { Draw(gameTime, camera, graphics); }
         #endregion
 
+        /// <summary>
+        /// Checks if the Ray Intersects with the GameObjects BoundingBox
+        /// </summary>
+        /// <param name="ray">A Ray which we will test intersection with</param>
+        /// <returns>A Boolean which represents if an intersection occured</returns>
+        public override bool CheckRayIntersection(Ray ray)
+        {
+            return base.CheckRayIntersection(ray);
+        }
 
+        /// <summary>
+        /// Checks along the X and Z axis' to determine if the point is hovering above or below the Terrain
+        /// </summary>
+        /// <param name="point">A position to check against</param>
+        /// <returns></returns>
         public bool IsOnHeightmap(Vector3 point)
         {
             return IsOnHeightmap(point.X, point.Z);
         }
        
+        /// <summary>
+        /// Checks along the X and Z axis' to determine if the point is hovering above or below the Terrain
+        /// </summary>
+        /// <param name="pointX">A position along the X Axis</param>
+        /// <param name="pointZ">A position along the Z Axis</param>
+        /// <returns></returns>
         public bool IsOnHeightmap(float pointX, float pointZ)
         {
-            if (pointX > m_boundingBox.Min.X &&
-                pointX < m_boundingBox.Max.X &&
-                //point.Y > m_boundingBox.Min.Y ||
-                //point.Y < m_boundingBox.Max.Y ||
-                pointZ > m_boundingBox.Min.Z &&
-                pointZ < m_boundingBox.Max.Z) 
-            {
-                 return true;
+            foreach (var bound in m_boundingBoxes) {
+                if (pointX > bound.Min.X &&
+                    pointX < bound.Max.X &&
+                    //point.Y > bound.Min.Y ||
+                    //point.Y < bound.Max.Y ||
+                    pointZ > bound.Min.Z &&
+                    pointZ < bound.Max.Z) {
+                    return true;
+                }
             }
             return false;
         }
 
         #region Picking
+        /// <summary>
+        /// Get a point on the Terrain at the position of intersection
+        /// </summary>
+        /// <param name="ray">A Ray which will be traversed</param>
+        /// <returns>Vector3 containing Position in World Space. Returns null if no intersection occurs</returns>
         public Vector3? Intersects(Ray ray)
         {
             Ray? currentRay = LinearSearch(ray);

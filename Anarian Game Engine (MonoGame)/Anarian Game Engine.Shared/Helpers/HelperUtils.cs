@@ -26,7 +26,10 @@ namespace Anarian.Helpers
             return new Rectangle(0, 0, viewport.Width, viewport.Height);
         }
 
-
+        public static float DeltaTime (this GameTime gameTime)
+        {
+            return (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+        }
 
         public static BoundingBox GenerateBoundingBox(this ModelMesh modelMesh, Matrix meshTransform)
         {
