@@ -18,18 +18,18 @@ namespace Anarian.DataStructures.Components
             protected set { m_name = value; }
         }
 
-        protected bool m_active;
-        public bool Active
-        {
-            get { return m_active; }
-            set { m_active = value; }
-        }
-
         protected ComponentTypes m_componentType;
         public ComponentTypes ComponentType
         {
             get { return m_componentType; }
             protected set { m_componentType = value; }
+        }
+
+        protected bool m_active;
+        public bool Active
+        {
+            get { return m_active; }
+            set { m_active = value; }
         }
 
         protected GameObject m_gameObject;
@@ -43,20 +43,23 @@ namespace Anarian.DataStructures.Components
         public Component(GameObject gameObject)
         {
             m_name = "";
-            m_active = true;
-
             m_componentType = ComponentTypes.None;
 
+            m_active = true;
             m_gameObject = gameObject;
         }
         public Component(GameObject gameObject, ComponentTypes componentType)
         {
             m_name = componentType.ToString();
-            m_active = true;
-
             m_componentType = componentType;
 
+            m_active = true;
             m_gameObject = gameObject;
+        }
+
+        public virtual void Reset()
+        {
+            m_active = true;
         }
 
         #region Interfaces

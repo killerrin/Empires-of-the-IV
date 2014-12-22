@@ -60,8 +60,10 @@ namespace Anarian.DataStructures.Components
             m_regenerateMana = regenerateMana;
             m_regenerationRate = regenerationRate;
         }
-        public void Reset()
+        public override void Reset()
         {
+            base.Reset();
+
             m_currentMana = m_maxMana;
         }
 

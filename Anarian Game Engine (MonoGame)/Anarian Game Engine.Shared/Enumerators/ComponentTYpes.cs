@@ -7,7 +7,12 @@ namespace Anarian.Enumerators
     public enum ComponentTypes
     {
         None,
+
+        // Main Component Types
         Transform,
+        Physics,
+
+        // Extra Component Types
         Health,
         Mana
     }

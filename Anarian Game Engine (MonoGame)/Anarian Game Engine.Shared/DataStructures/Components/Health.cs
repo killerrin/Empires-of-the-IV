@@ -71,8 +71,10 @@ namespace Anarian.DataStructures.Components
             m_regenerateHealth = regenerateHealth;
             m_regenerationRate = regenerationRate;
         }
-        public void Reset()
+        public override void Reset()
         {
+            base.Reset();
+
             m_alive = true;
             m_currentHealth = m_maxHealth;
         }

@@ -85,22 +85,36 @@ namespace Anarian.DataStructures
 
             // Render This Object
             // Copy any parent transforms.
-            Matrix[] transforms = new Matrix[m_model.Bones.Count];
-            m_model.CopyAbsoluteBoneTransformsTo(transforms);
+            Matrix[] boneTransforms = new Matrix[m_model.Bones.Count];
+            m_model.CopyAbsoluteBoneTransformsTo(boneTransforms);
 
             // Draw the model. A model can have multiple meshes, so loop.
             foreach (ModelMesh mesh in m_model.Meshes) {
                 // This is where the mesh orientation is set, as well 
                 // as our camera and projection.
-                foreach (BasicEffect effect in mesh.Effects) {
-                    effect.EnableDefaultLighting();
-                    //effect.LightingEnabled = false;// EnableDefaultLighting();
-                    effect.DiffuseColor = new Vector3(1, 1, 1);
-                    effect.PreferPerPixelLighting = true;
-                    effect.World = transforms[mesh.ParentBone.Index] *
-                                   m_transform.WorldMatrix;
-                    effect.View = camera.View;
-                    effect.Projection = camera.Projection;
+
+                foreach (Effect effect in mesh.Effects) {
+                    if (effect is BasicEffect) {
+                        BasicEffect beffect = effect as BasicEffect;
+                        beffect.World = boneTransforms[mesh.ParentBone.Index] * m_transform.WorldMatrix;
+                        beffect.View = camera.View;
+                        beffect.Projection = camera.Projection;
+                        beffect.EnableDefaultLighting();
+                        //beffect.LightingEnabled = false;
+                        beffect.PreferPerPixelLighting = true;
+                        beffect.DiffuseColor = new Vector3(1, 1, 1);
+                    }
+
+                    if (effect is SkinnedEffect) {
+                        SkinnedEffect seffect = effect as SkinnedEffect;
+                        seffect.World = boneTransforms[mesh.ParentBone.Index] * m_transform.WorldMatrix;
+                        seffect.View = camera.View;
+                        seffect.Projection = camera.Projection;
+                        seffect.EnableDefaultLighting();
+                        //seffect.LightingEnabled = false;
+                        seffect.PreferPerPixelLighting = true;
+                        seffect.DiffuseColor = new Vector3(1, 1, 1);
+                    }
                 }
                 // Draw the mesh, using the effects set above.
                 mesh.Draw();

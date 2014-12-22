@@ -20,6 +20,7 @@ using Anarian.DataStructures.Input;
 using Anarian.DataStructures.Rendering;
 using Anarian.Helpers;
 using Anarian.Interfaces;
+using EmpiresOfTheIV.GameObjects;
 
 namespace EmpiresOfTheIV
 {
@@ -28,10 +29,7 @@ namespace EmpiresOfTheIV
     /// </summary>
     public class Game1 : AnarianGameEngine
     {
-        /// <summary>
-        /// The animated model we are displaying
-        /// </summary>
-        private AnimatedGameObject dance = null;
+        private AnimatedGameObject soldier = null;
 
         //Terrain
         Terrain m_terrain;
@@ -77,47 +75,31 @@ namespace EmpiresOfTheIV
             base.LoadContent();
 
             // Load the Assets
-            m_resourceManager.LoadTexture(Content, "KillerrinStudiosLogo");
-            m_resourceManager.LoadModel(Content, "t-pose_3_t");
-            
-            // Create the Game Objects
-            StaticGameObject armyGuy = new StaticGameObject();
-            armyGuy.Model3D = m_resourceManager.GetModel("t-pose_3_t");
-            armyGuy.Transform.Scale = new Vector3(0.007f);
-            armyGuy.Transform.Position = new Vector3(0.2f, -0.5f, 0.50f);
-            //armyGuy.Visible = false;
+            m_resourceManager.LoadAsset(Content, typeof(Texture2D), "KillerrinStudiosLogo");
+            m_resourceManager.LoadAsset(Content, typeof(AnimatedModel), "t-pose_3");
 
             // Create the Game Objects
-            StaticGameObject armyGuy2 = new StaticGameObject();
-            armyGuy2.Model3D = m_resourceManager.GetModel("t-pose_3_t");
-            armyGuy2.Transform.Scale = new Vector3(0.02f);
-            armyGuy2.Transform.Position = new Vector3(0.0f, 0.5f, -1.5f);
+            Unit armyGuy = new Unit();
+            armyGuy.Model3D = m_resourceManager.GetAsset(typeof(AnimatedModel), "t-pose_3") as AnimatedModel;
+            armyGuy.Transform.Scale = new Vector3(0.007f);
+            armyGuy.Transform.Position = new Vector3(0.2f, -0.5f, 0.50f);
             
             // Add to the Scene
-            m_sceneManager.CurrentScene.SceneNode.Transform.AddChild(armyGuy.Transform);
-            m_sceneManager.CurrentScene.SceneNode.Transform.AddChild(armyGuy2.Transform);
+            m_sceneManager.CurrentScene.SceneNode.AddChild(armyGuy.Transform);
 
             // Load the Terrain
             Texture2D heightMap = Content.Load<Texture2D>("heightmap");
             Texture2D grassTexture = Content.Load<Texture2D>("grassTexture");
             m_terrain = new Terrain(graphics, heightMap, grassTexture);
 
-            //// Load the Animated Model
-            ////// Load the model we will display
-            //model = new AnimatedModel("t-pose_3");
-            //model.LoadContent(Content);
-            ////// Load the model that has an animation clip it in
-            //dance = new AnimatedModel("walk_t");
-            //dance.LoadContent(Content);
-            dance = new AnimatedGameObject();
-            dance.Model3D = CustomContentLoader.LoadAnimatedModel(Content, "walk_t");
-            
-            System.Diagnostics.Debug.WriteLine(dance.Model3D.Clips.Count);
-            AnimationClip clip = dance.Model3D.Clips[0];
-            System.Diagnostics.Debug.WriteLine(dance.Model3D.Clips[0].Name);
-            ////
-            ////// And play the clip
-            AnimationPlayer player = dance.Model3D.PlayClip(clip);
+            // Load the model we will display
+            soldier = new AnimatedGameObject();
+            soldier.Model3D = m_resourceManager.GetAsset(typeof(AnimatedModel), "t-pose_3") as AnimatedModel;
+
+            // Load the model that has an animation clip it in
+            AnimatedModel walk = CustomContentLoader.LoadAnimatedModel(Content, "walk");
+            AnimationClip clip = walk.Clips[0];
+            AnimationPlayer player = soldier.PlayClip(clip);
             player.Looping = true;
         }
 
@@ -137,33 +119,23 @@ namespace EmpiresOfTheIV
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            dance.Update(gameTime);
+            soldier.Update(gameTime);
 
             if (rayPosOnTerrain.HasValue) {
-                GameObject moving = m_sceneManager.CurrentScene.SceneNode.Transform.GetChild(0).GameObject;
-                //GameObject moveTo = m_sceneManager.CurrentScene.SceneNode.GetChild(1);
-
-                Vector3 direction = rayPosOnTerrain.Value - moving.Transform.Position;
-                direction.Normalize();
-
-                Vector3 speed = direction * 0.002f;
-
-                moving.Transform.Position += speed * (float)gameTime.ElapsedGameTime.Milliseconds;
+                m_sceneManager.CurrentScene.SceneNode.GetChild(0).MoveToPosition(gameTime, rayPosOnTerrain.Value);
             }
 
-            Vector3 p = m_sceneManager.CurrentScene.SceneNode.Transform.GetChild(1).Position; 
+            Vector3 p = m_sceneManager.CurrentScene.SceneNode.GetChild(0).Position; 
             p.X += 0.02f;
-            m_sceneManager.CurrentScene.SceneNode.Transform.GetChild(1).Position = p;
+            m_sceneManager.CurrentScene.SceneNode.GetChild(0).Position = p;
 
-            float height = m_terrain.GetHeightAtPoint(m_sceneManager.CurrentScene.SceneNode.Transform.GetChild(1).Position);
-
+            float height = m_terrain.GetHeightAtPoint(m_sceneManager.CurrentScene.SceneNode.GetChild(0).Position);
             if (height != float.MaxValue) {
-                Vector3 pos = m_sceneManager.CurrentScene.SceneNode.Transform.GetChild(1).Position;
+                Vector3 pos = m_sceneManager.CurrentScene.SceneNode.GetChild(0).Position;
                 pos.Y = height;
-                m_sceneManager.CurrentScene.SceneNode.Transform.GetChild(1).Position = pos;
+                m_sceneManager.CurrentScene.SceneNode.GetChild(0).Position = pos;
             }
 
-            
             base.Update(gameTime);
         }
         
@@ -178,28 +150,24 @@ namespace EmpiresOfTheIV
             base.PreDraw(gameTime);
 
             // Now we can begin our draw Here
-            Texture2D logo = ResourceManager.Instance.GetTexture("KillerrinStudiosLogo");
+            Texture2D logo = ResourceManager.Instance.GetAsset(typeof(Texture2D), "KillerrinStudiosLogo") as Texture2D;
 
             // Draw Texture
             spriteBatch.Begin();
             spriteBatch.Draw(logo, new Vector2(0.0f, 0.0f), Color.White);
             spriteBatch.End();
 
-            //// Draw some Points
-            //PrimitiveHelper2D.DrawSineWave(spriteBatch, Color.Red, 4, new Vector2(0.0f, 600.0f), 100.0f, 0.006f, GraphicsDevice.Viewport.Width, 0.0f);
-
             // Call Draw on the Anarian Game Engine to render the SceneGraph
             base.Draw(gameTime);
 
-            //// Draw the Rays
+            // Draw the Rays
             if (currentRay.HasValue) {
                 currentRay.Value.DrawRay(graphics, Color.Red, m_sceneManager.CurrentScene.Camera, Matrix.Identity);
             }
 
             m_terrain.Draw(gameTime, m_sceneManager.CurrentScene.Camera, graphics);
-
-            dance.Draw(gameTime, m_sceneManager.CurrentScene.Camera, graphics);
-
+            soldier.Draw(gameTime, m_sceneManager.CurrentScene.Camera, graphics);
+            
             // Lastly, Call the Monogame Draw Method
             base.PostDraw(gameTime);
         }
@@ -209,10 +177,7 @@ namespace EmpiresOfTheIV
         void Mouse_MouseDown(object sender, Anarian.Events.MouseClickedEventArgs e)
         {
             if (e.ButtonClicked == MouseButtonClick.RightMouseButton) {
-                //Ray ray = new Ray(Vector3.Zero, Vector3.One);
-                //bool intersects = m_sceneManager.CurrentScene.SceneNode.Transform.GetChild(0).GameObject.CheckRayIntersection(ray);
 
-                //Debug.WriteLine("GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
             }
         }
 
@@ -227,7 +192,7 @@ namespace EmpiresOfTheIV
                     GraphicsDevice.Viewport
                     );
 
-                bool intersects = m_sceneManager.CurrentScene.SceneNode.Transform.GetChild(0).GameObject.CheckRayIntersection(ray);
+                bool intersects = m_sceneManager.CurrentScene.SceneNode.GetChild(0).GameObject.CheckRayIntersection(ray);
                 Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
 
                 currentRay = ray;
@@ -236,9 +201,6 @@ namespace EmpiresOfTheIV
                 rayPosOnTerrain = m_terrain.Intersects(ray);
             }            
             if (e.ButtonClicked == MouseButtonClick.MiddleMouseButton) {
-                //Debug.WriteLine("BEFORE GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
-                //GC.Collect();
-                //Debug.WriteLine("AFTER GC: TOTAL MEMORY {0}", GC.GetTotalMemory(false));
                 Debug.WriteLine("Middle Mouse Pressed");
                 GamePage.PageFrame.Navigate(typeof(BlankPage));
                 GamePage.PageFrame.Visibility = Windows.UI.Xaml.Visibility.Visible;
@@ -250,13 +212,11 @@ namespace EmpiresOfTheIV
 
         void Mouse_MouseMoved(object sender, Anarian.Events.MouseMovedEventArgs e)
         {
-            //Debug.WriteLine("Mouse Moved To: {0}, Delta: {1}", e.Position.ToString(), e.DeltaPosition.ToString());
-            //m_sceneManager.CurrentScene.Camera.AddYaw(e.DeltaPosition.X * 0.0005f);
-            //m_sceneManager.CurrentScene.Camera.AddPitch(e.DeltaPosition.Y * 0.0005f);
         }
 
         void Keyboard_KeyboardDown(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
+            //Debug.WriteLine("Keyboard: {0}, Held Down", e.KeyClicked.ToString());
             Camera cam = m_sceneManager.CurrentScene.Camera;
             
             switch (e.KeyClicked) {
@@ -299,7 +259,6 @@ namespace EmpiresOfTheIV
                     cam.AddYaw(MathHelper.ToRadians(-2));
                     break;
             }
-            //Debug.WriteLine("{0}, Held Down", e.KeyClicked.ToString());
         }
         void Keyboard_KeyboardPressed(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {

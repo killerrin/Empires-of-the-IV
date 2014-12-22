@@ -39,21 +39,23 @@ namespace Anarian.DataStructures.Rendering
         Vector3[,] m_terrainVertsPos;
         float[,] m_heightData;
 
-
-        int m_terrainWidth = 4;
+        int m_terrainWidth = 0;
         public int TerrainWidth { get { return m_terrainWidth; } }
 
-        int m_terrainHeight = 3;
+        int m_terrainHeight = 0;
         public int TerrainHeight { get { return m_terrainHeight; } }
 
         float m_highestHeightPoint;
         public float HighestHeight { get { return m_highestHeightPoint * m_transform.WorldScale.Y; } }
 
+        float m_terrainHeightScale;
+        public float TerrainHeightScale { get { return m_terrainHeightScale; } }
+
         BasicEffect m_effect;
         public BasicEffect Effect { get { return m_effect; } }
         #endregion
 
-        public Terrain(GraphicsDeviceManager graphics, Texture2D heightMap, Texture2D texture)
+        public Terrain(GraphicsDeviceManager graphics, Texture2D heightMap, Texture2D texture = null)
             :base()
         {
             // Store the Texture
@@ -63,10 +65,26 @@ namespace Anarian.DataStructures.Rendering
             SetupTerrain(graphics.GraphicsDevice, heightMap);
         }
 
+        public Terrain(GraphicsDeviceManager graphics, int width, int height, Texture2D texture = null)
+            : base()
+        {
+            // Store the Texture
+            m_texture = texture;
+
+            // Create the Height Map
+            Texture2D heightMap = new Texture2D(graphics.GraphicsDevice, width, height);
+            Color[] colors = new Color[width * height];
+            for (int i = 0; i < width * height; i++) { colors[i] = Color.White; }
+            heightMap.SetData(colors);
+
+            // Finally, Setup the terrain
+            SetupTerrain(graphics.GraphicsDevice, heightMap);
+        }
+
         #region Terrain Setup
         private void SetupTerrain(GraphicsDevice graphics, Texture2D heightMap)
         {
-            LoadHeightData(heightMap);
+            LoadHeightData(heightMap, 5.0f);
 
             SetUpVertices();
             SetUpIndices();
@@ -75,11 +93,13 @@ namespace Anarian.DataStructures.Rendering
             SetupEffects(graphics);
             GenerateBoundingBox();
         }
-        private void LoadHeightData(Texture2D heightMap)
+        private void LoadHeightData(Texture2D heightMap, float terrainHeightScale)
         {
             m_heightMap = heightMap;
             m_terrainWidth = heightMap.Width;
             m_terrainHeight = heightMap.Height;
+
+            m_terrainHeightScale = terrainHeightScale;
 
             float tempHighestHeight = -1.0f;
 
@@ -89,7 +109,7 @@ namespace Anarian.DataStructures.Rendering
             m_heightData = new float[m_terrainWidth, m_terrainHeight];
             for (int x = 0; x < m_terrainWidth; x++) {
                 for (int y = 0; y < m_terrainHeight; y++) {
-                    m_heightData[x, y] = heightMapColors[x + y * m_terrainWidth].R / 5.0f;
+                    m_heightData[x, y] = heightMapColors[x + y * m_terrainWidth].R / m_terrainHeightScale;
 
                     if (m_heightData[x, y] > tempHighestHeight) { tempHighestHeight = m_heightData[x, y]; }
                 }
@@ -168,9 +188,11 @@ namespace Anarian.DataStructures.Rendering
         private void SetupEffects(GraphicsDevice graphics)
         {
             m_effect = new BasicEffect(graphics);
-            
-            m_effect.TextureEnabled = true;
-            m_effect.Texture = m_texture;
+
+            if (m_texture != null) {
+                m_effect.TextureEnabled = true;
+                m_effect.Texture = m_texture;
+            }
 
             m_effect.EnableDefaultLighting();
         }
@@ -317,16 +339,14 @@ namespace Anarian.DataStructures.Rendering
             // Hold the Grid Counters
             int posX = -1;
             int posZ = -1;
-            
+
             // Search Along the X
             for (int x = 0; x < m_terrainWidth; x++) {
                 Vector3 vertAtWorld = Vector3.Transform(m_terrainVertsPos[x, 0], world);
-                //Debug.WriteLine("X: {0} | Height: {1} | WorldPos: {2}", x, m_heightData[x, 0], vertAtWorld.ToString());
 
                 if (pointX <= vertAtWorld.X) {
+                    //Debug.WriteLine("PointX Pos: {0} | VertAtWorld: {1} | VertGridSpace: {2}", pointX, vertAtWorld.X, x);
                     posX = x;
-
-                    //Debug.WriteLine("PointX Pos: {0} | VertAtWorld: {1} | VertGridSpace: {2}", pointX, vertAtWorld.X, posX);
                     break;
                 }
             }
@@ -334,12 +354,10 @@ namespace Anarian.DataStructures.Rendering
             // Search along the Z
             for (int z = 0; z < m_terrainHeight; z++) {
                 Vector3 vertAtWorld = Vector3.Transform(m_terrainVertsPos[0, z], world);
-                //Debug.WriteLine("X: {0} | Height: {1} | WorldPos: {2}", z, m_heightData[0, z], vertAtWorld.ToString());
 
                 if (pointZ >= vertAtWorld.Z) {
+                    //Debug.WriteLine("PointZ Pos: {0} | VertAtWorld: {1} | VertGridSpace: {2}", pointZ, vertAtWorld.Z, z);
                     posZ = z;
-
-                    //Debug.WriteLine("PointZ Pos: {0} | VertAtWorld: {1} | VertGridSpace: {2}", pointZ, vertAtWorld.Z, posZ);
                     break;
                 }
             }
@@ -353,7 +371,21 @@ namespace Anarian.DataStructures.Rendering
 
             // Get the vertex position
             Vector3 vert = Vector3.Transform(m_terrainVertsPos[posX, posZ], world);
-            
+
+            // See if we can lerp the values
+            if (posX > 0 && posZ > 0) {
+                // Lerp the Data from the four vertices to get the average height
+                Vector3 vert2 = Vector3.Transform(m_terrainVertsPos[posX - 1, posZ], world);
+                Vector3 vert3 = Vector3.Transform(m_terrainVertsPos[posX, posZ - 1], world);
+                Vector3 vert4 = Vector3.Transform(m_terrainVertsPos[posX - 1, posZ - 1], world);
+
+                float averageHeight = (vert.Y + vert2.Y + vert3.Y + vert4.Y) / 4.0f;
+
+                // Lerp the Average Height to get the height according to our current position
+                return averageHeight;
+            }
+
+            // If we can't lerp the values, we continue on and just use the current vertex to get the height 
             // Now we get the height data
             float height = vert.Y;
             
@@ -364,12 +396,12 @@ namespace Anarian.DataStructures.Rendering
         #endregion
 
         #region Update/Draw
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             if (!m_active) return;
         }
 
-        public void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
+        public override void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
         {
             if (!m_active) return;
             if (!m_visible) return;

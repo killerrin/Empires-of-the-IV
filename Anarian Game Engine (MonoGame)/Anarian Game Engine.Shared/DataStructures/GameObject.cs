@@ -76,6 +76,7 @@ namespace Anarian.DataStructures
             if (type == typeof(Health)) { component = new Health(this); }
             else if (type == typeof(Mana)) { component = new Mana(this); }
             else if (type == typeof(Transform)) { component = new Transform(this); }
+            else if (type == typeof(Physics)) { component = new Physics(this); }
             else { component = null; }
 
             if (component != null) {
@@ -161,18 +162,18 @@ namespace Anarian.DataStructures
         {
             if (!m_active) return;
 
-            // Then do the Children
+            // Update the Children
             foreach (var child in m_transform.GetChildren()) {
                 child.GameObject.Update(gameTime);
             }
-
-            // Update the Transform
-            m_transform.Update(gameTime);
 
             // Update every other Component
             foreach (var component in m_components) {
                 component.Update(gameTime);
             }
+
+            // Finally, Update the Transform
+            m_transform.Update(gameTime);
         }
         public virtual void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
         {

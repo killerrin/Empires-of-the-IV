@@ -27,7 +27,16 @@ namespace Anarian.DataStructures.Input
         
         public TouchPanelCapabilities TouchPanelCapabilities { get { return m_touchPanelCapabilities; } }
 
-        public GestureSample ReadGesture { get { return TouchPanel.ReadGesture(); } }
+        public GestureSample? ReadGesture 
+        {
+            get 
+            {
+                if (TouchPanel.IsGestureAvailable) {
+                    return TouchPanel.ReadGesture();
+                }
+                return null;
+            } 
+        }
 
         public GestureType EnabledGestures {
             get { return TouchPanel.EnabledGestures; }

@@ -5,6 +5,7 @@ using System.Diagnostics;
 
 using Anarian.Interfaces;
 using Anarian.Enumerators;
+using Anarian.Helpers;
 
 using Microsoft.Xna.Framework;
 
@@ -102,7 +103,7 @@ namespace Anarian.DataStructures.Components
         public Matrix WorldMatrix
         {
             get { return m_worldMatrix; }
-            private set { m_worldMatrix = value; }
+            protected set { m_worldMatrix = value; }
         }
 
         private Matrix m_scaleMatrix;
@@ -195,6 +196,17 @@ namespace Anarian.DataStructures.Components
             Setup();
         }
 
+        public override void Reset()
+        {
+            base.Reset();
+
+            m_position = Vector3.Zero;
+            m_rotation = Vector3.Zero;
+            m_scale = Vector3.One;
+
+            Setup();
+        }
+
         private void Setup(GameObject gameObject = null)
         {
             m_orbitalRotation = Vector3.Zero;
@@ -217,6 +229,7 @@ namespace Anarian.DataStructures.Components
         void IMoveable.MoveVertical(GameTime gameTime, float amount) { MoveVertical(gameTime, amount); }
         void IMoveable.MoveHorizontal(GameTime gameTime, float amount) { MoveHorizontal(gameTime, amount); }
         void IMoveable.MoveForward(GameTime gameTime, float amount) { MoveForward(gameTime, amount); }
+        void IMoveable.MoveToPosition(GameTime gameTime, Vector3 point) { MoveToPosition(gameTime, point); }
         #endregion
 
         public override void Update(GameTime gameTime)
@@ -225,13 +238,36 @@ namespace Anarian.DataStructures.Components
         }
 
         #region Movements
-        public void Move(GameTime gameTime, Vector3 movement) { }
-
-        public void MoveVertical(GameTime gameTime, float amount) { }
+        public void Move(GameTime gameTime, Vector3 movement)
+        {
+            MoveHorizontal(gameTime, movement.X);
+            MoveVertical(gameTime, movement.Y);
+            MoveForward(gameTime, movement.Z);
+        }
 
         public void MoveHorizontal(GameTime gameTime, float amount) { }
-
+        public void MoveVertical(GameTime gameTime, float amount) { }
         public void MoveForward(GameTime gameTime, float amount) { }
+
+        public void MoveToPosition(GameTime gameTime, Vector3 point)
+        {
+            Vector3 direction = point - m_position;
+            direction.Normalize();
+
+            Vector3 speed = direction * 0.002f;
+            m_position += speed * gameTime.DeltaTime();
+
+            // Rotate to the point
+            RotateToPoint(gameTime, point);
+        }
+        #endregion
+
+        #region Rotations
+        public void RotateToPoint(GameTime gameTime, Vector3 point)
+        {
+            RotationMatrix = Matrix.CreateLookAt(Vector3.Zero, point, Vector3.Up);
+            RotationMatrix = Matrix.Transpose(RotationMatrix);
+        }
         #endregion
 
         #region Parent/Children

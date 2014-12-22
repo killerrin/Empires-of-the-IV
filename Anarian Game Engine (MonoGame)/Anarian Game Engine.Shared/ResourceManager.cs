@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using Anarian.DataStructures.Animation;
+using Anarian.Helpers;
+
 namespace Anarian
 {
     public class ResourceManager
@@ -22,11 +26,13 @@ namespace Anarian
 
         Dictionary<string, Texture2D> m_textures;
         Dictionary<string, Model> m_models;
+        Dictionary<string, AnimatedModel> m_animatedModels;
 
         private ResourceManager()
         {
             m_textures = new Dictionary<string, Texture2D>();
             m_models = new Dictionary<string, Model>();
+            m_animatedModels = new Dictionary<string, AnimatedModel>();
         }
 
         private string AssetName(string assetName)
@@ -36,24 +42,30 @@ namespace Anarian
             return assetNameSplit[assetNameSplit.Length - 1];
         }
 
-        public void LoadTexture(ContentManager Content, string assetName) {
-            m_textures.Add(AssetName(assetName), Content.Load<Texture2D>(assetName)); 
-        }
-        public void LoadModel(ContentManager Content, string assetName) {
-            m_models.Add(AssetName(assetName), Content.Load<Model>(assetName));
-        }
-
-        #region Add
-        public void AddTexture(Texture2D texture, string assetName)
+        public void LoadAsset(ContentManager Content, Type assetType, string assetName)
         {
-            m_textures.Add(assetName, texture);
+            if (assetType == typeof(Texture2D)) { m_textures.Add(AssetName(assetName), Content.Load<Texture2D>(assetName)); }
+            else if (assetType == typeof(Model)) { m_models.Add(AssetName(assetName), Content.Load<Model>(assetName)); }
+            else if (assetType == typeof(AnimatedModel)) { m_animatedModels.Add(AssetName(assetName), CustomContentLoader.LoadAnimatedModel(Content, assetName)); }
         }
-        #endregion
 
-        #region Get
-        public Texture2D GetTexture(string key) { return m_textures[key]; }
-        public Model GetModel(string key) { return m_models[key]; }
-        #endregion
+        public void AddAsset(object asset, string assetName)
+        {
+            Type assetType = asset.GetType();
+
+            if (assetType == typeof(Texture2D)) { m_textures.Add(AssetName(assetName), (Texture2D)asset); }
+            else if (assetType == typeof(Model)) { m_models.Add(AssetName(assetName), (Model)asset); }
+            else if (assetType == typeof(AnimatedModel)) { m_animatedModels.Add(AssetName(assetName), (AnimatedModel)asset); }
+        }
+
+        public object GetAsset(Type assetType, string key)
+        {
+            if (assetType == typeof(Texture2D)) { return m_textures[key]; }
+            else if (assetType == typeof(Model)) { return m_models[key]; }
+            else if (assetType == typeof(AnimatedModel)) { return m_animatedModels[key]; }
+
+            return null;
+        }
 
         public static class ReservedNames
         {

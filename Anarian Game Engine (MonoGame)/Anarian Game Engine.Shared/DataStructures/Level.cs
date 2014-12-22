@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Anarian.Interfaces;
+using Anarian.DataStructures.Components;
 
 namespace Anarian.DataStructures
 {
     public class Level : IScene, IUpdatable, IRenderable
     {
         private Camera m_camera;
-        private GameObject m_sceneNode;
+        private Transform m_sceneNode;
         public Camera Camera
         {
             get { return m_camera; }
             set { m_camera = value; }
         }
-        public GameObject SceneNode
+        public Transform SceneNode
         {
             get { return m_sceneNode; }
             protected set { m_sceneNode = value; }
@@ -31,8 +32,9 @@ namespace Anarian.DataStructures
             // When Creating the Base SceneNode, we will set
             // its Scale to Zero so that SceneNodes which get
             // added as children aren't screwed up
-            m_sceneNode = new GameObject();
-            m_sceneNode.Transform.Scale = Vector3.Zero;
+            GameObject node = new GameObject();
+            node.Transform.Scale = Vector3.Zero;
+            m_sceneNode = node.Transform;
         }
 
         #region Interface Implimentation
@@ -42,7 +44,7 @@ namespace Anarian.DataStructures
             set { Camera = value; }
         }
 
-        GameObject IScene.SceneNode
+        Transform IScene.SceneNode
         {
             get { return SceneNode; }
             set { }

@@ -2,22 +2,19 @@
 using System.Collections.Generic;
 using System.Text;
 using Anarian.DataStructures;
+using Anarian.DataStructures.Components;
 
 namespace Anarian.Interfaces
 {
     public interface IScene
     {
-        //Camera GetCamera();
-        //void SetCamera(Camera cam);
-
         Camera Camera
         {
             get;
             set;
         }
 
-        //GameObject GetSceneNode();
-        GameObject SceneNode
+        Transform SceneNode
         {
             get;
             set;

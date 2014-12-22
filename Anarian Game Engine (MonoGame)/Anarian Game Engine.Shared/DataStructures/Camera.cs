@@ -214,6 +214,8 @@ namespace Anarian.DataStructures
         {
             MoveForward(amount);
         }
+
+        void IMoveable.MoveToPosition(GameTime gameTime, Vector3 point) { MoveToPosition(point); }
         #endregion
 
         #region Camera Movement
@@ -251,7 +253,7 @@ namespace Anarian.DataStructures
             CreateViewMatrix(m_eye, m_lookAt, m_up);
         }
 
-
+        public void MoveToPosition(Vector3 point) { }
 
         /// <summary>
         /// Adds Yaw to the Camera

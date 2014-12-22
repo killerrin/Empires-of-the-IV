@@ -66,7 +66,7 @@ namespace Anarian
             // Blank Texture
             Texture2D blankTexture = new Texture2D(GraphicsDevice, 1, 1);
             blankTexture.SetData(new Color[] { Color.White });
-            m_resourceManager.AddTexture(blankTexture, "blankTexture_age");
+            m_resourceManager.AddAsset(blankTexture, "blankTexture_age");
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Anarian
 
             if (m_sceneManager != null) {
                 if (m_sceneManager.CurrentScene != null) {
-                    m_sceneManager.CurrentScene.SceneNode.Update(gameTime);
+                    m_sceneManager.CurrentScene.SceneNode.GameObject.Update(gameTime);
                 }
             }
 
@@ -110,7 +110,7 @@ namespace Anarian
             // Root Scene Node
             if (m_sceneManager != null) {
                 if (m_sceneManager.CurrentScene != null) {
-                    m_sceneManager.CurrentScene.SceneNode.Draw(
+                    m_sceneManager.CurrentScene.SceneNode.GameObject.Draw(
                         gameTime,
                         m_sceneManager.CurrentScene.Camera,
                         graphics);

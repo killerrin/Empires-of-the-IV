@@ -46,7 +46,6 @@ namespace Anarian.DataStructures.Animation
         #endregion
 
         #region Properties
-
         /// <summary>
         /// The actual underlying XNA model
         /// </summary>
@@ -84,7 +83,6 @@ namespace Anarian.DataStructures.Animation
         #endregion
 
         #region Construction and Loading
-
         /// <summary>
         /// Constructor. Creates the model from an XNA model
         /// </summary>
@@ -128,7 +126,6 @@ namespace Anarian.DataStructures.Animation
         #endregion
 
         #region Bones Management
-
         /// <summary>
         /// Get the bones from the model and create a bone class object for
         /// each bone. We use our bone class to do the real animated bone work.
@@ -144,7 +141,7 @@ namespace Anarian.DataStructures.Animation
                 bones.Add(newBone);
             }
 
-            System.Diagnostics.Debug.WriteLine("{0}: Total Bones {1}", assetName, bones.Count);
+            //System.Diagnostics.Debug.WriteLine("{0}: Total Bones {1}", assetName, bones.Count);
         }
 
         /// <summary>
@@ -165,7 +162,6 @@ namespace Anarian.DataStructures.Animation
         #endregion
 
         #region Animation Management
-
         /// <summary>
         /// Play an animation clip
         /// </summary>
@@ -178,6 +174,17 @@ namespace Anarian.DataStructures.Animation
             return player;
         }
 
+        #endregion
+
+        #region Operator Overloads
+        public static implicit operator Model(AnimatedModel animatedModel)
+        {
+            return animatedModel.Model;
+        }
+        //public static explicit operator Model(AnimatedModel animatedModel)
+        //{
+        //    return animatedModel.Model;
+        //}
         #endregion
 
         /// <summary>

@@ -20,7 +20,7 @@ namespace Anarian.Helpers
         #region Helper Methods
         public static void SetDefaultTexture()
         {
-            Texture = ResourceManager.Instance.GetTexture("blankTexture_age");
+            Texture = ResourceManager.Instance.GetAsset(typeof(Texture2D), "blankTexture_age") as Texture2D;
         }
         private static Rectangle GetCenterOfPoint(int size, Vector2 position)
         {
@@ -119,6 +119,7 @@ namespace Anarian.Helpers
         /// <param name="frequency">The number of oscillations (cycles) that occur each second of time</param>
         /// <param name="maxTime">The maximum ammount of time the Sine will go from </param>
         /// <param name="phase">Where (In Degrees) in its cycle the oscillation is at t = 0 </param>
+        /// <example>DrawSineWave(spriteBatch, Color.Red, 4, new Vector2(0.0f, 600.0f), 100.0f, 0.006f, GraphicsDevice.Viewport.Width, 0.0f);</example>
         public static void DrawSineWave(SpriteBatch spriteBatch, Color color, int size, Vector2 position, float amplitude, float frequency, float maxTime, float phase = 0.0f)
         {
             for (float i = 0.0f; i < maxTime; i += 1.0f) {

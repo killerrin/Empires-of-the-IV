@@ -6,7 +6,14 @@ namespace Anarian.Interfaces
 {
     public interface ISelectableEntity
     {
-        bool Selected { get; set; }
+        /// <summary>
+        /// Is the Entity Able to be Selected
+        /// </summary>
         bool Selectable { get; set; }
+
+        /// <summary>
+        /// Is the Entity Currently Selected
+        /// </summary>
+        bool Selected { get; set; }
     }
 }

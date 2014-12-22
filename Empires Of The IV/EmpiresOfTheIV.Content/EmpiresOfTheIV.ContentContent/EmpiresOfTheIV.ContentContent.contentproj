@@ -59,7 +59,7 @@
     <Compile Include="t-pose_3_t.fbx">
       <Name>t-pose_3_t</Name>
       <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
+      <Processor>AnimationProcessor</Processor>
     </Compile>
     <Compile Include="walk_t.FBX">
       <Name>walk_t</Name>
@@ -86,6 +86,18 @@
       <Name>grassTexture</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="t-pose_3.fbx">
+      <Name>t-pose_3</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>AnimationProcessor</Processor>
+    </Compile>
+    <Compile Include="walk.FBX">
+      <Name>walk</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>AnimationProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

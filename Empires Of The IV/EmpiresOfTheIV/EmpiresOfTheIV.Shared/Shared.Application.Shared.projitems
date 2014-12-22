@@ -19,6 +19,8 @@
       <DependentUpon>BlankPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Game1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameObjects\Building.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameObjects\Unit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
     </Compile>
