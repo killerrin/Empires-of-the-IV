@@ -14,6 +14,8 @@ namespace Anarian.DataStructures.Components
     public class Transform : Component,
                              IUpdatable, IMoveable
     {
+        #region Fields/Properties
+
         #region Vectors
         Vector3 m_orbitalRotation;
         public Vector3 OrbitalRotation
@@ -22,11 +24,11 @@ namespace Anarian.DataStructures.Components
             set { m_orbitalRotation = value; }
         }
 
-        Vector3 m_rotation;
-        public Vector3 Rotation
+        Quaternion m_rotation;
+        public Quaternion Rotation
         {
             get { return m_rotation; }
-            set { m_rotation = value; }
+            private set { m_rotation = value; }
         }
 
         Vector3 m_scale;
@@ -36,11 +38,16 @@ namespace Anarian.DataStructures.Components
             set { m_scale = value; }
         }
 
+        Vector3 m_lastPosition;
         Vector3 m_position;
         public Vector3 Position
         {
             get { return m_position; }
-            set { m_position = value; }
+            set {
+                m_lastPosition = m_position;
+                m_position = value;
+
+            }
         }
 
         #region WorldVectors
@@ -57,14 +64,14 @@ namespace Anarian.DataStructures.Components
             }
         }
 
-        public Vector3 WorldRotation
+        public Quaternion WorldRotation
         {
             get
             {
-                Vector3 rot = m_rotation;
-
+                Quaternion rot = m_rotation;
+        
                 if (m_parent != null) {
-                    rot += m_parent.WorldRotation;
+                    rot *= m_parent.WorldRotation;
                 }
                 return rot;
             }
@@ -99,35 +106,35 @@ namespace Anarian.DataStructures.Components
         #endregion
 
         #region Matrices
-        private Matrix m_worldMatrix;
+        private Matrix m_worldMatrix = Matrix.Identity;
         public Matrix WorldMatrix
         {
             get { return m_worldMatrix; }
             protected set { m_worldMatrix = value; }
         }
 
-        private Matrix m_scaleMatrix;
+        private Matrix m_scaleMatrix = Matrix.Identity;
         public Matrix ScaleMatrix
         {
             get { return m_scaleMatrix; }
             set { m_scaleMatrix = value; }
         }
 
-        private Matrix m_rotationMatrix;
+        private Matrix m_rotationMatrix = Matrix.Identity;
         public Matrix RotationMatrix
         {
             get { return m_rotationMatrix; }
             set { m_rotationMatrix = value; }
         }
 
-        private Matrix m_translationMatrix;
+        private Matrix m_translationMatrix = Matrix.Identity;
         public Matrix TranslationMatrix
         {
             get { return m_translationMatrix; }
             set { m_translationMatrix = value; }
         }
 
-        private Matrix m_orbitalRotationMatrix;
+        private Matrix m_orbitalRotationMatrix = Matrix.Identity;
         public Matrix OrbitalRotationMatrix
         {
             get { return m_orbitalRotationMatrix; }
@@ -141,11 +148,13 @@ namespace Anarian.DataStructures.Components
         }
         protected void CreateRotationMatrix()
         {
-            Vector3 worldRotation = WorldRotation;
-            Matrix rotX = Matrix.CreateRotationX(worldRotation.X);
-            Matrix rotY = Matrix.CreateRotationY(worldRotation.Y);
-            Matrix rotZ = Matrix.CreateRotationZ(worldRotation.Z);
-            m_rotationMatrix = rotX * rotY * rotZ;
+            //m_rotationMatrix = Matrix.CreateFromQuaternion(WorldRotation);
+
+            //Vector3 worldRot = WorldRotation;
+            //Matrix rotX = Matrix.CreateRotationX(worldRotation.X);
+            //Matrix rotY = Matrix.CreateRotationY(worldRotation.Y);
+            //Matrix rotZ = Matrix.CreateRotationZ(worldRotation.Z);
+            //m_rotationMatrix = rotX * rotY * rotZ;
         }
         protected void CreateTranslationMatrix()
         {
@@ -176,22 +185,56 @@ namespace Anarian.DataStructures.Components
         #endregion
         #endregion
 
+        Vector3 m_forward;
+
+        /// <summary>
+        /// Defaults to Vector3.Forward
+        /// </summary>
+        public Vector3 Forward
+        {
+            get { return m_forward; }
+            set { m_forward = value; }
+        }
+
+        Vector3 m_up;
+
+        /// <summary>
+        /// Defaults to Vector3.Up
+        /// </summary>
+        public Vector3 Up
+        {
+            get { return m_up; }
+            set { m_up = value; }
+        }
+
+        Vector3 m_right;
+        public Vector3 Right 
+        {
+            get { return m_right; }
+            set { m_right = value; }
+        }
+
+        public Vector3 Back { get { return -m_forward; } }
+        public Vector3 Down { get { return -m_up; } }
+        public Vector3 Left { get { return -m_right; } }
+        #endregion
+
         public Transform(GameObject gameObject)
             :base(gameObject, ComponentTypes.Transform)
         {
             m_position = Vector3.Zero;
-            m_rotation = Vector3.Zero;
+            m_rotation = Quaternion.Identity;
             m_scale = Vector3.One;
 
             Setup();
         }
 
-        public Transform(GameObject gameObject, Vector3 position, Vector3 scale, Vector3 rotation)
+        public Transform(GameObject gameObject, Vector3 position, Vector3 scale, Quaternion rotation)
             : base(gameObject, ComponentTypes.Transform)
         {
             m_position = position;
-            m_rotation = scale;
-            m_scale = rotation;
+            m_rotation = rotation;
+            m_scale = scale;
 
             Setup();
         }
@@ -201,7 +244,7 @@ namespace Anarian.DataStructures.Components
             base.Reset();
 
             m_position = Vector3.Zero;
-            m_rotation = Vector3.Zero;
+            m_rotation = Quaternion.Identity;
             m_scale = Vector3.One;
 
             Setup();
@@ -209,13 +252,17 @@ namespace Anarian.DataStructures.Components
 
         private void Setup(GameObject gameObject = null)
         {
+            // Setup Transform Vectors
             m_orbitalRotation = Vector3.Zero;
+            m_lastPosition = m_position;
 
-            CreateRotationMatrix();
-            CreateScaleMatrix();
-            CreateTranslationMatrix();
-            CreateOrbitalRotationMatrix();
-            CreateWorldMatrix();
+            // Setup the Direction Vectors
+            m_forward = -Vector3.Forward;
+            m_up = Vector3.Up;
+            m_right = Vector3.Normalize(Vector3.Cross(Forward, this.Up));
+
+            // Create the Matricies
+            CreateAllMatrices();
 
             // Setup Children
             m_parent = null;
@@ -237,6 +284,21 @@ namespace Anarian.DataStructures.Components
             CreateAllMatrices();
         }
 
+        #region Helper Methods
+        /// <summary>
+        /// A Direction Vector facing a specified point
+        /// </summary>
+        /// <param name="point">The point we wish to face</param>
+        /// <returns>A normalized direction vector</returns>
+        public Vector3 CreateDirectionVector(Vector3 point)
+        {
+            Vector3 direction = point - m_position;
+            direction.Normalize();
+
+            return direction;
+        }
+        #endregion
+
         #region Movements
         public void Move(GameTime gameTime, Vector3 movement)
         {
@@ -249,24 +311,49 @@ namespace Anarian.DataStructures.Components
         public void MoveVertical(GameTime gameTime, float amount) { }
         public void MoveForward(GameTime gameTime, float amount) { }
 
-        public void MoveToPosition(GameTime gameTime, Vector3 point)
+        public bool MoveToPosition(GameTime gameTime, Vector3 point, float boundry = 0.025f)
         {
-            Vector3 direction = point - m_position;
-            direction.Normalize();
+            //Debug.WriteLine(Vector3.Distance(m_position, point));
+            
+            // Check if we even need to enter the method or not
+            if (Vector3.Distance(m_position, point) <= boundry) return true;
+
+            Vector3 direction = CreateDirectionVector(point);
 
             Vector3 speed = direction * 0.002f;
-            m_position += speed * gameTime.DeltaTime();
+            Position += speed * gameTime.DeltaTime();
 
             // Rotate to the point
-            RotateToPoint(gameTime, point);
+            RotateToFaceForward(gameTime);
+
+            // Exit out of the method signaling whether we have arrived yet
+            if (Vector3.Distance(m_position, point) <= boundry) return true;
+            return false;
         }
         #endregion
 
         #region Rotations
+        public void RotateToFaceForward(GameTime gameTime) { RotateToPoint(gameTime, m_lastPosition); }
         public void RotateToPoint(GameTime gameTime, Vector3 point)
         {
-            RotationMatrix = Matrix.CreateLookAt(Vector3.Zero, point, Vector3.Up);
-            RotationMatrix = Matrix.Transpose(RotationMatrix);
+            // the new forward vector, so the avatar faces the target
+            Vector3 newForward = -(Vector3.Normalize(m_position - point));
+
+            // Set the Forwards
+            Forward = newForward;
+            Right = Vector3.Cross(Forward, Up);
+
+            // Rotate the Matrix
+            Matrix rotMatrix = Matrix.Identity;
+            rotMatrix.Forward = Forward;
+            rotMatrix.Right = Right;
+            rotMatrix.Up = Up;
+
+            //float angle = (float)Math.Atan2(-newForward.X, -newForward.Z);
+            //Quaternion rotation = Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), angle);
+            //m_rotation.Y = rotation.Y;
+
+            m_rotationMatrix = rotMatrix;
         }
         #endregion
 

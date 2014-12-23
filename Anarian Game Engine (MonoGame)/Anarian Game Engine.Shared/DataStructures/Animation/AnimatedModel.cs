@@ -21,77 +21,41 @@ namespace Anarian.DataStructures.Animation
         /// <summary>
         /// The model asset name
         /// </summary>
-        private string assetName = "";
+        private string m_assetName = "";
 
         /// <summary>
         /// The actual underlying XNA model
         /// </summary>
         private Model model = null;
-        
-        /// <summary>
-        /// Extra data associated with the XNA model
-        /// </summary>
-        private ModelExtra modelExtra = null;
+
+        private ModelExtra m_modelExtra = null;
+        public ModelExtra ModelExtra { get { return m_modelExtra; } }
 
         /// <summary>
-        /// The model bones
+        /// The Default Animation State for this Model
         /// </summary>
-        private List<Bone> bones = new List<Bone>();
-
-        /// <summary>
-        /// An associated animation clip player
-        /// </summary>
-        private AnimationPlayer player = null;
-
+        private AnimationState m_animationState;
         #endregion
 
         #region Properties
         /// <summary>
-        /// The actual underlying XNA model
+        /// The asset name of the Animated Model
         /// </summary>
-        public Model Model
-        {
-            get { return model; }
-        }
+        public string AssetName { get { return m_assetName; } }
 
         /// <summary>
-        /// The underlying bones for the model
+        /// The actual underlying XNA model
         /// </summary>
-        public List<Bone> Bones { get { return bones; } }
+        public Model Model { get { return model; } }
+
+        public AnimationState AnimationState { get { return m_animationState; } }
 
         /// <summary>
         /// The model animation clips
         /// </summary>
-        public List<AnimationClip> Clips { get { return modelExtra.Clips; } }
-
-        /// <summary>
-        /// The asset name of the Animated Model
-        /// </summary>
-        public string AssetName { get { return assetName; } }
-
-        /// <summary>
-        /// The Exta Information stored in the models tag
-        /// </summary>
-        public ModelExtra ModelExtra { get { return modelExtra; } }
-
-        public AnimationPlayer AnimationPlayer
-        {
-            get { return player; }
-            set { player = value; }
-        }
+        public List<AnimationClip> Clips { get { return m_modelExtra.Clips; } }
 
         #endregion
-
-        #region Construction and Loading
-        /// <summary>
-        /// Constructor. Creates the model from an XNA model
-        /// </summary>
-        /// <param name="assetName">The name of the asset for this model</param>
-        protected AnimatedModel(string assetName)
-        {
-            this.assetName = assetName;
-
-        }
 
         /// <summary>
         /// Animated Model wrapper to convert AnimationAux.AnimatedModel data structures across cross assemblies
@@ -99,69 +63,20 @@ namespace Anarian.DataStructures.Animation
         /// <param name="oldModel">A Loaded model from the AnimationAux.AnimatedModel namespace</param>
         public AnimatedModel(AnimationAux.AnimatedModel oldModel)
         {
-            assetName = oldModel.AssetName;
+            m_assetName = oldModel.AssetName;
+
             model = oldModel.Model;
-            
-            modelExtra = new ModelExtra(oldModel.ModelExtra);
+            m_modelExtra = new ModelExtra(oldModel.ModelExtra);
 
-            // Finally, Obtain the Bones
-            System.Diagnostics.Debug.Assert(modelExtra != null);
-            ObtainBones();
+            Setup();
         }
 
-        /// <summary>
-        /// Load the model asset from content
-        /// </summary>
-        /// <param name="content"></param>
-        public void LoadContent(ContentManager content)
+        public void Setup()
         {
-            this.model = content.Load<Model>(assetName);
-            modelExtra = model.Tag as ModelExtra;
-            System.Diagnostics.Debug.Assert(modelExtra != null);
-
-            ObtainBones();
+            // Set the Default Animation State
+            m_animationState = new AnimationState(this);
         }
 
-
-        #endregion
-
-        #region Bones Management
-        /// <summary>
-        /// Get the bones from the model and create a bone class object for
-        /// each bone. We use our bone class to do the real animated bone work.
-        /// </summary>
-        private void ObtainBones()
-        {
-            bones.Clear();
-            foreach (ModelBone bone in model.Bones) {
-                // Create the bone object and add to the heirarchy
-                Bone newBone = new Bone(bone.Name, bone.Transform, bone.Parent != null ? bones[bone.Parent.Index] : null);
-
-                // Add to the bones for this model
-                bones.Add(newBone);
-            }
-
-            //System.Diagnostics.Debug.WriteLine("{0}: Total Bones {1}", assetName, bones.Count);
-        }
-
-        /// <summary>
-        /// Find a bone in this model by name
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public Bone FindBone(string name)
-        {
-            foreach (Bone bone in Bones) {
-                if (bone.Name == name)
-                    return bone;
-            }
-
-            return null;
-        }
-
-        #endregion
-
-        #region Animation Management
         /// <summary>
         /// Play an animation clip
         /// </summary>
@@ -169,22 +84,14 @@ namespace Anarian.DataStructures.Animation
         /// <returns>The player that will play this clip</returns>
         public AnimationPlayer PlayClip(AnimationClip clip)
         {
-            // Create a clip player and assign it to this model
-            player = new AnimationPlayer(clip, this);
-            return player;
+            return m_animationState.PlayClip(clip);
         }
-
-        #endregion
 
         #region Operator Overloads
         public static implicit operator Model(AnimatedModel animatedModel)
         {
             return animatedModel.Model;
         }
-        //public static explicit operator Model(AnimatedModel animatedModel)
-        //{
-        //    return animatedModel.Model;
-        //}
         #endregion
 
         /// <summary>
@@ -193,27 +100,43 @@ namespace Anarian.DataStructures.Animation
         /// <param name="gameTime"></param>
         public void Update(GameTime gameTime)
         {
-            if (player != null) {
-                player.Update(gameTime);
+            if (m_animationState != null) {
+                m_animationState.Update(gameTime);
             }
         }
 
         /// <summary>
-        /// Draw the model
+        /// Draws the Model to the screen
         /// </summary>
         /// <param name="graphics">The graphics device to draw on</param>
         /// <param name="view"> The Camera View</param>
         /// <param name="projection">The Camera Projection</param>
         /// <param name="world">The World Matrix of the Model</param>
-        public void Draw(GraphicsDevice graphics, Matrix view, Matrix projection, Matrix world)
+        public void Draw(GraphicsDevice graphics, Matrix view, Matrix projection, Matrix world, AnimationState animationState = null)
         {
             if (model == null)
                 return;
 
-            //
-            // Compute all of the bone absolute transforms
-            //
+            // Save the variables out of the animation state
+            List<Bone> bones;
+            ModelExtra modelExtra;
+            AnimationPlayer animationPlayer;
 
+            // Determine whether to use the default AnimationState or the Instanced one
+            if (animationState == null) {
+                bones = m_animationState.Bones;
+                modelExtra = m_animationState.ModelExtra;
+                animationPlayer = m_animationState.AnimationPlayer;
+            }
+            else {
+                bones = animationState.Bones;
+                modelExtra = animationState.ModelExtra;
+                animationPlayer = animationState.AnimationPlayer;
+            }
+
+            // Now that we have determined which AnimationState to use, we can begin animating the model
+
+            // Compute all of the bone absolute transforms
             Matrix[] boneTransforms = new Matrix[bones.Count];
 
             for (int i = 0; i < bones.Count; i++) {
@@ -223,10 +146,7 @@ namespace Anarian.DataStructures.Animation
                 boneTransforms[i] = bone.AbsoluteTransform;
             }
 
-            //
             // Determine the skin transforms from the skeleton
-            //
-
             Matrix[] skeleton = new Matrix[modelExtra.Skeleton.Count];
             for (int s = 0; s < modelExtra.Skeleton.Count; s++) {
                 Bone bone = bones[modelExtra.Skeleton[s]];

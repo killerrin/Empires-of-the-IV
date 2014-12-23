@@ -38,14 +38,12 @@ namespace Anarian.DataStructures.Animation
         private int boneCnt;
 
         /// <summary>
-        /// An assigned model
+        /// An assigned AnimationState
         /// </summary>
-        private AnimatedModel model = null;
+        private AnimationState m_animationState = null;
 
-        /// <summary>
-        /// The looping option
-        /// </summary>
         private bool looping = false;
+        private bool paused = false;
 
         #endregion
 
@@ -85,13 +83,14 @@ namespace Anarian.DataStructures.Animation
         /// A model this animation is assigned to. It will play on that model.
         /// </summary>
         //[Browsable(false)]
-        public AnimatedModel Model { get { return model; } }
+        public AnimationState AnimationState { get { return m_animationState; } }
 
         /// <summary>
         /// The looping option. Set to true if you want the animation to loop
         /// back at the end
         /// </summary>
         public bool Looping { get { return looping; } set { looping = value; } }
+        public bool Paused { get { return paused; } set { paused = value; } }
 
         #endregion
 
@@ -102,10 +101,10 @@ namespace Anarian.DataStructures.Animation
         /// association between a clip and a model and sets up for playing
         /// </summary>
         /// <param name="clip"></param>
-        public AnimationPlayer(AnimationClip clip, AnimatedModel model)
+        public AnimationPlayer(AnimationClip clip, AnimationState animationState)
         {
             this.clip = clip;
-            this.model = model;
+            m_animationState = animationState;
 
             // Create the bone information classes
             boneCnt = clip.Bones.Count;
@@ -116,8 +115,16 @@ namespace Anarian.DataStructures.Animation
                 boneInfos[b] = new BoneInfo(clip.Bones[b]);
 
                 // Assign it to a model bone
-                boneInfos[b].SetModel(model);
+                boneInfos[b].SetModel(m_animationState);
             }
+
+            SetDefaults();
+        }
+
+        public void SetDefaults()
+        {
+            Looping = false;
+            Paused = false;
 
             Rewind();
         }
@@ -139,6 +146,8 @@ namespace Anarian.DataStructures.Animation
         /// <param name="delta"></param>
         public void Update(GameTime gameTime)
         {
+            if (Paused) return;
+
             Position = Position + (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (looping && Position >= Duration)
                 Position = 0;
@@ -301,10 +310,10 @@ namespace Anarian.DataStructures.Animation
             /// Assign this bone to the correct bone in the model
             /// </summary>
             /// <param name="model"></param>
-            public void SetModel(AnimatedModel model)
+            public void SetModel(AnimationState animationState)
             {
                 // Find this bone
-                assignedBone = model.FindBone(ClipBone.Name);
+                assignedBone = animationState.FindBone(ClipBone.Name);
             }
 
             #endregion

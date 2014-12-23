@@ -16,19 +16,26 @@ namespace Anarian.DataStructures
 {
     public class AnimatedGameObject : GameObject, IUpdatable, IRenderable
     {
+        #region Fields/Properties
         protected AnimatedModel m_model;
         public AnimatedModel Model3D
         {
             get { return m_model; }
-            set { m_model = value; }
+            set 
+            { 
+                m_model = value;
+                CreateAnimationState();
+            }
         }
 
-        protected AnimationPlayer m_animationPlayer;
-        public AnimationPlayer AnimationPlayer
+        protected AnimationState m_animationState;
+        public AnimationState AnimationState
         {
-            get { return m_animationPlayer; }
-            set { m_animationPlayer = value; }
+            get { return m_animationState; }
+            set { m_animationState = value; }
         }
+        public void CreateAnimationState() { if (m_model != null) m_animationState = new AnimationState(m_model); }
+        #endregion
 
         public AnimatedGameObject()
             :base()
@@ -42,7 +49,7 @@ namespace Anarian.DataStructures
             m_boundingBoxes = new List<BoundingBox>();
 
             // Create the ModelTransforms
-            Matrix[] modelTransforms = new Matrix[Model3D.Bones.Count];
+            Matrix[] modelTransforms = new Matrix[m_animationState.Bones.Count];
             Model3D.Model.CopyAbsoluteBoneTransformsTo(modelTransforms);
 
             // Check intersection
@@ -63,22 +70,16 @@ namespace Anarian.DataStructures
         #endregion
 
         #region Animation Helpers
-        /// <summary>
-        /// Play an animation clip
-        /// </summary>
-        /// <param name="clip">The clip to play</param>
-        /// <returns>The player that will play this clip</returns>
-        public AnimationPlayer PlayClip(AnimationClip clip) { 
-            m_animationPlayer = Model3D.PlayClip(clip);
-            return m_animationPlayer;
+        public AnimationPlayer PlayClip(AnimationClip clip) {
+            return m_animationState.PlayClip(clip);
         }
         #endregion
 
         #region Update/Draw
         private void UpdateAnimation(GameTime gameTime)
         {
-            //Model3D.AnimationPlayer = m_animationPlayer;
-            Model3D.Update(gameTime);
+            m_animationState.Update(gameTime);
+            m_model.Update(gameTime);
         }
 
         public override void Update(GameTime gameTime)
@@ -111,12 +112,8 @@ namespace Anarian.DataStructures
                 if (!m_boundingBoxes[i].Intersects(camera.Frustum)) return;
             }
 
-            // We Update the Animation here so that we can have several different
-            // GameObjects Animating at different paces in their animations
-            //UpdateAnimation(gameTime);
-
             // Finally, we render This Object
-            Model3D.Draw(graphics.GraphicsDevice, camera.View, camera.Projection, Transform.WorldMatrix);
+            Model3D.Draw(graphics.GraphicsDevice, camera.View, camera.Projection, Transform.WorldMatrix, m_animationState);
         }
         #endregion
     }

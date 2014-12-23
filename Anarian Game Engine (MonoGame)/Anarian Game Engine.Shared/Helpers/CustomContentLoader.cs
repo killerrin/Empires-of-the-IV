@@ -19,6 +19,8 @@ namespace Anarian.Helpers
             oldModel.LoadContent(content);
 
             AnimatedModel model = new AnimatedModel(oldModel);
+
+            Debug.WriteLine(assetName + ": Setup");
             return model;
         }
     }

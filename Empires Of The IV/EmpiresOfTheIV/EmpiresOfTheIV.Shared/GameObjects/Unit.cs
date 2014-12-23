@@ -58,12 +58,12 @@ namespace EmpiresOfTheIV.GameObjects
         }
         #endregion
 
-        public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
         }
 
-        public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, Camera camera, Microsoft.Xna.Framework.GraphicsDeviceManager graphics)
+        public override void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
         {
             base.Draw(gameTime, camera, graphics);
         }

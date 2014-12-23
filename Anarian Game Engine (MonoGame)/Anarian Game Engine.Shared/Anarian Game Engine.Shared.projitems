@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\AnimationClip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\AnimationClipReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\AnimationPlayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\AnimationState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\Bone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\ModelExtra.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\ModelExtraReader.cs" />

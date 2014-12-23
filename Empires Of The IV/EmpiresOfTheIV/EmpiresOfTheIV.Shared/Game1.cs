@@ -86,7 +86,7 @@ namespace EmpiresOfTheIV
             
             // Add to the Scene
             m_sceneManager.CurrentScene.SceneNode.AddChild(armyGuy.Transform);
-
+            
             // Load the Terrain
             Texture2D heightMap = Content.Load<Texture2D>("heightmap");
             Texture2D grassTexture = Content.Load<Texture2D>("grassTexture");
@@ -99,8 +99,12 @@ namespace EmpiresOfTheIV
             // Load the model that has an animation clip it in
             AnimatedModel walk = CustomContentLoader.LoadAnimatedModel(Content, "walk");
             AnimationClip clip = walk.Clips[0];
+            
             AnimationPlayer player = soldier.PlayClip(clip);
             player.Looping = true;
+
+            AnimationPlayer armyGuyPlayer = armyGuy.PlayClip(clip);
+            armyGuyPlayer.Looping = true;
         }
 
         /// <summary>
@@ -119,15 +123,12 @@ namespace EmpiresOfTheIV
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            //m_sceneManager.CurrentScene.SceneNode.GetChild(0).Rotation *= Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), gameTime.DeltaTime());
             soldier.Update(gameTime);
 
             if (rayPosOnTerrain.HasValue) {
                 m_sceneManager.CurrentScene.SceneNode.GetChild(0).MoveToPosition(gameTime, rayPosOnTerrain.Value);
             }
-
-            Vector3 p = m_sceneManager.CurrentScene.SceneNode.GetChild(0).Position; 
-            p.X += 0.02f;
-            m_sceneManager.CurrentScene.SceneNode.GetChild(0).Position = p;
 
             float height = m_terrain.GetHeightAtPoint(m_sceneManager.CurrentScene.SceneNode.GetChild(0).Position);
             if (height != float.MaxValue) {
@@ -206,7 +207,8 @@ namespace EmpiresOfTheIV
                 GamePage.PageFrame.Visibility = Windows.UI.Xaml.Visibility.Visible;
             }
             if (e.ButtonClicked == MouseButtonClick.RightMouseButton) {
-
+                Unit unit = m_sceneManager.CurrentScene.SceneNode.GetChild(0).GameObject as Unit;
+                unit.AnimationState.AnimationPlayer.Paused = !unit.AnimationState.AnimationPlayer.Paused;
             }
         }
 
