@@ -53,6 +53,15 @@ namespace Anarian.Helpers
             spriteBatch.End();
         }
 
+        public static void DrawRect(SpriteBatch spriteBatch, Color color, Rectangle rect)
+        {
+            if (Texture == null) SetDefaultTexture();
+
+            spriteBatch.Begin();
+            spriteBatch.Draw(Texture, rect, color);
+            spriteBatch.End();
+        }
+
         /// <summary>
         /// Draws Square Points on the screen at the specified Position, Size and Color
         /// </summary>

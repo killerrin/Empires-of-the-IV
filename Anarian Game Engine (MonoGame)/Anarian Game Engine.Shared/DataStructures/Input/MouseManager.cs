@@ -71,25 +71,25 @@ namespace Anarian.DataStructures.Input
 
             if (MouseDown != null) {
                 if (LeftMouseDown())
-                    MouseDown(this, new MouseClickedEventArgs(MouseButtonClick.LeftMouseButton, GetMousePosition()));
+                    MouseDown(this, new PointerPressedEventArgs(PointerPress.LeftMouseButton, GetMousePosition()));
                 if (MiddleMouseDown())
-                    MouseDown(this, new MouseClickedEventArgs(MouseButtonClick.MiddleMouseButton, GetMousePosition()));
+                    MouseDown(this, new PointerPressedEventArgs(PointerPress.MiddleMouseButton, GetMousePosition()));
                 if (RightMouseDown())
-                    MouseDown(this, new MouseClickedEventArgs(MouseButtonClick.RightMouseButton, GetMousePosition()));
+                    MouseDown(this, new PointerPressedEventArgs(PointerPress.RightMouseButton, GetMousePosition()));
             }
             
             if (MouseClicked != null) {
-                if (LeftMouseClicked()) 
-                    MouseClicked(this, new MouseClickedEventArgs(MouseButtonClick.LeftMouseButton, GetMousePosition()));
+                if (LeftMouseClicked())
+                    MouseClicked(this, new PointerPressedEventArgs(PointerPress.LeftMouseButton, GetMousePosition()));
                 if (MiddleMouseClicked())
-                    MouseClicked(this, new MouseClickedEventArgs(MouseButtonClick.MiddleMouseButton, GetMousePosition()));
-                if (RightMouseClicked()) 
-                    MouseClicked(this, new MouseClickedEventArgs(MouseButtonClick.RightMouseButton, GetMousePosition()));
+                    MouseClicked(this, new PointerPressedEventArgs(PointerPress.MiddleMouseButton, GetMousePosition()));
+                if (RightMouseClicked())
+                    MouseClicked(this, new PointerPressedEventArgs(PointerPress.RightMouseButton, GetMousePosition()));
             }
 
             if (MouseMoved != null) {
                 if (m_mouseState.Position != m_prevMouseState.Position) 
-                    MouseMoved(this, new MouseMovedEventArgs(GetMousePosition(), GetMouseDelta()));
+                    MouseMoved(this, new PointerMovedEventArgs(GetMousePosition(), GetMouseDelta()));
             }
 
             // If Mouse is Fixed, Place it back to its fixed location
@@ -152,9 +152,9 @@ namespace Anarian.DataStructures.Input
         #endregion
 
         #region Events
-        public event MouseDownEventHandler MouseDown;
-        public event MouseClickedEventHandler MouseClicked;
-        public event MouseMovedEventHandler MouseMoved;
+        public event PointerDownEventHandler MouseDown;
+        public event PointerPressedEventHandler MouseClicked;
+        public event PointerMovedEventHandler MouseMoved;
         #endregion
 
     }

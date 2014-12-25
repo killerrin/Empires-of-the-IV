@@ -14,30 +14,37 @@ using Anarian;
 using Anarian.DataStructures;
 using Anarian.DataStructures.Animation;
 using Anarian.DataStructures.Animation.Aux;
-//using AnimationAux;
-using Anarian.Enumerators;
 using Anarian.DataStructures.Input;
 using Anarian.DataStructures.Rendering;
+using Anarian.Enumerators;
 using Anarian.Helpers;
 using Anarian.Interfaces;
-using EmpiresOfTheIV.GameObjects;
+using EmpiresOfTheIV.Game;
+using EmpiresOfTheIV.Game.GameObjects;
 
 namespace EmpiresOfTheIV
 {
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : AnarianGameEngine
+    public class EmpiresOfTheIVGame : AnarianGameEngine
     {
+        protected GameManager m_gameManager;
+        public GameManager GameManager { get { return m_gameManager; } protected set { m_gameManager = value; } }
+
+        #region Content
         private AnimatedGameObject soldier = null;
 
         //Terrain
         Terrain m_terrain;
+        #endregion
 
-        public Game1()
+
+        public EmpiresOfTheIVGame()
             :base()
         {
-            Content.RootDirectory = "Content";  
+            Content.RootDirectory = "Content";
+            m_gameManager = new GameManager(this);
         }
 
         /// <summary>
@@ -48,7 +55,11 @@ namespace EmpiresOfTheIV
         /// </summary>
         protected override void Initialize()
         {
+            // Initialize the Game Engine
             base.Initialize();
+
+            // Initialize Game Specific Managers
+            m_gameManager.Initialize();
 
             graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
 
@@ -57,13 +68,17 @@ namespace EmpiresOfTheIV
 #endif
 
             // Subscribe to our Events
-            // Mouse
-            m_inputManager.Mouse.MouseDown += Mouse_MouseDown;
-            m_inputManager.Mouse.MouseClicked += Mouse_MouseClicked;
-            m_inputManager.Mouse.MouseMoved += Mouse_MouseMoved;
+            // Pointer
+            InputManager.PointerDown += InputManager_PointerDown;
+            InputManager.PointerPressed += InputManager_PointerClicked;
+            InputManager.PointerMoved += InputManager_PointerMoved;
+
             // Keybaord
-            m_inputManager.Keyboard.KeyboardDown += Keyboard_KeyboardDown;
-            m_inputManager.Keyboard.KeyboardPressed += Keyboard_KeyboardPressed;
+            InputManager.Keyboard.KeyboardDown += Keyboard_KeyboardDown;
+            InputManager.Keyboard.KeyboardPressed += Keyboard_KeyboardPressed;
+
+            // Lastly we call PostInitialize to do MonoGame Initializations
+            base.PostInitialize();
         }
 
         /// <summary>
@@ -73,6 +88,7 @@ namespace EmpiresOfTheIV
         protected override void LoadContent()
         {
             base.LoadContent();
+            m_gameManager.LoadContent();
 
             // Load the Assets
             m_resourceManager.LoadAsset(Content, typeof(Texture2D), "KillerrinStudiosLogo");
@@ -83,7 +99,7 @@ namespace EmpiresOfTheIV
             armyGuy.Model3D = m_resourceManager.GetAsset(typeof(AnimatedModel), "t-pose_3") as AnimatedModel;
             armyGuy.Transform.Scale = new Vector3(0.007f);
             armyGuy.Transform.Position = new Vector3(0.2f, -0.5f, 0.50f);
-            
+
             // Add to the Scene
             m_sceneManager.CurrentScene.SceneNode.AddChild(armyGuy.Transform);
             
@@ -105,6 +121,9 @@ namespace EmpiresOfTheIV
 
             AnimationPlayer armyGuyPlayer = armyGuy.PlayClip(clip);
             armyGuyPlayer.Looping = true;
+
+            // Lastly we call PostLoadContent to do MonoGame LoadContent
+            base.PostLoadContent();
         }
 
         /// <summary>
@@ -123,7 +142,14 @@ namespace EmpiresOfTheIV
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            //m_sceneManager.CurrentScene.SceneNode.GetChild(0).Rotation *= Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), gameTime.DeltaTime());
+            // Update the GameEngine
+            base.PreUpdate(gameTime);
+
+            // Update the SceneNodes
+            base.Update(gameTime);
+
+
+            // Begin Normal Rendering
             soldier.Update(gameTime);
 
             if (rayPosOnTerrain.HasValue) {
@@ -137,7 +163,8 @@ namespace EmpiresOfTheIV
                 m_sceneManager.CurrentScene.SceneNode.GetChild(0).Position = pos;
             }
 
-            base.Update(gameTime);
+            // Lastly, we call PostUpdate on the GameEngine to let MonoGame know we are finished 
+            base.PostUpdate(gameTime);
         }
         
 
@@ -158,7 +185,7 @@ namespace EmpiresOfTheIV
             spriteBatch.Draw(logo, new Vector2(0.0f, 0.0f), Color.White);
             spriteBatch.End();
 
-            // Call Draw on the Anarian Game Engine to render the SceneGraph
+            // Call Draw on the Anarian Game Engine to render the Scene
             base.Draw(gameTime);
 
             // Draw the Rays
@@ -169,24 +196,25 @@ namespace EmpiresOfTheIV
             m_terrain.Draw(gameTime, m_sceneManager.CurrentScene.Camera, graphics);
             soldier.Draw(gameTime, m_sceneManager.CurrentScene.Camera, graphics);
             
-            // Lastly, Call the Monogame Draw Method
+            // Lastly, Call the GameEngines PostDraw Method to let MonoGame know we are finished
             base.PostDraw(gameTime);
         }
 
 
         #region Input Events
-        void Mouse_MouseDown(object sender, Anarian.Events.MouseClickedEventArgs e)
+        void InputManager_PointerDown(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
-            if (e.ButtonClicked == MouseButtonClick.RightMouseButton) {
-
-            }
+            //Debug.WriteLine("{0}, Pressed", e.ToString());
         }
 
         Ray? currentRay;
         Vector3? rayPosOnTerrain;
-        void Mouse_MouseClicked(object sender, Anarian.Events.MouseClickedEventArgs e)
+        void InputManager_PointerClicked(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
-            if (e.ButtonClicked == MouseButtonClick.LeftMouseButton) {
+            //Debug.WriteLine("{0}, Pressed", e.ToString());
+
+            if (e.Pointer == PointerPress.LeftMouseButton ||
+                e.Pointer == PointerPress.Touch) {
                 Camera camera = m_sceneManager.CurrentScene.Camera;
                 Ray ray = camera.GetMouseRay(
                     e.Position,
@@ -200,20 +228,22 @@ namespace EmpiresOfTheIV
 
                 // Get the point on the terrain
                 rayPosOnTerrain = m_terrain.Intersects(ray);
-            }            
-            if (e.ButtonClicked == MouseButtonClick.MiddleMouseButton) {
+            }
+            if (e.Pointer == PointerPress.MiddleMouseButton) {
                 Debug.WriteLine("Middle Mouse Pressed");
                 GamePage.PageFrame.Navigate(typeof(BlankPage));
                 GamePage.PageFrame.Visibility = Windows.UI.Xaml.Visibility.Visible;
             }
-            if (e.ButtonClicked == MouseButtonClick.RightMouseButton) {
+            if (e.Pointer == PointerPress.RightMouseButton) {
                 Unit unit = m_sceneManager.CurrentScene.SceneNode.GetChild(0).GameObject as Unit;
                 unit.AnimationState.AnimationPlayer.Paused = !unit.AnimationState.AnimationPlayer.Paused;
             }
         }
 
-        void Mouse_MouseMoved(object sender, Anarian.Events.MouseMovedEventArgs e)
+        void InputManager_PointerMoved(object sender, Anarian.Events.PointerMovedEventArgs e)
         {
+            //Debug.WriteLine("{0}, Pressed", e.ToString());
+
         }
 
         void Keyboard_KeyboardDown(object sender, Anarian.Events.KeyboardPressedEventArgs e)

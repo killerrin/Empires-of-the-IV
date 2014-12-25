@@ -70,14 +70,22 @@ namespace Anarian
             m_controller4 = new Controller(PlayerIndex.Four);
 
             // Subscribe to Events
-            //m_mouse.MouseDown += m_mouse_MouseDown;
-            //m_mouse.MouseClicked += m_mouse_MouseClicked;
-            //m_mouse.MouseMoved += m_mouse_MouseMoved;
-            //
+            // Button
+            //m_keyboard.KeyboardDown += m_keyboard_KeyboardDown;
+            //m_keyboard.KeyboardPressed += m_keyboard_KeyboardPressed;
+
             //Controller.GamePadDown += Controller_GamePadDown;
             //Controller.GamePadClicked += Controller_GamePadClicked;
             //Controller.GamePadMoved += Controller_GamePadMoved;
+
+            // Pointer
+            m_mouse.MouseDown += m_mouse_MouseDown;
+            m_mouse.MouseClicked += m_mouse_MouseClicked;
+            m_mouse.MouseMoved += m_mouse_MouseMoved;
 //#endif
+            m_touchScreen.TouchDown += m_touchScreen_TouchDown;
+            m_touchScreen.TouchPressed += m_touchScreen_TouchPressed;
+            m_touchScreen.TouchMoved += m_touchScreen_TouchMoved;
         }
 
         #region Interface Implimentations
@@ -108,22 +116,55 @@ namespace Anarian
         public event PointerPressedEventHandler PointerPressed;
         public event PointerMovedEventHandler PointerMoved;
 
-        public event ButtonDownEventHandler ButtonDown;
-        public event ButtonPressedEventHandler ButtonPressed;
-
+        #region Pointers
         #region Mouse
-        void m_mouse_MouseDown(object sender, MouseClickedEventArgs e)
+        void m_mouse_MouseDown(object sender, PointerPressedEventArgs e)
         {
+            if (PointerDown != null) {
+                PointerDown(this, e);
+            }
         }
-        void m_mouse_MouseClicked(object sender, MouseClickedEventArgs e)
+        void m_mouse_MouseClicked(object sender, PointerPressedEventArgs e)
         {
+            if (PointerPressed != null) {
+                PointerPressed(this, e);
+            }
         }
 
-        void m_mouse_MouseMoved(object sender, MouseMovedEventArgs e)
+        void m_mouse_MouseMoved(object sender, PointerMovedEventArgs e)
         {
+            if (PointerMoved != null) {
+                PointerMoved(this, e);
+            }
         }
         #endregion
 
+        #region Touch
+        void m_touchScreen_TouchDown(object sender, PointerPressedEventArgs e)
+        {
+            if (PointerDown != null) {
+                PointerDown(this, e);
+            }
+        }
+        void m_touchScreen_TouchPressed(object sender, PointerPressedEventArgs e)
+        {
+            if (PointerPressed != null) {
+                PointerPressed(this, e);
+            }
+        }
+        void m_touchScreen_TouchMoved(object sender, PointerMovedEventArgs e)
+        {
+            if (PointerMoved != null) {
+                PointerMoved(this, e);
+            }
+        }
+        #endregion
+        #endregion
+
+        public event ButtonDownEventHandler ButtonDown;
+        public event ButtonPressedEventHandler ButtonPressed;
+
+        #region Buttons
         #region Controller
         void Controller_GamePadDown(object sender, GamePadPressedEventArgs e)
         {
@@ -136,6 +177,17 @@ namespace Anarian
         void Controller_GamePadMoved(object sender, GamePadMovedEventsArgs e)
         {
         }
+        #endregion
+
+        #region Keyboard
+        void m_keyboard_KeyboardDown(object sender, KeyboardPressedEventArgs e)
+        {
+        }
+
+        void m_keyboard_KeyboardPressed(object sender, KeyboardPressedEventArgs e)
+        {
+        }
+        #endregion
         #endregion
         #endregion
     }

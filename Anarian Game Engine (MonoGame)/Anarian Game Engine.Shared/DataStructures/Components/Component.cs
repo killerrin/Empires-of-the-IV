@@ -8,16 +8,9 @@ using Anarian.Interfaces;
 
 namespace Anarian.DataStructures.Components
 {
-    public class Component : IUpdatable
+    public class Component : AnarianObject, IUpdatable
     {
         #region Fields/Properties
-        protected string m_name;
-        public string Name
-        {
-            get { return m_name; }
-            protected set { m_name = value; }
-        }
-
         protected ComponentTypes m_componentType;
         public ComponentTypes ComponentType
         {
@@ -41,16 +34,16 @@ namespace Anarian.DataStructures.Components
         #endregion
 
         public Component(GameObject gameObject)
+            :base()
         {
-            m_name = "";
             m_componentType = ComponentTypes.None;
-
+           
             m_active = true;
             m_gameObject = gameObject;
         }
         public Component(GameObject gameObject, ComponentTypes componentType)
+            :base(componentType.ToString())
         {
-            m_name = componentType.ToString();
             m_componentType = componentType;
 
             m_active = true;

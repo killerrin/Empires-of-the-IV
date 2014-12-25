@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EmpiresOfTheIV.GameObjects
+namespace EmpiresOfTheIV.Game.GameObjects
 {
     public class Building : StaticGameObject,
                             IUpdatable, IRenderable, ISelectableEntity

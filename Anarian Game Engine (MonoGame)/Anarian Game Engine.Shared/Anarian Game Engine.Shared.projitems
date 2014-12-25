@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AnarianGameEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\AnarianObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\AnimatedGameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\AnimatedModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Animation\AnimationClip.cs" />
@@ -35,16 +36,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\StaticGameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\ComponentTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\GuiState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Enumerators\MouseButtonClick.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enumerators\InputType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enumerators\PointerPress.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\PointDirection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\ButtonPressedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\GamePadMovedEventsArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\GamePadPressedEventArgs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Events\ButtonPressedEventArgs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Events\PointerPressedEventArgs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Events\MouseClickedEventArgs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Events\PointerMovedEventArgs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Events\MouseMovedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\KeyboardPressedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\PointerMovedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\PointerPressedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\Button.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\Element.cs" />

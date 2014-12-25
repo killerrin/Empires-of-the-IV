@@ -49,17 +49,17 @@ namespace Anarian
         }
 
         #region Mouse Events
-        void Mouse_MouseMoved(object sender, MouseMovedEventArgs e)
+        void Mouse_MouseMoved(object sender, PointerMovedEventArgs e)
         {
             
         }
 
-        void Mouse_MouseClicked(object sender, MouseClickedEventArgs e)
+        void Mouse_MouseClicked(object sender, PointerPressedEventArgs e)
         {
             
         }
 
-        void Mouse_MouseDown(object sender, MouseClickedEventArgs e)
+        void Mouse_MouseDown(object sender, PointerPressedEventArgs e)
         {
             
         }

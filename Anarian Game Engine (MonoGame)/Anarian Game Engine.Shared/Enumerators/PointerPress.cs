@@ -4,9 +4,10 @@ using System.Text;
 
 namespace Anarian.Enumerators
 {
-    public enum MouseButtonClick
+    public enum PointerPress
     {
         None,
+        Touch,
         LeftMouseButton,
         MiddleMouseButton,
         RightMouseButton

@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 
 using Anarian.Interfaces;
+using Anarian.Enumerators;
+using Anarian.Events;
 
 namespace Anarian.DataStructures.Input
 {
@@ -84,7 +86,33 @@ namespace Anarian.DataStructures.Input
             m_touchCollection = TouchPanel.GetState();
 
             // Preform Events
+            if (TouchDown != null) {
+                foreach (var touch in m_touchCollection) {
+                    if (IsTouchDown(touch.Id)) {
+                            TouchDown(this, new PointerPressedEventArgs(touch.Id, PointerPress.Touch, touch.Position, touch.Pressure));
+                    }
+                }
+            }
 
+            if (TouchPressed != null) {
+                foreach (var touch in m_touchCollection) {
+                    if (WasTouchPressed(touch.Id)) {
+                        TouchPressed(this, new PointerPressedEventArgs(touch.Id, PointerPress.Touch, touch.Position, touch.Pressure));
+                    }
+                }
+            }
+
+            if (TouchMoved != null) {
+                foreach (var touch in m_touchCollection) {
+                    TouchLocation prevLocation;
+                    bool prevLocationAvailable = touch.TryGetPreviousLocation(out prevLocation);
+                    if (!prevLocationAvailable) continue;
+
+                    if (touch.Position != prevLocation.Position) {
+                        TouchMoved(this, new PointerMovedEventArgs(touch.Id, touch.Position, touch.Position - prevLocation.Position));
+                    }
+                }
+            }
         }
 
         #region Helper Methods
@@ -108,8 +136,15 @@ namespace Anarian.DataStructures.Input
                 if (location.Id == id) {
                     TouchLocation prevLocation;
                     bool prevLocationAvailable = location.TryGetPreviousLocation(out prevLocation);
+                    if (!prevLocationAvailable) break;
 
-                    if (location.State == TouchLocationState.Pressed && prevLocation.State != TouchLocationState.Pressed) {
+                    if (location.State == TouchLocationState.Released &&
+                        prevLocation.State == TouchLocationState.Pressed) {
+                        return true;
+                    }
+
+                    if (location.State == TouchLocationState.Released &&
+                        prevLocation.State == TouchLocationState.Moved) {
                         return true;
                     }
 
@@ -119,6 +154,31 @@ namespace Anarian.DataStructures.Input
 
             return false;
         }
+
+        public bool DidTouchMove(int id)
+        {
+            foreach (TouchLocation location in m_touchCollection) {
+                if (location.Id == id) {
+                    TouchLocation prevLocation;
+                    bool prevLocationAvailable = location.TryGetPreviousLocation(out prevLocation);
+                    if (!prevLocationAvailable) break;
+
+                    if (location.Position == prevLocation.Position) {
+                        return true;
+                    }
+
+                    break;
+                }
+            }
+
+            return false;
+        }
+        #endregion
+
+        #region Events
+        public event PointerDownEventHandler TouchDown;
+        public event PointerPressedEventHandler TouchPressed;
+        public event PointerMovedEventHandler TouchMoved;
         #endregion
 
     }

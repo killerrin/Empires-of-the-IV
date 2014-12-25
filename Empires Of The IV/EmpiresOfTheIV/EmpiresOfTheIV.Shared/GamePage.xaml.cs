@@ -22,7 +22,7 @@ namespace EmpiresOfTheIV
     /// </summary>
     public sealed partial class GamePage : SwapChainBackgroundPanel
     {
-        readonly Game1 m_game;
+        readonly EmpiresOfTheIVGame m_game;
 
         private static Frame m_pageFrame;
         public static Frame PageFrame
@@ -44,7 +44,7 @@ namespace EmpiresOfTheIV
             this.InitializeComponent();
 
             // Create the game.
-            m_game = XamlGame<Game1>.Create(launchArguments, Window.Current.CoreWindow, this);
+            m_game = XamlGame<EmpiresOfTheIVGame>.Create(launchArguments, Window.Current.CoreWindow, this);
         }
 
         private void PageFrame_Loaded(object sender, RoutedEventArgs e)

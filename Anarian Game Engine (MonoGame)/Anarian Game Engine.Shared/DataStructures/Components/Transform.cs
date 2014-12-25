@@ -15,7 +15,6 @@ namespace Anarian.DataStructures.Components
                              IUpdatable, IMoveable
     {
         #region Fields/Properties
-
         #region Vectors
         Vector3 m_orbitalRotation;
         public Vector3 OrbitalRotation
@@ -185,6 +184,7 @@ namespace Anarian.DataStructures.Components
         #endregion
         #endregion
 
+        #region Directions
         Vector3 m_forward;
 
         /// <summary>
@@ -217,6 +217,7 @@ namespace Anarian.DataStructures.Components
         public Vector3 Back { get { return -m_forward; } }
         public Vector3 Down { get { return -m_up; } }
         public Vector3 Left { get { return -m_right; } }
+        #endregion
         #endregion
 
         public Transform(GameObject gameObject)
@@ -260,6 +261,13 @@ namespace Anarian.DataStructures.Components
             m_forward = -Vector3.Forward;
             m_up = Vector3.Up;
             m_right = Vector3.Normalize(Vector3.Cross(Forward, this.Up));
+
+            // Reset all Matrices
+            m_orbitalRotationMatrix = Matrix.Identity;
+            m_rotationMatrix = Matrix.Identity;
+            m_scaleMatrix = Matrix.Identity;
+            m_translationMatrix = Matrix.Identity;
+            m_worldMatrix = Matrix.Identity;
 
             // Create the Matricies
             CreateAllMatrices();

@@ -12,7 +12,7 @@ using Anarian.Helpers;
 
 namespace Anarian.DataStructures
 {
-    public class GameObject : IUpdatable, IRenderable
+    public class GameObject : AnarianObject, IUpdatable, IRenderable
     {
         #region Fields/Properties
         protected bool    m_active;
@@ -49,6 +49,7 @@ namespace Anarian.DataStructures
         #endregion
 
         public GameObject()
+            :base()
         {
             // Setup Defaults
             m_active    = true;
