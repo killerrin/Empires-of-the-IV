@@ -8,7 +8,8 @@ using Anarian.Interfaces;
 
 namespace Anarian.DataStructures
 {
-    public class Camera : IMoveable
+    public class Camera : AnarianObject,
+                          IMoveable
     {
         BoundingFrustum m_frustrum;
 
@@ -131,6 +132,7 @@ namespace Anarian.DataStructures
         #endregion
 
         public Camera()
+            :base()
         {
             CreateViewMatrix(
                 new Vector3(0.0f, 0.7f, 1.5f),      // eye
@@ -147,6 +149,7 @@ namespace Anarian.DataStructures
         }
         public Camera(Vector3 eye, Vector3 lookat, Vector3 up,
                       float fov, float aspectRatio, float near, float far)
+            :base()
         {
             CreateViewMatrix(eye, lookat, up);
             CreateProjectionMatrix(fov, aspectRatio, near, far);
@@ -168,6 +171,16 @@ namespace Anarian.DataStructures
             direction.Normalize();
 
             return new Ray(nearPoint, direction);
+        }
+
+        public Vector2 ProjectToScreenCoordinates(Vector3 position, Viewport viewport)
+        {
+            // Project the 3d position first
+            Vector3 screenPos3D = viewport.Project(position, Projection, View, World);
+
+            // Just to make it easier to use we create a Vector2 from screenPos3D
+            Vector2 screenPos2D = new Vector2(screenPos3D.X, screenPos3D.Y);
+            return screenPos2D;
         }
 
         public BoundingFrustum UnprojectRectangle(Rectangle source, Viewport viewport)

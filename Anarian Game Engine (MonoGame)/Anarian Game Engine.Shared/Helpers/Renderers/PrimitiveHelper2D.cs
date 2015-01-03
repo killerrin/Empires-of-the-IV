@@ -20,7 +20,7 @@ namespace Anarian.Helpers
         #region Helper Methods
         public static void SetDefaultTexture()
         {
-            Texture = ResourceManager.Instance.GetAsset(typeof(Texture2D), "blankTexture_age") as Texture2D;
+            Texture = ResourceManager.Instance.GetAsset(typeof(Texture2D), ResourceManager.EngineReservedAssetNames.blankTextureName) as Texture2D;
         }
         private static Rectangle GetCenterOfPoint(int size, Vector2 position)
         {

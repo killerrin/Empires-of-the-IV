@@ -17,13 +17,18 @@ namespace Anarian
     public class AnarianGameEngine : Game
     {
         #region Fields/Properties
+        #region MonoGame
         protected GraphicsDeviceManager graphics;
         public GraphicsDeviceManager Graphics { get { return graphics; } protected set { graphics = value; } }
 
         protected SpriteBatch spriteBatch;
         public SpriteBatch SpriteBatch { get { return spriteBatch; } protected set { spriteBatch = value; } }
 
+        protected Color m_backgroundColor;
+        public Color BackgroundColor { get { return m_backgroundColor; } set { m_backgroundColor = value; } }
+        #endregion
 
+        #region Managers
         protected SceneManager m_sceneManager;
         public SceneManager SceneManager { get { return m_sceneManager; } }
 
@@ -33,8 +38,10 @@ namespace Anarian
         protected InputManager m_inputManager;
         public InputManager InputManager { get { return m_inputManager; } }
 
-        protected Color m_backgroundColor;
-        public Color BackgroundColor { get { return m_backgroundColor; } set { m_backgroundColor = value; } }
+        protected GUIManager m_guiManager;
+        public GUIManager GuiManager { get { return m_guiManager; } }
+        #endregion
+
         #endregion
 
         public AnarianGameEngine()
@@ -55,6 +62,7 @@ namespace Anarian
             m_resourceManager = ResourceManager.Instance;
             m_inputManager = InputManager.Instance;
             m_sceneManager = SceneManager.Instance;
+            m_guiManager = GUIManager.Instance;
         }
 
         /// <summary>
@@ -85,7 +93,7 @@ namespace Anarian
             // Blank Texture
             Texture2D blankTexture = new Texture2D(GraphicsDevice, 1, 1);
             blankTexture.SetData(new Color[] { Color.White });
-            m_resourceManager.AddAsset(blankTexture, "blankTexture_age");
+            m_resourceManager.AddAsset(blankTexture, ResourceManager.EngineReservedAssetNames.blankTextureName);
         }
 
         /// <summary>
@@ -118,17 +126,18 @@ namespace Anarian
         }
 
         /// <summary>
-        /// Has the GameEngine Update the SceneNodes
+        /// Has the GameEngine Update the SceneNodes then Update the GUI
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Then we Update the SceneNodes
+            // First we Update the SceneNodes
             if (m_sceneManager != null) {
-                if (m_sceneManager.CurrentScene != null) {
-                    m_sceneManager.CurrentScene.SceneNode.GameObject.Update(gameTime);
-                }
+                m_sceneManager.Update(gameTime);
             }
+
+            // Now we Update the GUI
+            m_guiManager.Update(gameTime);
         }
 
         /// <summary>
@@ -152,12 +161,12 @@ namespace Anarian
         }
 
         /// <summary>
-        /// Has the GameEngine Render the SceneNodes
+        /// Has the GameEngine Render the SceneNodes then Draw the GUI
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            // Root Scene Node
+            // First we Render the Scene
             if (m_sceneManager != null) {
                 if (m_sceneManager.CurrentScene != null) {
                     m_sceneManager.CurrentScene.SceneNode.GameObject.Draw(
@@ -166,6 +175,9 @@ namespace Anarian
                         graphics);
                 }
             }
+
+            // Then we Draw the GUI
+            m_guiManager.Draw(gameTime, spriteBatch);
         }
 
         /// <summary>

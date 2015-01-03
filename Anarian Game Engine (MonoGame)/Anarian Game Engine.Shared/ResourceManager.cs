@@ -67,9 +67,9 @@ namespace Anarian
             return null;
         }
 
-        public static class ReservedNames
+        public static class EngineReservedAssetNames
         {
-            public static string tex_blankTexture = "blankTexture_age";
+            public static string blankTextureName = "blankTexture_age";
         }
     }
 }

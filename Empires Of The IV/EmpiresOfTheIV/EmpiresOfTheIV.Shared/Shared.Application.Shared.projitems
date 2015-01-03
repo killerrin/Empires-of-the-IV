@@ -22,6 +22,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\BuildingType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\UnitType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameInputManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Building.cs" />

@@ -179,10 +179,18 @@ namespace Anarian.DataStructures
         public virtual void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
         {
             if (!m_active) return;
+            if (!m_visible) return;
 
             // Render the Children
             foreach (var child in m_transform.GetChildren()) {
                 if (child != null) child.GameObject.Draw(gameTime, camera, graphics);
+            }
+
+            // Draw Each Component
+            foreach (var component in m_components) {
+                if (component is IRenderable) {
+                    ((IRenderable)component).Draw(gameTime, camera, graphics);
+                }
             }
 
             // Begin Setting up the GameObject for Rendering in the inherited classes

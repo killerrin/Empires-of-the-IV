@@ -302,7 +302,7 @@ namespace Anarian.DataStructures.Rendering
                 Vector3 nextPoint = ray.Position + ray.Direction;
 
                 float heightAtNextPoint = GetHeightAtPoint(nextPoint.X, nextPoint.Z);
-                if (heightAtNextPoint == null) return null;
+                if (heightAtNextPoint == float.MaxValue) return null;
 
                 if (nextPoint.Y > heightAtNextPoint) {
                     ray.Position = nextPoint;
@@ -399,12 +399,18 @@ namespace Anarian.DataStructures.Rendering
         public override void Update(GameTime gameTime)
         {
             if (!m_active) return;
+
+            // We first Update the Children
+            base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
         {
             if (!m_active) return;
             if (!m_visible) return;
+
+            // We Draw the base here so that the Children get taken care of
+            base.Draw(gameTime, camera, graphics);
 
             // Prep the Graphics Device
             graphics.GraphicsDevice.RasterizerState.CullMode = CullMode.None;

@@ -7,7 +7,8 @@ using Anarian.DataStructures.Components;
 
 namespace Anarian.DataStructures
 {
-    public class Level : IScene, IUpdatable, IRenderable
+    public class Level : AnarianObject,
+                         IScene, IUpdatable, IRenderable
     {
         private Camera m_camera;
         private Transform m_sceneNode;
@@ -24,6 +25,7 @@ namespace Anarian.DataStructures
 
 
         public Level(GraphicsDeviceManager graphics)
+            :base()
         {
             // Create the Camera using the Graphics Device
             m_camera = new Camera();
@@ -67,7 +69,7 @@ namespace Anarian.DataStructures
         /// <param name="gameTime">The GameTime</param>
         public void Update(GameTime gameTime)
         {
-
+            m_sceneNode.GameObject.Update(gameTime);
         }
 
         /// <summary>
@@ -78,7 +80,7 @@ namespace Anarian.DataStructures
         /// <param name="graphics">The GraphicsDeviceManager</param>
         public void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
         {
-
+            m_sceneNode.GameObject.Draw(gameTime, camera, graphics);
         }
     }
 }

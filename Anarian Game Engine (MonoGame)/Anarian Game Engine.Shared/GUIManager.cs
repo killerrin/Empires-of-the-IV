@@ -5,15 +5,17 @@ using System.Text;
 using System.Diagnostics;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 using Anarian.GUI;
 using Anarian.DataStructures.Input;
 using Anarian.Enumerators;
 using Anarian.Events;
+using Anarian.Interfaces;
 
 namespace Anarian
 {
-    public class GUIManager
+    public class GUIManager :IDisposable, IUpdatable, Anarian.Interfaces.IDrawable
     {
         #region Singleton
         static GUIManager m_instance;
@@ -28,40 +30,101 @@ namespace Anarian
         }
         #endregion
 
+        #region Fields/Properties
+        public bool Initialized { get; private set; }
+
+        public IScene2D CurrentScene { get; set; }
+        #endregion
+
+        #region Constructor
         private GUIManager()
         {
-            // Subscribe to Mouse Events
-            InputManager.Instance.Mouse.MouseDown += Mouse_MouseDown;
-            InputManager.Instance.Mouse.MouseClicked += Mouse_MouseClicked;
-            InputManager.Instance.Mouse.MouseMoved += Mouse_MouseMoved;
+            Initialized = false;
+        }
+
+        public void Dispose()
+        {
+            Initialized = false;
+
+            // Subscribe to Pointer Events
+            InputManager.Instance.PointerMoved -= Instance_PointerMoved;
+            InputManager.Instance.PointerPressed -= Instance_PointerPressed;
+            InputManager.Instance.PointerDown -= Instance_PointerDown;
+
+            // Subscribe to Keyboard Events
+            InputManager.Instance.Keyboard.KeyboardDown -= Keyboard_KeyboardDown;
+            InputManager.Instance.Keyboard.KeyboardPressed -= Keyboard_KeyboardPressed;
+
+            // Subscribe to Controller Events
+            Controller.GamePadDown -= GUIManager_GamePadDown;
+            Controller.GamePadClicked -= GUIManager_GamePadClicked;
+            Controller.GamePadMoved -= GUIManager_GamePadMoved;
+
+            // Surpress the Finalize
+            GC.SuppressFinalize(this);
+        }
+        
+
+        public void Initialize()
+        {
+            // Subscribe to Pointer Events
+            InputManager.Instance.PointerMoved += Instance_PointerMoved;
+            InputManager.Instance.PointerPressed += Instance_PointerPressed;
+            InputManager.Instance.PointerDown += Instance_PointerDown;
 
             // Subscribe to Keyboard Events
             InputManager.Instance.Keyboard.KeyboardDown += Keyboard_KeyboardDown;
             InputManager.Instance.Keyboard.KeyboardPressed += Keyboard_KeyboardPressed;
 
-            // Subscribe to Touchscreen Events
-
-
             // Subscribe to Controller Events
             Controller.GamePadDown += GUIManager_GamePadDown;
             Controller.GamePadClicked += GUIManager_GamePadClicked;
             Controller.GamePadMoved += GUIManager_GamePadMoved;
+
+            // Create a Root Menu
+            CurrentScene = new Menu();
+
+            // Set the Initialization Flag
+            Initialized = true;
+        }
+        #endregion
+
+        #region Interfaces
+        void IDisposable.Dispose() { Dispose(); }
+        void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
+        void Anarian.Interfaces.IDrawable.Draw(GameTime gameTime, SpriteBatch spriteBatch) { Draw(gameTime, spriteBatch); }
+        #endregion
+
+        public void Update(GameTime gameTime)
+        {
+            if (!Initialized) return;
+
+            if (CurrentScene != null) {
+                CurrentScene.SceneNode.GuiObject.Update(gameTime);
+            }
         }
 
-        #region Mouse Events
-        void Mouse_MouseMoved(object sender, PointerMovedEventArgs e)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            
+            if (!Initialized) return;
+
+            if (CurrentScene != null) {
+                CurrentScene.SceneNode.GuiObject.Draw(gameTime, spriteBatch);
+            }
         }
 
-        void Mouse_MouseClicked(object sender, PointerPressedEventArgs e)
+        #region Events
+        #region Pointer Events
+        void Instance_PointerDown(object sender, PointerPressedEventArgs e)
         {
-            
         }
 
-        void Mouse_MouseDown(object sender, PointerPressedEventArgs e)
+        void Instance_PointerPressed(object sender, PointerPressedEventArgs e)
         {
-            
+        }
+
+        void Instance_PointerMoved(object sender, PointerMovedEventArgs e)
+        {
         }
         #endregion
 
@@ -83,14 +146,15 @@ namespace Anarian
 
         }
 
-        private void GUIManager_GamePadClicked(object sender, GamePadPressedEventArgs e)
+        void GUIManager_GamePadClicked(object sender, GamePadPressedEventArgs e)
         {
 
         }
 
-        private void GUIManager_GamePadMoved(object sender, GamePadMovedEventsArgs e)
+        void GUIManager_GamePadMoved(object sender, GamePadMovedEventsArgs e)
         {
         }
+        #endregion
         #endregion
     }
 }

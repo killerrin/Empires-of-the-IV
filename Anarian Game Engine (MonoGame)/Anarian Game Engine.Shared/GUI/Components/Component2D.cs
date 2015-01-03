@@ -5,10 +5,11 @@ using System.Diagnostics;
 using Anarian.Enumerators;
 using Microsoft.Xna.Framework;
 using Anarian.Interfaces;
+using Anarian.DataStructures;
 
-namespace Anarian.DataStructures.Components
+namespace Anarian.GUI.Components
 {
-    public class Component : AnarianObject, IUpdatable
+    public class Component2D : AnarianObject, IUpdatable
     {
         #region Fields/Properties
         protected ComponentTypes m_componentType;
@@ -25,29 +26,29 @@ namespace Anarian.DataStructures.Components
             set { m_active = value; }
         }
 
-        protected GameObject m_gameObject;
-        public GameObject GameObject
+        protected GuiObject m_guiObject;
+        public GuiObject GuiObject
         {
-            get { return m_gameObject; }
-            internal set { m_gameObject = value; }
+            get { return m_guiObject; }
+            internal set { m_guiObject = value; }
         }
         #endregion
 
-        public Component(GameObject gameObject)
+        public Component2D(GuiObject guiObject)
             :base()
         {
             m_componentType = ComponentTypes.None;
            
             m_active = true;
-            m_gameObject = gameObject;
+            m_guiObject = guiObject;
         }
-        public Component(GameObject gameObject, ComponentTypes componentType)
+        public Component2D(GuiObject guiObject, ComponentTypes componentType)
             :base(componentType.ToString())
         {
             m_componentType = componentType;
 
             m_active = true;
-            m_gameObject = gameObject;
+            m_guiObject = guiObject;
         }
 
         public virtual void Reset()
@@ -63,7 +64,7 @@ namespace Anarian.DataStructures.Components
 
         public override string ToString()
         {
-            return m_gameObject.Name + "|" + m_name + ": ";
+            return m_guiObject.Name + "|" + m_name + ": ";
         }
     }
 }

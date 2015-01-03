@@ -12,22 +12,12 @@ namespace Anarian.GUI
 {
     public class Element : GuiObject
     {
-        public GuiObject m_parent;
-        public GuiObject Parent { 
-            get { return m_parent; }
-            protected set { m_parent = value; }
-        }
-
         protected GuiState m_guiState;
 
         #region Monogame SpriteBatch 
         public Texture2D Texture { get; set; }
-        public Vector2 Position { get; set; }
         public Rectangle? SourceRectangle { get; set; }
         public Color Colour { get; set; }
-        public float Rotation { get; set; }
-        public Vector2 Origin { get; set; }
-        public Vector2 Scale { get; set; }
         public SpriteEffects SpriteEffect { get; set; }
         public float Depth { get; set; }
         #endregion
@@ -40,13 +30,16 @@ namespace Anarian.GUI
             )
             :base()
         {
+            // Set the Transform
+            m_transform.Position = _position;
+            m_transform.Scale = _scale;
+            m_transform.Rotation = _rotation;
+            m_transform.Origin = _origin;
+
+            // Set the rest of the Element
             Texture = _texture;
-            Position = _position;
             SourceRectangle = _sourceRectangle;
             Colour = _color;
-            Rotation = _rotation;
-            Origin = _origin;
-            Scale = _scale;
             SpriteEffect = _spriteEffects;
             Depth = _depth;
 
@@ -55,21 +48,27 @@ namespace Anarian.GUI
 
         public override void Update(GameTime gameTime)
         {
-            if (!Enabled) return;
+            if (!m_active) return;
 
             base.Update(gameTime);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            if (!Visible) return;
+            if (!m_active) return;
+
+            // Draw the Element
+            if (!m_visible) return;
             if (Texture == null) return;
 
+            // Since we don't want to be drawing the current element over the children,
+            // we Draw the Children after we draw this
             spriteBatch.Begin();
-            spriteBatch.Draw(Texture, Position, SourceRectangle, Colour, Rotation, Origin, Scale, SpriteEffect, Depth);
+            spriteBatch.Draw(Texture, m_transform.WorldPosition, SourceRectangle, Colour, m_transform.WorldRotation, m_transform.Origin, m_transform.WorldScale, SpriteEffect, Depth);
             spriteBatch.End();
 
-            base.Draw(spriteBatch);
+            // Draw the Children
+            base.Draw(gameTime, spriteBatch);
         }
     }
 }

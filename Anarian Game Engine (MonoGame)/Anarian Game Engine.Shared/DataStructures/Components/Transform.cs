@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
+using System.Text;
 
 using Anarian.Interfaces;
 using Anarian.Enumerators;
@@ -12,7 +13,7 @@ using Microsoft.Xna.Framework;
 namespace Anarian.DataStructures.Components
 {
     public class Transform : Component,
-                             IUpdatable, IMoveable
+                             IEnumerable, IUpdatable, IMoveable
     {
         #region Fields/Properties
         #region Vectors
@@ -45,7 +46,6 @@ namespace Anarian.DataStructures.Components
             set {
                 m_lastPosition = m_position;
                 m_position = value;
-
             }
         }
 
@@ -223,11 +223,7 @@ namespace Anarian.DataStructures.Components
         public Transform(GameObject gameObject)
             :base(gameObject, ComponentTypes.Transform)
         {
-            m_position = Vector3.Zero;
-            m_rotation = Quaternion.Identity;
-            m_scale = Vector3.One;
-
-            Setup();
+            Reset();
         }
 
         public Transform(GameObject gameObject, Vector3 position, Vector3 scale, Quaternion rotation)
@@ -285,6 +281,15 @@ namespace Anarian.DataStructures.Components
         void IMoveable.MoveHorizontal(GameTime gameTime, float amount) { MoveHorizontal(gameTime, amount); }
         void IMoveable.MoveForward(GameTime gameTime, float amount) { MoveForward(gameTime, amount); }
         void IMoveable.MoveToPosition(GameTime gameTime, Vector3 point) { MoveToPosition(gameTime, point); }
+
+        public IEnumerator GetEnumerator()
+        {
+            foreach (var child in m_children) {
+                // Return the current element and then on next function call 
+                // resume from next element rather than starting all over again;
+                yield return child;
+            }
+        }
         #endregion
 
         public override void Update(GameTime gameTime)
@@ -383,5 +388,14 @@ namespace Anarian.DataStructures.Components
         public void RemoveChild(int index) { m_children.RemoveAt(index); }
         public Transform GetChild(int index) { return m_children[index]; }
         #endregion
+
+        public override string ToString()
+        {
+            return base.ToString() + 
+                   "Position: " + WorldPosition + " " +
+                   "Rotation: " + WorldRotation + " " +
+                   "Scale: " + WorldScale + " " +
+                   "OrbitalRotation: " + WorldOrbitalRotation + " ";
+        }
     }
 }

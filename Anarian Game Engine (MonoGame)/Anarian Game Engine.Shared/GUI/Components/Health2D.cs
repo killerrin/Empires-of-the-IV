@@ -6,9 +6,9 @@ using Anarian.Enumerators;
 using Anarian.Interfaces;
 using Microsoft.Xna.Framework;
 
-namespace Anarian.DataStructures.Components
+namespace Anarian.GUI.Components
 {
-    public class Health : Component,
+    public class Health2D : Component2D,
                           IUpdatable
     {
         #region Fields/Properties
@@ -55,8 +55,8 @@ namespace Anarian.DataStructures.Components
         }
         #endregion
 
-        public Health (GameObject gameObject)
-            :base(gameObject, ComponentTypes.Health)
+        public Health2D (GuiObject guiObject)
+            : base(guiObject, ComponentTypes.Health)
         {
             m_alive = true;
             m_visible = true;
@@ -67,8 +67,8 @@ namespace Anarian.DataStructures.Components
             m_regenerateHealth = false;
             m_regenerationRate = 0.02f;
         }
-        public Health(GameObject gameObject, float maxHealth, bool regenerateHealth = false, float regenerationRate = 0.0f)
-            : base(gameObject, ComponentTypes.Health)
+        public Health2D(GuiObject guiObject, float maxHealth, bool regenerateHealth = false, float regenerationRate = 0.0f)
+            : base(guiObject, ComponentTypes.Health)
         {
             m_alive = true;
             m_visible = true;

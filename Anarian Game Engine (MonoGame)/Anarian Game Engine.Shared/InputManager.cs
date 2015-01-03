@@ -14,7 +14,7 @@ using Anarian.DataStructures.Input;
 
 namespace Anarian
 {
-    public class InputManager : IUpdatable
+    public class InputManager : IDisposable, IUpdatable
     {
         #region Singleton
         static InputManager m_instance;
@@ -88,7 +88,32 @@ namespace Anarian
             m_touchScreen.TouchMoved += m_touchScreen_TouchMoved;
         }
 
+        public void Dispose()
+        {
+            // Subscribe to Events
+            // Button
+            m_keyboard.KeyboardDown -= m_keyboard_KeyboardDown;
+            m_keyboard.KeyboardPressed -= m_keyboard_KeyboardPressed;
+
+            Controller.GamePadDown -= Controller_GamePadDown;
+            Controller.GamePadClicked -= Controller_GamePadClicked;
+            Controller.GamePadMoved -= Controller_GamePadMoved;
+
+            // Pointer
+            m_mouse.MouseDown -= m_mouse_MouseDown;
+            m_mouse.MouseClicked -= m_mouse_MouseClicked;
+            m_mouse.MouseMoved -= m_mouse_MouseMoved;
+
+            m_touchScreen.TouchDown -= m_touchScreen_TouchDown;
+            m_touchScreen.TouchPressed -= m_touchScreen_TouchPressed;
+            m_touchScreen.TouchMoved -= m_touchScreen_TouchMoved;
+
+            // Surpress the Finalize
+            GC.SuppressFinalize(this);
+        }
+
         #region Interface Implimentations
+        void IDisposable.Dispose() { Dispose(); }
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         #endregion
 

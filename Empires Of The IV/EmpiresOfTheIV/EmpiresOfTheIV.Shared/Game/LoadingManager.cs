@@ -19,6 +19,7 @@ using Anarian.DataStructures.Rendering;
 using Anarian.Enumerators;
 using Anarian.Helpers;
 using Anarian.Interfaces;
+using EmpiresOfTheIV.Game.GameObjects;
 
 namespace EmpiresOfTheIV.Game
 {
@@ -52,7 +53,35 @@ namespace EmpiresOfTheIV.Game
 
         public void LoadContent()
         {
+            // Load the Assets
+            m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Texture2D), "KillerrinStudiosLogo");
+            m_game.ResourceManager.LoadAsset(m_game.Content, typeof(AnimatedModel), "t-pose_3");
 
+            // Load the Terrain
+            Texture2D heightMap = m_game.Content.Load<Texture2D>("heightmap");
+            Texture2D grassTexture = m_game.Content.Load<Texture2D>("grassTexture");
+            Terrain m_terrain = new Terrain(m_game.Graphics, heightMap, grassTexture);
+            m_game.SceneManager.CurrentScene.SceneNode.AddChild(m_terrain.Transform);
+
+            // Create the Game Objects
+            Unit armyGuy = new Unit();
+            armyGuy.Model3D = m_game.ResourceManager.GetAsset(typeof(AnimatedModel), "t-pose_3") as AnimatedModel;
+            armyGuy.Transform.Scale = new Vector3(0.007f);
+            armyGuy.Transform.Position = new Vector3(0.2f, -0.5f, 0.50f);
+
+            // Add to the Scene
+            m_game.SceneManager.CurrentScene.SceneNode.AddChild(armyGuy.Transform);
+
+            // Load the models which contain animations
+            AnimatedModel walk = CustomContentLoader.LoadAnimatedModel(m_game.Content, "walk");
+            AnimationClip clip = walk.Clips[0];
+
+            // Set our animations to the gameObjects
+            AnimationPlayer armyGuyPlayer = armyGuy.PlayClip(clip);
+            armyGuyPlayer.Looping = true;
+
+
+            m_game.SceneManager.CurrentScene.Camera.MoveVertical(30.0f);
         }
     }
 }
