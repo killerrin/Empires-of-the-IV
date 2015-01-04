@@ -27,7 +27,7 @@ namespace Anarian.GUI
             : base(_normalTexture, _position, Color.White, Vector2.One, null, 0.0f, _sourceRectangle, SpriteEffects.None, _depth)
         {
             m_guiState = GuiState.None;
-
+            
             NormalTexture = _normalTexture;
         }
 
