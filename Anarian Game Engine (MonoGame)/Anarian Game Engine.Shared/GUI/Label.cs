@@ -12,24 +12,30 @@ namespace Anarian.GUI
 {
     public class Label : GuiObject
     {
+        #region Fields/Properties
         public string Text { get; set; }
         public SpriteFont Font { get; set; }
         public Color Colour { get; set; }
-        public Vector2 StringSize { get; protected set; }
 
+        /// <summary>
+        /// Wrapper around Transform.WidthHeight for readability
+        /// </summary>
+        public Vector2 StringSize { get { return m_transform.WidthHeight; } protected set { m_transform.WidthHeight = value; } }
+        #endregion
 
         public Label(SpriteFont font, string text, Vector2 position, Color color)
             :base()
         {
             // Set the Transform
             m_transform.Position = position;
-
+            
             // Set Everything Else
             Text = text;
             Font = font;
             Colour = color;
 
             StringSize = font.MeasureString(text);
+            m_transform.SetOriginToCenter();
         }
 
         public void ApplyFormattedText(string str, params object[] parameters)

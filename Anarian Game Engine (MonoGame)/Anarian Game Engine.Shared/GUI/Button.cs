@@ -10,26 +10,39 @@ using Microsoft.Xna.Framework.Graphics;
 using Anarian.Enumerators;
 using Anarian.Events;
 using Anarian.GUI.Events;
+using Anarian.Helpers;
 
 namespace Anarian.GUI
 {
     public class Button : Element
     {
+        public Texture2D NormalTexture { get; set; }
         public Texture2D DownTexture { get; set; }
         public Texture2D DisabledTexture { get; set; }
 
         public Label Label { get; set; }
 
 
-        public Button(Texture2D _texture, Vector2 _position, Color _color, Vector2 _scale, Vector2 _origin,
-            float _rotation = 0.0f,
-            Rectangle? _sourceRectangle = null,
-            SpriteEffects _spriteEffects = SpriteEffects.None,
-            float _depth = 0.0f
-            )
-            : base(_texture, _position, _color, _scale, _origin, _rotation, _sourceRectangle, _spriteEffects, _depth)
+        public Button(Texture2D _normalTexture, Vector2 _position, Rectangle? _sourceRectangle = null, float _depth = 0.0f)
+            : base(_normalTexture, _position, Color.White, Vector2.One, null, 0.0f, _sourceRectangle, SpriteEffects.None, _depth)
         {
             m_guiState = GuiState.None;
+
+            NormalTexture = _normalTexture;
+        }
+
+        public Button(GraphicsDeviceManager graphics, Color texColor, Color downColor, Color disabledColor, Vector2 _position, Vector2 widthHeight, float _depth = 0.0f)
+            : base(null, _position, Color.White, Vector2.One, null, 0.0f, null, SpriteEffects.None, _depth)
+        {
+            m_guiState = GuiState.None;
+
+            NormalTexture = texColor.CreateTextureFromSolidColor(graphics.GraphicsDevice, (int)widthHeight.X, (int)widthHeight.Y);
+            DownTexture = downColor.CreateTextureFromSolidColor(graphics.GraphicsDevice, (int)widthHeight.X, (int)widthHeight.Y);
+            DisabledTexture = disabledColor.CreateTextureFromSolidColor(graphics.GraphicsDevice, (int)widthHeight.X, (int)widthHeight.Y);
+
+            Texture = NormalTexture;
+            m_transform.WidthHeight = new Vector2(Texture.Width, Texture.Height);
+            m_transform.SetOriginToCenter();
         }
 
         public override void Update(GameTime gameTime)

@@ -22,19 +22,23 @@ namespace Anarian.GUI
         public float Depth { get; set; }
         #endregion
 
-        public Element(Texture2D _texture, Vector2 _position, Color _color, Vector2 _scale, Vector2 _origin,
+        public Element(Texture2D _texture, Vector2 _position, Color _color, Vector2 _scale, Vector2? _origin,
             float _rotation = 0.0f,
             Rectangle? _sourceRectangle = null,
             SpriteEffects _spriteEffects = SpriteEffects.None,
-            float _depth = 0.0f
-            )
+            float _depth = 0.0f)
             :base()
         {
             // Set the Transform
             m_transform.Position = _position;
             m_transform.Scale = _scale;
             m_transform.Rotation = _rotation;
-            m_transform.Origin = _origin;
+
+            if (_texture == null) m_transform.WidthHeight = Vector2.Zero;
+            else m_transform.WidthHeight = new Vector2(_texture.Width, _texture.Height);
+
+            if (_origin.HasValue) m_transform.Origin = _origin.Value;
+            else m_transform.SetOriginToCenter();
 
             // Set the rest of the Element
             Texture = _texture;

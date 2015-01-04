@@ -240,6 +240,7 @@ namespace Anarian.DataStructures.Components
         {
             base.Reset();
 
+            // Basic Transforms
             m_position = Vector3.Zero;
             m_rotation = Quaternion.Identity;
             m_scale = Vector3.One;
@@ -247,7 +248,7 @@ namespace Anarian.DataStructures.Components
             Setup();
         }
 
-        private void Setup(GameObject gameObject = null)
+        private void Setup()
         {
             // Setup Transform Vectors
             m_orbitalRotation = Vector3.Zero;

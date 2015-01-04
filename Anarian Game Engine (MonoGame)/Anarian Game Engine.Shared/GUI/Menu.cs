@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Anarian.GUI.Components;
 using Anarian.Interfaces;
 using Anarian.DataStructures;
+using Anarian.Events;
 
 namespace Anarian.GUI
 {
@@ -32,17 +33,21 @@ namespace Anarian.GUI
         }
 
         #region Interface Implimentation
+        #region IScene2D
         Transform2D IScene2D.SceneNode
         {
             get { return SceneNode; }
             set { }
         }
+        void IScene2D.HandlePointerDown(object sender, PointerPressedEventArgs e) { HandlePointerDown(sender, e); }
+        void IScene2D.HandlePointerPressed(object sender, PointerPressedEventArgs e) { HandlePointerPressed(sender, e); }
+        void IScene2D.HandlePointerMoved(object sender, PointerMovedEventArgs e) { HandlePointerMoved(sender, e); }
+        #endregion
 
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
 
         void Anarian.Interfaces.IDrawable.Draw(GameTime gameTime, SpriteBatch spriteBatch) { Draw(gameTime, spriteBatch); }
         #endregion
-
 
         public void Update(GameTime gameTime)
         {
@@ -53,5 +58,19 @@ namespace Anarian.GUI
         {
             m_sceneNode.GuiObject.Draw(gameTime, spriteBatch);
         }
+
+        #region HandleEvents
+        internal void HandlePointerDown(object sender, PointerPressedEventArgs e)
+        {
+        }
+
+        internal void HandlePointerPressed(object sender, PointerPressedEventArgs e)
+        {
+        }
+
+        internal void HandlePointerMoved(object sender, PointerMovedEventArgs e)
+        {
+        }
+        #endregion
     }
 }

@@ -30,7 +30,6 @@ namespace Anarian.DataStructures.Rendering
             get { return m_texture; }
             set { m_texture = value; }
         }
-        #endregion
 
         #region TerrainData
         VertexPositionNormalTexture[] m_vertices;
@@ -54,6 +53,7 @@ namespace Anarian.DataStructures.Rendering
         BasicEffect m_effect;
         public BasicEffect Effect { get { return m_effect; } }
         #endregion
+        #endregion
 
         public Terrain(GraphicsDeviceManager graphics, Texture2D heightMap, Texture2D texture = null)
             :base()
@@ -65,20 +65,23 @@ namespace Anarian.DataStructures.Rendering
             SetupTerrain(graphics.GraphicsDevice, heightMap);
         }
 
-        public Terrain(GraphicsDeviceManager graphics, int width, int height, Texture2D texture = null)
+        public Terrain(GraphicsDeviceManager graphics, int width, int height, Color heightmapGenerationColor, Texture2D texture = null)
             : base()
         {
             // Store the Texture
             m_texture = texture;
 
             // Create the Height Map
-            Texture2D heightMap = new Texture2D(graphics.GraphicsDevice, width, height);
-            Color[] colors = new Color[width * height];
-            for (int i = 0; i < width * height; i++) { colors[i] = Color.White; }
-            heightMap.SetData(colors);
+            Texture2D heightMap = heightmapGenerationColor.CreateTextureFromSolidColor(graphics.GraphicsDevice, width, height);
 
             // Finally, Setup the terrain
             SetupTerrain(graphics.GraphicsDevice, heightMap);
+        }
+
+        public static Terrain CreateFlatTerrain(GraphicsDeviceManager graphics, int width, int height, Texture2D texture = null)
+        {
+            Terrain terrain = new Terrain(graphics, width, height, Color.White, texture);
+            return terrain;
         }
 
         #region Terrain Setup

@@ -16,6 +16,7 @@ namespace Anarian.GUI.Components
                              IEnumerable, IUpdatable, IMoveable
     {
         #region Fields/Properties
+        #region Transforms
         Vector2 m_lastPosition;
         Vector2 m_position;
         public Vector2 Position
@@ -48,6 +49,27 @@ namespace Anarian.GUI.Components
             get { return m_rotation; }
             set { m_rotation = value; }
         }
+        #endregion
+
+        #region Helper Properties
+        Vector2 m_widthHeight;
+        public Vector2 WidthHeight
+        {
+            get { return m_widthHeight; }
+            set { m_widthHeight = value; }
+        }
+        public Rectangle PositionRect
+        {
+            get
+            {
+                return new Rectangle((int)m_position.X, (int)m_position.Y, (int)m_widthHeight.X, (int)m_widthHeight.Y);
+            }
+            set {
+                Position = new Vector2(value.X, value.Y);
+                m_widthHeight = new Vector2(value.Width, value.Height);
+            }
+        }
+        #endregion
 
         #region World Location
         public Vector2 WorldPosition
@@ -99,30 +121,26 @@ namespace Anarian.GUI.Components
         public Transform2D(GuiObject guiObject, Vector2 position, Vector2 scale, float rotation)
             : base(guiObject, ComponentTypes.Transform)
         {
+            Reset();
+
             m_position = position;
             m_scale = scale;
             m_rotation = rotation;
-
-            m_origin = Vector2.Zero;
-
-            Setup();
         }
 
         public override void Reset()
         {
             base.Reset();
 
+            // Basic Transforms
             m_position = Vector2.Zero;
             m_scale = Vector2.One;
             m_rotation = 0.0f;
 
+            // Advanced Transforms
             m_origin = Vector2.Zero;
+            m_widthHeight = Vector2.One;
 
-            Setup();
-        }
-
-        private void Setup(GuiObject guiObject = null)
-        {
             // Setup Children
             m_parent = null;
             m_children = new List<Transform2D>();
@@ -164,6 +182,11 @@ namespace Anarian.GUI.Components
             direction.Normalize();
 
             return direction;
+        }
+
+        public void SetOriginToCenter()
+        {
+            m_origin = m_widthHeight / 2.0f;
         }
         #endregion
 

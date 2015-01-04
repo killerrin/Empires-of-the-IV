@@ -26,6 +26,17 @@ namespace Anarian.Helpers
             return new Rectangle(0, 0, viewport.Width, viewport.Height);
         }
 
+        public static Texture2D CreateTextureFromSolidColor(this Color color, GraphicsDevice graphicsDevice, int width, int height)
+        {
+            Texture2D texture = new Texture2D(graphicsDevice, width, height);
+
+            Color[] colors = new Color[width * height];
+            for (int i = 0; i < width * height; i++) { colors[i] = color; }
+            texture.SetData(colors);
+
+            return texture;
+        }
+
         public static float DeltaTime (this GameTime gameTime)
         {
             return (float)gameTime.ElapsedGameTime.TotalMilliseconds;

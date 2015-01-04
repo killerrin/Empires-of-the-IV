@@ -117,14 +117,26 @@ namespace Anarian
         #region Pointer Events
         void Instance_PointerDown(object sender, PointerPressedEventArgs e)
         {
+            if (!Initialized) return;
+            if (CurrentScene != null) {
+                CurrentScene.HandlePointerDown(sender, e);
+            }
         }
 
         void Instance_PointerPressed(object sender, PointerPressedEventArgs e)
         {
+            if (!Initialized) return;
+            if (CurrentScene != null) {
+                CurrentScene.HandlePointerPressed(sender, e);
+            }
         }
 
         void Instance_PointerMoved(object sender, PointerMovedEventArgs e)
         {
+            if (!Initialized) return;
+            if (CurrentScene != null) {
+                CurrentScene.HandlePointerMoved(sender, e);
+            }
         }
         #endregion
 
