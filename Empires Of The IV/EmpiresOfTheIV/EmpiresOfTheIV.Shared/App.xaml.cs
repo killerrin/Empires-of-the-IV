@@ -29,14 +29,14 @@ namespace EmpiresOfTheIV
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            var gamePage = Window.Current.Content as GamePage;
+            var mainPage = Window.Current.Content as MainPage;
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
-            if (gamePage == null)
+            if (mainPage == null)
             {
                 // Create a main GamePage
-                gamePage = new GamePage(args.Arguments);
+                mainPage = new MainPage(args.Arguments);
 
                 if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
@@ -44,7 +44,7 @@ namespace EmpiresOfTheIV
                 }
 
                 // Place the GamePage in the current Window
-                Window.Current.Content = gamePage;
+                Window.Current.Content = mainPage;
             }
 
             // Ensure the current window is active

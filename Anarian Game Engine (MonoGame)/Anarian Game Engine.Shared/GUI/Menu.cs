@@ -12,7 +12,7 @@ using Anarian.Events;
 namespace Anarian.GUI
 {
     public class Menu : AnarianObject,
-                           IScene2D, IUpdatable, Anarian.Interfaces.IDrawable
+                        IScene2D, IUpdatable, Anarian.Interfaces.IDrawable
     {
         Transform2D m_sceneNode;
         public Transform2D SceneNode

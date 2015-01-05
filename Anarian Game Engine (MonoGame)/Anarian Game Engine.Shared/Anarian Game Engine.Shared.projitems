@@ -33,12 +33,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Input\TouchScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Level.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Rendering\Terrain.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\ScreenEffects\Fade.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\StaticGameObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Timer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\ComponentTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\GuiState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\InputType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\PointerPress.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\PointDirection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enumerators\ProgressStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\ButtonPressedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\GamePadMovedEventsArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\GamePadPressedEventArgs.cs" />
@@ -47,6 +50,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Events\PointerPressedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\Button.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUI\Camera2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\Components\Component2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\Components\Health2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\Components\Mana2D.cs" />
@@ -67,6 +71,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IRenderable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IScene2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IScreenEffect.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISelectableEntity.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IUpdatable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ResourceManager.cs" />

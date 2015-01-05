@@ -26,6 +26,9 @@ namespace Anarian
 
         protected Color m_backgroundColor;
         public Color BackgroundColor { get { return m_backgroundColor; } set { m_backgroundColor = value; } }
+
+        protected Random m_random;
+        public Random Random { get { return m_random; } protected set { m_random = value; } }
         #endregion
 
         #region Managers
@@ -49,6 +52,9 @@ namespace Anarian
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            // Disable the Fixed TimeStep infavor of a Variable one
+            IsFixedTimeStep = false;
         }
 
         /// <summary>
@@ -59,6 +65,8 @@ namespace Anarian
         /// </summary>
         protected override void Initialize()
         {
+            m_random = new System.Random();
+
             m_resourceManager = ResourceManager.Instance;
             m_inputManager = InputManager.Instance;
             m_sceneManager = SceneManager.Instance;
@@ -91,8 +99,7 @@ namespace Anarian
 
             // Create Textures which will be needed in the engine
             // Blank Texture
-            Texture2D blankTexture = new Texture2D(GraphicsDevice, 1, 1);
-            blankTexture.SetData(new Color[] { Color.White });
+            Texture2D blankTexture = Color.White.CreateTextureFromSolidColor(GraphicsDevice, 1, 1);
             m_resourceManager.AddAsset(blankTexture, ResourceManager.EngineReservedAssetNames.blankTextureName);
         }
 

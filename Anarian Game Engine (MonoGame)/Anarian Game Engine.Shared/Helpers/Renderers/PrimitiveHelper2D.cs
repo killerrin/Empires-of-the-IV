@@ -62,6 +62,13 @@ namespace Anarian.Helpers
             spriteBatch.End();
         }
 
+        public static void DrawRect(SpriteBatch spriteBatch, Color color, Vector2 startCorner, Vector2 endCorner)
+        {
+            Vector2 size = endCorner - startCorner;
+            Rectangle rect = new Rectangle((int)startCorner.X, (int)startCorner.Y, (int)size.X, (int)size.Y);
+            DrawRect(spriteBatch, color, rect);
+        }
+
         /// <summary>
         /// Draws Square Points on the screen at the specified Position, Size and Color
         /// </summary>

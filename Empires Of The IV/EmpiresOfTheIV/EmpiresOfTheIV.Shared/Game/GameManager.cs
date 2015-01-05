@@ -19,6 +19,7 @@ using Anarian.DataStructures.Rendering;
 using Anarian.Enumerators;
 using Anarian.Helpers;
 using Anarian.Interfaces;
+using EmpiresOfTheIV.Game.Enumerators;
 
 namespace EmpiresOfTheIV.Game
 {
@@ -28,11 +29,16 @@ namespace EmpiresOfTheIV.Game
         public EmpiresOfTheIVGame Game { get { return m_game; } protected set { m_game = value; } }
         
         #region Fields/Properties
+        #region Managers
         protected LoadingManager m_loadingManager;
         public LoadingManager LoadingManager { get { return m_loadingManager; } set { m_loadingManager = value; } }
 
         protected GameInputManager m_gameInputManager;
         public GameInputManager GameInputManager { get { return m_gameInputManager; } set { m_gameInputManager = value; } }
+        #endregion
+
+        protected GameState m_gameState;
+        public GameState GameState { get { return m_gameState; } protected set { m_gameState = value; } }
         #endregion
 
         List<ISelectableEntity> selectedEntities = new List<ISelectableEntity>();

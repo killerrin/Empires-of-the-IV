@@ -1,6 +1,8 @@
 ﻿using Anarian.DataStructures;
 using Anarian.DataStructures.Rendering;
+using Anarian.DataStructures.ScreenEffects;
 using Anarian.Enumerators;
+using Anarian.Interfaces;
 using EmpiresOfTheIV.Game.GameObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -12,14 +14,16 @@ using System.Text;
 
 namespace EmpiresOfTheIV.Game
 {
-    public class GameInputManager : IDisposable
+    public class GameInputManager : IDisposable, IUpdatable, Anarian.Interfaces.IDrawable
     {
         protected EmpiresOfTheIVGame m_game;
         public EmpiresOfTheIVGame Game { get { return m_game; } protected set { m_game = value; } }
 
         #region Fields/Properties
+
         #endregion
 
+        #region Constructors
         public GameInputManager (EmpiresOfTheIVGame game)
         {
             m_game = game;
@@ -51,9 +55,23 @@ namespace EmpiresOfTheIV.Game
             GC.SuppressFinalize(this);
         }
 
+        #endregion
+
         #region Interface Implimentations
         void IDisposable.Dispose() { Dispose(); }
+        void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
+        void Anarian.Interfaces.IDrawable.Draw(GameTime gameTime, SpriteBatch spriteBatch) { Draw(gameTime, spriteBatch); }
         #endregion
+
+        public void Update(GameTime gameTime)
+        {
+
+        }
+
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+
+        }
 
         #region Input Events
         void InputManager_PointerDown(object sender, Anarian.Events.PointerPressedEventArgs e)
@@ -85,8 +103,10 @@ namespace EmpiresOfTheIV.Game
             }
             if (e.Pointer == PointerPress.MiddleMouseButton) {
                 Debug.WriteLine("Middle Mouse Pressed");
-                //GamePage.PageFrame.Navigate(typeof(BlankPage));
-                //GamePage.PageFrame.Visibility = Windows.UI.Xaml.Visibility.Visible;
+                switch (m_game.fadeEffect.FadeStatus) {
+                    case FadeStatus.FadingToContent: m_game.fadeEffect.ChangeFadeStatus(FadeStatus.FadingIn); break;
+                    case FadeStatus.FadingIn: m_game.fadeEffect.ChangeFadeStatus(FadeStatus.FadingToContent); break;
+                }
             }
             if (e.Pointer == PointerPress.RightMouseButton) {
                 Unit unit = m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).GameObject as Unit;

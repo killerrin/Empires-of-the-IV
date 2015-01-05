@@ -71,20 +71,20 @@ namespace Anarian.DataStructures.Input
 
             if (MouseDown != null) {
                 if (LeftMouseDown())
-                    MouseDown(this, new PointerPressedEventArgs(PointerPress.LeftMouseButton, GetMousePosition()));
+                    MouseDown(this, new PointerPressedEventArgs(PointerPress.LeftMouseButton, GetMousePosition(), GetMouseDelta()));
                 if (MiddleMouseDown())
-                    MouseDown(this, new PointerPressedEventArgs(PointerPress.MiddleMouseButton, GetMousePosition()));
+                    MouseDown(this, new PointerPressedEventArgs(PointerPress.MiddleMouseButton, GetMousePosition(), GetMouseDelta()));
                 if (RightMouseDown())
-                    MouseDown(this, new PointerPressedEventArgs(PointerPress.RightMouseButton, GetMousePosition()));
+                    MouseDown(this, new PointerPressedEventArgs(PointerPress.RightMouseButton, GetMousePosition(), GetMouseDelta()));
             }
             
             if (MouseClicked != null) {
                 if (LeftMouseClicked())
-                    MouseClicked(this, new PointerPressedEventArgs(PointerPress.LeftMouseButton, GetMousePosition()));
+                    MouseClicked(this, new PointerPressedEventArgs(PointerPress.LeftMouseButton, GetMousePosition(), GetMouseDelta()));
                 if (MiddleMouseClicked())
-                    MouseClicked(this, new PointerPressedEventArgs(PointerPress.MiddleMouseButton, GetMousePosition()));
+                    MouseClicked(this, new PointerPressedEventArgs(PointerPress.MiddleMouseButton, GetMousePosition(), GetMouseDelta()));
                 if (RightMouseClicked())
-                    MouseClicked(this, new PointerPressedEventArgs(PointerPress.RightMouseButton, GetMousePosition()));
+                    MouseClicked(this, new PointerPressedEventArgs(PointerPress.RightMouseButton, GetMousePosition(), GetMouseDelta()));
             }
 
             if (MouseMoved != null) {

@@ -21,6 +21,7 @@ using Anarian.Helpers;
 using Anarian.Interfaces;
 using EmpiresOfTheIV.Game;
 using EmpiresOfTheIV.Game.GameObjects;
+using Anarian.DataStructures.ScreenEffects;
 
 namespace EmpiresOfTheIV
 {
@@ -63,6 +64,8 @@ namespace EmpiresOfTheIV
             base.PostInitialize();
         }
 
+        public Fade fadeEffect;
+
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -71,6 +74,8 @@ namespace EmpiresOfTheIV
         {
             base.LoadContent();
             m_gameManager.LoadContent();
+
+            fadeEffect = new Fade(GraphicsDevice, Color.Red);
 
             // Lastly we call PostLoadContent to do MonoGame LoadContent
             base.PostLoadContent();
@@ -101,6 +106,8 @@ namespace EmpiresOfTheIV
             // Preform normal Updates
             m_gameManager.Update(gameTime);
 
+            fadeEffect.ApplyEffect(gameTime);
+
             // Lastly, we call PostUpdate on the GameEngine to let MonoGame know we are finished 
             base.PostUpdate(gameTime);
         }
@@ -128,7 +135,9 @@ namespace EmpiresOfTheIV
 
             // Preform Game Rendering
             m_gameManager.Draw(gameTime);
-            
+
+            fadeEffect.Draw(gameTime, spriteBatch);
+
             // Lastly, Call the GameEngines PostDraw Method to let MonoGame know we are finished
             base.PostDraw(gameTime);
         }

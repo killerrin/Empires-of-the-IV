@@ -89,7 +89,7 @@ namespace Anarian.DataStructures.Input
             if (TouchDown != null) {
                 foreach (var touch in m_touchCollection) {
                     if (IsTouchDown(touch.Id)) {
-                            TouchDown(this, new PointerPressedEventArgs(touch.Id, PointerPress.Touch, touch.Position, touch.Pressure));
+                            TouchDown(this, new PointerPressedEventArgs(touch.Id, PointerPress.Touch, touch.Position, GetDeltaTouchPosition(touch.Id), touch.Pressure));
                     }
                 }
             }
@@ -97,7 +97,7 @@ namespace Anarian.DataStructures.Input
             if (TouchPressed != null) {
                 foreach (var touch in m_touchCollection) {
                     if (WasTouchPressed(touch.Id)) {
-                        TouchPressed(this, new PointerPressedEventArgs(touch.Id, PointerPress.Touch, touch.Position, touch.Pressure));
+                        TouchPressed(this, new PointerPressedEventArgs(touch.Id, PointerPress.Touch, touch.Position, GetDeltaTouchPosition(touch.Id), touch.Pressure));
                     }
                 }
             }
@@ -172,6 +172,21 @@ namespace Anarian.DataStructures.Input
             }
 
             return false;
+        }
+
+        public Vector2 GetDeltaTouchPosition(int id)
+        {
+            foreach (TouchLocation location in m_touchCollection) {
+                if (location.Id == id) {
+                    TouchLocation prevLocation;
+                    bool prevLocationAvailable = location.TryGetPreviousLocation(out prevLocation);
+                    if (!prevLocationAvailable) break;
+
+                    return prevLocation.Position - location.Position;
+                }
+            }
+
+            return Vector2.Zero;
         }
         #endregion
 

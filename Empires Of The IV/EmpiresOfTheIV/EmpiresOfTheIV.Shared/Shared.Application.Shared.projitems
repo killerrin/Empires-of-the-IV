@@ -18,10 +18,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)BlankPage.xaml.cs">
       <DependentUpon>BlankPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)EmpiresOfTheIVGame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GamePage.xaml.cs">
-      <DependentUpon>GamePage.xaml</DependentUpon>
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MainMenu.xaml.cs">
+      <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)SplashScreenPage.xaml.cs">
+      <DependentUpon>SplashScreenPage.xaml</DependentUpon>
+    </Compile>
+    <Content Include="$(MSBuildThisFileDirectory)Assets\KillerrinStudiosLogo.png" />
+    <Compile Include="$(MSBuildThisFileDirectory)Consts.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EmpiresOfTheIVGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\BuildingType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\UnitType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameInputManager.cs" />
@@ -29,23 +35,26 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Building.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Unit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\LoadingManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Page Events\MainPage.cs" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\Space and Astronomy.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Content\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)BlankPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="$(MSBuildThisFileDirectory)GamePage.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)MainMenu.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Assets\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)Content\*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Page Include="$(MSBuildThisFileDirectory)SplashScreenPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>

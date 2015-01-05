@@ -15,14 +15,16 @@ namespace Anarian.Events
         public int ID { get; private set; }
         public float Pressure { get; private set; }
         public PointerPress Pointer { get; private set; }
-        public Vector2 Position { get; private set; }
 
+        public Vector2 Position { get; private set; }
+        public Vector2 DeltaPosition { get; private set; }
 
         public PointerPressedEventArgs()
             : base(new Exception(), false, null)
         {
             Pointer = PointerPress.None;
             Position = new Vector2(-1.0f, -1.0f);
+            DeltaPosition = Vector2.Zero;
             ID = -1;
             Pressure = 0.0f;
 
@@ -32,22 +34,24 @@ namespace Anarian.Events
         /// <summary>
         /// Mouse Event Args
         /// </summary>
-        public PointerPressedEventArgs(PointerPress pointerPress, Vector2 mousePosition)
+        public PointerPressedEventArgs(PointerPress pointerPress, Vector2 mousePosition, Vector2 deltaPosition)
             : base(new Exception(), false, null)
         {
             Pointer = pointerPress;
             Position = mousePosition;
+            DeltaPosition = deltaPosition;
             SetupMouse();
         }
 
         /// <summary>
         /// Mouse Event Args
         /// </summary>
-        public PointerPressedEventArgs(PointerPress pointerPress, Vector2 mousePosition, Exception e, bool canceled, Object state)
+        public PointerPressedEventArgs(PointerPress pointerPress, Vector2 mousePosition, Vector2 deltaPosition, Exception e, bool canceled, Object state)
             : base(e, canceled, state)
         {
             Pointer = pointerPress;
             Position = mousePosition;
+            DeltaPosition = deltaPosition;
             SetupMouse();
         }
 
@@ -62,24 +66,26 @@ namespace Anarian.Events
         /// <summary>
         /// Touch Event Args
         /// </summary>
-        public PointerPressedEventArgs(int id, PointerPress pointerPress, Vector2 mousePosition, float pressure)
+        public PointerPressedEventArgs(int id, PointerPress pointerPress, Vector2 mousePosition, Vector2 deltaPosition, float pressure)
             : base(new Exception(), false, null)
         {
             ID = id;
             Pointer = pointerPress;
             Position = mousePosition;
+            DeltaPosition = deltaPosition;
             Pressure = pressure;
         }
 
         /// <summary>
         /// Touch Event Args
         /// </summary>
-        public PointerPressedEventArgs(int id, PointerPress pointerPress, Vector2 mousePosition, float pressure, Exception e, bool canceled, Object state)
+        public PointerPressedEventArgs(int id, PointerPress pointerPress, Vector2 mousePosition, Vector2 deltaPosition, float pressure, Exception e, bool canceled, Object state)
             : base(e, canceled, state)
         {
             ID = id;
             Pointer = pointerPress;
             Position = mousePosition;
+            DeltaPosition = deltaPosition;
             Pressure = pressure;
         }
         #endregion
@@ -89,6 +95,7 @@ namespace Anarian.Events
             return "ID: " + ID + ", " +
                    "PointerPress: " + Pointer.ToString() + ", " +
                    "Position: " + Position.ToString() + ", " +
+                   "DeltaPosition: " + DeltaPosition.ToString() + ", " +
                    "Pressure: " + Pressure;
         }
     }
