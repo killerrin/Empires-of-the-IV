@@ -25,6 +25,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)SplashScreenPage.xaml.cs">
       <DependentUpon>SplashScreenPage.xaml</DependentUpon>
     </Compile>
+    <Content Include="$(MSBuildThisFileDirectory)Assets\CancelledEarcon.wav" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\CortanaGo.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\CortanaMicrophone.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\download.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\edit.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\KillerrinStudiosLogo.png" />
     <Compile Include="$(MSBuildThisFileDirectory)Consts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EmpiresOfTheIVGame.cs" />
@@ -36,7 +41,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Unit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\LoadingManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Universal Page Events\MainPage.cs" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\ListeningEarcon.wav" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\microphone.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\Space and Astronomy.ttf" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\stop.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\UnlockWhite.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)Content\*">
