@@ -16,28 +16,27 @@ namespace EmpiresOfTheIV.Game.Menus
     {
 
         #region Fields/Properties
-        EmpiresOfTheIVGame m_game;
-        Level m_level;
+
         #endregion
 
         public PlayGameMenu(EmpiresOfTheIVGame game)
-            : base(GameState.PlayGame)
+            : base(game, GameState.PlayGame)
         {
-            m_game = game;
+
         }
 
 
         #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics); }
         #endregion
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             base.Draw(gameTime, spriteBatch, graphics);
         }

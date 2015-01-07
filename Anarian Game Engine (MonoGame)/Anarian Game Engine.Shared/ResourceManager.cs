@@ -44,6 +44,7 @@ namespace Anarian
 
         public void LoadAsset(ContentManager Content, Type assetType, string assetName)
         {
+            Debug.WriteLine("Loading Asset: " + assetName + " | " + assetType.Name);
             if (assetType == typeof(Texture2D)) { m_textures.Add(AssetName(assetName), Content.Load<Texture2D>(assetName)); }
             else if (assetType == typeof(Model)) { m_models.Add(AssetName(assetName), Content.Load<Model>(assetName)); }
             else if (assetType == typeof(AnimatedModel)) { m_animatedModels.Add(AssetName(assetName), CustomContentLoader.LoadAnimatedModel(Content, assetName)); }
@@ -52,6 +53,7 @@ namespace Anarian
         public void AddAsset(object asset, string assetName)
         {
             Type assetType = asset.GetType();
+            Debug.WriteLine("Adding Asset: " + assetName + " | " + assetType.Name);
 
             if (assetType == typeof(Texture2D)) { m_textures.Add(AssetName(assetName), (Texture2D)asset); }
             else if (assetType == typeof(Model)) { m_models.Add(AssetName(assetName), (Model)asset); }
@@ -60,6 +62,8 @@ namespace Anarian
 
         public object GetAsset(Type assetType, string key)
         {
+            Debug.WriteLine("Getting Asset: " + key + " | " + assetType.Name);
+
             if (assetType == typeof(Texture2D)) { return m_textures[key]; }
             else if (assetType == typeof(Model)) { return m_models[key]; }
             else if (assetType == typeof(AnimatedModel)) { return m_animatedModels[key]; }

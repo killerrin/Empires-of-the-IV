@@ -11,19 +11,20 @@ using System.Text;
 
 namespace EmpiresOfTheIV.Game.Menus
 {
-    public class GameOverMenu : GameMenu,
-                                IUpdatable, IRenderable
+    public class BlankMenu : GameMenu,
+                             IUpdatable, IRenderable
     {
 
         #region Fields/Properties
 
         #endregion
 
-        public GameOverMenu(EmpiresOfTheIVGame game)
-            :base(game, GameState.GameOver)
+        public BlankMenu(EmpiresOfTheIVGame game)
+            : base(game, GameState.None)
         {
 
         }
+
 
         #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }

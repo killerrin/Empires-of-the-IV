@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\GameOverMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\BlankMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\PausedMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\InGameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\EmpireSelectionMenu.cs" />

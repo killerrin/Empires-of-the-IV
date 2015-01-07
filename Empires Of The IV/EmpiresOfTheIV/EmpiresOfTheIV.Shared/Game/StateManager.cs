@@ -22,6 +22,7 @@ using Anarian.Interfaces;
 using EmpiresOfTheIV.Game.GameObjects;
 using EmpiresOfTheIV.Game.Enumerators;
 using Anarian.DataStructures.ScreenEffects;
+using EmpiresOfTheIV.Game.Menus;
 
 namespace EmpiresOfTheIV.Game
 {
@@ -34,10 +35,11 @@ namespace EmpiresOfTheIV.Game
         bool m_goingBack;
         bool m_exit;
 
-        Stack<GameState> m_gameStates;
+        Stack<GameMenu> m_gameStates;
         Fade m_fadeEffect;
 
-        public GameState CurrentState { get { return m_gameStates.Peek(); } set { Navigate(value); } }
+        public GameMenu CurrentMenu { get { return m_gameStates.Peek(); } set { Navigate(value); } }
+        public GameState CurrentState { get { return m_gameStates.Peek().State; } set { Navigate(value); } }
         public Fade FadeEffect { get { return m_fadeEffect; } }
 
         public int BackStackDepth { get { return m_gameStates.Count; } }
@@ -51,7 +53,7 @@ namespace EmpiresOfTheIV.Game
             m_game = game;
             m_exit = false;
 
-            m_gameStates = new Stack<GameState>();
+            m_gameStates = new Stack<GameMenu>();
             m_goingBack = false;
 
             m_fadeEffect = new Fade(game.GraphicsDevice, fadeColor, 0.003f);
@@ -63,18 +65,7 @@ namespace EmpiresOfTheIV.Game
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         #endregion
 
-        #region Update/Draw
-        public void Update(GameTime gameTime)
-        {
-            m_fadeEffect.ApplyEffect(gameTime);
-        }
-
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
-        {
-            m_fadeEffect.Draw(gameTime, spriteBatch);
-        }
-        #endregion
-
+        #region Helper Methods
         public void ExitGame()
         {
             // Hide the Frame to prepare for Navigation
@@ -85,6 +76,27 @@ namespace EmpiresOfTheIV.Game
             // Lastly set the automation state
             m_fadeEffect.ChangeFadeStatus(FadeStatus.FadingIn);
         }
+        #endregion
+
+        #region Update/Draw
+        public void Update(GameTime gameTime)
+        {
+            // Update the Fade
+            m_fadeEffect.ApplyEffect(gameTime);
+
+            // Update the Current Menu
+            if (CurrentMenu != null) CurrentMenu.Update(gameTime);
+        }
+
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
+        {
+            // Draw the Current Menu
+            if (CurrentMenu != null) CurrentMenu.Draw(gameTime, spriteBatch, graphics);
+
+            // Draw the Fade
+            m_fadeEffect.Draw(gameTime, spriteBatch);
+        }
+        #endregion
 
         #region Stack Management
         public void Navigate(GameState newState)
@@ -92,13 +104,47 @@ namespace EmpiresOfTheIV.Game
             // Hide the Frame to prepare for Navigation
             MainPage.PageFrame.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 
-            m_gameStates.Push(newState);
+            GameMenu newMenu;
+            switch (newState) {
+                case GameState.SplashScreen:        newMenu = new SplashScreenMenu(m_game); break;
+                case GameState.MainMenu:            newMenu = new MainMenu(m_game); break;
+
+                case GameState.PlayGame:            newMenu = new PlayGameMenu(m_game); break;
+                case GameState.Singleplayer:        newMenu = new SingleplayerMenu(m_game); break;
+                case GameState.Multiplayer:         newMenu = new MultiplayerMenu(m_game); break;
+                case GameState.EmpireSelection:     newMenu = new EmpireSelectionMenu(m_game); break;
+                case GameState.InGame:              newMenu = new InGameMenu(m_game); break;
+                case GameState.Paused:              newMenu = new PausedMenu(m_game); break;
+                case GameState.GameOver:            newMenu = new GameOverMenu(m_game); break;
+
+                case GameState.Options:             newMenu = new OptionsMenu(m_game); break;
+                case GameState.Credits:             newMenu = new CreditsMenu(m_game); break;
+
+                case GameState.None:                
+                default:                            newMenu = new BlankMenu(m_game); break;
+            }
+
+            m_gameStates.Push(newMenu);           
             m_goingBack = false;
             m_exit = false;
 
             // Lastly set the automation state
             m_fadeEffect.ChangeFadeStatus(FadeStatus.FadingIn);
         }
+
+        public void Navigate(GameMenu newMenu)
+        {
+            // Hide the Frame to prepare for Navigation
+            MainPage.PageFrame.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+
+            m_gameStates.Push(newMenu);
+            m_goingBack = false;
+            m_exit = false;
+
+            // Lastly set the automation state
+            m_fadeEffect.ChangeFadeStatus(FadeStatus.FadingIn);
+        }
+
 
         public void GoBack()
         {
@@ -118,17 +164,53 @@ namespace EmpiresOfTheIV.Game
         }
 
         /// <summary>
+        /// Gets the Previous Menu
+        /// </summary>
+        /// <returns>The Previous GameMenu, or null if no previous GameMenu is available</returns>
+        public GameMenu GetPreviousMenu()
+        {
+            if (m_gameStates.Count > 1) {
+                GameMenu currentMenu = m_gameStates.Pop();
+                GameMenu previousMenu = m_gameStates.Pop();
+
+                m_gameStates.Push(previousMenu);
+                m_gameStates.Push(currentMenu);
+
+                return previousMenu;
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Removes the last GameState from the Stack
         /// </summary>
         /// <returns>The removed GameState</returns>
-        public GameState RemoveOneFromStack()
+        public GameMenu RemoveOneFromStack()
         {
             if (m_gameStates.Count > 0) {
                 return m_gameStates.Pop();
             }
             else {
                 m_exit = true;
-                return GameState.None;
+                return new BlankMenu(m_game);
+            }
+        }
+
+        public GameMenu RemovePreviousFromStack()
+        {
+            if (m_gameStates.Count > 1) {
+                GameMenu temp = m_gameStates.Pop();
+                GameMenu returningMenu = m_gameStates.Pop();
+
+                m_gameStates.Push(temp);
+                return returningMenu;
+            }
+            else if (m_gameStates.Count == 1) {
+                return m_gameStates.Pop();
+            }
+            else {
+                m_exit = true;
+                return new BlankMenu(m_game);
             }
         }
         #endregion
@@ -150,7 +232,7 @@ namespace EmpiresOfTheIV.Game
             if (m_fadeEffect.FadeStatus == FadeStatus.FadingIn) {
                 if (m_goingBack) MainPage.PageFrame.GoBack();
                 else {
-                    switch (m_gameStates.Peek()) {
+                    switch (m_gameStates.Peek().State) {
                         case GameState.SplashScreen:        MainPage.PageFrame.Navigate(typeof(SplashScreenPage)); break;
                         case GameState.MainMenu:            MainPage.PageFrame.Navigate(typeof(MainMenuPage)); break;
 

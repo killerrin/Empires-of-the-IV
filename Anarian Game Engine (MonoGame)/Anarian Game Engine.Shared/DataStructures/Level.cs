@@ -59,8 +59,9 @@ namespace Anarian.DataStructures
         /// Draws the Level
         /// </summary>
         /// <param name="gameTime">The GameTime</param>
-        /// <param name="camera">Set Camera to null to use Main Camera</param>
+        /// <param name="spriteBatch">The SpriteBatch</param>
         /// <param name="graphics">The GraphicsDevice</param>
+        /// <param name="camera">Set Camera to null to use Main Camera</param>
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
         #endregion
 
@@ -68,7 +69,7 @@ namespace Anarian.DataStructures
         /// Updates the Level
         /// </summary>
         /// <param name="gameTime">The GameTime</param>
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
             m_sceneNode.GameObject.Update(gameTime);
         }
@@ -77,11 +78,15 @@ namespace Anarian.DataStructures
         /// Draws the Level
         /// </summary>
         /// <param name="gameTime">The GameTime</param>
-        /// <param name="camera">Set Camera to null to use Main Camera</param>
+        /// <param name="spriteBatch">The SpriteBatch</param>
         /// <param name="graphics">The GraphicsDevice</param>
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
+        /// <param name="camera">Set to null to use Camera attached to Level</param>
+        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera = null)
         {
-            m_sceneNode.GameObject.Draw(gameTime, spriteBatch, graphics, camera);
+            if (camera == null)
+                m_sceneNode.GameObject.Draw(gameTime, spriteBatch, graphics, m_camera);
+            else
+                m_sceneNode.GameObject.Draw(gameTime, spriteBatch, graphics, camera);
         }
     }
 }

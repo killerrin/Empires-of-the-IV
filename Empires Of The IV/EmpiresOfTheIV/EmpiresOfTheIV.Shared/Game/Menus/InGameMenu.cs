@@ -19,23 +19,23 @@ namespace EmpiresOfTheIV.Game.Menus
 
         #endregion
 
-        public InGameMenu()
-            :base(GameState.InGame)
+        public InGameMenu(EmpiresOfTheIVGame game)
+            :base(game, GameState.InGame)
         {
 
         }
 
         #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics); }
         #endregion
 
-        public void Update(GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             base.Draw(gameTime, spriteBatch, graphics);
         }

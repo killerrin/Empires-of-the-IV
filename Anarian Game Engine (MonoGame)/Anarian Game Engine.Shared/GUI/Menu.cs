@@ -49,12 +49,12 @@ namespace Anarian.GUI
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics); }
         #endregion
 
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
             m_sceneNode.GuiObject.Update(gameTime);
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
+        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             m_sceneNode.GuiObject.Draw(gameTime, spriteBatch, graphics);
         }

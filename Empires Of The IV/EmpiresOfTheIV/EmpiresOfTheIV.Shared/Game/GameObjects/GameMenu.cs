@@ -14,14 +14,23 @@ namespace EmpiresOfTheIV.Game.GameObjects
                             IUpdatable, IRenderable
     {
         #region Fields/Properties
-        GameState m_gameState;
+        protected EmpiresOfTheIVGame m_game;
+        public EmpiresOfTheIVGame Game { get { return m_game; } protected set { m_game = value; } }
+
+        protected GameState m_gameState;
         public GameState State { get { return m_gameState; } protected set { m_gameState = value; } }
+
+        protected Level m_level;
+        public Level Level { get { return m_level; } protected set { m_level = value; } }
         #endregion
 
-        public GameMenu(GameState gameState)
+        public GameMenu(EmpiresOfTheIVGame game, GameState gameState)
             :base()
         {
+            m_game = game;
             m_gameState = gameState;
+
+            m_level = new Level(m_game.GraphicsDevice);
         }
 
         #region Interface Implimentations
@@ -29,13 +38,21 @@ namespace EmpiresOfTheIV.Game.GameObjects
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Camera camera) { Draw(gameTime, spriteBatch, graphicsDevice); }
         #endregion
 
-        public void Update(GameTime gameTime)
+        public virtual void Update(GameTime gameTime)
         {
+            // Update the 3D Level
+            m_level.Update(gameTime);
+
+            // Update the 2D Menu
             base.Update(gameTime);
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
+        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
+            // Draw the 3D Level
+            m_level.Draw(gameTime, spriteBatch, graphics);
+
+            // Draw the 2D Menu
             base.Draw(gameTime, spriteBatch, graphics);
         }
     }

@@ -21,8 +21,8 @@ namespace Anarian.DataStructures
             set { m_tag = value; }
         }
 
-        internal object m_lockObject;
-        protected object LockObject { get { return m_lockObject; } }
+        internal protected object m_lockObject;
+        protected object LockObject { get { return m_lockObject; } set { m_lockObject = value; } }
         #endregion
 
         public AnarianObject(string name = "", string tag = "")
