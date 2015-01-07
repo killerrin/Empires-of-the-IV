@@ -12,7 +12,7 @@ using Anarian.GUI.Components;
 namespace Anarian.GUI
 {
     public class GuiObject : AnarianObject,
-                             IUpdatable, Anarian.Interfaces.IDrawable
+                             IUpdatable, IRenderable
     {
         #region Fields/Properties
         protected bool m_active;
@@ -142,7 +142,7 @@ namespace Anarian.GUI
 
         #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        void Anarian.Interfaces.IDrawable.Draw(GameTime gameTime, SpriteBatch spriteBatch) { Draw(gameTime, spriteBatch); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics); }
         #endregion
 
         public virtual void Update(GameTime gameTime)
@@ -163,20 +163,20 @@ namespace Anarian.GUI
             m_transform.Update(gameTime);
         }
 
-        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             if (!m_active) return;
             if (!m_visible) return;
             
             // Update the Children
             foreach (var child in m_transform.GetChildren()) {
-                child.GuiObject.Draw(gameTime, spriteBatch);
+                child.GuiObject.Draw(gameTime, spriteBatch, graphics);
             }
 
             // Draw Each Component
             foreach (var component in m_components) {
-                if (component is Anarian.Interfaces.IDrawable) {
-                    ((Anarian.Interfaces.IDrawable)component).Draw(gameTime, spriteBatch);
+                if (component is IRenderable) {
+                    ((IRenderable)component).Draw(gameTime, spriteBatch, graphics, null);
                 }
             }
         }

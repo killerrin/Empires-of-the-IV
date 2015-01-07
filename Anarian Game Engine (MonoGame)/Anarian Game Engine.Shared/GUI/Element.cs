@@ -57,7 +57,7 @@ namespace Anarian.GUI
             base.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             if (!m_active) return;
 
@@ -72,7 +72,7 @@ namespace Anarian.GUI
             spriteBatch.End();
 
             // Draw the Children
-            base.Draw(gameTime, spriteBatch);
+            base.Draw(gameTime, spriteBatch, graphics);
         }
     }
 }

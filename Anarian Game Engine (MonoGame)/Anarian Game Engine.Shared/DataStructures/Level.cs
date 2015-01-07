@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Anarian.Interfaces;
 using Anarian.DataStructures.Components;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Anarian.DataStructures
 {
@@ -24,12 +25,12 @@ namespace Anarian.DataStructures
         }
 
 
-        public Level(GraphicsDeviceManager graphics)
+        public Level(GraphicsDevice graphics)
             :base()
         {
             // Create the Camera using the Graphics Device
             m_camera = new Camera();
-            m_camera.AspectRatio = graphics.GraphicsDevice.Viewport.AspectRatio;
+            m_camera.AspectRatio = graphics.Viewport.AspectRatio;
 
             // When Creating the Base SceneNode, we will set
             // its Scale to Zero so that SceneNodes which get
@@ -59,8 +60,8 @@ namespace Anarian.DataStructures
         /// </summary>
         /// <param name="gameTime">The GameTime</param>
         /// <param name="camera">Set Camera to null to use Main Camera</param>
-        /// <param name="graphics">The GraphicsDeviceManager</param>
-        void IRenderable.Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics) { Draw(gameTime, camera, graphics); }
+        /// <param name="graphics">The GraphicsDevice</param>
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
         #endregion
 
         /// <summary>
@@ -77,10 +78,10 @@ namespace Anarian.DataStructures
         /// </summary>
         /// <param name="gameTime">The GameTime</param>
         /// <param name="camera">Set Camera to null to use Main Camera</param>
-        /// <param name="graphics">The GraphicsDeviceManager</param>
-        public void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
+        /// <param name="graphics">The GraphicsDevice</param>
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
         {
-            m_sceneNode.GameObject.Draw(gameTime, camera, graphics);
+            m_sceneNode.GameObject.Draw(gameTime, spriteBatch, graphics, camera);
         }
     }
 }

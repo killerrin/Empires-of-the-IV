@@ -388,6 +388,8 @@ namespace Anarian.DataStructures.Components
         }
         public void RemoveChild(int index) { m_children.RemoveAt(index); }
         public Transform GetChild(int index) { return m_children[index]; }
+
+        public void ClearChildren() { m_children.Clear(); }
         #endregion
 
         public override string ToString()

@@ -50,7 +50,7 @@ namespace Anarian.DataStructures
 
         #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        void IRenderable.Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics) { Draw(gameTime, camera, graphics); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
         #endregion
 
         #region Update/Draw
@@ -64,12 +64,12 @@ namespace Anarian.DataStructures
             // Then we Update this
         }
 
-        public override void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
         {
             if (!m_active) return;
 
             // We Draw the base here so that the Children get taken care of
-            base.Draw(gameTime, camera, graphics);
+            base.Draw(gameTime, spriteBatch, graphics, camera);
 
             // Now that the children have been rendered...
             // We check if we are visible on the screen,

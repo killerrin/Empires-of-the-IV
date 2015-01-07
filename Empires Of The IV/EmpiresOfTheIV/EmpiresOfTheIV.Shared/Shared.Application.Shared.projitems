@@ -19,8 +19,22 @@
       <DependentUpon>BlankPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MainMenu.xaml.cs">
-      <DependentUpon>MainMenu.xaml</DependentUpon>
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GameMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\GameOverMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\PausedMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\InGameMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\EmpireSelectionMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\MultiplayerMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\SingleplayerMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\PlayGameMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\CreditsMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\OptionsMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\MainMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\SplashScreenMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\StateManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\XAMLMenuAdapter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MainMenuPage.xaml.cs">
+      <DependentUpon>MainMenuPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)SplashScreenPage.xaml.cs">
       <DependentUpon>SplashScreenPage.xaml</DependentUpon>
@@ -57,11 +71,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="$(MSBuildThisFileDirectory)MainMenu.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)MainMenuPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)SplashScreenPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Styles\UniversalStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Styles\MainMenuStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

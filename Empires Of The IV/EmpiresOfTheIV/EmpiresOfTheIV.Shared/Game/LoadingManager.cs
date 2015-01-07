@@ -51,7 +51,7 @@ namespace EmpiresOfTheIV.Game
             m_currentlyLoading = true;
         }
 
-        public void LoadContent()
+        public void LoadContent(GraphicsDevice graphics)
         {
             // Load the Assets
             m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Texture2D), "KillerrinStudiosLogo");
@@ -60,7 +60,7 @@ namespace EmpiresOfTheIV.Game
             // Load the Terrain
             Texture2D heightMap = m_game.Content.Load<Texture2D>("heightmap");
             Texture2D grassTexture = m_game.Content.Load<Texture2D>("grassTexture");
-            Terrain m_terrain = new Terrain(m_game.Graphics, heightMap, grassTexture);
+            Terrain m_terrain = new Terrain(graphics, heightMap, grassTexture);
             m_game.SceneManager.CurrentScene.SceneNode.AddChild(m_terrain.Transform);
 
             // Create the Game Objects

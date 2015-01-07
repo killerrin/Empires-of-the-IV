@@ -14,6 +14,8 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using MonoGame.Framework;
 using Windows.UI.ViewManagement;
+using Windows.Phone.UI.Input;
+using EmpiresOfTheIV.Game;
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace EmpiresOfTheIV
@@ -27,13 +29,22 @@ namespace EmpiresOfTheIV
         {
             this.InitializeComponent();
 
+            // Since this is Phone, we need to subscribe to the BackButton
+            HardwareButtons.BackPressed += HardwareButtons_BackPressed;
+
             // Before we create the game, we need to disable the status bar
             var statusBar = StatusBar.GetForCurrentView();
             statusBar.HideAsync();
-
+            
             // Finally, Create the game. 
             if (Consts.Game == null)
                 Consts.Game = XamlGame<EmpiresOfTheIVGame>.Create(launchArguments, Window.Current.CoreWindow, this);
+        }
+
+        private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
+        {
+            e.Handled = true;
+            XAMLMenuManager.BackButtonPressed();
         }
     }
 }

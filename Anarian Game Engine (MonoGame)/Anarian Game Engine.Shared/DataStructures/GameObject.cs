@@ -155,7 +155,7 @@ namespace Anarian.DataStructures
 
         #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        void IRenderable.Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics) { Draw(gameTime, camera, graphics); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
         #endregion
 
         #region Update/Draw
@@ -176,20 +176,20 @@ namespace Anarian.DataStructures
             // Finally, Update the Transform
             m_transform.Update(gameTime);
         }
-        public virtual void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
+        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
         {
             if (!m_active) return;
             if (!m_visible) return;
 
             // Render the Children
             foreach (var child in m_transform.GetChildren()) {
-                if (child != null) child.GameObject.Draw(gameTime, camera, graphics);
+                if (child != null) child.GameObject.Draw(gameTime, null, graphics, camera);
             }
 
             // Draw Each Component
             foreach (var component in m_components) {
                 if (component is IRenderable) {
-                    ((IRenderable)component).Draw(gameTime, camera, graphics);
+                    ((IRenderable)component).Draw(gameTime, null, graphics, camera);
                 }
             }
 
@@ -198,7 +198,7 @@ namespace Anarian.DataStructures
 
             // Since we are also using 2D, Reset the
             // Graphics Device to Render 3D Models properly
-            GraphicsDevice graphicsDevice = graphics.GraphicsDevice;
+            GraphicsDevice graphicsDevice = graphics;
             graphicsDevice.BlendState = BlendState.Opaque;
             graphicsDevice.DepthStencilState = DepthStencilState.Default;
             graphicsDevice.SamplerStates[0] = SamplerState.LinearWrap;

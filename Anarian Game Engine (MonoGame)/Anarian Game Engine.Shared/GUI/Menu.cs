@@ -12,7 +12,7 @@ using Anarian.Events;
 namespace Anarian.GUI
 {
     public class Menu : AnarianObject,
-                        IScene2D, IUpdatable, Anarian.Interfaces.IDrawable
+                        IScene2D, IUpdatable, IRenderable
     {
         Transform2D m_sceneNode;
         public Transform2D SceneNode
@@ -46,7 +46,7 @@ namespace Anarian.GUI
 
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
 
-        void Anarian.Interfaces.IDrawable.Draw(GameTime gameTime, SpriteBatch spriteBatch) { Draw(gameTime, spriteBatch); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics); }
         #endregion
 
         public void Update(GameTime gameTime)
@@ -54,9 +54,9 @@ namespace Anarian.GUI
             m_sceneNode.GuiObject.Update(gameTime);
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
-            m_sceneNode.GuiObject.Draw(gameTime, spriteBatch);
+            m_sceneNode.GuiObject.Draw(gameTime, spriteBatch, graphics);
         }
 
         #region HandleEvents

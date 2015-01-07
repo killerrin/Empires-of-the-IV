@@ -29,17 +29,6 @@ namespace Anarian.DataStructures.Input
         
         public TouchPanelCapabilities TouchPanelCapabilities { get { return m_touchPanelCapabilities; } }
 
-        public GestureSample? ReadGesture 
-        {
-            get 
-            {
-                if (TouchPanel.IsGestureAvailable) {
-                    return TouchPanel.ReadGesture();
-                }
-                return null;
-            } 
-        }
-
         public GestureType EnabledGestures {
             get { return TouchPanel.EnabledGestures; }
             set { TouchPanel.EnabledGestures = value; }
@@ -113,6 +102,13 @@ namespace Anarian.DataStructures.Input
                     }
                 }
             }
+
+            if (OnGesture != null) {
+                List<GestureSample> allGestures = ReadAllGestures();
+                foreach (var gesture in allGestures) {
+                    OnGesture(this, new TouchGestureEventArgs(gesture));
+                }
+            }
         }
 
         #region Helper Methods
@@ -155,6 +151,26 @@ namespace Anarian.DataStructures.Input
             return false;
         }
 
+        public GestureSample? ReadGesture()
+        {
+            if (TouchPanel.IsGestureAvailable) {
+                return TouchPanel.ReadGesture();
+            }
+            return null;
+        }
+
+        public List<GestureSample> ReadAllGestures()
+        {
+            List<GestureSample> allGestures = new List<GestureSample>();
+            while (TouchPanel.IsGestureAvailable)
+            {
+                GestureSample gesture = TouchPanel.ReadGesture();
+                allGestures.Add(gesture);
+            }
+
+            return allGestures;
+        }
+
         public bool DidTouchMove(int id)
         {
             foreach (TouchLocation location in m_touchCollection) {
@@ -194,6 +210,8 @@ namespace Anarian.DataStructures.Input
         public event PointerDownEventHandler TouchDown;
         public event PointerPressedEventHandler TouchPressed;
         public event PointerMovedEventHandler TouchMoved;
+
+        public event TouchGestureEventHandler OnGesture;
         #endregion
 
     }

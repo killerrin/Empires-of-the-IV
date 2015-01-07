@@ -36,8 +36,10 @@ namespace EmpiresOfTheIV
         public EmpiresOfTheIVGame()
             :base()
         {
-            Content.RootDirectory = "Content";
             m_gameManager = new GameManager(this);
+
+            // Set the Default Content Project
+            Content.RootDirectory = "Content";
         }
 
         /// <summary>
@@ -64,8 +66,6 @@ namespace EmpiresOfTheIV
             base.PostInitialize();
         }
 
-        public Fade fadeEffect;
-
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -74,9 +74,7 @@ namespace EmpiresOfTheIV
         {
             base.LoadContent();
             m_gameManager.LoadContent();
-
-            fadeEffect = new Fade(GraphicsDevice, Color.Red);
-
+            
             // Lastly we call PostLoadContent to do MonoGame LoadContent
             base.PostLoadContent();
         }
@@ -106,8 +104,6 @@ namespace EmpiresOfTheIV
             // Preform normal Updates
             m_gameManager.Update(gameTime);
 
-            fadeEffect.ApplyEffect(gameTime);
-
             // Lastly, we call PostUpdate on the GameEngine to let MonoGame know we are finished 
             base.PostUpdate(gameTime);
         }
@@ -122,21 +118,11 @@ namespace EmpiresOfTheIV
             // First, call the PreDraw to prepare the screen for rendering
             base.PreDraw(gameTime);
 
-            // Now we can begin our draw Here
-            Texture2D logo = ResourceManager.Instance.GetAsset(typeof(Texture2D), "KillerrinStudiosLogo") as Texture2D;
-
-            // Draw Texture
-            spriteBatch.Begin();
-            spriteBatch.Draw(logo, new Vector2(0.0f, 0.0f), Color.White);
-            spriteBatch.End();
-
             // Call Draw on the Anarian Game Engine to render the Scene
             base.Draw(gameTime);
 
             // Preform Game Rendering
-            m_gameManager.Draw(gameTime);
-
-            fadeEffect.Draw(gameTime, spriteBatch);
+            m_gameManager.Draw(gameTime, spriteBatch, graphics.GraphicsDevice);
 
             // Lastly, Call the GameEngines PostDraw Method to let MonoGame know we are finished
             base.PostDraw(gameTime);

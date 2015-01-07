@@ -23,7 +23,7 @@ using EmpiresOfTheIV.Game.Enumerators;
 
 namespace EmpiresOfTheIV.Game
 {
-    public class GameManager
+    public class GameManager : IUpdatable
     {
         protected EmpiresOfTheIVGame m_game;
         public EmpiresOfTheIVGame Game { get { return m_game; } protected set { m_game = value; } }
@@ -35,10 +35,14 @@ namespace EmpiresOfTheIV.Game
 
         protected GameInputManager m_gameInputManager;
         public GameInputManager GameInputManager { get { return m_gameInputManager; } set { m_gameInputManager = value; } }
+
+        protected StateManager m_stateManager;
+        public StateManager StateManager { get { return m_stateManager; } set { m_stateManager = value; } }
         #endregion
 
-        protected GameState m_gameState;
-        public GameState GameState { get { return m_gameState; } protected set { m_gameState = value; } }
+        #region Menus
+
+        #endregion
         #endregion
 
         List<ISelectableEntity> selectedEntities = new List<ISelectableEntity>();
@@ -53,14 +57,47 @@ namespace EmpiresOfTheIV.Game
         /// </summary>
         public void Initialize()
         {
+            // Load the State Manager
+            m_stateManager = new StateManager(m_game, Color.Black);
+            m_stateManager.OnExit += OnExitTriggered;
+
+            // Load the Other Managers
             m_loadingManager = new LoadingManager(m_game);
             m_gameInputManager = new GameInputManager(m_game);
         }
 
-        public void LoadContent() { m_loadingManager.LoadContent(); }
+        private void OnExitTriggered(object sender, EventArgs e)
+        {
+            // We can Exit the Game
+            Debug.WriteLine("Exit");
+            Windows.UI.Xaml.Application.Current.Exit();
+        }
 
+        public void LoadContent() { m_loadingManager.LoadContent(m_game.GraphicsDevice); }
+
+
+        void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         public void Update(GameTime gameTime)
         {
+            // First, Update the StateManager
+            m_stateManager.Update(gameTime);
+
+            switch (m_stateManager.CurrentState) {
+                case GameState.SplashScreen:            break;
+                case GameState.MainMenu:                break;
+                case GameState.PlayGame:                break;
+                case GameState.Singleplayer:            break;
+                case GameState.Multiplayer:             break;
+                case GameState.EmpireSelection:         break;
+                case GameState.InGame:                  break;
+                case GameState.Paused:                  break;
+                case GameState.GameOver:                break;
+                case GameState.Options:                 break;
+                case GameState.Credits:                 break;
+                default: break;
+            }
+
+            // Begin Regular Updates
             if (m_gameInputManager.rayPosOnTerrain.HasValue) {
                 m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).MoveToPosition(gameTime, m_gameInputManager.rayPosOnTerrain.Value);
             }
@@ -73,12 +110,25 @@ namespace EmpiresOfTheIV.Game
             }
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
-            // Draw the Rays
-            if (m_gameInputManager.currentRay.HasValue) {
-                m_gameInputManager.currentRay.Value.DrawRay(m_game.Graphics, Color.Red, m_game.SceneManager.CurrentScene.Camera, Matrix.Identity);
+            switch (m_stateManager.CurrentState) {
+                case GameState.SplashScreen:        m_game.GraphicsDevice.Clear(Color.Black);   break;
+                case GameState.MainMenu:            break;
+                case GameState.PlayGame:            break;
+                case GameState.Singleplayer:        break;
+                case GameState.Multiplayer:         break;
+                case GameState.EmpireSelection:     break;
+                case GameState.InGame:              break;
+                case GameState.Paused:              break;
+                case GameState.GameOver:            break;
+                case GameState.Options:             break;
+                case GameState.Credits:             break;
+                default:  break;
             }
+
+            // Finally, Draw the StateManager over everything else
+            m_stateManager.Draw(gameTime, spriteBatch, graphics);
         }
     }
 }

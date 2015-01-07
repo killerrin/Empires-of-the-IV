@@ -1,4 +1,5 @@
-﻿using Anarian.Enumerators;
+﻿using Anarian.DataStructures;
+using Anarian.Enumerators;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace Anarian.Interfaces
 {
-    public interface IScreenEffect : IDrawable
+    public interface IScreenEffect : IRenderable
     {
         ProgressStatus Progress { get; set; }
 

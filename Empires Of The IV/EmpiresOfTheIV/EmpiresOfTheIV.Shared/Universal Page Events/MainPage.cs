@@ -1,4 +1,5 @@
-﻿using KillerrinStudiosToolkit.Converters;
+﻿using EmpiresOfTheIV.Game.Enumerators;
+using KillerrinStudiosToolkit.Converters;
 using MonoGame.Framework;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,15 @@ namespace EmpiresOfTheIV
         {
             Debug.WriteLine("PageFrame: Frame Loaded");
             PageFrame = (sender as Frame);
-            PageFrame.Navigate(typeof(MainMenu));
+
+            while (true) {
+                if (Consts.Game == null) continue;
+                if (Consts.Game.GameManager == null) continue;
+                if (Consts.Game.GameManager.StateManager == null) continue;
+            
+                Consts.Game.GameManager.StateManager.Navigate(GameState.SplashScreen);
+                break;
+            }
         }
 
         private void CortanaElement_Loaded(object sender, RoutedEventArgs e)

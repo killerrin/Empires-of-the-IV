@@ -55,30 +55,30 @@ namespace Anarian.DataStructures.Rendering
         #endregion
         #endregion
 
-        public Terrain(GraphicsDeviceManager graphics, Texture2D heightMap, Texture2D texture = null)
+        public Terrain(GraphicsDevice graphics, Texture2D heightMap, Texture2D texture = null)
             :base()
         {
             // Store the Texture
             m_texture = texture;
 
             // Finally, Setup the terrain
-            SetupTerrain(graphics.GraphicsDevice, heightMap);
+            SetupTerrain(graphics, heightMap);
         }
 
-        public Terrain(GraphicsDeviceManager graphics, int width, int height, Color heightmapGenerationColor, Texture2D texture = null)
+        public Terrain(GraphicsDevice graphics, int width, int height, Color heightmapGenerationColor, Texture2D texture = null)
             : base()
         {
             // Store the Texture
             m_texture = texture;
 
             // Create the Height Map
-            Texture2D heightMap = heightmapGenerationColor.CreateTextureFromSolidColor(graphics.GraphicsDevice, width, height);
+            Texture2D heightMap = heightmapGenerationColor.CreateTextureFromSolidColor(graphics, width, height);
 
             // Finally, Setup the terrain
-            SetupTerrain(graphics.GraphicsDevice, heightMap);
+            SetupTerrain(graphics, heightMap);
         }
 
-        public static Terrain CreateFlatTerrain(GraphicsDeviceManager graphics, int width, int height, Texture2D texture = null)
+        public static Terrain CreateFlatTerrain(GraphicsDevice graphics, int width, int height, Texture2D texture = null)
         {
             Terrain terrain = new Terrain(graphics, width, height, Color.White, texture);
             return terrain;
@@ -216,7 +216,7 @@ namespace Anarian.DataStructures.Rendering
 
         #region Interface Implimentation
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        void IRenderable.Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics) { Draw(gameTime, camera, graphics); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
         #endregion
 
         /// <summary>
@@ -407,16 +407,16 @@ namespace Anarian.DataStructures.Rendering
             base.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
         {
             if (!m_active) return;
             if (!m_visible) return;
 
             // We Draw the base here so that the Children get taken care of
-            base.Draw(gameTime, camera, graphics);
+            base.Draw(gameTime, spriteBatch, graphics, camera);
 
             // Prep the Graphics Device
-            graphics.GraphicsDevice.RasterizerState.CullMode = CullMode.None;
+            graphics.RasterizerState.CullMode = CullMode.None;
 
             // Begin Drawing the World
             // Since the world will be generated outwards from its side, we are offsetting the orgin of the world to its center
@@ -427,7 +427,7 @@ namespace Anarian.DataStructures.Rendering
             foreach (EffectPass pass in m_effect.CurrentTechnique.Passes) {
                 pass.Apply();
 
-                graphics.GraphicsDevice.DrawUserIndexedPrimitives(
+                graphics.DrawUserIndexedPrimitives(
                     PrimitiveType.TriangleList,
                     m_vertices, 0, m_vertices.Length,
                     m_indices, 0, m_indices.Length / 3,

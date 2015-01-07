@@ -15,7 +15,7 @@ namespace Anarian.Helpers
 {
     public static class PrimitiveHelper3D
     {
-        public static void DrawRay(this Ray ray, GraphicsDeviceManager graphics, Color color, Camera camera, Matrix WorldMatrix)
+        public static void DrawRay(this Ray ray, GraphicsDevice graphics, Color color, Camera camera, Matrix WorldMatrix)
         {
             // Inside your Game class
             BasicEffect basicEffect;
@@ -23,7 +23,7 @@ namespace Anarian.Helpers
             Vector3 endPoint = ray.Position * (ray.Direction * camera.Far);
             
             // Inside your Game.LoadContent method
-            basicEffect = new BasicEffect(graphics.GraphicsDevice);
+            basicEffect = new BasicEffect(graphics);
             basicEffect.World = WorldMatrix;
             basicEffect.View = camera.View;
             basicEffect.Projection = camera.Projection;
@@ -31,10 +31,10 @@ namespace Anarian.Helpers
             // Inside your Game.Draw method
             basicEffect.CurrentTechnique.Passes[0].Apply();
             var vertices = new[] { new VertexPositionColor(startPoint, color), new VertexPositionColor(endPoint, color) };
-            graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
+            graphics.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
         }
 
-        public static void DrawBoundingBox(this BoundingBox boundingBox, GraphicsDeviceManager graphics, Color color, Camera camera, Matrix WorldMatrix)
+        public static void DrawBoundingBox(this BoundingBox boundingBox, GraphicsDevice graphics, Color color, Camera camera, Matrix WorldMatrix)
         {
             // Initialize an array of indices for the box. 12 lines require 24 indices
             short[] bBoxIndices = {
@@ -52,7 +52,7 @@ namespace Anarian.Helpers
             }
 
             /* Set your own effect parameters here */
-            BasicEffect boxEffect = new BasicEffect(graphics.GraphicsDevice);
+            BasicEffect boxEffect = new BasicEffect(graphics);
             boxEffect.World = WorldMatrix;
             boxEffect.View = camera.View;
             boxEffect.Projection = camera.Projection;
@@ -61,7 +61,7 @@ namespace Anarian.Helpers
             // Draw the box with a LineList
             foreach (EffectPass pass in boxEffect.CurrentTechnique.Passes) {
                 pass.Apply();
-                graphics.GraphicsDevice.DrawUserIndexedPrimitives(
+                graphics.DrawUserIndexedPrimitives(
                     PrimitiveType.LineList, primitiveList, 0, 8,
                     bBoxIndices, 0, 12);
             }

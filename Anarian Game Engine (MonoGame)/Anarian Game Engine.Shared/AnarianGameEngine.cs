@@ -95,7 +95,7 @@ namespace Anarian
             m_backgroundColor = Color.CornflowerBlue;
 
             // Create the Scene
-            m_sceneManager.CurrentScene = new Level(graphics);
+            m_sceneManager.CurrentScene = new Level(graphics.GraphicsDevice);
 
             // Create Textures which will be needed in the engine
             // Blank Texture
@@ -178,13 +178,14 @@ namespace Anarian
                 if (m_sceneManager.CurrentScene != null) {
                     m_sceneManager.CurrentScene.SceneNode.GameObject.Draw(
                         gameTime,
-                        m_sceneManager.CurrentScene.Camera,
-                        graphics);
+                        spriteBatch,
+                        graphics.GraphicsDevice,
+                        m_sceneManager.CurrentScene.Camera);
                 }
             }
 
             // Then we Draw the GUI
-            m_guiManager.Draw(gameTime, spriteBatch);
+            m_guiManager.Draw(gameTime, spriteBatch, graphics.GraphicsDevice);
         }
 
         /// <summary>

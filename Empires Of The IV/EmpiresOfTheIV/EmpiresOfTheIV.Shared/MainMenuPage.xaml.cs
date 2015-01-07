@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EmpiresOfTheIV.Game;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,15 +22,30 @@ namespace EmpiresOfTheIV
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainMenu : Page
+    public sealed partial class MainMenuPage : Page
     {
-        public MainMenu()
+        public MainMenuPage()
         {
             // Landscape and upside down landscape only
             DisplayInformation.AutoRotationPreferences = DisplayOrientations.Landscape |
                                                          DisplayOrientations.LandscapeFlipped;
 
             this.InitializeComponent();
+        }
+
+        private void PlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            XAMLMenuAdapter.MainMenu_PlayButton_Click();
+        }
+
+        private void OptionsButton_Click(object sender, RoutedEventArgs e)
+        {
+            XAMLMenuAdapter.MainMenu_OptionsButton_Click();
+        }
+
+        private void CreditsButton_Click(object sender, RoutedEventArgs e)
+        {
+            XAMLMenuAdapter.MainMenu_CreditsButton_Click();
         }
     }
 }

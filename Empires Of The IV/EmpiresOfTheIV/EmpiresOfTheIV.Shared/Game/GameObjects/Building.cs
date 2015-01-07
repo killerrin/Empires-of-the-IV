@@ -2,6 +2,7 @@
 using Anarian.DataStructures.Components;
 using Anarian.Interfaces;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -41,7 +42,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
         #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        void IRenderable.Draw(GameTime gameTime, Camera camera, GraphicsDeviceManager graphics) { Draw(gameTime, camera, graphics); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
 
         bool ISelectableEntity.Selectable
         {
@@ -56,14 +57,14 @@ namespace EmpiresOfTheIV.Game.GameObjects
         }
         #endregion
 
-        public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
         }
 
-        public override void Draw(Microsoft.Xna.Framework.GameTime gameTime, Camera camera, Microsoft.Xna.Framework.GraphicsDeviceManager graphics)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
         {
-            base.Draw(gameTime, camera, graphics);
+            base.Draw(gameTime, spriteBatch, graphics, camera);
         }
     }
 }

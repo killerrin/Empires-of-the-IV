@@ -46,6 +46,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Events\GamePadMovedEventsArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\GamePadPressedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\KeyboardPressedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\TouchGestureEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\PointerMovedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\PointerPressedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUIManager.cs" />
@@ -66,7 +67,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Renderers\PrimitiveHelper2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Renderers\PrimitiveHelper3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IDrawable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IMoveable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IRenderable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\IScene.cs" />

@@ -14,7 +14,7 @@ using System.Text;
 
 namespace EmpiresOfTheIV.Game
 {
-    public class GameInputManager : IDisposable, IUpdatable, Anarian.Interfaces.IDrawable
+    public class GameInputManager : IDisposable, IUpdatable, IRenderable
     {
         protected EmpiresOfTheIVGame m_game;
         public EmpiresOfTheIVGame Game { get { return m_game; } protected set { m_game = value; } }
@@ -60,7 +60,7 @@ namespace EmpiresOfTheIV.Game
         #region Interface Implimentations
         void IDisposable.Dispose() { Dispose(); }
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        void Anarian.Interfaces.IDrawable.Draw(GameTime gameTime, SpriteBatch spriteBatch) { Draw(gameTime, spriteBatch); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
         #endregion
 
         public void Update(GameTime gameTime)
@@ -68,7 +68,7 @@ namespace EmpiresOfTheIV.Game
 
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
         {
 
         }
@@ -103,10 +103,6 @@ namespace EmpiresOfTheIV.Game
             }
             if (e.Pointer == PointerPress.MiddleMouseButton) {
                 Debug.WriteLine("Middle Mouse Pressed");
-                switch (m_game.fadeEffect.FadeStatus) {
-                    case FadeStatus.FadingToContent: m_game.fadeEffect.ChangeFadeStatus(FadeStatus.FadingIn); break;
-                    case FadeStatus.FadingIn: m_game.fadeEffect.ChangeFadeStatus(FadeStatus.FadingToContent); break;
-                }
             }
             if (e.Pointer == PointerPress.RightMouseButton) {
                 Unit unit = m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).GameObject as Unit;

@@ -253,6 +253,8 @@ namespace Anarian.GUI.Components
         }
         public void RemoveChild(int index) { m_children.RemoveAt(index); }
         public Transform2D GetChild(int index) { return m_children[index]; }
+
+        public void ClearChildren() { m_children.Clear(); }
         #endregion
 
         public override string ToString()

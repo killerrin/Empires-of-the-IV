@@ -17,7 +17,7 @@ namespace Anarian.DataStructures.ScreenEffects
         FadingIn
     }
 
-    public class Fade : IScreenEffect, Anarian.Interfaces.IDrawable
+    public class Fade : IScreenEffect, IRenderable
     {
         #region Fields/Properties
         ProgressStatus m_progressStatus;
@@ -67,7 +67,7 @@ namespace Anarian.DataStructures.ScreenEffects
         void IScreenEffect.Draw(GameTime gameTime, SpriteBatch spriteBatch) { Draw(gameTime, spriteBatch); }
         ProgressStatus IScreenEffect.Progress { get { return Progress; } set { Progress = value; } }
 
-        void Anarian.Interfaces.IDrawable.Draw(GameTime gameTime, SpriteBatch spriteBatch) { Draw(gameTime, spriteBatch); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch); }
         #endregion
 
         #region Helper Methods
@@ -85,6 +85,20 @@ namespace Anarian.DataStructures.ScreenEffects
                     Progress = ProgressStatus.NotStarted;
                     break;
             }
+        }
+
+        public void ChangeWithoutFade(FadeStatus fadeStatus)
+        {
+            m_fadeStatus = fadeStatus;
+            Progress = ProgressStatus.Completed;
+
+            switch (m_fadeStatus) {
+                case FadeStatus.FadingToContent: m_fadePercentage = 0.0f; break;
+                case FadeStatus.FadingIn: m_fadePercentage = 1.0f; break;
+            }
+
+            if (Completed != null)
+                Completed(this, null);
         }
 
         public void ChangeFadeColor(Color color, GraphicsDevice graphicsDevice)
