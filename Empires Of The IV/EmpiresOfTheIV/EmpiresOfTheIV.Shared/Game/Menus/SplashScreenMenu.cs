@@ -15,17 +15,21 @@ namespace EmpiresOfTheIV.Game.Menus
     public class SplashScreenMenu : GameMenu,
                                     IUpdatable, IRenderable
     {
-
         #region Fields/Properties
+        public static bool AlreadyLoaded = false;
+
         Timer m_timer;
         #endregion
 
         public SplashScreenMenu(EmpiresOfTheIVGame game)
             : base(game, GameState.SplashScreen)
         {
+            if (AlreadyLoaded) { game.GameManager.StateManager.ForceExitGame(); }
+            AlreadyLoaded = true;
+
             m_timer = new Timer(TimeSpan.FromSeconds(3.0));
             
-            m_timer.Tick += Timer_Tick;
+            //m_timer.Tick += Timer_Tick;
             m_timer.Completed += Timer_Completed;
         }
 
@@ -53,7 +57,7 @@ namespace EmpiresOfTheIV.Game.Menus
         #region Events
         void Timer_Tick(object sender, EventArgs e)
         {
-            Debug.WriteLine("Tick");
+
         }
 
         void Timer_Completed(object sender, EventArgs e)

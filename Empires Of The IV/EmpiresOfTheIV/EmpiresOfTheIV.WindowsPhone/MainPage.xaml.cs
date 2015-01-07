@@ -44,7 +44,7 @@ namespace EmpiresOfTheIV
         private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
         {
             e.Handled = true;
-            XAMLMenuManager.BackButtonPressed();
+            PlatformMenuAdapter.BackButtonPressed();
         }
     }
 }

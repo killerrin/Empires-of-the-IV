@@ -39,6 +39,7 @@ namespace Anarian.DataStructures.ScreenEffects
         public Color FadeColor { get { return m_fadeColor; } set { m_fadeColor = value; } }
         #endregion
 
+        public event EventHandler ProgressTick;
         public event EventHandler Completed;
 
         public Fade(GraphicsDevice graphicsDevice, Color solidColor, float fadeRate = 0.003f)
@@ -126,10 +127,12 @@ namespace Anarian.DataStructures.ScreenEffects
                 if (Completed != null)
                     Completed(this, null);
             }
-            else
+            else {
                 m_progressStatus = ProgressStatus.InProgress;
-            
-            Debug.WriteLine(ToString());
+
+                if (ProgressTick != null)
+                    ProgressTick(this, null);
+            }
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)

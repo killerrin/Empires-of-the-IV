@@ -43,6 +43,7 @@ namespace EmpiresOfTheIV.Game
         public Fade FadeEffect { get { return m_fadeEffect; } }
 
         public int BackStackDepth { get { return m_gameStates.Count; } }
+        public bool CanGoBack { get { return m_gameStates.Count > 0; } }
 
 
         #region Flags
@@ -89,6 +90,12 @@ namespace EmpiresOfTheIV.Game
             // Lastly set the automation state
             m_fadeEffect.ChangeFadeStatus(FadeStatus.FadingIn);
         }
+        public void ForceExitGame()
+        {
+            m_exit = true;
+            if (OnExit != null)
+                OnExit(this, null);
+        }
 
         protected void ResetFlags()
         {
@@ -103,6 +110,8 @@ namespace EmpiresOfTheIV.Game
             // Update the Fade
             m_fadeEffect.ApplyEffect(gameTime);
 
+            if (m_exit) return;
+
             // Update the Current Menu
             if (CurrentMenu != null) CurrentMenu.Update(gameTime);
         }
@@ -110,7 +119,8 @@ namespace EmpiresOfTheIV.Game
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             // Draw the Current Menu
-            if (CurrentMenu != null) CurrentMenu.Draw(gameTime, spriteBatch, graphics);
+            if (!m_exit && CurrentMenu != null)
+                CurrentMenu.Draw(gameTime, spriteBatch, graphics);
 
             // Draw the Fade
             m_fadeEffect.Draw(gameTime, spriteBatch);
@@ -170,10 +180,13 @@ namespace EmpiresOfTheIV.Game
         public void GoBack()
         {
             // Hide the Frame to prepare for Navigation
-            if (m_hideFrameBeforeTransition)
-                MainPage.PageFrame.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            try {
+                if (m_hideFrameBeforeTransition)
+                    MainPage.PageFrame.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            }
+            catch (Exception) { }
 
-            if (m_gameStates.Count > 0) {
+            if (CanGoBack) {
                 m_goingBack = true;
             }
             else {
@@ -208,7 +221,7 @@ namespace EmpiresOfTheIV.Game
         /// <returns>The removed GameMenu</returns>
         public GameMenu RemoveOneFromStack()
         {
-            if (m_gameStates.Count > 0) {
+            if (CanGoBack) {
                 return m_gameStates.Pop();
             }
             else {
@@ -255,7 +268,11 @@ namespace EmpiresOfTheIV.Game
             // We are fully blacked out, so we can change the Menu
             if (m_fadeEffect.FadeStatus == FadeStatus.FadingIn) {
                 if (m_goingBack) {
-                    MainPage.PageFrame.GoBack();
+                    try {
+                        if (MainPage.PageFrame.CanGoBack)
+                            MainPage.PageFrame.GoBack();
+                    }
+                    catch (Exception) { }
 
                     // Remove the Menu so that the Update/Draw will handle the correct Menu
                     m_gameStates.Pop();
