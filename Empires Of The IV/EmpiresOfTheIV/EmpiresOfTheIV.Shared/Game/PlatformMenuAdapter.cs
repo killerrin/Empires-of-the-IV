@@ -26,7 +26,7 @@ using EmpiresOfTheIV.Game.Enumerators;
 
 namespace EmpiresOfTheIV.Game
 {
-    public static class XAMLMenuAdapter
+    public static class PlatformMenuAdapter
     {
         private static bool EarlyExitCheck()
         {

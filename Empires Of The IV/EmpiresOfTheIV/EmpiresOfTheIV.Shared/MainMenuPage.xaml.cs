@@ -35,17 +35,17 @@ namespace EmpiresOfTheIV
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
-            XAMLMenuAdapter.MainMenu_PlayButton_Click();
+            PlatformMenuAdapter.MainMenu_PlayButton_Click();
         }
 
         private void OptionsButton_Click(object sender, RoutedEventArgs e)
         {
-            XAMLMenuAdapter.MainMenu_OptionsButton_Click();
+            PlatformMenuAdapter.MainMenu_OptionsButton_Click();
         }
 
         private void CreditsButton_Click(object sender, RoutedEventArgs e)
         {
-            XAMLMenuAdapter.MainMenu_CreditsButton_Click();
+            PlatformMenuAdapter.MainMenu_CreditsButton_Click();
         }
     }
 }

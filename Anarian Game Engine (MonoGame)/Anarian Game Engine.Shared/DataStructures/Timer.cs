@@ -31,7 +31,7 @@ namespace Anarian.DataStructures
         public virtual void Reset()
         {
             m_completed = false;
-            m_lastTick = new TimeSpan();
+            m_lastTick = TimeSpan.Zero; // new TimeSpan();
         }
 
         #region Interface Implimentations
@@ -46,11 +46,11 @@ namespace Anarian.DataStructures
         {
             if (m_completed) return;
 
-            if (gameTime.TotalGameTime - m_lastTick >= m_interval) {
+            m_lastTick += gameTime.ElapsedGameTime;
+
+            if (m_lastTick < m_interval) {
                 if (Tick != null)
                     Tick(this, null);
-
-                m_lastTick = gameTime.TotalGameTime;
             }
             else {
                 m_completed = true;

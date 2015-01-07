@@ -33,7 +33,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\MainMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\SplashScreenMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\StateManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\XAMLMenuAdapter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\PlatformMenuAdapter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainMenuPage.xaml.cs">
       <DependentUpon>MainMenuPage.xaml</DependentUpon>
     </Compile>

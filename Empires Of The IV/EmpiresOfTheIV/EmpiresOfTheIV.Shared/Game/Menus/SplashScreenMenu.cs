@@ -60,11 +60,12 @@ namespace EmpiresOfTheIV.Game.Menus
         {
             Debug.WriteLine("SplashScreenTimer: Completed");
 
-            // Remove the SplashScreen
-            //m_game.GameManager.StateManager.RemoveOneFromStack();
+            // Set the flags
+            m_game.GameManager.StateManager.HideFrameBeforeTransition = false;
+            m_game.GameManager.StateManager.RemovePreviousOnCompleted = true;
 
             // Navigate to the MainMenu
-            //m_game.GameManager.StateManager.Navigate(GameState.MainMenu);
+            m_game.GameManager.StateManager.Navigate(GameState.MainMenu);
         }
         #endregion
     }
