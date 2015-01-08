@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="76dac11e-c349-4788-bcd1-b87372330171" Publisher="CN=killer rin" Version="1.0.0.0" />
+  <Identity Name="59141KillerrinStudios.EmpiresoftheIV" Publisher="CN=CB9966B0-97F1-4167-993A-C177C5B8B46A" Version="1.1.0.0" />
   <Properties>
-    <DisplayName>EmpiresOfTheIV</DisplayName>
-    <PublisherDisplayName>killer rin</PublisherDisplayName>
+    <DisplayName>Empires of the IV</DisplayName>
+    <PublisherDisplayName>Killerrin Studios</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Prerequisites>

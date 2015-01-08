@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-  <Identity Name="43689787-f473-428f-91cb-ebbe6a536247" Publisher="CN=killer rin" Version="1.0.0.0" />
-  <mp:PhoneIdentity PhoneProductId="43689787-f473-428f-91cb-ebbe6a536247" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="59141KillerrinStudios.EmpiresoftheIV" Publisher="CN=CB9966B0-97F1-4167-993A-C177C5B8B46A" Version="1.1.0.0" />
+  <mp:PhoneIdentity PhoneProductId="29106bd2-9ece-4d08-af87-b7b8870024bb" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>EmpiresOfTheIV</DisplayName>
-    <PublisherDisplayName>killer rin</PublisherDisplayName>
+    <DisplayName>Empires of the IV</DisplayName>
+    <PublisherDisplayName>Killerrin Studios</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Prerequisites>
