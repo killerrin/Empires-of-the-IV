@@ -9,6 +9,7 @@ namespace Anarian.Enumerators
         None,
         NotStarted,
         InProgress,
+        Stalled,
         Completed
     }
 }

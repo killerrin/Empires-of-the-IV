@@ -31,11 +31,14 @@ namespace EmpiresOfTheIV
 
             // Since this is Phone, we need to subscribe to the BackButton
             HardwareButtons.BackPressed += HardwareButtons_BackPressed;
-
+            
             // Before we create the game, we need to disable the status bar
             var statusBar = StatusBar.GetForCurrentView();
             statusBar.HideAsync();
             
+            // Save the Current
+            Current = this;
+
             // Finally, Create the game. 
             if (Consts.Game == null)
                 Consts.Game = XamlGame<EmpiresOfTheIVGame>.Create(launchArguments, Window.Current.CoreWindow, this);

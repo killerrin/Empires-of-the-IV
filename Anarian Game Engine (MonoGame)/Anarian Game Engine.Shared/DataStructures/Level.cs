@@ -5,14 +5,23 @@ using Microsoft.Xna.Framework;
 using Anarian.Interfaces;
 using Anarian.DataStructures.Components;
 using Microsoft.Xna.Framework.Graphics;
+using Anarian.Enumerators;
 
 namespace Anarian.DataStructures
 {
     public class Level : AnarianObject,
                          IScene, IUpdatable, IRenderable
     {
+        private NavigationSaveState m_navigationSaveState;
         private Camera m_camera;
         private Transform m_sceneNode;
+
+        public NavigationSaveState NavigationSaveState
+        {
+            get { return m_navigationSaveState; }
+            set { m_navigationSaveState = value; }
+        }
+
         public Camera Camera
         {
             get { return m_camera; }
@@ -24,10 +33,13 @@ namespace Anarian.DataStructures
             protected set { m_sceneNode = value; }
         }
 
+        public event EventHandler OnLoad;
 
         public Level(GraphicsDevice graphics)
             :base()
         {
+            m_navigationSaveState = NavigationSaveState.KeepSate;
+
             // Create the Camera using the Graphics Device
             m_camera = new Camera();
             m_camera.AspectRatio = graphics.Viewport.AspectRatio;
@@ -38,6 +50,24 @@ namespace Anarian.DataStructures
             GameObject node = new GameObject();
             node.Transform.Scale = Vector3.Zero;
             m_sceneNode = node.Transform;
+        }
+
+        public virtual void LevelLoaded()
+        {
+            if (m_navigationSaveState == NavigationSaveState.RecreateState) {
+                // Recreate Camera
+                float tempAspectRatio = m_camera.AspectRatio;
+                m_camera = new Camera();
+                m_camera.AspectRatio = tempAspectRatio;
+
+                // Recreate Node
+                GameObject node = new GameObject();
+                node.Transform.Scale = Vector3.Zero;
+                m_sceneNode = node.Transform;
+            }
+
+            if (OnLoad != null)
+                OnLoad(this, null);
         }
 
         #region Interface Implimentation

@@ -1,4 +1,6 @@
 ﻿using Anarian.DataStructures;
+using Anarian.DataStructures.ScreenEffects;
+using Anarian.Enumerators;
 using Anarian.GUI;
 using Anarian.Interfaces;
 using EmpiresOfTheIV.Game.Enumerators;
@@ -28,9 +30,27 @@ namespace EmpiresOfTheIV.Game.Menus
             AlreadyLoaded = true;
 
             m_timer = new Timer(TimeSpan.FromSeconds(3.0));
-            
             //m_timer.Tick += Timer_Tick;
             m_timer.Completed += Timer_Completed;
+        }
+
+        public override void MenuLoaded()
+        {
+            base.MenuLoaded();
+
+            if (NavigationSaveState == NavigationSaveState.RecreateState) {
+                AlreadyLoaded = false;
+
+                // Remove the previous timer to allow Garbage Collection
+                m_timer.Tick -= Timer_Tick;
+                m_timer.Completed -= Timer_Completed;
+
+                // Recreate the timer
+                m_timer = new Timer(TimeSpan.FromSeconds(3.0));
+                //m_timer.Tick += Timer_Tick;
+                m_timer.Completed += Timer_Completed;
+            }
+
         }
 
         #region Interface Implimentations

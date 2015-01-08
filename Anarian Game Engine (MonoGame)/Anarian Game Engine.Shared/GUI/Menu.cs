@@ -8,6 +8,7 @@ using Anarian.GUI.Components;
 using Anarian.Interfaces;
 using Anarian.DataStructures;
 using Anarian.Events;
+using Anarian.Enumerators;
 
 namespace Anarian.GUI
 {
@@ -21,15 +22,38 @@ namespace Anarian.GUI
             protected set { m_sceneNode = value; }
         }
 
+        NavigationSaveState m_navigationSaveState;
+        public NavigationSaveState NavigationSaveState
+        {
+            get { return m_navigationSaveState; }
+            set { m_navigationSaveState = value; }
+        }
+
+        public event EventHandler OnLoad;
+
         public Menu()
             :base()
         {
+            m_navigationSaveState = NavigationSaveState.KeepSate;
+
             // When Creating the Base SceneNode, we will set
             // its Scale to Zero so that SceneNodes which get
             // added as children aren't screwed up
             GuiObject node = new GuiObject();
             node.Transform.Scale = Vector2.Zero;
             m_sceneNode = node.Transform;
+        }
+
+        public virtual void MenuLoaded()
+        {
+            if (m_navigationSaveState == NavigationSaveState.RecreateState) {
+                GuiObject node = new GuiObject();
+                node.Transform.Scale = Vector2.Zero;
+                m_sceneNode = node.Transform;
+            }
+
+            if (OnLoad != null)
+                OnLoad(this, null);
         }
 
         #region Interface Implimentation

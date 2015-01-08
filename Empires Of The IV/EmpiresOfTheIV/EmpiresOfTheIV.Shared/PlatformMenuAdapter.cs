@@ -24,7 +24,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
 using EmpiresOfTheIV.Game.Enumerators;
 
-namespace EmpiresOfTheIV.Game
+namespace EmpiresOfTheIV
 {
     public static class PlatformMenuAdapter
     {
@@ -62,6 +62,20 @@ namespace EmpiresOfTheIV.Game
         {
             if (EarlyExitCheck()) return;
             Consts.Game.GameManager.StateManager.Navigate(GameState.Credits);
+        }
+        #endregion
+
+        #region PlayGame Menu
+        public static void PlayGameMenu_SingleplayerButton_Click()
+        {
+            if (EarlyExitCheck()) return;
+            Consts.Game.GameManager.StateManager.Navigate(GameState.Singleplayer);
+        }
+
+        public static void PlayGameMenu_MultiplayerButton_Click()
+        {
+            if (EarlyExitCheck()) return;
+            Consts.Game.GameManager.StateManager.Navigate(GameState.Multiplayer);
         }
         #endregion
     }

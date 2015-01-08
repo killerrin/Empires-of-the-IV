@@ -25,6 +25,10 @@ namespace EmpiresOfTheIV.Game.Menus
 
         }
 
+        public override void MenuLoaded()
+        {
+            base.MenuLoaded();
+        }
 
         #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }

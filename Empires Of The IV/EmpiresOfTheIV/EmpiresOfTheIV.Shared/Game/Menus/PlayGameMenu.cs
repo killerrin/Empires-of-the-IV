@@ -1,4 +1,5 @@
 ﻿using Anarian.DataStructures;
+using Anarian.DataStructures.ScreenEffects;
 using Anarian.GUI;
 using Anarian.Interfaces;
 using EmpiresOfTheIV.Game.Enumerators;
@@ -16,15 +17,25 @@ namespace EmpiresOfTheIV.Game.Menus
     {
 
         #region Fields/Properties
-
+        Overlay m_overlay;
         #endregion
 
         public PlayGameMenu(EmpiresOfTheIVGame game)
             : base(game, GameState.PlayGame)
         {
-
+            m_overlay = new Overlay(game.GraphicsDevice, Color.Black);
+            m_overlay.FadePercentage = 0.5f;
         }
 
+        public override void MenuLoaded()
+        {
+            base.MenuLoaded();
+
+            if (NavigationSaveState == Anarian.Enumerators.NavigationSaveState.RecreateState) {
+                m_overlay = new Overlay(m_game.GraphicsDevice, Color.Black);
+                m_overlay.FadePercentage = 0.5f;
+            }
+        }
 
         #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
@@ -33,12 +44,15 @@ namespace EmpiresOfTheIV.Game.Menus
 
         public override void Update(GameTime gameTime)
         {
+            m_overlay.ApplyEffect(gameTime);
+
             base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             base.Draw(gameTime, spriteBatch, graphics);
+            m_overlay.Draw(gameTime, spriteBatch);
         }
     }
 }

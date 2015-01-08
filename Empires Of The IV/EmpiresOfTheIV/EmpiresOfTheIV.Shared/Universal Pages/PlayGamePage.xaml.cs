@@ -12,7 +12,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using MonoGame.Framework;
+
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace EmpiresOfTheIV
@@ -20,18 +20,21 @@ namespace EmpiresOfTheIV
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage : SwapChainBackgroundPanel
+    public sealed partial class PlayGamePage : Page
     {
-        public MainPage(string launchArguments)
+        public PlayGamePage()
         {
             this.InitializeComponent();
+        }
 
-            // Save the Current
-            Current = this;
+        private void SingleplayerButton_Click(object sender, RoutedEventArgs e)
+        {
+            PlatformMenuAdapter.PlayGameMenu_SingleplayerButton_Click();
+        }
 
-            // Create the game.
-            if (Consts.Game == null)
-                Consts.Game = XamlGame<EmpiresOfTheIVGame>.Create(launchArguments, Window.Current.CoreWindow, this);
+        private void MultiplayerButton_Click(object sender, RoutedEventArgs e)
+        {
+            PlatformMenuAdapter.PlayGameMenu_MultiplayerButton_Click();
         }
     }
 }

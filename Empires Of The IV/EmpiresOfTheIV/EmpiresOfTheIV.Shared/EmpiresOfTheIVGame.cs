@@ -30,16 +30,22 @@ namespace EmpiresOfTheIV
     /// </summary>
     public class EmpiresOfTheIVGame : AnarianGameEngine
     {
+        public static EmpiresOfTheIVGame Current { get; private set; }
+    
         protected GameManager m_gameManager;
         public GameManager GameManager { get { return m_gameManager; } protected set { m_gameManager = value; } }
 
         public EmpiresOfTheIVGame()
             :base()
         {
+            // Create the GameManager
             m_gameManager = new GameManager(this);
 
             // Set the Default Content Project
             Content.RootDirectory = "Content";
+
+            // Set the Current
+            Current = this;
         }
 
         /// <summary>

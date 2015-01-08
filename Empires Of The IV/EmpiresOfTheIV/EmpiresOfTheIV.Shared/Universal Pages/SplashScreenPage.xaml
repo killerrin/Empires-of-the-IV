@@ -21,6 +21,6 @@
         
         <Image Grid.Column="1" Grid.Row="2" 
                VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
-               Source="Assets/KillerrinStudiosLogo.png" />
+               Source="../Assets/KillerrinStudiosLogo.png" />
     </Grid>
 </Page>

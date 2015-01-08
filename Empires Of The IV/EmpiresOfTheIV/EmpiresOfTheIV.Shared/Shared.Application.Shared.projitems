@@ -15,10 +15,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)BlankPage.xaml.cs">
-      <DependentUpon>BlankPage.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\GameOverMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\BlankMenu.cs" />
@@ -33,11 +32,42 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\MainMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\SplashScreenMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\StateManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\PlatformMenuAdapter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MainMenuPage.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformMenuAdapter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\BlankPage.xaml.cs">
+      <DependentUpon>BlankPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\CreditsPage.xaml.cs">
+      <DependentUpon>CreditsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\EmpireSelectionPage.xaml.cs">
+      <DependentUpon>EmpireSelectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\Events\MainPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\GameOverPage.xaml.cs">
+      <DependentUpon>GameOverPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\InGamePage.xaml.cs">
+      <DependentUpon>InGamePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\MainMenuPage.xaml.cs">
       <DependentUpon>MainMenuPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)SplashScreenPage.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\MultiplayerPage.xaml.cs">
+      <DependentUpon>MultiplayerPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\OptionsPage.xaml.cs">
+      <DependentUpon>OptionsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\PausedPage.xaml.cs">
+      <DependentUpon>PausedPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\PlayGamePage.xaml.cs">
+      <DependentUpon>PlayGamePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\SingleplayerPage.xaml.cs">
+      <DependentUpon>SingleplayerPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\SplashScreenPage.xaml.cs">
       <DependentUpon>SplashScreenPage.xaml</DependentUpon>
     </Compile>
     <Content Include="$(MSBuildThisFileDirectory)Assets\CancelledEarcon.wav" />
@@ -55,7 +85,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Building.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Unit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\LoadingManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Universal Page Events\MainPage.cs" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\ListeningEarcon.wav" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\microphone.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\Space and Astronomy.ttf" />
@@ -68,23 +97,59 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="$(MSBuildThisFileDirectory)BlankPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="$(MSBuildThisFileDirectory)MainMenuPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="$(MSBuildThisFileDirectory)SplashScreenPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="$(MSBuildThisFileDirectory)Styles\UniversalStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Styles\MainMenuStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\BlankPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\CreditsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\EmpireSelectionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\GameOverPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\InGamePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\MainMenuPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\MultiplayerPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\OptionsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\PausedPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\PlayGamePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\SingleplayerPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\SplashScreenPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -11,14 +11,15 @@ namespace EmpiresOfTheIV.Game.Enumerators
         
         MainMenu,
             PlayGame,
-                Singleplayer, //--|
-                Multiplayer,  //--|
-                              //  |
+                Singleplayer,
+                Multiplayer,
+                GameLobby,
                     EmpireSelection,
-                        InGame, //--|
-                        Paused, //--|
-                                //  |
-                             GameOver,
+
+                    InGame, //--|
+                    Paused, //--|
+                            //  |
+                            GameOver,
 
             Options,
             Credits     

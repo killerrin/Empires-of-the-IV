@@ -40,6 +40,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\ComponentTypes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\GuiState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\InputType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enumerators\NavigationSaveState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enumerators\PausedState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\PointerPress.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\PointDirection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enumerators\ProgressStatus.cs" />

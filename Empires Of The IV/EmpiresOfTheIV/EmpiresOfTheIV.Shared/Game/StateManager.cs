@@ -279,28 +279,29 @@ namespace EmpiresOfTheIV.Game
                 }
                 else {
                     switch (m_goingToMenu.State) {
-                        case GameState.SplashScreen: MainPage.PageFrame.Navigate(typeof(SplashScreenPage)); break;
-                        case GameState.MainMenu: MainPage.PageFrame.Navigate(typeof(MainMenuPage)); break;
+                        case GameState.SplashScreen:                MainPage.PageFrame.Navigate(typeof(SplashScreenPage)); break;
+                        case GameState.MainMenu:                    MainPage.PageFrame.Navigate(typeof(MainMenuPage)); break;
 
-                        case GameState.PlayGame: break;
-                        case GameState.Singleplayer: break;
-                        case GameState.Multiplayer: break;
-                        case GameState.EmpireSelection: break;
-                        case GameState.InGame: break;
-                        case GameState.Paused: break;
-                        case GameState.GameOver: break;
+                        case GameState.PlayGame:                    MainPage.PageFrame.Navigate(typeof(PlayGamePage)); break;
+                        case GameState.Singleplayer:                MainPage.PageFrame.Navigate(typeof(SingleplayerPage)); break;
+                        case GameState.Multiplayer:                 MainPage.PageFrame.Navigate(typeof(MultiplayerPage)); break;
+                        case GameState.EmpireSelection:             MainPage.PageFrame.Navigate(typeof(EmpireSelectionPage));break;
+                        case GameState.InGame:                      MainPage.PageFrame.Navigate(typeof(InGamePage)); break;
+                        case GameState.Paused:                      MainPage.PageFrame.Navigate(typeof(PausedPage)); break;
+                        case GameState.GameOver:                    MainPage.PageFrame.Navigate(typeof(GameOverPage)); break;
 
-                        case GameState.Options: break;
-                        case GameState.Credits: break;
+                        case GameState.Options:                     MainPage.PageFrame.Navigate(typeof(OptionsPage)); break;
+                        case GameState.Credits:                     MainPage.PageFrame.Navigate(typeof(CreditsPage)); break;
                         default:
-                        case GameState.None: MainPage.PageFrame.Navigate(typeof(BlankPage)); break;
+                        case GameState.None:                        MainPage.PageFrame.Navigate(typeof(BlankPage)); break;
                     }
 
                     if (m_removePreviousOnCompleted) {
                         m_gameStates.Pop();
                     }
 
-                    // Add in the Menu so that the Update/Draw will handle the correct Menu
+                    // Add in the new menu
+                    // This is done here so that the menu won't be pulled in during the Update/Draw while fading
                     m_gameStates.Push(m_goingToMenu);
                     m_goingToMenu = null;
                 }
@@ -308,6 +309,10 @@ namespace EmpiresOfTheIV.Game
                 // Reset Flags;
                 ResetFlags();
 
+                // Now that the menu is loaded, we will notify it
+                m_gameStates.Peek().MenuLoaded();
+
+                // Finally, fade back out
                 m_fadeEffect.ChangeFadeStatus(FadeStatus.FadingToContent);
                 return;
             }

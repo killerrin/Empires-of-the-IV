@@ -8,6 +8,8 @@
     mc:Ignorable="d">
 
     <Grid>
+        <Rectangle x:Name="monogamePageDim" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Loaded="MonoGamePageDim_Loaded" Visibility="Collapsed" Fill="Black" Opacity="0.25" />
+
         <Frame x:Name="pageFrame" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Loaded="PageFrame_Loaded" Visibility="Visible"/>
         <MediaElement x:Name="cortanaElement" Loaded="CortanaElement_Loaded" Visibility="Collapsed"/>
     </Grid>

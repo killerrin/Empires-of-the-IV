@@ -22,5 +22,8 @@
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
+    <Capability Name="internetClientServer" />
+    <DeviceCapability Name="microphone" />
+    <DeviceCapability Name="proximity" />
   </Capabilities>
 </Package>
