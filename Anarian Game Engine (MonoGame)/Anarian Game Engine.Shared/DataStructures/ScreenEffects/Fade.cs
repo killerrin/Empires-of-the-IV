@@ -35,21 +35,21 @@ namespace Anarian.DataStructures.ScreenEffects
         Texture2D m_fadeTexture;
         public Texture2D FadeTexture { get { return m_fadeTexture; } set { m_fadeTexture = value; } }
 
-        Color m_fadeColor;
-        public Color FadeColor { get { return m_fadeColor; } set { m_fadeColor = value; } }
+        Color m_fadeColour;
+        public Color FadeColour { get { return m_fadeColour; } set { m_fadeColour = value; } }
         #endregion
 
         public event EventHandler ProgressTick;
         public event EventHandler Completed;
 
-        public Fade(GraphicsDevice graphicsDevice, Color solidColor, float fadeRate = 0.003f)
+        public Fade(GraphicsDevice graphicsDevice, Color solidColour, float fadeRate = 0.003f)
         {
             m_progressStatus = ProgressStatus.None;
             m_fadeStatus = ScreenEffects.FadeStatus.FadingToContent;
             m_fadeRate = fadeRate;
             m_fadePercentage = 0.0f;
 
-            ChangeFadeColor(solidColor, graphicsDevice);
+            ChangeFadeColor(graphicsDevice, solidColour);
         }
 
         public Fade(Texture2D texture, float fadeRate = 0.003f)
@@ -60,7 +60,7 @@ namespace Anarian.DataStructures.ScreenEffects
             m_fadePercentage = 0.0f;
 
             m_fadeTexture = texture;
-            m_fadeColor = Color.White;
+            m_fadeColour = Color.White;
         }
 
         #region Interface Implimentation
@@ -102,10 +102,10 @@ namespace Anarian.DataStructures.ScreenEffects
                 Completed(this, null);
         }
 
-        public void ChangeFadeColor(Color color, GraphicsDevice graphicsDevice)
+        public void ChangeFadeColor(GraphicsDevice graphicsDevice, Color colour)
         {
-            m_fadeColor = color;
-            m_fadeTexture = m_fadeColor.CreateTextureFromSolidColor(graphicsDevice, graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height);
+            m_fadeColour = colour;
+            m_fadeTexture = m_fadeColour.CreateTextureFromSolidColor(graphicsDevice, graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height);
         }
         #endregion
 
@@ -138,7 +138,7 @@ namespace Anarian.DataStructures.ScreenEffects
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {            
             spriteBatch.Begin();
-            spriteBatch.Draw(m_fadeTexture, Vector2.Zero, m_fadeColor * m_fadePercentage);
+            spriteBatch.Draw(m_fadeTexture, Vector2.Zero, m_fadeColour * m_fadePercentage);
             spriteBatch.End();
         }
 
@@ -147,7 +147,8 @@ namespace Anarian.DataStructures.ScreenEffects
             return "Progress: " + m_progressStatus.ToString() + " | " +
                    "FadeStatus: " + m_fadeStatus.ToString() + " | " +
                    "FadePercentage: " + m_fadePercentage + " | " +
-                   "FadeRate: " + m_fadeRate;
+                   "FadeRate: " + m_fadeRate + " | " +
+                   "Colour: " + m_fadeColour.ToString();
         }
     }
 }

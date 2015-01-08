@@ -33,6 +33,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Input\TouchScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Level.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Rendering\Terrain.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DataStructures\ScreenEffects\Overlay.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\ScreenEffects\Fade.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\StaticGameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DataStructures\Timer.cs" />

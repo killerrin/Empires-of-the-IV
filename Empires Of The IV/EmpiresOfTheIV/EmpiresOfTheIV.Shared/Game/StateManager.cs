@@ -300,19 +300,20 @@ namespace EmpiresOfTheIV.Game
                         m_gameStates.Pop();
                     }
 
-                    // Reset Flags;
-                    ResetFlags();
-
                     // Add in the Menu so that the Update/Draw will handle the correct Menu
                     m_gameStates.Push(m_goingToMenu);
                     m_goingToMenu = null;
                 }
 
+                // Reset Flags;
+                ResetFlags();
+
                 m_fadeEffect.ChangeFadeStatus(FadeStatus.FadingToContent);
                 return;
             }
-            // else if (m_fadeEffect.FadeStatus == FadeStatus.FadingToContent)
-            MainPage.PageFrame.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            //else if (m_fadeEffect.FadeStatus == FadeStatus.FadingToContent) {
+                MainPage.PageFrame.Visibility = Windows.UI.Xaml.Visibility.Visible;
+            //}
         }
         #endregion
     }
