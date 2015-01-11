@@ -95,24 +95,15 @@ namespace Anarian.DataStructures.Animation
         #endregion
 
         /// <summary>
-        /// Update animation for the model.
-        /// </summary>
-        /// <param name="gameTime"></param>
-        public void Update(GameTime gameTime)
-        {
-            if (m_animationState != null) {
-                m_animationState.Update(gameTime);
-            }
-        }
-
-        /// <summary>
         /// Draws the Model to the screen
         /// </summary>
         /// <param name="graphics">The graphics device to draw on</param>
         /// <param name="view"> The Camera View</param>
         /// <param name="projection">The Camera Projection</param>
         /// <param name="world">The World Matrix of the Model</param>
-        public void Draw(GraphicsDevice graphics, Matrix view, Matrix projection, Matrix world, AnimationState animationState = null)
+        /// <param name="animationState">An Instanced Animation State to render the animation using. Set to null to use the models Default AnimationState</param>
+        /// <remarks>Warning: Drawing using the Default AnimationState will effect every object drawn with the default.</remarks>
+        public void Draw(GraphicsDevice graphics, Matrix view, Matrix projection, Matrix world, AnimationState animationState)
         {
             if (model == null)
                 return;

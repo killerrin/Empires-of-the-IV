@@ -11,6 +11,7 @@ using Anarian.DataStructures.Components;
 using Anarian.Interfaces;
 using Anarian.Helpers;
 using Anarian.DataStructures.Animation.Aux;
+using System.Runtime.CompilerServices;
 
 namespace Anarian.DataStructures
 {
@@ -70,18 +71,12 @@ namespace Anarian.DataStructures
         #endregion
 
         #region Animation Helpers
-        public AnimationPlayer PlayClip(AnimationClip clip) {
+        public virtual AnimationPlayer PlayClip(AnimationClip clip) {
             return m_animationState.PlayClip(clip);
         }
         #endregion
 
         #region Update/Draw
-        private void UpdateAnimation(GameTime gameTime)
-        {
-            m_animationState.Update(gameTime);
-            m_model.Update(gameTime);
-        }
-
         public override void Update(GameTime gameTime)
         {
             if (!m_active) return;
@@ -90,7 +85,7 @@ namespace Anarian.DataStructures
             base.Update(gameTime);
             
             // Now we update the Animation
-            UpdateAnimation(gameTime);
+            m_animationState.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
