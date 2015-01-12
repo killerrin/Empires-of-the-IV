@@ -70,7 +70,9 @@ namespace Anarian.DataStructures.Components
                 Quaternion rot = m_rotation;
         
                 if (m_parent != null) {
-                    rot *= m_parent.WorldRotation;
+                    if (m_parent.WorldRotation != Quaternion.Identity) {
+                        rot *= m_parent.WorldRotation;
+                    }
                 }
                 return rot;
             }
@@ -363,11 +365,23 @@ namespace Anarian.DataStructures.Components
             rotMatrix.Right = Right;
             rotMatrix.Up = Up;
 
-            //float angle = (float)Math.Atan2(-newForward.X, -newForward.Z);
-            //Quaternion rotation = Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), angle);
-            //m_rotation.Y = rotation.Y;
+            //Debug.WriteLine("Scale: {0}, {1}, {2}, {3}",
+            //                rotMatrix.M11,
+            //                rotMatrix.M22,
+            //                rotMatrix.M33,
+            //                rotMatrix.M44);
 
+            // Fix the Matrix to forbid values of 0
+            if (rotMatrix.M11 == 0.0f) { rotMatrix.M11 = 1.0f; }
+            if (rotMatrix.M22 == 0.0f) { rotMatrix.M22 = 1.0f; }
+            if (rotMatrix.M33 == 0.0f) { rotMatrix.M33 = 1.0f; }
+            if (rotMatrix.M44 == 0.0f) { rotMatrix.M44 = 1.0f; }
+
+            // Set the Rotation Matrix
             m_rotationMatrix = rotMatrix;
+
+            // Create the Quaternion and store it to the Value
+            Quaternion m_rotation = Quaternion.CreateFromRotationMatrix(rotMatrix);
         }
         #endregion
 
