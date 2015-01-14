@@ -57,7 +57,7 @@ namespace EmpiresOfTheIV.Game
         #endregion
         #endregion
 
-        public EventHandler OnExit;
+        public event EventHandler OnExit;
 
         public StateManager(EmpiresOfTheIVGame game, Color fadeColor)
         {

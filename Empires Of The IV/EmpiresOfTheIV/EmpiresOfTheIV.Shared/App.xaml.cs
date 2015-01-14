@@ -49,6 +49,17 @@ namespace EmpiresOfTheIV
 
             // Ensure the current window is active
             Window.Current.Activate();
+
+            // Let the Platform Menu Manager know that we have Launched
+            PlatformMenuAdapter.OnLaunched();
+        }
+
+        protected override void OnActivated(IActivatedEventArgs e)
+        {
+            // Let the Platform Menu Manager know that we have Activated
+            PlatformMenuAdapter.OnActivated();
+        
+            base.OnActivated(e);
         }
 
         /// <summary>
@@ -62,8 +73,9 @@ namespace EmpiresOfTheIV
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
-            // TODO: Save application state and stop any background activity
-
+            // Let the Platform Menu Manager know that we have are Suspending
+            PlatformMenuAdapter.OnSuspending();
+            
             deferral.Complete();
         }
     }

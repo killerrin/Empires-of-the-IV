@@ -15,7 +15,8 @@
     <FileAlignment>512</FileAlignment>
     <SynthesizeLinkMetadata>true</SynthesizeLinkMetadata>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>EmpiresOfTheIV.Windows_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>EmpiresOfTheIV.Windows_StoreKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>C8AADB4D013B397EE266236A1D377043C4587F43</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -119,6 +120,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="EmpiresOfTheIV.Windows_StoreKey.pfx" />
     <None Include="EmpiresOfTheIV.Windows_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

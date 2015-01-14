@@ -17,42 +17,20 @@ namespace Anarian.DataStructures.Rendering
     public class Terrain : GameObject, IUpdatable, IRenderable
     {
         #region Fields/Properties
-        Texture2D m_heightMap;
         Texture2D m_texture;
 
-        public Texture2D HeightMap
-        {
-            get { return m_heightMap; }
-            protected set { m_heightMap = value; }
-        }
         public Texture2D Texture
         {
             get { return m_texture; }
             set { m_texture = value; }
         }
 
-        #region TerrainData
-        VertexPositionNormalTexture[] m_vertices;
-        int[] m_indices;
-
-        Vector3[,] m_terrainVertsPos;
-        float[,] m_heightData;
-
-        int m_terrainWidth = 0;
-        public int TerrainWidth { get { return m_terrainWidth; } }
-
-        int m_terrainHeight = 0;
-        public int TerrainHeight { get { return m_terrainHeight; } }
-
-        float m_highestHeightPoint;
-        public float HighestHeight { get { return m_highestHeightPoint * m_transform.WorldScale.Y; } }
-
-        float m_terrainHeightScale;
-        public float TerrainHeightScale { get { return m_terrainHeightScale; } }
-
         BasicEffect m_effect;
         public BasicEffect Effect { get { return m_effect; } }
-        #endregion
+
+
+        TerrainHeightData m_heightData;
+        public TerrainHeightData HeightData { get { return m_heightData; } }
         #endregion
 
         public Terrain(GraphicsDevice graphics, Texture2D heightMap, Texture2D texture = null)
@@ -87,105 +65,10 @@ namespace Anarian.DataStructures.Rendering
         #region Terrain Setup
         private void SetupTerrain(GraphicsDevice graphics, Texture2D heightMap)
         {
-            LoadHeightData(heightMap, 5.0f);
-
-            SetUpVertices();
-            SetUpIndices();
-            CalculateNormals();
+            m_heightData = new TerrainHeightData(this, heightMap, 5.0f);
 
             SetupEffects(graphics);
             GenerateBoundingBox();
-        }
-        private void LoadHeightData(Texture2D heightMap, float terrainHeightScale)
-        {
-            m_heightMap = heightMap;
-            m_terrainWidth = heightMap.Width;
-            m_terrainHeight = heightMap.Height;
-
-            m_terrainHeightScale = terrainHeightScale;
-
-            float tempHighestHeight = -1.0f;
-
-            Color[] heightMapColors = new Color[m_terrainWidth * m_terrainHeight];
-            heightMap.GetData(heightMapColors);
-
-            m_heightData = new float[m_terrainWidth, m_terrainHeight];
-            for (int x = 0; x < m_terrainWidth; x++) {
-                for (int y = 0; y < m_terrainHeight; y++) {
-                    m_heightData[x, y] = heightMapColors[x + y * m_terrainWidth].R / m_terrainHeightScale;
-
-                    if (m_heightData[x, y] > tempHighestHeight) { tempHighestHeight = m_heightData[x, y]; }
-                }
-            }
-
-            m_highestHeightPoint = tempHighestHeight;
-        }
-        
-        private void SetUpVertices()
-        {
-            Vector3 centerAlign = new Vector3(-m_terrainWidth / 2.0f, 0, m_terrainHeight / 2.0f);
-            
-            m_vertices = new VertexPositionNormalTexture[m_terrainWidth * m_terrainHeight];
-            m_terrainVertsPos = new Vector3[m_terrainWidth, m_terrainHeight];
-
-            for (int x = 0; x < m_terrainWidth; x++) {
-                for (int y = 0; y < m_terrainHeight; y++) {
-                    int vertIndex = x + y * m_terrainWidth;
-                    //Debug.WriteLine("Terrain Setup: {0}", vertIndex);
-
-                    m_terrainVertsPos[x, y] = new Vector3(x, m_heightData[x, y], -y) + centerAlign;
-                    m_vertices[vertIndex].Position = m_terrainVertsPos[x, y];
-
-                    m_vertices[vertIndex].TextureCoordinate.X = (float)x / 30.0f;
-                    m_vertices[vertIndex].TextureCoordinate.Y = (float)y / 30.0f;
-                }
-                //Debug.WriteLine("\n");
-            }
-        }
-
-        private void SetUpIndices()
-        {
-            m_indices = new int[(m_terrainWidth - 1) * (m_terrainHeight - 1) * 6];
-            int counter = 0;
-            for (int y = 0; y < m_terrainHeight - 1; y++) {
-                for (int x = 0; x < m_terrainWidth - 1; x++) {
-                    int lowerLeft = x + y * m_terrainWidth;
-                    int lowerRight = (x + 1) + y * m_terrainWidth;
-                    int topLeft = x + (y + 1) * m_terrainWidth;
-                    int topRight = (x + 1) + (y + 1) * m_terrainWidth;
-
-                    m_indices[counter++] = topLeft;
-                    m_indices[counter++] = lowerRight;
-                    m_indices[counter++] = lowerLeft;
-
-                    m_indices[counter++] = topLeft;
-                    m_indices[counter++] = topRight;
-                    m_indices[counter++] = lowerRight;
-                }
-            }
-        }
-
-        private void CalculateNormals()
-        {
-            for (int i = 0; i < m_vertices.Length; i++)
-                m_vertices[i].Normal = new Vector3(0, 0, 0);
-
-            for (int i = 0; i < m_indices.Length / 3; i++) {
-                int index1 = m_indices[i * 3];
-                int index2 = m_indices[i * 3 + 1];
-                int index3 = m_indices[i * 3 + 2];
-
-                Vector3 side1 = m_vertices[index1].Position - m_vertices[index3].Position;
-                Vector3 side2 = m_vertices[index1].Position - m_vertices[index2].Position;
-                Vector3 normal = Vector3.Cross(side1, side2);
-
-                m_vertices[index1].Normal += normal;
-                m_vertices[index2].Normal += normal;
-                m_vertices[index3].Normal += normal;
-            }
-
-            for (int i = 0; i < m_vertices.Length; i++)
-                m_vertices[i].Normal.Normalize();
         }
 
         private void SetupEffects(GraphicsDevice graphics)
@@ -206,8 +89,8 @@ namespace Anarian.DataStructures.Rendering
             Matrix world = m_transform.WorldMatrix;
             List<Vector3> points = new List<Vector3>();
 
-            for (int i = 0; i < m_vertices.Length; i++) {
-                points.Add(Vector3.Transform(m_vertices[i].Position, world));
+            for (int i = 0; i < m_heightData.Vertices.Length; i++) {
+                points.Add(Vector3.Transform(m_heightData.Vertices[i].Position, world));
             }
 
             m_boundingBoxes.Add(BoundingBox.CreateFromPoints(points));
@@ -344,8 +227,8 @@ namespace Anarian.DataStructures.Rendering
             int posZ = -1;
 
             // Search Along the X
-            for (int x = 0; x < m_terrainWidth; x++) {
-                Vector3 vertAtWorld = Vector3.Transform(m_terrainVertsPos[x, 0], world);
+            for (int x = 0; x < m_heightData.TerrainWidth; x++) {
+                Vector3 vertAtWorld = Vector3.Transform(m_heightData.TerrainVertsPos[x, 0], world);
 
                 if (pointX <= vertAtWorld.X) {
                     //Debug.WriteLine("PointX Pos: {0} | VertAtWorld: {1} | VertGridSpace: {2}", pointX, vertAtWorld.X, x);
@@ -355,8 +238,8 @@ namespace Anarian.DataStructures.Rendering
             }
 
             // Search along the Z
-            for (int z = 0; z < m_terrainHeight; z++) {
-                Vector3 vertAtWorld = Vector3.Transform(m_terrainVertsPos[0, z], world);
+            for (int z = 0; z < m_heightData.TerrainHeight; z++) {
+                Vector3 vertAtWorld = Vector3.Transform(m_heightData.TerrainVertsPos[0, z], world);
 
                 if (pointZ >= vertAtWorld.Z) {
                     //Debug.WriteLine("PointZ Pos: {0} | VertAtWorld: {1} | VertGridSpace: {2}", pointZ, vertAtWorld.Z, z);
@@ -373,14 +256,14 @@ namespace Anarian.DataStructures.Rendering
             }
 
             // Get the vertex position
-            Vector3 vert = Vector3.Transform(m_terrainVertsPos[posX, posZ], world);
+            Vector3 vert = Vector3.Transform(m_heightData.TerrainVertsPos[posX, posZ], world);
 
             // See if we can lerp the values
             if (posX > 0 && posZ > 0) {
                 // Lerp the Data from the four vertices to get the average height
-                Vector3 vert2 = Vector3.Transform(m_terrainVertsPos[posX - 1, posZ], world);
-                Vector3 vert3 = Vector3.Transform(m_terrainVertsPos[posX, posZ - 1], world);
-                Vector3 vert4 = Vector3.Transform(m_terrainVertsPos[posX - 1, posZ - 1], world);
+                Vector3 vert2 = Vector3.Transform(m_heightData.TerrainVertsPos[posX - 1, posZ], world);
+                Vector3 vert3 = Vector3.Transform(m_heightData.TerrainVertsPos[posX, posZ - 1], world);
+                Vector3 vert4 = Vector3.Transform(m_heightData.TerrainVertsPos[posX - 1, posZ - 1], world);
 
                 float averageHeight = (vert.Y + vert2.Y + vert3.Y + vert4.Y) / 4.0f;
 
@@ -429,8 +312,8 @@ namespace Anarian.DataStructures.Rendering
 
                 graphics.DrawUserIndexedPrimitives(
                     PrimitiveType.TriangleList,
-                    m_vertices, 0, m_vertices.Length,
-                    m_indices, 0, m_indices.Length / 3,
+                    m_heightData.Vertices, 0, m_heightData.Vertices.Length,
+                    m_heightData.Indices, 0, m_heightData.Indices.Length / 3,
                     VertexPositionNormalTexture.VertexDeclaration);
             }
 

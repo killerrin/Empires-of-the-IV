@@ -39,11 +39,40 @@ namespace EmpiresOfTheIV
             return false;
         }
 
+        #region Launch and Activation
+        public static void OnLaunched()
+        {
+            if (EarlyExitCheck()) return;
+        }
+
+        public static void OnSuspending()
+        {
+            if (EarlyExitCheck()) return;
+        }
+
+        public static void OnActivated()
+        {
+            if (EarlyExitCheck()) return;
+        }
+        #endregion
+
+        #region Hardware Buttons
         public static void BackButtonPressed()
         {
             if (EarlyExitCheck()) return;
             Consts.Game.GameManager.StateManager.GoBack();
         }
+
+        public static void HomeButtonPressed()
+        {
+            if (EarlyExitCheck()) return;
+        }
+
+        public static void SearchButtonPressed()
+        {
+            if (EarlyExitCheck()) return;
+        }
+        #endregion
 
         #region Main Menu
         public static void MainMenu_PlayButton_Click()
