@@ -9,7 +9,7 @@
             <ResourceDictionary.MergedDictionaries>
 
                 <ResourceDictionary Source="Styles/UniversalStyles.xaml" />
-                <ResourceDictionary Source="Styles/MainMenuStyles.xaml" />
+                <ResourceDictionary Source="Styles/MenuStyles.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

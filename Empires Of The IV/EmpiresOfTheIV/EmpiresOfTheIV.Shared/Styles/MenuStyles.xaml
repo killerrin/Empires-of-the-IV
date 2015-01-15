@@ -15,4 +15,14 @@
         <Setter Property="FontFamily" Value="Assets/Space and Astronomy.ttf#Space and Astronomy"/>
         <Setter Property="FontSize" Value="62"/>
     </Style>
+
+    <Style x:Key="GameLobbyTeamHeaderText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="DarkGreen"/>
+
+        <Setter Property="Margin" Value="0,0,0,0"/>
+        <Setter Property="Width" Value="auto"/>
+
+        <Setter Property="FontFamily" Value="Assets/Space and Astronomy.ttf#Space and Astronomy"/>
+        <Setter Property="FontSize" Value="62"/>
+    </Style>
 </ResourceDictionary>

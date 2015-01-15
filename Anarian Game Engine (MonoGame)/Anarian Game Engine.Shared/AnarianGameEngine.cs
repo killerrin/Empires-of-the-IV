@@ -175,13 +175,7 @@ namespace Anarian
         {
             // First we Render the Scene
             if (m_sceneManager != null) {
-                if (m_sceneManager.CurrentScene != null) {
-                    m_sceneManager.CurrentScene.SceneNode.GameObject.Draw(
-                        gameTime,
-                        spriteBatch,
-                        graphics.GraphicsDevice,
-                        m_sceneManager.CurrentScene.Camera);
-                }
+                m_sceneManager.Draw(gameTime, spriteBatch, graphics.GraphicsDevice);
             }
 
             // Then we Draw the GUI

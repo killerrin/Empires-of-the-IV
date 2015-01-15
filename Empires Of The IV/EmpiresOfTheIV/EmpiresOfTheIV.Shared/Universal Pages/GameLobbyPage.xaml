@@ -8,6 +8,47 @@
     mc:Ignorable="d">
 
     <Grid>
+        <Hub>
+            <HubSection Header="Lobby">
+                <DataTemplate>
+                    <Grid VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="3*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
 
+                        <!-- Grid Row 0 -->
+                        <ScrollViewer Grid.Row="0">
+                            <StackPanel Orientation="Vertical">
+                                <StackPanel>
+                                    <TextBlock Text="Team 1" Style="{StaticResource GameLobbyTeamHeaderText}"/>
+                                </StackPanel>
+
+                                <StackPanel>
+                                    <TextBlock Text="Team 2" Style="{StaticResource GameLobbyTeamHeaderText}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                        
+                        <!-- Grid Row 1 -->
+                        <StackPanel Grid.Row="1" Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Start Game" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </HubSection>
+            <HubSection Header="Chat">
+                <DataTemplate>
+                    <Grid>
+                        
+                    </Grid>
+                </DataTemplate>
+            </HubSection>
+        </Hub>
     </Grid>
 </Page>

@@ -23,9 +23,14 @@ namespace Anarian
         }
         #endregion
 
+        public bool Active;
+        public bool Visible;
+
         private SceneManager()
         {
             CurrentScene = null;
+            Active = true;
+            Visible = true;
         }
 
         public IScene CurrentScene { get; set; }
@@ -37,19 +42,29 @@ namespace Anarian
 
         public void Update(GameTime gameTime)
         {
+            if (!Active) return;
+
             if (CurrentScene != null) {
                 CurrentScene.SceneNode.GameObject.Update(gameTime);
             }
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera = null)
         {
+            if (!Active) return;
+            if (!Visible) return;
+
             if (CurrentScene != null) {
+
+                Camera cameraToUse;
+                if (camera == null) cameraToUse = CurrentScene.Camera;
+                else cameraToUse = camera;
+
                 CurrentScene.SceneNode.GameObject.Draw(
                     gameTime,
                     spriteBatch,
                     graphics,
-                    camera);
+                    cameraToUse);
             }
         }
 
