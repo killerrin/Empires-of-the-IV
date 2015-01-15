@@ -17,15 +17,16 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameConnectionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GameMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\BluetoothMultiplayerMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\GameLobbyMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\GameOverMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\BlankMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\LanMultiplayerMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\PausedMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\InGameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\EmpireSelectionMenu.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\MultiplayerMenu.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\SingleplayerMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\PlayGameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\CreditsMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\OptionsMenu.cs" />
@@ -36,6 +37,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\BlankPage.xaml.cs">
       <DependentUpon>BlankPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\BluetoothMultiplayerPage.xaml.cs">
+      <DependentUpon>BluetoothMultiplayerPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\CreditsPage.xaml.cs">
       <DependentUpon>CreditsPage.xaml</DependentUpon>
     </Compile>
@@ -43,17 +47,20 @@
       <DependentUpon>EmpireSelectionPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\Events\MainPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\GameLobbyPage.xaml.cs">
+      <DependentUpon>GameLobbyPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\GameOverPage.xaml.cs">
       <DependentUpon>GameOverPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\InGamePage.xaml.cs">
       <DependentUpon>InGamePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\LanMultiplayerPage.xaml.cs">
+      <DependentUpon>LanMultiplayerPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\MainMenuPage.xaml.cs">
       <DependentUpon>MainMenuPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\MultiplayerPage.xaml.cs">
-      <DependentUpon>MultiplayerPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\OptionsPage.xaml.cs">
       <DependentUpon>OptionsPage.xaml</DependentUpon>
@@ -63,9 +70,6 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\PlayGamePage.xaml.cs">
       <DependentUpon>PlayGamePage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\SingleplayerPage.xaml.cs">
-      <DependentUpon>SingleplayerPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\SplashScreenPage.xaml.cs">
       <DependentUpon>SplashScreenPage.xaml</DependentUpon>
@@ -109,11 +113,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\BluetoothMultiplayerPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)Universal Pages\CreditsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Universal Pages\EmpireSelectionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\GameLobbyPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -125,11 +137,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\MainMenuPage.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\LanMultiplayerPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\MultiplayerPage.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\MainMenuPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -142,10 +154,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Universal Pages\PlayGamePage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="$(MSBuildThisFileDirectory)Universal Pages\SingleplayerPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

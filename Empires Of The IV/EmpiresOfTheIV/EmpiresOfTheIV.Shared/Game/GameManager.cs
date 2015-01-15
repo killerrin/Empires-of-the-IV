@@ -84,16 +84,21 @@ namespace EmpiresOfTheIV.Game
 
             switch (m_stateManager.CurrentState) {
                 case GameState.SplashScreen:            break;
+
                 case GameState.MainMenu:                break;
+                case GameState.Options:                 break;
+                case GameState.Credits:                 break;
                 case GameState.PlayGame:                break;
-                case GameState.Singleplayer:            break;
-                case GameState.Multiplayer:             break;
+
+                case GameState.BluetoothMultiplayer:    break;
+                case GameState.LanMultiplayer:          break;
+
+                case GameState.GameLobby:               break;
                 case GameState.EmpireSelection:         break;
+
                 case GameState.InGame:                  break;
                 case GameState.Paused:                  break;
                 case GameState.GameOver:                break;
-                case GameState.Options:                 break;
-                case GameState.Credits:                 break;
                 default: break;
             }
 
@@ -113,18 +118,23 @@ namespace EmpiresOfTheIV.Game
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             switch (m_stateManager.CurrentState) {
-                case GameState.SplashScreen:        m_game.GraphicsDevice.Clear(Color.Black);   break;
-                case GameState.MainMenu:            break;
-                case GameState.PlayGame:            break;
-                case GameState.Singleplayer:        break;
-                case GameState.Multiplayer:         break;
-                case GameState.EmpireSelection:     break;
-                case GameState.InGame:              break;
-                case GameState.Paused:              break;
-                case GameState.GameOver:            break;
-                case GameState.Options:             break;
-                case GameState.Credits:             break;
-                default:  break;
+                case GameState.SplashScreen:            m_game.GraphicsDevice.Clear(Color.Black);   break;
+
+                case GameState.MainMenu:                break;
+                case GameState.Options:                 break;
+                case GameState.Credits:                 break;
+                case GameState.PlayGame:                break;
+
+                case GameState.BluetoothMultiplayer:    break;
+                case GameState.LanMultiplayer:          break;
+
+                case GameState.GameLobby:               break;
+                case GameState.EmpireSelection:         break;
+
+                case GameState.InGame:                  break;
+                case GameState.Paused:                  break;
+                case GameState.GameOver:                break;
+                default:                                break;
             }
 
             // Finally, Draw the StateManager over everything else

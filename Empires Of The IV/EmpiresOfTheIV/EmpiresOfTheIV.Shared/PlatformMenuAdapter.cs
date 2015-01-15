@@ -101,10 +101,16 @@ namespace EmpiresOfTheIV
             Consts.Game.GameManager.StateManager.Navigate(GameState.Singleplayer);
         }
 
-        public static void PlayGameMenu_MultiplayerButton_Click()
+        public static void PlayGameMenu_BluetoothMultiplayerButton_Click()
         {
             if (EarlyExitCheck()) return;
-            Consts.Game.GameManager.StateManager.Navigate(GameState.Multiplayer);
+            Consts.Game.GameManager.StateManager.Navigate(GameState.BluetoothMultiplayer);
+        }
+
+        public static void PlayGameMenu_LANMultiplayerButton_Click()
+        {
+            if (EarlyExitCheck()) return;
+            Consts.Game.GameManager.StateManager.Navigate(GameState.LanMultiplayer);
         }
         #endregion
     }

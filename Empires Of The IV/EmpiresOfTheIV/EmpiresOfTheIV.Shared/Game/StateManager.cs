@@ -136,22 +136,33 @@ namespace EmpiresOfTheIV.Game
 
             GameMenu newMenu;
             switch (newState) {
-                case GameState.SplashScreen:        newMenu = new SplashScreenMenu(m_game); break;
-                case GameState.MainMenu:            newMenu = new MainMenu(m_game); break;
+                case GameState.SplashScreen:            newMenu = new SplashScreenMenu(m_game); break;
 
-                case GameState.PlayGame:            newMenu = new PlayGameMenu(m_game); break;
-                case GameState.Singleplayer:        newMenu = new SingleplayerMenu(m_game); break;
-                case GameState.Multiplayer:         newMenu = new MultiplayerMenu(m_game); break;
-                case GameState.EmpireSelection:     newMenu = new EmpireSelectionMenu(m_game); break;
-                case GameState.InGame:              newMenu = new InGameMenu(m_game); break;
-                case GameState.Paused:              newMenu = new PausedMenu(m_game); break;
-                case GameState.GameOver:            newMenu = new GameOverMenu(m_game); break;
+                case GameState.MainMenu:                newMenu = new MainMenu(m_game); break;
+                case GameState.Options:                 newMenu = new OptionsMenu(m_game); break;
+                case GameState.Credits:                 newMenu = new CreditsMenu(m_game); break;
+                case GameState.PlayGame:                newMenu = new PlayGameMenu(m_game); break;
 
-                case GameState.Options:             newMenu = new OptionsMenu(m_game); break;
-                case GameState.Credits:             newMenu = new CreditsMenu(m_game); break;
+                case GameState.Singleplayer:            newMenu = new GameLobbyMenu(m_game, GameConnectionType.Singleplayer); break;
+                case GameState.BluetoothMultiplayer:    newMenu = new BluetoothMultiplayerMenu(m_game); break;
+                case GameState.LanMultiplayer:          newMenu = new LanMultiplayerMenu(m_game); break;
 
-                case GameState.None:                
-                default:                            newMenu = new BlankMenu(m_game); break;
+                case GameState.GameLobby:               GameConnectionType connType = GameConnectionType.None;
+                                                        if (CurrentMenu.GetType() == typeof(PlayGameMenu)) connType = GameConnectionType.Singleplayer;
+                                                        if (CurrentMenu.GetType() == typeof(BluetoothMultiplayerMenu)) connType = GameConnectionType.BluetoothMultiplayer;
+                                                        if (CurrentMenu.GetType() == typeof(LanMultiplayerMenu)) connType = GameConnectionType.LANMultiplayer;
+
+                                                        newMenu = new GameLobbyMenu(m_game, connType);
+                                                        break;
+
+                case GameState.EmpireSelection:         newMenu = new EmpireSelectionMenu(m_game); break;
+
+                case GameState.InGame:                  newMenu = new InGameMenu(m_game); break;
+                case GameState.Paused:                  newMenu = new PausedMenu(m_game); break;
+                case GameState.GameOver:                newMenu = new GameOverMenu(m_game); break;
+
+                case GameState.None:                    
+                default:                                newMenu = new BlankMenu(m_game); break;
             }
 
             m_goingToMenu = newMenu;          
@@ -280,18 +291,22 @@ namespace EmpiresOfTheIV.Game
                 else {
                     switch (m_goingToMenu.State) {
                         case GameState.SplashScreen:                MainPage.PageFrame.Navigate(typeof(SplashScreenPage)); break;
-                        case GameState.MainMenu:                    MainPage.PageFrame.Navigate(typeof(MainMenuPage)); break;
 
+                        case GameState.MainMenu:                    MainPage.PageFrame.Navigate(typeof(MainMenuPage)); break;
+                        case GameState.Options:                     MainPage.PageFrame.Navigate(typeof(OptionsPage)); break;
+                        case GameState.Credits:                     MainPage.PageFrame.Navigate(typeof(CreditsPage)); break;
                         case GameState.PlayGame:                    MainPage.PageFrame.Navigate(typeof(PlayGamePage)); break;
-                        case GameState.Singleplayer:                MainPage.PageFrame.Navigate(typeof(SingleplayerPage)); break;
-                        case GameState.Multiplayer:                 MainPage.PageFrame.Navigate(typeof(MultiplayerPage)); break;
+                        
+                        case GameState.Singleplayer:                MainPage.PageFrame.Navigate(typeof(GameLobbyPage)); break;
+                        case GameState.BluetoothMultiplayer:        MainPage.PageFrame.Navigate(typeof(BluetoothMultiplayerPage)); break;
+                        case GameState.LanMultiplayer:              MainPage.PageFrame.Navigate(typeof(LanMultiplayerPage)); break;
+
+                        case GameState.GameLobby:                   MainPage.PageFrame.Navigate(typeof(GameLobbyPage)); break;
                         case GameState.EmpireSelection:             MainPage.PageFrame.Navigate(typeof(EmpireSelectionPage));break;
+
                         case GameState.InGame:                      MainPage.PageFrame.Navigate(typeof(InGamePage)); break;
                         case GameState.Paused:                      MainPage.PageFrame.Navigate(typeof(PausedPage)); break;
                         case GameState.GameOver:                    MainPage.PageFrame.Navigate(typeof(GameOverPage)); break;
-
-                        case GameState.Options:                     MainPage.PageFrame.Navigate(typeof(OptionsPage)); break;
-                        case GameState.Credits:                     MainPage.PageFrame.Navigate(typeof(CreditsPage)); break;
                         default:
                         case GameState.None:                        MainPage.PageFrame.Navigate(typeof(BlankPage)); break;
                     }

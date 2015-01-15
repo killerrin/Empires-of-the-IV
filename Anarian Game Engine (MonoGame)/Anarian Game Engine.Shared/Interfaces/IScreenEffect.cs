@@ -10,6 +10,10 @@ namespace Anarian.Interfaces
 {
     public interface IScreenEffect : IRenderable
     {
+        // Standard Events for the Interface
+        event EventHandler ProgressTick;
+        event EventHandler Completed;
+
         ProgressStatus Progress { get; set; }
 
         void PreformEffect(GameTime gameTime);

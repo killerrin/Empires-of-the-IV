@@ -26,6 +26,9 @@ namespace Anarian.DataStructures.ScreenEffects
         public Color Colour { get { return m_colour; } set { m_colour = value; } }
         #endregion
 
+        public event EventHandler ProgressTick;
+        public event EventHandler Completed;
+
         public Overlay(GraphicsDevice graphicsDevice, Color solidColour)
         {
             m_progressStatus = ProgressStatus.None;
@@ -64,7 +67,14 @@ namespace Anarian.DataStructures.ScreenEffects
             if (m_progressStatus == ProgressStatus.None) return;
             if (m_progressStatus == ProgressStatus.Completed) return;
 
+            // Call the Events
+            m_progressStatus = ProgressStatus.InProgress;
+            if (ProgressTick != null)
+                ProgressTick(this, null);
+
             m_progressStatus = ProgressStatus.Completed;
+            if (Completed != null)
+                Completed(this, null);
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)

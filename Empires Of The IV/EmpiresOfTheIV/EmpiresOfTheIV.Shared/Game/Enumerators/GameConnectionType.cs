@@ -4,10 +4,11 @@ using System.Text;
 
 namespace EmpiresOfTheIV.Game.Enumerators
 {
-    public enum GameType
+    public enum GameConnectionType
     {
         None,
         Singleplayer,
-        Multiplayer
+        BluetoothMultiplayer,
+        LANMultiplayer
     }
 }

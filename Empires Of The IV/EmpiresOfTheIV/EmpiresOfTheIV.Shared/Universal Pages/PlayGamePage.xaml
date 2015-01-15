@@ -21,7 +21,8 @@
 
         <StackPanel x:Name="menuOptions" Grid.Column="1" Grid.Row="1" Orientation="Vertical">
             <Button Content="Singleplayer"      Style="{StaticResource MainMenuButton}" Click="SingleplayerButton_Click" />
-            <Button Content="Multiplayer"   Style="{StaticResource MainMenuButton}" Click="MultiplayerButton_Click"/>
+            <Button Content="Bluetooth"         Style="{StaticResource MainMenuButton}" Click="BluetoothMultiplayerButton_Click"/>
+            <Button Content="Lan"               Style="{StaticResource MainMenuButton}" Click="LanMultiplayerButton_Click"/>
         </StackPanel>
     </Grid>
 </Page>

@@ -20,26 +20,11 @@ namespace EmpiresOfTheIV
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class PlayGamePage : Page
+    public sealed partial class GameLobbyPage : Page
     {
-        public PlayGamePage()
+        public GameLobbyPage()
         {
             this.InitializeComponent();
-        }
-
-        private void SingleplayerButton_Click(object sender, RoutedEventArgs e)
-        {
-            PlatformMenuAdapter.PlayGameMenu_SingleplayerButton_Click();
-        }
-
-        private void BluetoothMultiplayerButton_Click(object sender, RoutedEventArgs e)
-        {
-            PlatformMenuAdapter.PlayGameMenu_BluetoothMultiplayerButton_Click();
-        }
-
-        private void LanMultiplayerButton_Click(object sender, RoutedEventArgs e)
-        {
-            PlatformMenuAdapter.PlayGameMenu_LANMultiplayerButton_Click();
         }
     }
 }

@@ -4,6 +4,10 @@ using System.Text;
 
 namespace EmpiresOfTheIV.Game.Enumerators
 {
+
+    /// <summary>
+    /// The MenuState
+    /// </summary>
     public enum GameState
     {
         None,
@@ -12,14 +16,16 @@ namespace EmpiresOfTheIV.Game.Enumerators
         MainMenu,
             PlayGame,
                 Singleplayer,
-                Multiplayer,
-                GameLobby,
-                    EmpireSelection,
+                BluetoothMultiplayer,
+                LanMultiplayer,
 
-                    InGame, //--|
-                    Paused, //--|
-                            //  |
-                            GameOver,
+                    GameLobby,
+                        EmpireSelection,
+
+                            InGame, //--|
+                            Paused, //--|
+                                    //  |
+                                    GameOver,
 
             Options,
             Credits     
