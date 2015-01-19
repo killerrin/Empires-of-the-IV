@@ -78,7 +78,7 @@ namespace EmpiresOfTheIV
         /// </summary>
         protected override void LoadContent()
         {
-            base.LoadContent();
+            base.LoadContent(Color.Black);
             m_gameManager.LoadContent();
             
             // Lastly we call PostLoadContent to do MonoGame LoadContent
@@ -113,7 +113,6 @@ namespace EmpiresOfTheIV
             // Lastly, we call PostUpdate on the GameEngine to let MonoGame know we are finished 
             base.PostUpdate(gameTime);
         }
-        
 
         /// <summary>
         /// This is called when the game should draw itself.

@@ -24,7 +24,7 @@ namespace EmpiresOfTheIV.Game.Menus
         #endregion
 
         public GameLobbyMenu(EmpiresOfTheIVGame game, GameConnectionType gameConnectionType)
-            : base(game, GameState.LanMultiplayer)
+            : base(game, GameState.GameLobby)
         {
             m_gameConnectionType = gameConnectionType;
 

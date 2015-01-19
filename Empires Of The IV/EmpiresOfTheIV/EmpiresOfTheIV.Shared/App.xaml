@@ -10,7 +10,8 @@
 
                 <ResourceDictionary Source="Styles/UniversalStyles.xaml" />
                 <ResourceDictionary Source="Styles/MenuStyles.xaml" />
-
+                <ResourceDictionary Source="Styles/GameLobbyStyles.xaml" />
+                
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

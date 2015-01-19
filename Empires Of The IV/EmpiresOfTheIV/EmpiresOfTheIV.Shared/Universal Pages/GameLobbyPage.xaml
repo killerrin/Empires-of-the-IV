@@ -9,43 +9,58 @@
 
     <Grid>
         <Hub>
-            <HubSection Header="Lobby">
+            <HubSection Header="Game" Width="700" Template="{StaticResource TeamsHubSection}">
                 <DataTemplate>
-                    <Grid VerticalAlignment="Stretch">
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="3*" />
+                            <RowDefinition Height="4*" />
+                            <RowDefinition Height="0.1*" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-
-                        <!-- Grid Row 0 -->
-                        <ScrollViewer Grid.Row="0">
-                            <StackPanel Orientation="Vertical">
-                                <StackPanel>
-                                    <TextBlock Text="Team 1" Style="{StaticResource GameLobbyTeamHeaderText}"/>
-                                </StackPanel>
-
-                                <StackPanel>
-                                    <TextBlock Text="Team 2" Style="{StaticResource GameLobbyTeamHeaderText}"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </ScrollViewer>
                         
-                        <!-- Grid Row 1 -->
-                        <StackPanel Grid.Row="1" Orientation="Vertical">
-                            <StackPanel Orientation="Horizontal">
-                                <Button Content="Start Game" />
-                            </StackPanel>
-                        </StackPanel>
+                        <Button x:Name="gameStartButton" Content="Start" Grid.Row="2"  Style="{StaticResource GameLobbyStartButton}"/>
                     </Grid>
                 </DataTemplate>
             </HubSection>
-            <HubSection Header="Chat">
+
+            <HubSection Header="Chat" Width="500" Template="{StaticResource ChatHubSection}">
                 <DataTemplate>
                     <Grid>
-                        
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="4*" />
+                            <RowDefinition Height="0.1*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <ScrollViewer Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <TextBlock x:Name="chatTextBlock" HorizontalAlignment="Stretch" Height="auto" 
+                                       TextWrapping="WrapWholeWords" Margin="0,0,30,0"
+                                       Text=""/>
+                        </ScrollViewer>
+
+                        <Grid Grid.Column="0" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="5*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.15*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBox x:Name="chatTextBox" PlaceholderText="Type a message here" 
+                     Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch"/>
+                            <Button x:Name="chatSendButton" Content="Send" 
+                    Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+                        </Grid>
                     </Grid>
                 </DataTemplate>
             </HubSection>
