@@ -12,6 +12,8 @@
         <Setter Property="MinWidth" Value="600"/>
 
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        
         <Setter Property="FontFamily" Value="Assets/Space and Astronomy.ttf#Space and Astronomy"/>
         <Setter Property="FontSize" Value="62"/>
     </Style>

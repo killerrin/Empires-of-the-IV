@@ -86,13 +86,13 @@ namespace Anarian
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
         /// </summary>
-        protected override void LoadContent()
+        protected virtual void LoadContent(Color backgroundColor)
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Set the Background Color
-            m_backgroundColor = Color.CornflowerBlue;
+            m_backgroundColor = backgroundColor;
 
             // Create the Scene
             m_sceneManager.CurrentScene = new Level(graphics.GraphicsDevice);
