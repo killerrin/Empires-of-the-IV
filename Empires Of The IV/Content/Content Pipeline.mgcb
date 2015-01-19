@@ -14,7 +14,7 @@
 #---------------------------------- Content ---------------------------------#
 
 #begin Tyril.FBX
-/importer:FbxImporter
+/importer:OpenAssetImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
 /processorParam:ColorKeyEnabled=True
