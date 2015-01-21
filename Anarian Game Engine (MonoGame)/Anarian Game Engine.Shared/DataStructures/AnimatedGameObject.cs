@@ -26,6 +26,7 @@ namespace Anarian.DataStructures
             { 
                 m_model = value;
                 CreateAnimationState();
+                CheckRayIntersection(new Ray());
             }
         }
 
@@ -103,12 +104,21 @@ namespace Anarian.DataStructures
             if (m_model == null) return;
 
             // Check Against Frustrum to cull out objects
-            for (int i = 0; i < m_boundingBoxes.Count; i++) {
-                if (!m_boundingBoxes[i].Intersects(camera.Frustum)) return;
+            if (m_cullDraw) {
+                for (int i = 0; i < m_boundingBoxes.Count; i++) {
+                    if (!m_boundingBoxes[i].Intersects(camera.Frustum)) return;
+                }
             }
 
             // Finally, we render This Object
             Model3D.Draw(graphics, camera.View, camera.Projection, Transform.WorldMatrix, m_animationState);
+
+            if (m_renderBounds) {
+                //mesh.BoundingSphere.RenderBoundingSphere(graphics, m_transform.WorldMatrix, camera.View, camera.Projection, Color.Red);
+                for (int i = 0; i < m_boundingBoxes.Count; i++) {
+                    m_boundingBoxes[i].DrawBoundingBox(graphics, Color.Red, camera, Matrix.Identity);
+                }
+            }
         }
         #endregion
     }

@@ -17,6 +17,8 @@ namespace Anarian.DataStructures
         #region Fields/Properties
         protected bool    m_active;
         protected bool    m_visible;
+        protected bool    m_cullDraw;
+        protected bool    m_renderBounds;
 
         protected List<BoundingBox> m_boundingBoxes;
         protected List<Component> m_components;
@@ -34,6 +36,17 @@ namespace Anarian.DataStructures
             get { return m_visible; }
             set { m_visible = value; }
         }
+        public bool CullDraw
+        {
+            get { return m_cullDraw; }
+            set { m_cullDraw = value; }
+        }
+        public bool RenderBounds
+        {
+            get { return m_renderBounds; }
+            set { m_renderBounds = value; }
+        }
+
 
         public Transform Transform
         {
@@ -52,8 +65,10 @@ namespace Anarian.DataStructures
             :base()
         {
             // Setup Defaults
-            m_active    = true;
-            m_visible   = true;
+            m_active        = true;
+            m_visible       = true;
+            m_cullDraw      = true;
+            m_renderBounds  = false;
 
             // Setup the Transform
             m_transform = new Transform(this);

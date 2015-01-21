@@ -18,7 +18,7 @@ namespace Anarian.DataStructures
         public Model Model3D
         {
             get { return m_model; }
-            set { m_model = value; }
+            set { m_model = value; CheckRayIntersection(new Ray()); }
         }
 
         public StaticGameObject()
@@ -79,8 +79,10 @@ namespace Anarian.DataStructures
             if (m_model == null) return;
 
             // Check Against Frustrum to cull out objects
-            for (int i = 0; i < m_boundingBoxes.Count; i++) {
-                if (!m_boundingBoxes[i].Intersects(camera.Frustum)) return;
+            if (m_cullDraw) {
+                for (int i = 0; i < m_boundingBoxes.Count; i++) {
+                    if (!m_boundingBoxes[i].Intersects(camera.Frustum)) return;
+                }
             }
 
             // Render This Object
@@ -90,6 +92,7 @@ namespace Anarian.DataStructures
 
             // Draw the model. A model can have multiple meshes, so loop.
             foreach (ModelMesh mesh in m_model.Meshes) {
+                Debug.WriteLine(mesh.Name);
                 // This is where the mesh orientation is set, as well 
                 // as our camera and projection.
 
@@ -100,7 +103,7 @@ namespace Anarian.DataStructures
                         beffect.View = camera.View;
                         beffect.Projection = camera.Projection;
                         beffect.EnableDefaultLighting();
-                        //beffect.LightingEnabled = false;
+                        beffect.LightingEnabled = false;
                         beffect.PreferPerPixelLighting = true;
                         beffect.DiffuseColor = new Vector3(1, 1, 1);
                     }
@@ -111,7 +114,6 @@ namespace Anarian.DataStructures
                         seffect.View = camera.View;
                         seffect.Projection = camera.Projection;
                         seffect.EnableDefaultLighting();
-                        //seffect.LightingEnabled = false;
                         seffect.PreferPerPixelLighting = true;
                         seffect.DiffuseColor = new Vector3(1, 1, 1);
                     }
@@ -119,9 +121,11 @@ namespace Anarian.DataStructures
                 // Draw the mesh, using the effects set above.
                 mesh.Draw();
 
-                //mesh.BoundingSphere.RenderBoundingSphere( graphics.GraphicsDevice, WorldMatrix, camera.View, camera.Projection, Color.Red);
-                for (int i = 0; i < m_boundingBoxes.Count; i++) {
-                    m_boundingBoxes[i].DrawBoundingBox(graphics, Color.Red, camera, Matrix.Identity);
+                if (m_renderBounds) {
+                    //mesh.BoundingSphere.RenderBoundingSphere(graphics, m_transform.WorldMatrix, camera.View, camera.Projection, Color.Red);
+                    for (int i = 0; i < m_boundingBoxes.Count; i++) {
+                        m_boundingBoxes[i].DrawBoundingBox(graphics, Color.Red, camera, Matrix.Identity);
+                    }
                 }
             }
         }
