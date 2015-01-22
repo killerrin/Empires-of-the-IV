@@ -71,9 +71,11 @@ namespace EmpiresOfTheIV.Game
             armyGuy.Transform.Position = new Vector3(0.2f, -0.5f, -5.50f);
 
             Planet tyril = new Planet();
-            tyril.Model3D = m_game.ResourceManager.GetAsset(typeof(Model), "Tyril") as Model;
-            tyril.Transform.Scale = new Vector3(100.0f);
             tyril.Transform.Position = new Vector3(0.0f, 0.0f, -10.0f);
+            tyril.Transform.Scale = new Vector3(25.0f);
+            tyril.Model3D = m_game.ResourceManager.GetAsset(typeof(Model), "Tyril") as Model;
+            tyril.CullDraw = false;
+            tyril.RenderBounds = true;
 
             // Add to the Scene
             m_game.SceneManager.CurrentScene.SceneNode.AddChild(armyGuy.Transform);
