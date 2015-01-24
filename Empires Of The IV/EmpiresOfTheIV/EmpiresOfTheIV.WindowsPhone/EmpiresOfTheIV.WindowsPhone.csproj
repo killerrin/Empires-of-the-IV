@@ -115,7 +115,7 @@
   <ItemGroup>
     <Reference Include="Anarian Game Engine.WindowsPhone, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Anarian Game Engine (MonoGame)\Anarian Game Engine.WindowsPhone\bin\Debug\Anarian Game Engine.WindowsPhone.dll</HintPath>
+      <HintPath>..\..\..\..\Anarian-Game-Engine-MonoGame\Anarian Game Engine.WindowsPhone\bin\Debug\Anarian Game Engine.WindowsPhone.dll</HintPath>
     </Reference>
     <Reference Include="AnimationAux">
       <HintPath>..\..\..\Extra Libraries\AnimationAux Monogame\AnimationAux.WindowsPhone\bin\Debug\AnimationAux.dll</HintPath>

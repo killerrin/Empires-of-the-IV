@@ -133,7 +133,7 @@
   <ItemGroup>
     <Reference Include="Anarian Game Engine.Windows, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Anarian Game Engine (MonoGame)\Anarian Game Engine.Windows\bin\Debug\Anarian Game Engine.Windows.dll</HintPath>
+      <HintPath>..\..\..\..\Anarian-Game-Engine-MonoGame\Anarian Game Engine.Windows\bin\Debug\Anarian Game Engine.Windows.dll</HintPath>
     </Reference>
     <Reference Include="AnimationAux, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
