@@ -135,10 +135,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Anarian-Game-Engine-MonoGame\Anarian Game Engine.Windows\bin\Debug\Anarian Game Engine.Windows.dll</HintPath>
     </Reference>
-    <Reference Include="AnimationAux, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Extra Libraries\AnimationAux Monogame\AnimationAux.Windows\bin\Debug\AnimationAux.dll</HintPath>
-    </Reference>
     <Reference Include="Killerrin Studios Toolkit.Windows, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\dlls\Killerrin Studios Toolkit.Windows.dll</HintPath>

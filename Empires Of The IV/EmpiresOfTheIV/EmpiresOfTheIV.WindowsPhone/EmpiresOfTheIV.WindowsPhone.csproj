@@ -117,9 +117,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Anarian-Game-Engine-MonoGame\Anarian Game Engine.WindowsPhone\bin\Debug\Anarian Game Engine.WindowsPhone.dll</HintPath>
     </Reference>
-    <Reference Include="AnimationAux">
-      <HintPath>..\..\..\Extra Libraries\AnimationAux Monogame\AnimationAux.WindowsPhone\bin\Debug\AnimationAux.dll</HintPath>
-    </Reference>
     <Reference Include="Killerrin Studios Toolkit.WindowsPhone">
       <HintPath>..\..\dlls\Killerrin Studios Toolkit.WindowsPhone.dll</HintPath>
     </Reference>

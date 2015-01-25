@@ -68,6 +68,8 @@ namespace EmpiresOfTheIV.Game
             armyGuy.Model3D = m_game.ResourceManager.GetAsset(typeof(AnimatedModel), "t-pose_3") as AnimatedModel;
             armyGuy.Transform.Scale = new Vector3(0.007f);
             armyGuy.Transform.Position = new Vector3(0.2f, -0.5f, -5.50f);
+            armyGuy.CullDraw = false;
+            armyGuy.RenderBounds = true;
 
             Planet tyril = new Planet(graphics, grassTexture, 5.0f);
             
@@ -80,15 +82,15 @@ namespace EmpiresOfTheIV.Game
 
             // Add to the Scene
             m_game.SceneManager.CurrentScene.SceneNode.AddChild(armyGuy.Transform);
-            m_game.SceneManager.CurrentScene.SceneNode.AddChild(tyril.Transform);
+            //m_game.SceneManager.CurrentScene.SceneNode.AddChild(tyril.Transform);
             
             //// Load the models which contain animations
-            //AnimatedModel walk = CustomContentLoader.LoadAnimatedModel(m_game.Content, "walk");
-            //AnimationClip clip = walk.Clips[0];
-            //
-            //// Set our animations to the gameObjects
-            //AnimationPlayer armyGuyPlayer = armyGuy.PlayClip(clip);
-            //armyGuyPlayer.Looping = true;
+            AnimatedModel walk = CustomContentLoader.LoadAnimatedModel(m_game.Content, "walk");
+            AnimationClip clip = walk.Clips[0];
+            
+            // Set our animations to the gameObjects
+            AnimationPlayer armyGuyPlayer = armyGuy.PlayClip(clip);
+            armyGuyPlayer.Looping = true;
 
 
 

@@ -38,7 +38,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AnimationPipeline">
-      <HintPath>..\..\..\Extra Libraries\Animation Pipeline\AnimationPipeline\bin\x86\Debug\AnimationPipeline.dll</HintPath>
+      <HintPath>..\..\..\..\Anarian-Game-Engine-MonoGame\Extra Libraries\XNA\AnimationPipeline.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.EffectImporter" />
     <Reference Include="Microsoft.Xna.Framework.Content.Pipeline.FBXImporter" />

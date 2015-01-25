@@ -167,19 +167,4 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Content\05_Clouds.xnb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\05_Clouds_1.xnb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Bump.xnb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Map__11.xnb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Map__8.xnb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Map__8_0.xnb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Map__9.xnb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Spectral.xnb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Texture 6x4.xnb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Texture 6x4_1.xnb" />
-    <None Include="$(MSBuildThisFileDirectory)Content\Tyril.xnb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 </Project>
