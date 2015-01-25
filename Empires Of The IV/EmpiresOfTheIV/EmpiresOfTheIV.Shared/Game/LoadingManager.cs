@@ -56,7 +56,6 @@ namespace EmpiresOfTheIV.Game
             // Load the Assets
             m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Texture2D), "KillerrinStudiosLogo");
             m_game.ResourceManager.LoadAsset(m_game.Content, typeof(AnimatedModel), "t-pose_3");
-            m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Model), "Tyril");
             
             // Load the Terrain
             //Texture2D heightMap = m_game.Content.Load<Texture2D>("heightmap");
@@ -70,7 +69,7 @@ namespace EmpiresOfTheIV.Game
             armyGuy.Transform.Scale = new Vector3(0.007f);
             armyGuy.Transform.Position = new Vector3(0.2f, -0.5f, -5.50f);
 
-            Sphere tyril = new Planet(graphics, grassTexture, 5.0f);
+            Planet tyril = new Planet(graphics, grassTexture, 5.0f);
             
             //Planet tyril = new Planet();
             //tyril.Transform.Position = new Vector3(0.0f, 0.0f, -10.0f);
