@@ -60,7 +60,7 @@ namespace EmpiresOfTheIV.Game
             
             // Load the Terrain
             //Texture2D heightMap = m_game.Content.Load<Texture2D>("heightmap");
-            //Texture2D grassTexture = m_game.Content.Load<Texture2D>("grassTexture");
+            Texture2D grassTexture = m_game.Content.Load<Texture2D>("grassTexture");
             //Terrain m_terrain = new Terrain(graphics, heightMap, grassTexture);
             //m_game.SceneManager.CurrentScene.SceneNode.AddChild(m_terrain.Transform);
             
@@ -70,12 +70,14 @@ namespace EmpiresOfTheIV.Game
             armyGuy.Transform.Scale = new Vector3(0.007f);
             armyGuy.Transform.Position = new Vector3(0.2f, -0.5f, -5.50f);
 
-            Planet tyril = new Planet();
-            tyril.Transform.Position = new Vector3(0.0f, 0.0f, -10.0f);
-            tyril.Transform.Scale = new Vector3(25.0f);
-            tyril.Model3D = m_game.ResourceManager.GetAsset(typeof(Model), "Tyril") as Model;
-            tyril.CullDraw = false;
-            tyril.RenderBounds = true;
+            Sphere tyril = new Planet(graphics, grassTexture, 5.0f);
+            
+            //Planet tyril = new Planet();
+            //tyril.Transform.Position = new Vector3(0.0f, 0.0f, -10.0f);
+            //tyril.Transform.Scale = new Vector3(25.0f);
+            //tyril.Model3D = m_game.ResourceManager.GetAsset(typeof(Model), "Tyril") as Model;
+            //tyril.CullDraw = false;
+            //tyril.RenderBounds = true;
 
             // Add to the Scene
             m_game.SceneManager.CurrentScene.SceneNode.AddChild(armyGuy.Transform);
