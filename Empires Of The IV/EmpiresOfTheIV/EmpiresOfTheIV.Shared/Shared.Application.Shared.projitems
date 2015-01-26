@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)BluetoothNetworkAdapter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data Models\NameDescription.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data Models\NameImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data Models\NameImageDescription.cs" />

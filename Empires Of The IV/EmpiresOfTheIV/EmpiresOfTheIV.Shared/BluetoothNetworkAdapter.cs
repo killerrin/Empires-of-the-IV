@@ -1,0 +1,72 @@
+﻿using KillerrinStudiosToolkit;
+using KillerrinStudiosToolkit.Events;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Windows.Foundation;
+using Windows.Networking.Proximity;
+
+namespace EmpiresOfTheIV
+{
+    public class BluetoothNetworkAdapter
+    {
+        public readonly Guid BluetoothGUID = new Guid("20BB9225-AC4B-4ACD-9B12-126D8EBCF2D6");
+        public readonly BluetoothConnectionHelper BluetoothConnectionHelper;
+
+        public event TypedEventHandler<object, TriggeredConnectState> ConnectionStatusChanged;
+        public event TypedEventHandler<object, ReceivedMessageEventArgs> MessageReceived;
+        public event TypedEventHandler<object, IEnumerable<PeerInformation>> PeersFound;
+
+        #region Helper Properties
+        public bool ConnectCrossPlatform
+        {
+            get { return BluetoothConnectionHelper.ConnectCrossPlatform; }
+            set { BluetoothConnectionHelper.ConnectCrossPlatform = value; }
+        }
+        #endregion
+
+        public BluetoothNetworkAdapter()
+        {
+            BluetoothConnectionHelper = new BluetoothConnectionHelper(BluetoothGUID.ToString());
+            BluetoothConnectionHelper.ConnectCrossPlatform = true;
+
+            // Connection Status Changed
+            BluetoothConnectionHelper.ConnectionStatusChanged += BluetoothConnectionHelper_ConnectionStatusChanged;
+            
+            // Messages Recieved
+            BluetoothConnectionHelper.MessageReceived += BluetoothConnectionHelper_MessageRecieved;
+            
+            // Peers Found
+            BluetoothConnectionHelper.PeersFound += BluetoothConnectionHelper_PeersFound;
+        }
+
+        private void BluetoothConnectionHelper_ConnectionStatusChanged(object sender, TriggeredConnectState args)
+        {
+            try
+            {
+                if (ConnectionStatusChanged != null)
+                    ConnectionStatusChanged(sender, args);
+            }
+            catch (Exception) { }
+        }
+        
+        private void BluetoothConnectionHelper_MessageRecieved(object sender, ReceivedMessageEventArgs args)
+        {
+            try { 
+                if (MessageReceived != null)
+                    MessageReceived(sender, args);
+            }
+            catch (Exception) { }
+        }
+
+        private void BluetoothConnectionHelper_PeersFound(object sender, IEnumerable<PeerInformation> args)
+        {
+            try
+            {
+                if (PeersFound != null)
+                    PeersFound(sender, args);
+            }
+            catch (Exception) { }
+        }
+    }
+}

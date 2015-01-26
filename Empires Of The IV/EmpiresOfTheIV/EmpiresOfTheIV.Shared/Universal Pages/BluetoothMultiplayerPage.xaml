@@ -37,8 +37,8 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="Begin Search"          IsEnabled="True"        Style="{StaticResource NetworkConnectionButton}" Click="BeginSearchButton_Click"/>
-                <Button Grid.Column="1" Content="Bluetooth Settings"    IsEnabled="True"        Style="{StaticResource NetworkConnectionButton}" Click="BluetoothSettingsButton_Click"/>
+                <Button x:Name="beginSearchButton"          Grid.Column="0" Content="Begin Searching"          IsEnabled="True"        Style="{StaticResource NetworkConnectionButton}" Click="BeginSearchButton_Click"/>
+                <Button x:Name="bluetoothSettingsButton"    Grid.Column="1" Content="Bluetooth Settings"    IsEnabled="True"        Style="{StaticResource NetworkConnectionButton}" Click="BluetoothSettingsButton_Click"/>
 
             </Grid>
             
