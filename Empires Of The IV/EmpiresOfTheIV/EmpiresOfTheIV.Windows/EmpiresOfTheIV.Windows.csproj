@@ -137,7 +137,7 @@
     </Reference>
     <Reference Include="Killerrin Studios Toolkit.Windows, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\dlls\Killerrin Studios Toolkit.Windows.dll</HintPath>
+      <HintPath>..\..\..\Extra Libraries\Windows\Killerrin Studios Toolkit.Windows.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MSBuildProgramFiles32)\MonoGame\v3.0\Assemblies\Windows8\MonoGame.Framework.dll</HintPath>

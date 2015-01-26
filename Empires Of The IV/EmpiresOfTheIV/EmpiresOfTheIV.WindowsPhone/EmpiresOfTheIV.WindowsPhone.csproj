@@ -118,7 +118,7 @@
       <HintPath>..\..\..\..\Anarian-Game-Engine-MonoGame\Anarian Game Engine.WindowsPhone\bin\Debug\Anarian Game Engine.WindowsPhone.dll</HintPath>
     </Reference>
     <Reference Include="Killerrin Studios Toolkit.WindowsPhone">
-      <HintPath>..\..\dlls\Killerrin Studios Toolkit.WindowsPhone.dll</HintPath>
+      <HintPath>..\..\..\Extra Libraries\Windows Phone\Killerrin Studios Toolkit.WindowsPhone.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MSBuildProgramFiles32)\MonoGame\v3.0\Assemblies\WindowsPhone81\MonoGame.Framework.dll</HintPath>
