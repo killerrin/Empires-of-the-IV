@@ -60,13 +60,13 @@ namespace EmpiresOfTheIV
             NetworkConnectionState currentConnectionState = Consts.BluetoothNetworkAdapter.BluetoothConnectionHelper.NetworkConnectionStatus;
             if (currentConnectionState == NetworkConnectionState.NotSearching)
             {
-                Consts.BluetoothNetworkAdapter.BluetoothConnectionHelper.Start();
+                Consts.BluetoothNetworkAdapter.StartSearchBluetooth();
                 try { beginSearchButton.Content = "Stop Searching"; }
                 catch (Exception) { }
             }
             else if (currentConnectionState == NetworkConnectionState.Searching)
             {
-                Consts.BluetoothNetworkAdapter.BluetoothConnectionHelper.Reset();
+                Consts.BluetoothNetworkAdapter.StopSearch();
                 try { beginSearchButton.Content = "Begin Searching"; }
                 catch (Exception) { }
             }
@@ -94,11 +94,6 @@ namespace EmpiresOfTheIV
 
         void BluetoothConnectionHelper_PeersFound(object sender, IEnumerable<Windows.Networking.Proximity.PeerInformation> args)
         {
-            foreach (var peer in args)
-            {
-                Debug.WriteLine(peer.DisplayName.ToString());
-            }
-
             //Peers.Clear();
             //args.ForEach(Peers.Add);
             //if (Peers.Count > 0)

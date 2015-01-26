@@ -1,7 +1,9 @@
 ﻿using KillerrinStudiosToolkit;
+using KillerrinStudiosToolkit.Enumerators;
 using KillerrinStudiosToolkit.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Windows.Foundation;
 using Windows.Networking.Proximity;
@@ -40,8 +42,16 @@ namespace EmpiresOfTheIV
             BluetoothConnectionHelper.PeersFound += BluetoothConnectionHelper_PeersFound;
         }
 
+        public void StartSearchBluetooth(string advertiseName = null) { BluetoothConnectionHelper.Start(ConnectMethod.Browse, advertiseName); }
+
+        public void StartSearchNFC(string advertiseName = null) { BluetoothConnectionHelper.Start(ConnectMethod.Tap, advertiseName); }
+
+        public void StopSearch() { BluetoothConnectionHelper.Reset(); }
+
         private void BluetoothConnectionHelper_ConnectionStatusChanged(object sender, TriggeredConnectState args)
         {
+            Debug.WriteLine(args.ToString());
+
             try
             {
                 if (ConnectionStatusChanged != null)
@@ -61,6 +71,12 @@ namespace EmpiresOfTheIV
 
         private void BluetoothConnectionHelper_PeersFound(object sender, IEnumerable<PeerInformation> args)
         {
+            foreach (var peer in args)
+            {
+                Debug.WriteLine("DisplayName: "+ peer.DisplayName.ToString() + " | " +
+                                "ID: " + peer.Id.ToString());
+            }
+
             try
             {
                 if (PeersFound != null)
