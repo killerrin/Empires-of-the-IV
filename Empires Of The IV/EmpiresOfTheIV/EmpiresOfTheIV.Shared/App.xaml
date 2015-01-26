@@ -11,6 +11,7 @@
                 <ResourceDictionary Source="Styles/UniversalStyles.xaml" />
                 <ResourceDictionary Source="Styles/MenuStyles.xaml" />
                 <ResourceDictionary Source="Styles/GameLobbyStyles.xaml" />
+                <ResourceDictionary Source="Styles/NetworkConnectionStyles.xaml" />
                 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
