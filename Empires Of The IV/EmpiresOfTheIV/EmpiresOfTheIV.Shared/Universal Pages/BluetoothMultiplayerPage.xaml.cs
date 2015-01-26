@@ -1,5 +1,7 @@
-﻿using System;
+﻿using EmpiresOfTheIV.Data_Models;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -25,6 +27,31 @@ namespace EmpiresOfTheIV
         public BluetoothMultiplayerPage()
         {
             this.InitializeComponent();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            ObservableCollection<NameDescription> devices = new ObservableCollection<NameDescription>();
+            devices.Add(new NameDescription("Lumia", ""));
+            devices.Add(new NameDescription("Surface", "192.168.0.1"));
+            connectionListBox.ItemsSource = devices;
+
+            base.OnNavigatedTo(e);
+        }
+
+        private void BeginSearchButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BluetoothSettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ConnectionListBox_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
         }
     }
 }

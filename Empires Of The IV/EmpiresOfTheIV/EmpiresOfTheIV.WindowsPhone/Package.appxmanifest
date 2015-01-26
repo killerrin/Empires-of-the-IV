@@ -31,5 +31,10 @@
     <Capability Name="internetClientServer" />
     <DeviceCapability Name="microphone" />
     <DeviceCapability Name="proximity" />
+    <m2:DeviceCapability Name="bluetooth.rfcomm">
+      <m2:Device Id="any">
+        <m2:Function Type="serviceId:20BB9225-AC4B-4ACD-9B12-126D8EBCF2D6" />
+      </m2:Device>
+    </m2:DeviceCapability>
   </Capabilities>
 </Package>

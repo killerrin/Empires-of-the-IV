@@ -30,10 +30,10 @@ namespace EmpiresOfTheIV.Game
 
             // Subscribe to our Events
             // Pointer
-            m_game.InputManager.PointerDown += InputManager_PointerDown;
-            m_game.InputManager.PointerPressed += InputManager_PointerClicked;
-            m_game.InputManager.PointerMoved += InputManager_PointerMoved;
-
+            //m_game.InputManager.PointerDown += InputManager_PointerDown;
+            //m_game.InputManager.PointerPressed += InputManager_PointerClicked;
+            //m_game.InputManager.PointerMoved += InputManager_PointerMoved;
+            
             // Keybaord
             m_game.InputManager.Keyboard.KeyboardDown += Keyboard_KeyboardDown;
             m_game.InputManager.Keyboard.KeyboardPressed += Keyboard_KeyboardPressed;
@@ -122,31 +122,14 @@ namespace EmpiresOfTheIV.Game
             Camera cam = m_game.SceneManager.CurrentScene.Camera;
 
             switch (e.KeyClicked) {
-                case Keys.W:
-                    cam.MoveForward(2.0f);
-                    break;
-                case Keys.S:
-                    cam.MoveForward(-2.0f);
-                    break;
-                case Keys.A:
-                    cam.MoveHorizontal(-2.0f);
-                    break;
-                case Keys.D:
-                    cam.MoveHorizontal(2.0f);
-                    break;
-                case Keys.Q:
-                    cam.MoveVertical(-2.0f);
-                    break;
-                case Keys.E:
-                    cam.MoveVertical(2.0f);
-                    break;
-
-                case Keys.O:
-                    cam.MoveDepth(-2.0f);
-                    break;
-                case Keys.L:
-                    cam.MoveDepth(2.0f);
-                    break;
+                case Keys.W:    cam.MoveForward(     0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                case Keys.S:    cam.MoveForward(    -0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                case Keys.A:    cam.MoveHorizontal( -0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                case Keys.D:    cam.MoveHorizontal(  0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                case Keys.Q:    cam.MoveVertical(   -0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                case Keys.E:    cam.MoveVertical(    0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                case Keys.O:    cam.MoveDepth(      -0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                case Keys.L:    cam.MoveDepth(       0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
 
                 case Keys.Up:
                     cam.AddPitch(MathHelper.ToRadians(2));
