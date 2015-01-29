@@ -12,7 +12,6 @@ namespace EmpiresOfTheIV
 {
     public class BluetoothNetworkAdapter
     {
-        public readonly Guid BluetoothGUID = new Guid("20BB9225-AC4B-4ACD-9B12-126D8EBCF2D6");
         public readonly BluetoothConnectionHelper BluetoothConnectionHelper;
 
         public event TypedEventHandler<object, TriggeredConnectState> ConnectionStatusChanged;
@@ -29,7 +28,7 @@ namespace EmpiresOfTheIV
 
         public BluetoothNetworkAdapter()
         {
-            BluetoothConnectionHelper = new BluetoothConnectionHelper(BluetoothGUID.ToString());
+            BluetoothConnectionHelper = new BluetoothConnectionHelper(Consts.UniqueNetworkGUID.ToString());
             BluetoothConnectionHelper.ConnectCrossPlatform = true;
 
             // Connection Status Changed

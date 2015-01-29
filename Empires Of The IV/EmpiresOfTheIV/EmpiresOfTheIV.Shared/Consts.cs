@@ -10,6 +10,7 @@ namespace EmpiresOfTheIV
         public static EmpiresOfTheIVGame Game;
 
         public static BluetoothNetworkAdapter BluetoothNetworkAdapter = new BluetoothNetworkAdapter();
+        public readonly Guid UniqueNetworkGUID = new Guid("20BB9225-AC4B-4ACD-9B12-126D8EBCF2D6");
 
         /// <summary>
         /// Used as an early exit check to determine if the Game is setup and ready to be interacted with
