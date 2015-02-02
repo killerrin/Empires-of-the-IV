@@ -8,6 +8,7 @@ namespace EmpiresOfTheIV
     public static class Consts
     {
         public static EmpiresOfTheIVGame Game;
+        public static string LaunchArguments;
 
         /// <summary>
         /// Used as an early exit check to determine if the Game is setup and ready to be interacted with

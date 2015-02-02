@@ -32,6 +32,8 @@ namespace EmpiresOfTheIV.Game
         public BluetoothConnectionHelper BluetoothConnectionHelper { get; protected set; }
         public LANHelper LanHelper { get; protected set; }
 
+        public HostType HostSettings { get { return LanHelper.HostType; } set { LanHelper.HostType = value; } }
+
         public NetworkStage CurrentNetworkStage { get; protected set; }
         public NetworkType NetworkType { get; protected set; }
 

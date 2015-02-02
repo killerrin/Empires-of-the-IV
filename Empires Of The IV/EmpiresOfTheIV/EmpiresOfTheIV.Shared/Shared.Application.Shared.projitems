@@ -15,6 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Commands\CommandType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameConnectionType.cs" />
@@ -35,6 +36,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\MainMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\SplashScreenMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\GamePacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\SystemPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\ChatPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\EotIVPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\PacketType.cs" />

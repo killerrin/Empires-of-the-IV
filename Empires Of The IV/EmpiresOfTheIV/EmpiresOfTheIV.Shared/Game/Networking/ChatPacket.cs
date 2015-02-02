@@ -16,7 +16,7 @@ namespace EmpiresOfTheIV.Game.Networking
             Message = message;
         }
 
-        public override void SetFromOtherPacket(ChatPacket o)
+        public void SetFromOtherPacket(ChatPacket o)
         {
             base.SetFromOtherPacket(o);
             Message = o.Message;

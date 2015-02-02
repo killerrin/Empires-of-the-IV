@@ -36,12 +36,17 @@ namespace EmpiresOfTheIV
             var statusBar = StatusBar.GetForCurrentView();
             statusBar.HideAsync();
             
+            // Save the Launch Arguments
+            Consts.LaunchArguments = launchArguments;
+
             // Save the Current
             Current = this;
 
-            // Finally, Create the game. 
-            if (Consts.Game == null)
-                Consts.Game = XamlGame<EmpiresOfTheIVGame>.Create(launchArguments, Window.Current.CoreWindow, this);
+            // Set the Loaded Event
+            Loaded += MainPage_Loaded;
+
+            // Create the Game!
+            CreateGame();
         }
 
         private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)

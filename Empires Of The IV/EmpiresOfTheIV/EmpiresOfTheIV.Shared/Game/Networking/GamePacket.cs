@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EmpiresOfTheIV.Game.Enumerators;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -8,16 +9,18 @@ namespace EmpiresOfTheIV.Game.Networking
 {
     public class GamePacket : EotIVPacket
     {
+        CommandType CommandType { get; set; }
 
-        public GamePacket(bool requiresAck)
+        public GamePacket(bool requiresAck, CommandType commandType)
             : base(requiresAck, PacketType.GameData)
         {
+            CommandType = commandType;
         }
 
-        public override void SetFromOtherPacket(GamePacket o)
+        public void SetFromOtherPacket(GamePacket o)
         {
             base.SetFromOtherPacket(o);
-
+            CommandType = o.CommandType;
         }
 
         public override string ThisToJson()

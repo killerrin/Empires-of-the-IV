@@ -44,6 +44,8 @@ namespace EmpiresOfTheIV.Game
 
         #endregion
 
+        bool m_doOnlyOnce = false;
+
         #region Menus
 
         #endregion
@@ -63,12 +65,17 @@ namespace EmpiresOfTheIV.Game
         {
             // Load the State Manager
             m_stateManager = new StateManager(m_game, Color.Black);
+            m_stateManager.OnBackButtonPressed += m_stateManager_OnBackButtonPressed;
             m_stateManager.OnExit += OnExitTriggered;
 
             // Load the Other Managers
             m_loadingManager = new LoadingManager(m_game);
             m_gameInputManager = new GameInputManager(m_game);
-            m_networkManager = new NetworkManager(m_game);
+        }
+
+        private void m_stateManager_OnBackButtonPressed(object sender, EventArgs e)
+        {
+            
         }
 
         private void OnExitTriggered(object sender, EventArgs e)
@@ -84,6 +91,15 @@ namespace EmpiresOfTheIV.Game
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         public void Update(GameTime gameTime)
         {
+            // Because MonoGame opertes in a way where Everything up till the Before is being called before
+            // The initial XAML Page is able to load, We defer some non-essential loading to the first
+            // Update to ensure that the operating system doesn't force-quit the Game during load
+            if (!m_doOnlyOnce)
+            {
+                m_networkManager = new NetworkManager(m_game);
+                m_doOnlyOnce = true;
+            }
+
             // First, Update the StateManager
             m_stateManager.Update(gameTime);
 

@@ -8,13 +8,12 @@ namespace EmpiresOfTheIV.Game.Networking
 {
     public class SystemPacket : EotIVPacket
     {
-
         public SystemPacket(bool requiresAck)
             : base(requiresAck, PacketType.System)
         {
         }
 
-        public override void SetFromOtherPacket(SystemPacket o)
+        public void SetFromOtherPacket(SystemPacket o)
         {
             base.SetFromOtherPacket(o);
 

@@ -26,12 +26,18 @@ namespace EmpiresOfTheIV
         {
             this.InitializeComponent();
 
+            // Save the Launch Arguments
+            Consts.LaunchArguments = launchArguments;
+
             // Save the Current
             Current = this;
 
-            // Create the game.
-            if (Consts.Game == null)
-                Consts.Game = XamlGame<EmpiresOfTheIVGame>.Create(launchArguments, Window.Current.CoreWindow, this);
+            // Set the Loaded Event
+            Loaded += MainPage_Loaded;
+
+            // Create the Game!
+            CreateGame();
         }
+
     }
 }

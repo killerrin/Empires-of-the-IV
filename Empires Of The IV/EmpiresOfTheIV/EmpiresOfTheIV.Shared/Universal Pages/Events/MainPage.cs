@@ -15,14 +15,22 @@ namespace EmpiresOfTheIV
     {
         #region Fields/Properties
         public static MainPage Current { get; private set; }
-        //readonly EmpiresOfTheIVGame m_game;
 
         public static Rectangle MonoGamePageDim { get; private set; }
         public static Frame PageFrame { get; private set; }
         public static MediaElement CortanaMediaElement { get; private set; }
         #endregion
 
+        public void CreateGame()
+        {
+            // Finally, Create the game. 
+            if (Consts.Game == null)
+                Consts.Game = XamlGame<EmpiresOfTheIVGame>.Create(Consts.LaunchArguments, Window.Current.CoreWindow, this);
+        }
 
+        public void MainPage_Loaded(object sender, RoutedEventArgs e)
+        {
+        }
 
         #region Events
         private void PageFrame_Loaded(object sender, RoutedEventArgs e)

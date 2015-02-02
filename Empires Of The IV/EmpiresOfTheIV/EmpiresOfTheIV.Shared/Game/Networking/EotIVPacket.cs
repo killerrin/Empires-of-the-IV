@@ -17,7 +17,7 @@ namespace EmpiresOfTheIV.Game.Networking
             PacketType = packetType;
         }
 
-        public override void SetFromOtherPacket(EotIVPacket o)
+        public void SetFromOtherPacket(EotIVPacket o)
         {
             base.SetFromOtherPacket(o);
             PacketType = o.PacketType;

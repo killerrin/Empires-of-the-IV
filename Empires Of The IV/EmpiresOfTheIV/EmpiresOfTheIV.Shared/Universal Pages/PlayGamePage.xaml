@@ -9,9 +9,9 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.75*"/>
+            <ColumnDefinition Width="0.15*"/>
             <ColumnDefinition Width="4*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="0.15*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.75*"/>
@@ -20,9 +20,9 @@
         </Grid.RowDefinitions>
 
         <StackPanel x:Name="menuOptions" Grid.Column="1" Grid.Row="1" Orientation="Vertical">
-            <Button Content="Singleplayer"      IsEnabled="False"   Style="{StaticResource GenericMenuButton}" Click="SingleplayerButton_Click" />
-            <Button Content="Bluetooth"         IsEnabled="False"   Style="{StaticResource GenericMenuButton}" Click="BluetoothMultiplayerButton_Click"/>
-            <Button Content="Lan"               IsEnabled="True"    Style="{StaticResource GenericMenuButton}" Click="LanMultiplayerButton_Click"/>
+            <Button Content="Singleplayer"      Visibility="Collapsed"   Style="{StaticResource GenericMenuButton}" Click="SingleplayerButton_Click" />
+            <Button Content="Bluetooth"         Visibility="Collapsed"   Style="{StaticResource GenericMenuButton}" Click="BluetoothMultiplayerButton_Click"/>
+            <Button Content="Lan"               Visibility="Visible"     Style="{StaticResource GenericMenuButton}" Click="LanMultiplayerButton_Click"/>
         </StackPanel>
     </Grid>
 </Page>
