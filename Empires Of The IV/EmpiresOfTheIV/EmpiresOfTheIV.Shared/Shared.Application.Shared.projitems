@@ -15,13 +15,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)BluetoothNetworkAdapter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data Models\NameDescription.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data Models\NameImage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Data Models\NameImageDescription.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameConnectionType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\NetworkStage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Planet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\BluetoothMultiplayerMenu.cs" />
@@ -37,6 +34,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\OptionsMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\MainMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\SplashScreenMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\GamePacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\ChatPacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\EotIVPacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\PacketType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\NetworkManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\StateManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformMenuAdapter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\BlankPage.xaml.cs">
@@ -106,15 +108,15 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Styles\Constants.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)Styles\GameLobbyStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Styles\NetworkConnectionStyles.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="$(MSBuildThisFileDirectory)Styles\UniversalStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -188,5 +190,8 @@
     <Content Include="$(MSBuildThisFileDirectory)Content\Planet Textures\Yol Texture.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Data Models\" />
   </ItemGroup>
 </Project>

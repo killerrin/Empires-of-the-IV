@@ -1,0 +1,27 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:EmpiresOfTheIV.Styles">
+
+    
+    <!-- Constants -->
+    <x:String x:Key="AppName">Empires of the IV</x:String>
+    <FontFamily x:Key="EmpiresOfTheIVFont">../Assets/Space and Astronomy.ttf#Space and Astronomy</FontFamily>
+    
+    <Color x:Key="EmpiresOfTheIVGreen">DarkGreen</Color>
+    <Color x:Key="EmpiresOfTheIVWhite">White</Color>
+    
+    <SolidColorBrush x:Key="EmpiresOfTheIVMenuButtonBrush" Color="{StaticResource EmpiresOfTheIVGreen}" />
+    <SolidColorBrush x:Key="EmpiresOfTheIVMenuTextBlockBrush" Color="{StaticResource EmpiresOfTheIVWhite}" />
+    
+    
+    <!-- Universal Styles -->
+    <Style x:Key="RectangleFade" TargetType="Rectangle">
+        <Setter Property="Fill" Value="Black"/>
+        <Setter Property="Opacity" Value="0.25"/>
+
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    </Style>
+
+</ResourceDictionary>

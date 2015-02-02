@@ -1,6 +1,6 @@
-﻿using EmpiresOfTheIV.Data_Models;
-using KillerrinStudiosToolkit;
+﻿using KillerrinStudiosToolkit;
 using KillerrinStudiosToolkit.Enumerators;
+using KillerrinStudiosToolkit.Data_Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -34,42 +34,42 @@ namespace EmpiresOfTheIV
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            Consts.BluetoothNetworkAdapter.ConnectionStatusChanged += BluetoothConnectionHelper_ConnectionStatusChanged;
-            Consts.BluetoothNetworkAdapter.MessageReceived += BluetoothConnectionHelper_MessageRecieved;
-            Consts.BluetoothNetworkAdapter.PeersFound += BluetoothConnectionHelper_PeersFound;
+            Consts.Game.GameManager.NetworkManager.ConnectionStatusChanged += BluetoothConnectionHelper_ConnectionStatusChanged;
+            Consts.Game.GameManager.NetworkManager.OnMessageRecieved += BluetoothConnectionHelper_MessageRecieved;
+            Consts.Game.GameManager.NetworkManager.PeersFound += BluetoothConnectionHelper_PeersFound;
             
-            //ObservableCollection<NameDescription> devices = new ObservableCollection<NameDescription>();
-            //devices.Add(new NameDescription("Lumia", ""));
-            //devices.Add(new NameDescription("Surface", "192.168.0.1"));
-            //connectionListBox.ItemsSource = devices;
+            ObservableCollection<NameDescription> devices = new ObservableCollection<NameDescription>();
+            devices.Add(new NameDescription("Lumia", ""));
+            devices.Add(new NameDescription("Surface", "192.168.0.1"));
+            connectionListBox.ItemsSource = devices;
             
             base.OnNavigatedTo(e);
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
-            Consts.BluetoothNetworkAdapter.ConnectionStatusChanged -= BluetoothConnectionHelper_ConnectionStatusChanged;
-            Consts.BluetoothNetworkAdapter.MessageReceived -= BluetoothConnectionHelper_MessageRecieved;
-            Consts.BluetoothNetworkAdapter.PeersFound -= BluetoothConnectionHelper_PeersFound;
+            //Consts.Game.GameManager.NetworkManager.ConnectionStatusChanged -= BluetoothConnectionHelper_ConnectionStatusChanged;
+            //Consts.Game.GameManager.NetworkManager.OnMessageRecieved -= BluetoothConnectionHelper_MessageRecieved;
+            //Consts.Game.GameManager.NetworkManager.PeersFound -= BluetoothConnectionHelper_PeersFound;
             base.OnNavigatedFrom(e);
         }
 
         #region Control Events
         private void BeginSearchButton_Click(object sender, RoutedEventArgs e)
         {
-            NetworkConnectionState currentConnectionState = Consts.BluetoothNetworkAdapter.BluetoothConnectionHelper.NetworkConnectionStatus;
-            if (currentConnectionState == NetworkConnectionState.NotSearching)
-            {
-                Consts.BluetoothNetworkAdapter.StartSearchBluetooth();
-                try { beginSearchButton.Content = "Stop Searching"; }
-                catch (Exception) { }
-            }
-            else if (currentConnectionState == NetworkConnectionState.Searching)
-            {
-                Consts.BluetoothNetworkAdapter.StopSearch();
-                try { beginSearchButton.Content = "Begin Searching"; }
-                catch (Exception) { }
-            }
+            //NetworkConnectionState currentConnectionState = Consts.BluetoothNetworkAdapter.BluetoothConnectionHelper.NetworkConnectionStatus;
+            //if (currentConnectionState == NetworkConnectionState.NotSearching)
+            //{
+            //    Consts.BluetoothNetworkAdapter.StartSearchBluetooth();
+            //    try { beginSearchButton.Content = "Stop Searching"; }
+            //    catch (Exception) { }
+            //}
+            //else if (currentConnectionState == NetworkConnectionState.Searching)
+            //{
+            //    Consts.BluetoothNetworkAdapter.StopSearch();
+            //    try { beginSearchButton.Content = "Begin Searching"; }
+            //    catch (Exception) { }
+            //}
         }
 
         private void BluetoothSettingsButton_Click(object sender, RoutedEventArgs e)

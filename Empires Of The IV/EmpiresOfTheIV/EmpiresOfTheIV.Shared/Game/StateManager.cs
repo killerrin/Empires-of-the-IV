@@ -45,6 +45,8 @@ namespace EmpiresOfTheIV.Game
         public int BackStackDepth { get { return m_gameStates.Count; } }
         public bool CanGoBack { get { return m_gameStates.Count > 0; } }
 
+        public bool HandleBackButtonPressed { get; set; }
+
 
         #region Flags
         bool m_exit;
@@ -58,6 +60,7 @@ namespace EmpiresOfTheIV.Game
         #endregion
 
         public event EventHandler OnExit;
+        public event EventHandler OnBackButtonPressed;
 
         public StateManager(EmpiresOfTheIVGame game, Color fadeColor)
         {
@@ -68,11 +71,24 @@ namespace EmpiresOfTheIV.Game
             m_goingToMenu = null;
             m_goingBack = false;
 
+            HandleBackButtonPressed = true;
+
             ResetFlags();
 
             m_fadeEffect = new Fade(game.GraphicsDevice, fadeColor, 0.002f);
             m_fadeEffect.ChangeWithoutFade(FadeStatus.FadingIn);
             m_fadeEffect.Completed += FadeEffect_Completed;
+
+            PlatformMenuAdapter.OnBackButtonPressed += PlatformMenuAdapter_OnBackButtonPressed;
+        }
+
+        void PlatformMenuAdapter_OnBackButtonPressed(object sender, EventArgs e)
+        {
+            if (HandleBackButtonPressed)
+                GoBack();
+
+            if (OnBackButtonPressed != null)
+                OnBackButtonPressed(null, null);
         }
 
         #region Interface Implimentations
@@ -80,6 +96,9 @@ namespace EmpiresOfTheIV.Game
         #endregion
 
         #region Helper Methods
+        /// <summary>
+        /// Begins a fade which will end the game
+        /// </summary>
         public void ExitGame()
         {
             // Hide the Frame to prepare for Navigation
@@ -90,6 +109,9 @@ namespace EmpiresOfTheIV.Game
             // Lastly set the automation state
             m_fadeEffect.ChangeFadeStatus(FadeStatus.FadingIn);
         }
+        /// <summary>
+        /// Forces the game to exit immediately
+        /// </summary>
         public void ForceExitGame()
         {
             m_exit = true;
@@ -102,6 +124,7 @@ namespace EmpiresOfTheIV.Game
             m_removePreviousOnCompleted = false;
             m_hideFrameBeforeTransition = true;
         }
+
         #endregion
 
         #region Update/Draw

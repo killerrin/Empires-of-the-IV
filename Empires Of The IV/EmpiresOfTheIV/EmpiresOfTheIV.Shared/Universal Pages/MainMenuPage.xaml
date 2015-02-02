@@ -20,9 +20,9 @@
         </Grid.RowDefinitions>
  
         <StackPanel x:Name="menuOptions" Grid.Column="1" Grid.Row="1" Orientation="Vertical">
-            <Button Content="Play"      Style="{StaticResource MainMenuButton}" Click="PlayButton_Click" />
-            <Button Content="Options"   Style="{StaticResource MainMenuButton}" Click="OptionsButton_Click"/>
-            <Button Content="Credits"   Style="{StaticResource MainMenuButton}" Click="CreditsButton_Click"/>
+            <Button Content="Play"      Style="{StaticResource GenericMenuButton}" Click="PlayButton_Click" />
+            <Button Content="Options"   Style="{StaticResource GenericMenuButton}" Click="OptionsButton_Click"/>
+            <Button Content="Credits"   Style="{StaticResource GenericMenuButton}" Click="CreditsButton_Click"/>
         </StackPanel>
     </Grid>
 </Page>

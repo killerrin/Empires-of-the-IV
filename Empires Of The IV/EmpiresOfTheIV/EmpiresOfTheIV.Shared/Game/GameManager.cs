@@ -38,6 +38,10 @@ namespace EmpiresOfTheIV.Game
 
         protected StateManager m_stateManager;
         public StateManager StateManager { get { return m_stateManager; } set { m_stateManager = value; } }
+
+        protected NetworkManager m_networkManager;
+        public NetworkManager NetworkManager { get { return m_networkManager; } set { m_networkManager = value; } }
+
         #endregion
 
         #region Menus
@@ -64,6 +68,7 @@ namespace EmpiresOfTheIV.Game
             // Load the Other Managers
             m_loadingManager = new LoadingManager(m_game);
             m_gameInputManager = new GameInputManager(m_game);
+            m_networkManager = new NetworkManager(m_game);
         }
 
         private void OnExitTriggered(object sender, EventArgs e)

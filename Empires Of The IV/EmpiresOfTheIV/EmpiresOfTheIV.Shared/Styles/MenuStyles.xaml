@@ -3,8 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:EmpiresOfTheIV.Styles">
 
-    <Style x:Key="MainMenuButton" TargetType="Button">
-        <Setter Property="Foreground" Value="DarkGreen"/>
+    <Style x:Key="GenericMenuButton" TargetType="Button">
+        <Setter Property="Foreground" Value="{StaticResource EmpiresOfTheIVMenuButtonBrush}"/>
         <Setter Property="BorderBrush" Value="{x:Null}"/>
 
         <Setter Property="Margin" Value="0,0,0,0"/>
@@ -13,18 +13,18 @@
 
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
-        
-        <Setter Property="FontFamily" Value="Assets/Space and Astronomy.ttf#Space and Astronomy"/>
+
+        <Setter Property="FontFamily" Value="{StaticResource EmpiresOfTheIVFont}"/>
         <Setter Property="FontSize" Value="62"/>
     </Style>
 
     <Style x:Key="GameLobbyTeamHeaderText" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="DarkGreen"/>
+        <Setter Property="Foreground" Value="{StaticResource EmpiresOfTheIVMenuButtonBrush}"/>
 
         <Setter Property="Margin" Value="0,0,0,0"/>
         <Setter Property="Width" Value="auto"/>
 
-        <Setter Property="FontFamily" Value="Assets/Space and Astronomy.ttf#Space and Astronomy"/>
+        <Setter Property="FontFamily" Value="{StaticResource EmpiresOfTheIVFont}"/>
         <Setter Property="FontSize" Value="62"/>
     </Style>
 </ResourceDictionary>

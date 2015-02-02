@@ -8,7 +8,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
 
-                <ResourceDictionary Source="Styles/UniversalStyles.xaml" />
+                <ResourceDictionary x:Name="Constants" Source="Styles/Constants.xaml" />
                 <ResourceDictionary Source="Styles/MenuStyles.xaml" />
                 <ResourceDictionary Source="Styles/GameLobbyStyles.xaml" />
                 <ResourceDictionary Source="Styles/NetworkConnectionStyles.xaml" />

@@ -3,18 +3,28 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:EmpiresOfTheIV.Styles">
 
-    <Style x:Key="NetworkConnectionDeviceText" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="Red"/>
+    <Style x:Key="NetworkConnectionDeviceTextBlock" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource EmpiresOfTheIVMenuTextBlockBrush}"/>
 
         <Setter Property="Margin" Value="0,0,0,0"/>
         <Setter Property="Width" Value="auto"/>
 
-        <Setter Property="FontFamily" Value="Assets/Space and Astronomy.ttf#Space and Astronomy"/>
+        <Setter Property="FontFamily" Value="{StaticResource EmpiresOfTheIVFont}"/>
         <Setter Property="FontSize" Value="62"/>
     </Style>
 
+    <Style x:Key="DeviceIPTextBlock" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource EmpiresOfTheIVMenuTextBlockBrush}"/>
+
+        <Setter Property="Margin" Value="0,0,0,0"/>
+        <Setter Property="Width" Value="auto"/>
+
+        <Setter Property="FontFamily" Value="{StaticResource EmpiresOfTheIVFont}"/>
+        <Setter Property="FontSize" Value="24"/>
+    </Style>
+    
     <Style x:Key="NetworkConnectionButton" TargetType="Button">
-        <Setter Property="Foreground" Value="DarkGreen"/>
+        <Setter Property="Foreground" Value="{StaticResource EmpiresOfTheIVMenuButtonBrush}"/>
         <Setter Property="BorderBrush" Value="{x:Null}"/>
 
         <Setter Property="Margin" Value="0,0,0,0"/>
@@ -25,7 +35,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
 
-        <Setter Property="FontFamily" Value="Assets/Space and Astronomy.ttf#Space and Astronomy"/>
+        <Setter Property="FontFamily" Value="{StaticResource EmpiresOfTheIVFont}"/>
         <Setter Property="FontSize" Value="36"/>
     </Style>
 
@@ -41,8 +51,8 @@
     <DataTemplate x:Key="NetworkConnectionItemTemplate">
         <Grid HorizontalAlignment="Stretch">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Name}"        Style="{StaticResource NetworkConnectionDeviceText}"/>
-                <TextBlock Text="{Binding Description}" Style="{StaticResource NetworkConnectionDeviceText}"    Margin="20,0,0,0"/>
+                <TextBlock Text="{Binding Name}"        Style="{StaticResource NetworkConnectionDeviceTextBlock}"/>
+                <TextBlock Text="{Binding Description}" Style="{StaticResource NetworkConnectionDeviceTextBlock}"    Margin="20,0,0,0"/>
             </StackPanel>
         </Grid>
     </DataTemplate>

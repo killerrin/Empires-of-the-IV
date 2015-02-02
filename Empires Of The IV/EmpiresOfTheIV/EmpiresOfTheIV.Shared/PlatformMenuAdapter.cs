@@ -46,11 +46,14 @@ namespace EmpiresOfTheIV
         }
         #endregion
 
+        public static event EventHandler OnBackButtonPressed;
+
+
         #region Hardware Buttons
         public static void BackButtonPressed()
         {
-            if (Consts.EarlyExitCheck()) return;
-            Consts.Game.GameManager.StateManager.GoBack();
+            if (OnBackButtonPressed != null)
+                OnBackButtonPressed(null, null);
         }
 
         public static void HomeButtonPressed()
@@ -101,6 +104,14 @@ namespace EmpiresOfTheIV
         {
             if (Consts.EarlyExitCheck()) return;
             Consts.Game.GameManager.StateManager.Navigate(GameState.LanMultiplayer);
+        }
+        #endregion
+
+        #region Multiplayer Menus
+        public static void LanMultiplayerMenu_ConnectButton_Click()
+        {
+            if (Consts.EarlyExitCheck()) return;
+            Consts.Game.GameManager.StateManager.Navigate(GameState.GameLobby);
         }
         #endregion
     }

@@ -122,6 +122,7 @@
     </AppxManifest>
     <None Include="EmpiresOfTheIV.Windows_StoreKey.pfx" />
     <None Include="EmpiresOfTheIV.Windows_TemporaryKey.pfx" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.scale-100.png" />
@@ -137,10 +138,13 @@
     </Reference>
     <Reference Include="Killerrin Studios Toolkit.Windows, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Extra Libraries\Windows\Killerrin Studios Toolkit.Windows.dll</HintPath>
+      <HintPath>..\..\..\..\Killerrin-Studios-Toolkit\Killerrin Studios Toolkit.Windows\bin\Debug\Killerrin Studios Toolkit.Windows.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MSBuildProgramFiles32)\MonoGame\v3.0\Assemblies\Windows8\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\netcore45\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
