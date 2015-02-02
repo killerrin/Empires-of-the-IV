@@ -25,6 +25,6 @@
         <Setter Property="Width" Value="auto"/>
 
         <Setter Property="FontFamily" Value="{StaticResource EmpiresOfTheIVFont}"/>
-        <Setter Property="FontSize" Value="62"/>
+        <Setter Property="FontSize" Value="36"/>
     </Style>
 </ResourceDictionary>

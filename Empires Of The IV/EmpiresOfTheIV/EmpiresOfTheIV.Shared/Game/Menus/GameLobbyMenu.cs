@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace EmpiresOfTheIV.Game.Menus
@@ -34,6 +35,8 @@ namespace EmpiresOfTheIV.Game.Menus
 
         public override void MenuLoaded()
         {
+            Debug.WriteLine("GameLobbyMenu Loaded");
+
             base.MenuLoaded();
 
             if (NavigationSaveState == Anarian.Enumerators.NavigationSaveState.RecreateState) {

@@ -12,6 +12,7 @@
                 <ResourceDictionary Source="Styles/MenuStyles.xaml" />
                 <ResourceDictionary Source="Styles/GameLobbyStyles.xaml" />
                 <ResourceDictionary Source="Styles/NetworkConnectionStyles.xaml" />
+                <ResourceDictionary Source="Styles/EmpireSelectionStyles.xaml" />
                 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

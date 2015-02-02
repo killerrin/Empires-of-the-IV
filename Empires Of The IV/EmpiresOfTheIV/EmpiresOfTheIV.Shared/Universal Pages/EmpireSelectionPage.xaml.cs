@@ -1,5 +1,7 @@
-﻿using System;
+﻿using KillerrinStudiosToolkit.Data_Models;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -22,9 +24,32 @@ namespace EmpiresOfTheIV
     /// </summary>
     public sealed partial class EmpireSelectionPage : Page
     {
+        ObservableCollection<NameImageDescription> m_empires;
+
         public EmpireSelectionPage()
         {
             this.InitializeComponent();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            m_empires = new ObservableCollection<NameImageDescription>();
+            m_empires.Add(new NameImageDescription("Unanian Empire", new Uri("http://killerrin.com/wikis/eot-iv/images/thumb/b/bb/UnaniFlag.png/300px-UnaniFlag.png", UriKind.Absolute), "UNANIANDESCRIPTION"));
+            m_empires.Add(new NameImageDescription("Crescanian Confederacy", new Uri("http://killerrin.com/wikis/eot-iv/images/thumb/7/77/C.C_Flag.png/300px-C.C_Flag.png", UriKind.Absolute), "CRESCANIANDESCRIPTION"));
+            m_empires.Add(new NameImageDescription("Kingdom of Edolas", new Uri("http://killerrin.com/wikis/eot-iv/images/thumb/8/81/Edolas_Flag.png/300px-Edolas_Flag.png", UriKind.Absolute), "EDOLASDESCRIPTION"));
+            empireSelection_GridView.ItemsSource = m_empires;
+        }
+
+        private void EmpireSelection_GridView_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void EmpireSelection_GridView_Clicked(object sender, ItemClickEventArgs e)
+        {
+
         }
     }
 }
