@@ -7,11 +7,13 @@ using System.Text;
 
 namespace EmpiresOfTheIV.Game
 {
-    public class ChatManager :IEnumerable<ChatMessage>
+    public class ChatManager : IEnumerable<ChatMessage>
     {
         public static readonly Uri DefaultAvatar = new Uri("http://www.killerrin.com", UriKind.Absolute);
 
         public ObservableCollection<ChatMessage> ChatMessages { get; private set; }
+        public int MessageCount { get { return ChatMessages.Count; } }
+
         public Uri CurrentAvatar;
 
         public ChatManager()

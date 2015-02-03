@@ -43,6 +43,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\EotIVPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\PacketType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\NetworkManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\AIPlayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\LocalPlayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\APlayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\NetworkedPlayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\PlayerIDManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\PlayerType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Team.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\TeamID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\StateManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformMenuAdapter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Universal Pages\BlankPage.xaml.cs">
