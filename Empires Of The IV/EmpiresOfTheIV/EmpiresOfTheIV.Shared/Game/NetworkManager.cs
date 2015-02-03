@@ -32,7 +32,7 @@ namespace EmpiresOfTheIV.Game
         public BluetoothConnectionHelper BluetoothConnectionHelper { get; protected set; }
         public LANHelper LanHelper { get; protected set; }
 
-        public HostType HostSettings { get { return LanHelper.HostType; } set { LanHelper.HostType = value; } }
+        public HostType HostSettings { get; set; }
 
         public NetworkStage CurrentNetworkStage { get; protected set; }
         public NetworkType NetworkType { get; protected set; }
@@ -45,6 +45,7 @@ namespace EmpiresOfTheIV.Game
             m_game = game;
 
             // Initialize us to None for later parsing
+            HostSettings = HostType.Client;
             NetworkType = KillerrinStudiosToolkit.Enumerators.NetworkType.None;
 
             // Setup the Helpers

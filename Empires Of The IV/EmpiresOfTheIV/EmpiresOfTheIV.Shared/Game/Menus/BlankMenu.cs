@@ -19,8 +19,8 @@ namespace EmpiresOfTheIV.Game.Menus
 
         #endregion
 
-        public BlankMenu(EmpiresOfTheIVGame game)
-            : base(game, GameState.None)
+        public BlankMenu(EmpiresOfTheIVGame game, object parameter)
+            : base(game, parameter, GameState.None)
         {
 
         }

@@ -24,8 +24,8 @@ namespace EmpiresOfTheIV.Game.Menus
         Overlay m_overlay;
         #endregion
 
-        public GameLobbyMenu(EmpiresOfTheIVGame game, GameConnectionType gameConnectionType)
-            : base(game, GameState.GameLobby)
+        public GameLobbyMenu(EmpiresOfTheIVGame game, object parameter, GameConnectionType gameConnectionType)
+            : base(game, parameter, GameState.GameLobby)
         {
             m_gameConnectionType = gameConnectionType;
 

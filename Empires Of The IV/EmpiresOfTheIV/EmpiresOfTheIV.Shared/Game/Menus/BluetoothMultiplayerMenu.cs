@@ -23,8 +23,8 @@ namespace EmpiresOfTheIV.Game.Menus
         Overlay m_overlay;
         #endregion
 
-        public BluetoothMultiplayerMenu(EmpiresOfTheIVGame game)
-            : base(game, GameState.BluetoothMultiplayer)
+        public BluetoothMultiplayerMenu(EmpiresOfTheIVGame game, object parameter)
+            : base(game, parameter, GameState.BluetoothMultiplayer)
         {
             m_gameConnectionType = GameConnectionType.BluetoothMultiplayer;
 

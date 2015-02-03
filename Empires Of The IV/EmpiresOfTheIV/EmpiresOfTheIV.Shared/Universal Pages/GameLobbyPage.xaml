@@ -8,81 +8,81 @@
     mc:Ignorable="d">
 
     <Grid>
-        <Hub>
-            <HubSection Header="Game" Width="700" Template="{StaticResource TeamsHubSection}">
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="3*" />
-                            <RowDefinition Height="0.1*" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        
-                        <ScrollViewer Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Height="auto">
-                                <StackPanel x:Name="team1StackPanel" Orientation="Vertical" HorizontalAlignment="Stretch" Height="auto">
-                                    <TextBlock Text="Team 1" Style="{StaticResource GameLobbyTeamHeaderText}"/>
-                                    <ListBox x:Name="team1ListBox" 
-                                             Loaded="Team1ListBoxLoaded" Tapped="Team1SelectionChanged" >
-                                        <Run>Test Data 1</Run>
-                                    </ListBox>
-                                </StackPanel>
-                                <StackPanel x:Name="team2StackPanel" Margin="0,20,0,0" Orientation="Vertical" HorizontalAlignment="Stretch" Height="auto">
-                                    <TextBlock Text="Team 2" Style="{StaticResource GameLobbyTeamHeaderText}"/>
-                                    <ListBox x:Name="team2ListBox" 
-                                             Loaded="Team2ListBoxLoaded" Tapped="Team2SelectionChanged">
-                                        <Run>Test Data 2</Run>
-                                    </ListBox>
-                                </StackPanel>
+        <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                      ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                      ScrollViewer.HorizontalScrollMode="Enabled" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+            <Grid Width="auto" VerticalAlignment="Stretch" Margin="20,20,20,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="500" Width="auto"/>
+                    <ColumnDefinition MinWidth="500" Width="auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="3*" />
+                        <RowDefinition Height="0.1*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+
+                    <ScrollViewer Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="0,0,20,0">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Height="auto">
+                            <StackPanel x:Name="team1StackPanel" Orientation="Vertical" HorizontalAlignment="Stretch" Height="auto">
+                                <TextBlock Text="Team 1" Style="{StaticResource GameLobbyTeamHeaderText}"/>
+                                <ListBox x:Name="team1ListBox" 
+                                         Tapped="Team1SelectionChanged" >
+                                    <Run>Test Data 1</Run>
+                                </ListBox>
                             </StackPanel>
-                        </ScrollViewer>
-                        
-                        <Button x:Name="gameStartButton" Content="Start" Grid.Row="2"  Style="{StaticResource GameLobbyStartButton}" Tapped="gameStartButton_Tapped"/>
-                    </Grid>
-                </DataTemplate>
-            </HubSection>
+                            <StackPanel x:Name="team2StackPanel" Margin="0,20,0,0" Orientation="Vertical" HorizontalAlignment="Stretch" Height="auto">
+                                <TextBlock Text="Team 2" Style="{StaticResource GameLobbyTeamHeaderText}"/>
+                                <ListBox x:Name="team2ListBox" 
+                                         Tapped="Team2SelectionChanged">
+                                    <Run>Test Data 2</Run>
+                                </ListBox>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
 
-            <HubSection x:Name="chatHubSection" Header="Chat" Width="500" Template="{StaticResource ChatHubSection}">
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="3*" />
-                            <RowDefinition Height="0.1*" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
+                    <Button x:Name="gameStartButton" Content="Start" Grid.Row="2" Style="{StaticResource GameLobbyStartButton}" Tapped="gameStartButton_Tapped"/>
+                </Grid>
 
-                        <ScrollViewer Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            <TextBlock x:Name="chatTextBlock" HorizontalAlignment="Stretch" Height="auto" 
+                <Grid Grid.Column="1" Margin="20,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="4*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="0,0,20,0">
+                        <TextBlock x:Name="chatTextBlock" HorizontalAlignment="Stretch" Height="auto" 
                                        TextWrapping="WrapWholeWords" Margin="0,0,0,0"
                                        Text="" />
-                        </ScrollViewer>
+                    </ScrollViewer>
 
-                        <Grid Grid.Column="0" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="5*" />
-                                <ColumnDefinition Width="1.5*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="0.15*" />
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="0.15*" />
-                            </Grid.RowDefinitions>
+                    <Grid Grid.Column="0" Grid.Row="1" Margin="0,20,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="5*" />
+                            <ColumnDefinition Width="1.5*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
 
-                            <TextBox x:Name="chatTextBox" PlaceholderText="Type a message here" 
-                                        Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                            <Button x:Name="chatSendButton" Content="Send" 
-                                        Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                        <TextBox x:Name="chatTextBox" PlaceholderText="Type a message here" 
+                                        Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        <Button x:Name="chatSendButton" Content="Send" 
+                                        Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
-                        </Grid>
                     </Grid>
-                </DataTemplate>
-            </HubSection>
-        </Hub>
+                </Grid>
+            </Grid>
+            
+        </ScrollViewer>
     </Grid>
 </Page>

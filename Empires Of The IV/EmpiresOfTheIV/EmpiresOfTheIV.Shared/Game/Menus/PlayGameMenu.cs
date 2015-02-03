@@ -20,8 +20,8 @@ namespace EmpiresOfTheIV.Game.Menus
         Overlay m_overlay;
         #endregion
 
-        public PlayGameMenu(EmpiresOfTheIVGame game)
-            : base(game, GameState.PlayGame)
+        public PlayGameMenu(EmpiresOfTheIVGame game, object parameter)
+            : base(game, parameter, GameState.PlayGame)
         {
             m_overlay = new Overlay(game.GraphicsDevice, Color.Black);
             m_overlay.FadePercentage = 0.5f;

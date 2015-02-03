@@ -23,50 +23,35 @@ namespace EmpiresOfTheIV
     /// </summary>
     public sealed partial class GameLobbyPage : Page
     {
-        ListBox team1ListBox;
-        ListBox team2ListBox;
-
         public GameLobbyPage()
         {
-            //this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Required;
+            this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Required;
             this.InitializeComponent();
             Debug.WriteLine("GameLobbyPage loaded");
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            //Consts.Game.GameManager.StateManager.HandleBackButtonPressed = false;
+            Consts.Game.GameManager.StateManager.HandleBackButtonPressed = false;
             base.OnNavigatedTo(e);
         }
 
         #region GameLobby Events
-        #region Loaded Events
-        private void Team1ListBoxLoaded(object sender, RoutedEventArgs e)
-        {
-            //team1ListBox = (sender as ListBox);
-        }
-
-        private void Team2ListBoxLoaded(object sender, RoutedEventArgs e)
-        {
-            //team2ListBox = (sender as ListBox);
-        }
-        #endregion
-
         private void gameStartButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
 
         }
 
-        #endregion
-
         private void Team1SelectionChanged(object sender, TappedRoutedEventArgs e)
         {
-            //Frame.Navigate(typeof(EmpireSelectionPage));
+            Frame.Navigate(typeof(EmpireSelectionPage));
         }
         private void Team2SelectionChanged(object sender, TappedRoutedEventArgs e)
         {
 
         }
+        #endregion
+
         #region Chat Events
 
         #endregion

@@ -85,7 +85,7 @@ namespace EmpiresOfTheIV.Game
             Windows.UI.Xaml.Application.Current.Exit();
         }
 
-        public void LoadContent() { m_loadingManager.LoadContent(m_game.GraphicsDevice); }
+        public void LoadContent() {  }
 
 
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
@@ -96,6 +96,12 @@ namespace EmpiresOfTheIV.Game
             // Update to ensure that the operating system doesn't force-quit the Game during load
             if (!m_doOnlyOnce)
             {
+                try
+                {
+                    m_loadingManager.LoadContent(m_game.GraphicsDevice);
+                }
+                catch (Exception ex) { Debug.WriteLine(ex.PrintException()); }
+
                 m_networkManager = new NetworkManager(m_game);
                 m_doOnlyOnce = true;
             }

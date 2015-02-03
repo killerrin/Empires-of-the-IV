@@ -23,8 +23,8 @@ namespace EmpiresOfTheIV.Game.Menus
         Overlay m_overlay;
         #endregion
 
-        public LanMultiplayerMenu(EmpiresOfTheIVGame game)
-            : base(game, GameState.LanMultiplayer)
+        public LanMultiplayerMenu(EmpiresOfTheIVGame game, object parameter)
+            : base(game, parameter, GameState.LanMultiplayer)
         {
             m_gameConnectionType = GameConnectionType.LANMultiplayer;
             

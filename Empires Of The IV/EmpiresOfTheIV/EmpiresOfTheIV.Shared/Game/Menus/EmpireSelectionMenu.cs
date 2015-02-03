@@ -19,8 +19,8 @@ namespace EmpiresOfTheIV.Game.Menus
 
         #endregion
 
-        public EmpireSelectionMenu(EmpiresOfTheIVGame game)
-            :base(game, GameState.EmpireSelection)
+        public EmpireSelectionMenu(EmpiresOfTheIVGame game, object parameter)
+            :base(game, parameter, GameState.EmpireSelection)
         {
 
         }

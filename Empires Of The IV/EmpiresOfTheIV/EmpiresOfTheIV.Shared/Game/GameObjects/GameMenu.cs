@@ -24,12 +24,12 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public Level Level { get { return m_level; } protected set { m_level = value; } }
         #endregion
 
-        public GameMenu(EmpiresOfTheIVGame game, GameState gameState)
-            :base()
+        public GameMenu(EmpiresOfTheIVGame game, object pageParameter, GameState gameState)
+            : base(pageParameter)
         {
             m_game = game;
             m_gameState = gameState;
-
+            
             m_level = new Level(m_game.GraphicsDevice);
         }
 

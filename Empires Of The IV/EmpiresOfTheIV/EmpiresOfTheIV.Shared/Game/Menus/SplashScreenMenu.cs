@@ -23,8 +23,8 @@ namespace EmpiresOfTheIV.Game.Menus
         Timer m_timer;
         #endregion
 
-        public SplashScreenMenu(EmpiresOfTheIVGame game)
-            : base(game, GameState.SplashScreen)
+        public SplashScreenMenu(EmpiresOfTheIVGame game, object parameter)
+            : base(game, parameter, GameState.SplashScreen)
         {
             if (AlreadyLoaded) { game.GameManager.StateManager.ForceExitGame(); }
             AlreadyLoaded = true;

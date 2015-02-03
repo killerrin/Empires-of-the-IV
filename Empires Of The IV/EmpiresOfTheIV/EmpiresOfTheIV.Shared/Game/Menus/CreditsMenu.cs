@@ -19,8 +19,8 @@ namespace EmpiresOfTheIV.Game.Menus
 
         #endregion
 
-        public CreditsMenu(EmpiresOfTheIVGame game)
-            :base(game, GameState.Credits)
+        public CreditsMenu(EmpiresOfTheIVGame game, object parameter)
+            :base(game, parameter, GameState.Credits)
         {
 
         }

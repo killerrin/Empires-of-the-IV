@@ -19,8 +19,8 @@ namespace EmpiresOfTheIV.Game.Menus
 
         #endregion
 
-        public GameOverMenu(EmpiresOfTheIVGame game)
-            :base(game, GameState.GameOver)
+        public GameOverMenu(EmpiresOfTheIVGame game, object parameter)
+            :base(game, parameter, GameState.GameOver)
         {
 
         }

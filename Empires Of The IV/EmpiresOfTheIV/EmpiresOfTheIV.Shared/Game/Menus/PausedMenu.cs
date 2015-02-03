@@ -19,8 +19,8 @@ namespace EmpiresOfTheIV.Game.Menus
 
         #endregion
 
-        public PausedMenu(EmpiresOfTheIVGame game)
-            : base(game, GameState.Paused)
+        public PausedMenu(EmpiresOfTheIVGame game, object parameter)
+            : base(game, parameter, GameState.Paused)
         {
 
         }

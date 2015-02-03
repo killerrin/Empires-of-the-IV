@@ -19,8 +19,8 @@ namespace EmpiresOfTheIV.Game.Menus
 
         #endregion
 
-        public OptionsMenu(EmpiresOfTheIVGame game)
-            : base(game, GameState.Options)
+        public OptionsMenu(EmpiresOfTheIVGame game, object parameter)
+            : base(game, parameter, GameState.Options)
         {
 
         }
