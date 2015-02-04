@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace EmpiresOfTheIV.Game
+namespace EmpiresOfTheIV.Game.GameModels
 {
     public class ChatManager : IEnumerable<ChatMessage>
     {

@@ -16,12 +16,14 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Data Models\ChatMessage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\ChatManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Commands\CommandType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameConnectionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\NetworkStage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\AGameModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\ChatManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\GameModel1v1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Planet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\BluetoothMultiplayerMenu.cs" />
@@ -44,11 +46,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\PacketType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\NetworkManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\AIPlayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Cost.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Economy.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\LocalPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\APlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\NetworkedPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\PlayerIDManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\PlayerType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Resource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\ResourceType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Team.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\TeamID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\StateManager.cs" />

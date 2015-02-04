@@ -1,6 +1,8 @@
-﻿using Anarian.Interfaces;
+﻿using Anarian.DataStructures;
+using Anarian.Interfaces;
 using EmpiresOfTheIV.Game.Enumerators;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +10,7 @@ using System.Text;
 
 namespace EmpiresOfTheIV.Game.Players
 {
-    public class Team : IUpdatable, IEnumerable<APlayer>
+    public class Team : IUpdatable, IRenderable, IEnumerable<APlayer>
     {
         public TeamID TeamID;
         public List<APlayer> Players { get; protected set; }
@@ -77,6 +79,7 @@ namespace EmpiresOfTheIV.Game.Players
         }
 
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
         #endregion
 
         public void Update(GameTime gameTime)
@@ -84,6 +87,14 @@ namespace EmpiresOfTheIV.Game.Players
             foreach (var p in Players)
             {
                 p.Update(gameTime);
+            }
+        }
+
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
+        {
+            foreach (var p in Players)
+            {
+                p.Draw(gameTime, spriteBatch, graphics, camera);
             }
         }
     }
