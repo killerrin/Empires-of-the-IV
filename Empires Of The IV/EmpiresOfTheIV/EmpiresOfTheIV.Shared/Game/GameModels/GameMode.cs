@@ -6,5 +6,8 @@ namespace EmpiresOfTheIV.Game.Enumerators
 {
     public enum GameMode
     {
+        None,
+        OneVSOne,
+        TowerDefence
     }
 }

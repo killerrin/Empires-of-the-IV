@@ -17,12 +17,12 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Data Models\ChatMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Commands\CommandType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameConnectionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\NetworkStage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\AGameModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\ChatManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\GameMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\GameModel1v1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Planet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GameMenu.cs" />

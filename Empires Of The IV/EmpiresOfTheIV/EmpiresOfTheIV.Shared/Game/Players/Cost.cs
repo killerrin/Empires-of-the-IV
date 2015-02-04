@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EmpiresOfTheIV.Game.Players
 {
-    public struct Cost
+    public class Cost
     {
         public float CurrencyCost { get; set; }
         public float MetalCost { get; set; }
