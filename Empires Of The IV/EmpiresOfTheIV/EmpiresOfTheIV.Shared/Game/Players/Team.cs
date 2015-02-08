@@ -65,11 +65,7 @@ namespace EmpiresOfTheIV.Game.Players
         #endregion
 
         #region Interface Implimentations
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            // Lets call the generic version here
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
         public IEnumerator<APlayer> GetEnumerator()
         {
             for (int i = 0; i < Players.Count; i++)
