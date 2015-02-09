@@ -29,6 +29,8 @@ namespace EmpiresOfTheIV.Game
         public readonly Guid UniqueNetworkGUID = new Guid("20BB9225-AC4B-4ACD-9B12-126D8EBCF2D6");
         public readonly string NetworkPort = "27135";
 
+        public bool IsConnected { get; private set; }
+
         public BluetoothConnectionHelper BluetoothConnectionHelper { get; protected set; }
         public LANHelper LanHelper { get; protected set; }
 
@@ -48,6 +50,11 @@ namespace EmpiresOfTheIV.Game
             HostSettings = HostType.Client;
             NetworkType = KillerrinStudiosToolkit.Enumerators.NetworkType.None;
 
+            IsConnected = false;
+
+            // Subscribe to myself to handle specific setup code
+            OnMessageRecieved += NetworkManager_OnMessageRecieved;
+
             // Setup the Helpers
             LanHelper = new LANHelper(UniqueNetworkGUID);
             LanHelper.OnTCPConnected += LanHelper_OnTCPConnected;
@@ -63,6 +70,9 @@ namespace EmpiresOfTheIV.Game
 
         #region Events
         public event OnConnectedEventHandler OnConnected;
+        public event EventHandler OnFailedToConnect;
+        public event EventHandler OnDisconnected;
+
         public event ReceivedMessageEventHandler OnMessageRecieved;
         public event TypedEventHandler<object, TriggeredConnectState> ConnectionStatusChanged;
         public event TypedEventHandler<object, IEnumerable<PeerInformation>> PeersFound;
@@ -101,25 +111,17 @@ namespace EmpiresOfTheIV.Game
         #endregion
 
         #region Connection
-        /// <summary>
-        /// Starts a connection with the specified settings
-        /// </summary>
-        /// <param name="networkType">The type of connection we wish to connect over</param>
-        /// <param name="IP">The IP to connect to. Null if using Bluetooth</param>
-        public async void Connect(NetworkType networkType, string IP)
+        public async void StartListening(NetworkType networkType)
         {
             if (NetworkType != NetworkType.None) { Debug.WriteLine("Please Disconnect your connection first"); return; }
-            
-            NetworkType = networkType;
-            CurrentNetworkStage = NetworkStage.HandshakingConnection;
 
-            // Subscribe to myself to handle specific setup code
-            OnMessageRecieved += NetworkManager_OnMessageRecieved;
-            
+            HostSettings = HostType.Host;
+            NetworkType = networkType;
+            CurrentNetworkStage = NetworkStage.InLobby;
+
             if (NetworkType == NetworkType.LAN)
             {
-                LanHelper.ConnectUDP(new NetworkConnectionEndpoint(IP, NetworkPort));
-                BeginUDPHandshake();
+                LanHelper.StartUDPListening(NetworkPort);
             }
             else if (NetworkType == NetworkType.Bluetooth)
             {
@@ -127,48 +129,58 @@ namespace EmpiresOfTheIV.Game
             }
         }
 
-        public void Disconnect()
+        /// <summary>
+        /// Starts a connection with the specified settings
+        /// </summary>
+        /// <param name="networkType">The type of connection we wish to connect over</param>
+        /// <param name="IP">The IP to connect to. Null if using Bluetooth</param>
+        /// <param name="handshakeConnection">True if connecting to a host, False if responding to a connection request with a client</param>
+        public async void Connect(NetworkType networkType, string IP, bool handshakeConnection = true)
         {
-            if (NetworkType == NetworkType.None) return;
-
+            if (NetworkType != NetworkType.None && IsConnected) { Debug.WriteLine("Please Disconnect your connection first"); return; }
+            
+            NetworkType = networkType;
+            CurrentNetworkStage = NetworkStage.HandshakingConnection;
+            
             if (NetworkType == NetworkType.LAN)
             {
-                LanHelper.SendUDPCloseMessage();
-                LanHelper.Reset();
-                CurrentNetworkStage = NetworkStage.None;
+                LanHelper.ConnectUDP(new NetworkConnectionEndpoint(IP, NetworkPort));
             }
             else if (NetworkType == NetworkType.Bluetooth)
             {
 
             }
+
+            if (handshakeConnection)
+            {
+                SendMessage(StaticNetworkMessages.AttemptingToConnect);
+            }
+        }
+
+        public void Disconnect()
+        {
+            if (NetworkType == NetworkType.LAN)
+            {
+                LanHelper.SendUDPCloseMessage();
+                LanHelper.Reset();
+            }
+            else if (NetworkType == NetworkType.Bluetooth)
+            {
+
+            }
+
+            NetworkType = NetworkType.None;
+            CurrentNetworkStage = NetworkStage.None;
+            IsConnected = false;
+
+            if (OnDisconnected != null)
+                OnDisconnected(null, null);
         }
 
         void LanHelper_OnTCPConnected(object sender, OnConnectedEventArgs e)
         {
             if (OnConnected != null)
                 OnConnected(this, e);
-        }
-
-        async Task BeginUDPHandshake()
-        {
-            bool connectionFound = false;
-            while (true)
-            {
-                if (!LanHelper.IsUDPConnected) continue;
-                //lock (lockObject)
-                //{
-                    if (CurrentNetworkStage != NetworkStage.HandshakingConnection)
-                    {
-                        connectionFound = true;
-                        break;
-                    }
-                //}
-            
-                SendMessage(StaticNetworkMessages.AttemptingToConnect);
-                await Task.Delay(TimeSpan.FromSeconds(0.25));
-            }
-
-            if (connectionFound) { }
         }
         #endregion
 
@@ -188,32 +200,49 @@ namespace EmpiresOfTheIV.Game
         }
         #endregion
 
-        // Used to get the initial handshake
+        /// Used to get the initial handshake
         void NetworkManager_OnMessageRecieved(object sender, ReceivedMessageEventArgs e)
         {
-            lock (lockObject)
+            if (IsConnected) return;
+
+            if (HostSettings == HostType.Client)
             {
-                if (e.Message != StaticNetworkMessages.AttemptingToConnect) return;
-            
                 if (e.NetworkType == NetworkType.LAN)
                 {
-                    // Double send it again to make sure
-                    for (int i = 0; i < 5; i++)
-                        SendMessage(StaticNetworkMessages.AttemptingToConnect);
-                }
-                else if (e.NetworkType == NetworkType.Bluetooth)
-                {
-
+                    if (e.Message == StaticNetworkMessages.AttemptingToConnect)
+                    {
+                        Debug.WriteLine("Attempt to Connect Recieved: Sending Acknoledgement");
+                        SendMessage(StaticNetworkMessages.Acknowledge);
+                    }
+                    else if (e.Message == StaticNetworkMessages.Acknowledge)
+                    {
+                        Debug.WriteLine("Connected To: " + e.NetworkConnectionEndpoint.Value.ToString());
+                        IsConnected = true;
+                    }
                 }
 
                 // Switch the Lobby
                 CurrentNetworkStage = NetworkStage.InLobby;
-
-                // Describe so we no longer get events
-                OnMessageRecieved -= NetworkManager_OnMessageRecieved;
+            }
+            else if (HostSettings == HostType.Host)
+            {
+                if (e.NetworkType == NetworkType.LAN)
+                {
+                    if (e.Message == StaticNetworkMessages.AttemptingToConnect)
+                    {
+                        Debug.WriteLine("Connection Request at: " + e.NetworkConnectionEndpoint.Value.ToString() + " - Attempting to Connect ... :");
+                        Connect(NetworkType.LAN, e.NetworkConnectionEndpoint.Value.HostNameAsString, true);
+                    }
+                    else if (e.Message == StaticNetworkMessages.Acknowledge)
+                    {
+                        Debug.WriteLine("Connected to: " + e.NetworkConnectionEndpoint.Value.ToString());
+                        SendMessage(StaticNetworkMessages.Acknowledge);
+                        IsConnected = true;
+                    }
+                }
             }
 
-            if (OnConnected != null)
+            if (IsConnected && OnConnected != null)
                 OnConnected(this, new OnConnectedEventArgs(e.NetworkConnectionEndpoint, e.NetworkType));
         }
     }

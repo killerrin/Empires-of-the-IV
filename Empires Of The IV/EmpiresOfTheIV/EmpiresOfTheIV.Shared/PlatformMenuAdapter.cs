@@ -108,6 +108,12 @@ namespace EmpiresOfTheIV
         #endregion
 
         #region Multiplayer Menus
+        public static void LanMultiplayerMenu_HostButton_Click()
+        {
+            if (Consts.EarlyExitCheck()) return;
+            Consts.Game.GameManager.StateManager.Navigate(GameState.GameLobby);
+        }
+
         public static void LanMultiplayerMenu_ConnectButton_Click()
         {
             if (Consts.EarlyExitCheck()) return;

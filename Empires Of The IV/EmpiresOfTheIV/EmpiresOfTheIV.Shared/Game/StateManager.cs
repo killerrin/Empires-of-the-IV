@@ -85,11 +85,11 @@ namespace EmpiresOfTheIV.Game
 
         void PlatformMenuAdapter_OnBackButtonPressed(object sender, EventArgs e)
         {
-            if (HandleBackButtonPressed)
-                GoBack();
-
             if (OnBackButtonPressed != null)
                 OnBackButtonPressed(null, null);
+
+            if (HandleBackButtonPressed)
+                GoBack();
         }
 
         #region Interface Implimentations

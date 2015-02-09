@@ -1,4 +1,6 @@
-﻿using KillerrinStudiosToolkit;
+﻿using EmpiresOfTheIV.Game.Enumerators;
+using KillerrinStudiosToolkit;
+using KillerrinStudiosToolkit.Enumerators;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,6 +30,7 @@ namespace EmpiresOfTheIV
     public sealed partial class LanMultiplayerPage : Page
     {
         bool m_attemptingToConnect;
+
         public LanMultiplayerPage()
         {
             this.InitializeComponent();
@@ -36,17 +39,18 @@ namespace EmpiresOfTheIV
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             Consts.Game.GameManager.NetworkManager.OnConnected += NetworkManager_OnConnected;
-            
-            Consts.Game.GameManager.StateManager.HandleBackButtonPressed = false;
             Consts.Game.GameManager.StateManager.OnBackButtonPressed += StateManager_OnBackButtonPressed;
-            
+
+            Consts.Game.GameManager.StateManager.HandleBackButtonPressed = true;
+
             // Set some variables
+            m_attemptingToConnect = false;
+
             try
             {
                 myIP.Text = "Your IP: " + LANHelper.CurrentIPAddressAsString();
             }
             catch (Exception ex) { Debug.WriteLine(ex.PrintException("Showing IP")); }
-
 
             base.OnNavigatedTo(e);
         }
@@ -55,27 +59,45 @@ namespace EmpiresOfTheIV
         {
             Debug.WriteLine("Navigating From LAN Page");
             Consts.Game.GameManager.NetworkManager.OnConnected -= NetworkManager_OnConnected;
-
-            Consts.Game.GameManager.StateManager.HandleBackButtonPressed = true;
             Consts.Game.GameManager.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
             base.OnNavigatedFrom(e);
         }
 
-        #region Events
         void StateManager_OnBackButtonPressed(object sender, EventArgs e)
         {
             if (m_attemptingToConnect)
             {
-                m_attemptingToConnect = false;
                 Consts.Game.GameManager.NetworkManager.Disconnect();
-                return;
+                m_attemptingToConnect = false;
             }
         }
 
+        #region Host Events
+        private async void HostButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            // Disable any controls here
+            hostButton.IsEnabled = false;
+            connectButton.IsEnabled = false;
+            opponentsIPTextBox.IsEnabled = false;
+
+            // Start Listening
+            Consts.Game.GameManager.NetworkManager.StartListening(NetworkType.LAN);
+
+            // Describe from Events
+            Consts.Game.GameManager.NetworkManager.OnConnected -= NetworkManager_OnConnected;
+            Consts.Game.GameManager.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
+
+            // Tell the game we're off
+            PlatformMenuAdapter.LanMultiplayerMenu_HostButton_Click();
+        }
+        #endregion
+
+
+        #region Client Events
         private void ConnectButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            connectButton.IsEnabled = false;
-            ConnectToPlayer();
+            //connectButton.IsEnabled = false;
+            ConnectToHost();
         }
 
         private void IPAddressOnEnterEvent(object sender, KeyRoutedEventArgs e)
@@ -84,54 +106,51 @@ namespace EmpiresOfTheIV
             {
                 Debug.WriteLine("Enter Pressed");
                 XamlControlHelper.LoseFocusOnTextBox(opponentsIPTextBox);
-                opponentsIPTextBox.IsEnabled = false;
+                //opponentsIPTextBox.IsEnabled = false;
 
-                ConnectToPlayer();
+                ConnectToHost();
             }
         }
         #endregion
 
-        #region Connecting To Player
-        public void ConnectToPlayer()
+        async void ConnectToHost()
         {
+            //if (m_attemptingToConnect) return;
             if (string.IsNullOrEmpty(opponentsIPTextBox.Text)) return;
 
             try
             {
                 m_attemptingToConnect = true;
                 XamlControlHelper.ChangeProgressIndicator(progressRing, true);
-                Consts.Game.GameManager.NetworkManager.Connect(KillerrinStudiosToolkit.Enumerators.NetworkType.LAN, opponentsIPTextBox.Text);
+                Consts.Game.GameManager.NetworkManager.Connect(NetworkType.LAN, opponentsIPTextBox.Text);
             }
             catch (Exception) { }
         }
 
-
-        private object lockobject = new object();
-        bool hasConnected = false;
         void NetworkManager_OnConnected(object sender, KillerrinStudiosToolkit.Events.OnConnectedEventArgs e)
         {
-            //if (Monitor.TryEnter(lockobject))
-            //{
                 try {
-                    if (hasConnected) { return; }
-                    hasConnected = true;
-
                     CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
                         m_attemptingToConnect = false;
+
+                        // Disable any controls here
                         XamlControlHelper.ChangeProgressIndicator(progressRing, false);
+                        hostButton.IsEnabled = false;
+                        connectButton.IsEnabled = false;
+                        opponentsIPTextBox.IsEnabled = false;
+
+                        // Describe from Events
+                        Consts.Game.GameManager.NetworkManager.OnConnected -= NetworkManager_OnConnected;
+                        Consts.Game.GameManager.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
+
+                        // Tell the game we're off
                         PlatformMenuAdapter.LanMultiplayerMenu_ConnectButton_Click();
                     });
                 }
                 finally {
-                    //Monitor.Exit(lockobject);
                 }
-            //}
-            //else {
-            //    return;
-            //}
+     
         }
-
-        #endregion
     }
 }

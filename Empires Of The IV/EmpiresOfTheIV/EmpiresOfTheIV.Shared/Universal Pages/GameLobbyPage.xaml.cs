@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KillerrinStudiosToolkit.Enumerators;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -32,8 +33,35 @@ namespace EmpiresOfTheIV
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            Consts.Game.GameManager.NetworkManager.OnConnected += NetworkManager_OnConnected;
+            Consts.Game.GameManager.NetworkManager.OnMessageRecieved += NetworkManager_OnMessageRecieved;
+            Consts.Game.GameManager.StateManager.OnBackButtonPressed += StateManager_OnBackButtonPressed;
             Consts.Game.GameManager.StateManager.HandleBackButtonPressed = false;
+
             base.OnNavigatedTo(e);
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            Consts.Game.GameManager.NetworkManager.OnConnected -= NetworkManager_OnConnected;
+            Consts.Game.GameManager.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
+            base.OnNavigatedFrom(e);
+        }
+
+        private void StateManager_OnBackButtonPressed(object sender, EventArgs e)
+        {
+            
+        }
+
+        /// <summary>
+        /// Will only get fired if the player is the host
+        /// </summary>
+        private void NetworkManager_OnConnected(object sender, KillerrinStudiosToolkit.Events.OnConnectedEventArgs e)
+        {
+            Debug.WriteLine("Connected to: " + e.NetworkConnectionEndpoint.Value.ToString() + " over " + e.NetworkType.ToString());
+        }
+        void NetworkManager_OnMessageRecieved(object sender, KillerrinStudiosToolkit.Events.ReceivedMessageEventArgs e)
+        {
         }
 
         #region GameLobby Events
@@ -44,7 +72,7 @@ namespace EmpiresOfTheIV
 
         private void Team1SelectionChanged(object sender, TappedRoutedEventArgs e)
         {
-            Frame.Navigate(typeof(EmpireSelectionPage));
+            //Frame.Navigate(typeof(EmpireSelectionPage));
         }
         private void Team2SelectionChanged(object sender, TappedRoutedEventArgs e)
         {

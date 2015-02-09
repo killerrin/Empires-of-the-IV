@@ -9,14 +9,14 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.5*" />
+            <ColumnDefinition Width="0.25*" />
             <ColumnDefinition Width="6*" />
-            <ColumnDefinition Width="0.5*" />
+            <ColumnDefinition Width="0.25*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="0.25*"/>
             <RowDefinition Height="6*"/>
-            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="0.25*"/>
         </Grid.RowDefinitions>
         
         <Grid Grid.Column="1" Grid.Row="1">
@@ -36,7 +36,11 @@
                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
 
 
-            <Button x:Name="connectButton" Grid.Row="2" Content="Connect" Style="{StaticResource NetworkConnectionButton}" Tapped="ConnectButton_Tapped"/>
+
+            <StackPanel Grid.Row="2" HorizontalAlignment="Center" Orientation="Horizontal">
+                <Button x:Name="connectButton" Content="Connect" Style="{StaticResource NetworkConnectionButton}" Tapped="ConnectButton_Tapped"/>
+                <Button x:Name="hostButton"    Content="Host"    Style="{StaticResource NetworkConnectionButton}" Tapped="HostButton_Tapped"/>
+            </StackPanel>
 
         </Grid>
         
