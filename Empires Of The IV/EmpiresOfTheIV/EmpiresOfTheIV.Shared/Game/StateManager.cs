@@ -65,7 +65,7 @@ namespace EmpiresOfTheIV.Game
         public event EventHandler OnExit;
         public event EventHandler OnBackButtonPressed;
 
-        public StateManager(EmpiresOfTheIVGame game, Color fadeColor)
+        public StateManager(EmpiresOfTheIVGame game)
         {
             Loaded = false;
 

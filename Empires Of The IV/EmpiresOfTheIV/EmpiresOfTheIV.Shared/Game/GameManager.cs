@@ -64,7 +64,7 @@ namespace EmpiresOfTheIV.Game
         public void Initialize()
         {
             // Load the State Manager
-            m_stateManager = new StateManager(m_game, Color.Black);
+            m_stateManager = new StateManager(m_game);
             //m_stateManager.LoadStateManager(Color.Black);
 
             m_stateManager.OnBackButtonPressed += m_stateManager_OnBackButtonPressed;
@@ -96,19 +96,23 @@ namespace EmpiresOfTheIV.Game
             // Update to ensure that the operating system doesn't force-quit the Game during load
             if (!m_doOnlyOnce)
             {
-                //try
-                //{
+                if (m_stateManager.Loaded)
+                {
+                    //try
+                    //{
                     m_loadingManager = new LoadingManager(m_game);
                     m_loadingManager.LoadContent(m_game.GraphicsDevice);
-                //}
-                //catch (Exception ex) { Debug.WriteLine(ex.PrintException()); }
+                    //}
+                    //catch (Exception ex) { Debug.WriteLine(ex.PrintException()); }
 
-                // Load the other managers
-                m_networkManager = new NetworkManager(m_game);
+                    // Load the other managers
+                    m_networkManager = new NetworkManager(m_game);
 
-                // Create the Input Manager Last so that input doesn't get recognized until then
-                m_gameInputManager = new GameInputManager(m_game);
-                
+                    // Create the Input Manager Last so that input doesn't get recognized until then
+                    m_gameInputManager = new GameInputManager(m_game);
+                }
+                else { return; }
+
                 // Set the flag and we're done loading
                 m_doOnlyOnce = true;
             }
