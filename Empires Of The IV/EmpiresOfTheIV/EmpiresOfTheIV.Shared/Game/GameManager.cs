@@ -67,9 +67,6 @@ namespace EmpiresOfTheIV.Game
             m_stateManager = new StateManager(m_game, Color.Black);
             m_stateManager.OnBackButtonPressed += m_stateManager_OnBackButtonPressed;
             m_stateManager.OnExit += OnExitTriggered;
-
-            // Load the Other Managers
-            m_loadingManager = new LoadingManager(m_game);
         }
 
         private void m_stateManager_OnBackButtonPressed(object sender, EventArgs e)
@@ -95,12 +92,14 @@ namespace EmpiresOfTheIV.Game
             // Update to ensure that the operating system doesn't force-quit the Game during load
             if (!m_doOnlyOnce)
             {
-                try
-                {
+                //try
+                //{
+                    m_loadingManager = new LoadingManager(m_game);
                     m_loadingManager.LoadContent(m_game.GraphicsDevice);
-                }
-                catch (Exception ex) { Debug.WriteLine(ex.PrintException()); }
+                //}
+                //catch (Exception ex) { Debug.WriteLine(ex.PrintException()); }
 
+                // Load the other managers
                 m_networkManager = new NetworkManager(m_game);
 
                 // Create the Input Manager Last so that input doesn't get recognized until then

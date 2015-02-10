@@ -73,14 +73,24 @@ namespace EmpiresOfTheIV.Game
             m_goingBack = false;
 
             HandleBackButtonPressed = true;
-
             ResetFlags();
 
-            m_fadeEffect = new Fade(game.GraphicsDevice, fadeColor, 0.002f);
+            PlatformMenuAdapter.OnBackButtonPressed += PlatformMenuAdapter_OnBackButtonPressed;
+        }
+
+        protected void ResetFlags()
+        {
+            m_removePreviousOnCompleted = false;
+            m_hideFrameBeforeTransition = true;
+
+            m_pageParameterFlag = null; // If random bug appears, move back to under the "m_gameStates.Push(m_goingToMenu);"
+        }
+
+        public void LoadStateManager(Color fadeColor)
+        {
+            m_fadeEffect = new Fade(m_game.GraphicsDevice, fadeColor, 0.002f);
             m_fadeEffect.ChangeWithoutFade(FadeStatus.FadingIn);
             m_fadeEffect.Completed += FadeEffect_Completed;
-
-            PlatformMenuAdapter.OnBackButtonPressed += PlatformMenuAdapter_OnBackButtonPressed;
         }
 
         void PlatformMenuAdapter_OnBackButtonPressed(object sender, EventArgs e)
@@ -119,13 +129,6 @@ namespace EmpiresOfTheIV.Game
             if (OnExit != null)
                 OnExit(this, null);
         }
-
-        protected void ResetFlags()
-        {
-            m_removePreviousOnCompleted = false;
-            m_hideFrameBeforeTransition = true;
-        }
-
         #endregion
 
         #region Update/Draw
@@ -346,7 +349,6 @@ namespace EmpiresOfTheIV.Game
                     // This is done here so that the menu won't be pulled in during the Update/Draw while fading
                     m_gameStates.Push(m_goingToMenu);
                     m_goingToMenu = null;
-                    m_pageParameterFlag = null;
                 }
 
                 // Reset Flags;

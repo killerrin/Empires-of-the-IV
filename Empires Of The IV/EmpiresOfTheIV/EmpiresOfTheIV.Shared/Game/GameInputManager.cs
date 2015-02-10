@@ -34,7 +34,7 @@ namespace EmpiresOfTheIV.Game
             //m_game.InputManager.PointerPressed += InputManager_PointerClicked;
             //m_game.InputManager.PointerMoved += InputManager_PointerMoved;
             
-            // Keybaord
+            // Keyboard
             m_game.InputManager.Keyboard.KeyboardDown += Keyboard_KeyboardDown;
             m_game.InputManager.Keyboard.KeyboardPressed += Keyboard_KeyboardPressed;
         }
