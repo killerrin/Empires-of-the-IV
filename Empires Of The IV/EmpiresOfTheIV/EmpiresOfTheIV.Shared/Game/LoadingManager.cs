@@ -62,9 +62,8 @@ namespace EmpiresOfTheIV.Game
             // Load the Terrain
             Texture2D heightMap = m_game.Content.Load<Texture2D>("heightmap");
             Texture2D grassTexture = m_game.Content.Load<Texture2D>("grassTexture");
-            Terrain m_terrain = new Terrain(graphics, heightMap, grassTexture);
-
-            
+            //Terrain m_terrain = new Terrain(graphics, heightMap, grassTexture);
+           
             // Create the Game Objects
             Unit armyGuy = new Unit();
             armyGuy.Model3D = m_game.ResourceManager.GetAsset(typeof(AnimatedModel), "t-pose_3") as AnimatedModel;
@@ -76,7 +75,7 @@ namespace EmpiresOfTheIV.Game
             // Load the models which contain animations
             AnimatedModel walk = CustomContentLoader.LoadAnimatedModel(m_game.Content, "walk");
             AnimationClip clip = walk.Clips[0];
-
+            
             // Set our animations to the gameObjects
             AnimationPlayer armyGuyPlayer = armyGuy.PlayClip(clip);
             armyGuyPlayer.Looping = true;
@@ -97,15 +96,15 @@ namespace EmpiresOfTheIV.Game
             Texture2D luraTexture = m_game.Content.Load<Texture2D>("Planet Textures\\Lura Texture");
             Planet lura = new Planet(graphics, luraTexture, MathHelper.ToRadians(30.0f), new Vector3(-30.0f, 30.0f, 2.0f), new Vector3(0.00020f, 0.0f, 0.0f), new Vector3(0.00020f, 0.00020f, 0.0f));
             lura.Transform.Scale = new Vector3(2.0f);
-
+            
             tyril.AddSatellite(hope);
             tyril.AddSatellite(yol);
             tyril.AddSatellite(lura);
 
             // Add to the Scene
-            m_game.SceneManager.CurrentScene.SceneNode.AddChild(m_terrain.Transform);
-            m_game.SceneManager.CurrentScene.SceneNode.AddChild(armyGuy.Transform);
-            //m_game.SceneManager.CurrentScene.SceneNode.AddChild(tyril.Transform);
+            //m_game.SceneManager.CurrentScene.SceneNode.AddChild(m_terrain.Transform);
+            //m_game.SceneManager.CurrentScene.SceneNode.AddChild(armyGuy.Transform);
+            m_game.SceneManager.CurrentScene.SceneNode.AddChild(tyril.Transform);
         }
     }
 }

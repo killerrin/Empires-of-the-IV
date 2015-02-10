@@ -70,7 +70,6 @@ namespace EmpiresOfTheIV.Game
 
             // Load the Other Managers
             m_loadingManager = new LoadingManager(m_game);
-            m_gameInputManager = new GameInputManager(m_game);
         }
 
         private void m_stateManager_OnBackButtonPressed(object sender, EventArgs e)
@@ -103,6 +102,11 @@ namespace EmpiresOfTheIV.Game
                 catch (Exception ex) { Debug.WriteLine(ex.PrintException()); }
 
                 m_networkManager = new NetworkManager(m_game);
+
+                // Create the Input Manager Last so that input doesn't get recognized until then
+                m_gameInputManager = new GameInputManager(m_game);
+                
+                // Set the flag and we're done loading
                 m_doOnlyOnce = true;
             }
 
