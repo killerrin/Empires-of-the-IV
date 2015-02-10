@@ -53,23 +53,33 @@ namespace EmpiresOfTheIV.Game
 
         public void LoadContent(GraphicsDevice graphics)
         {
+            //m_game.SceneManager.CurrentScene.Camera.MoveVertical(30.0f);
+
             // Load the Assets
             m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Texture2D), "KillerrinStudiosLogo");
             m_game.ResourceManager.LoadAsset(m_game.Content, typeof(AnimatedModel), "t-pose_3");
             
             // Load the Terrain
-            //Texture2D heightMap = m_game.Content.Load<Texture2D>("heightmap");
-            //Texture2D grassTexture = m_game.Content.Load<Texture2D>("grassTexture");
-            //Terrain m_terrain = new Terrain(graphics, heightMap, grassTexture);
-            //m_game.SceneManager.CurrentScene.SceneNode.AddChild(m_terrain.Transform);
+            Texture2D heightMap = m_game.Content.Load<Texture2D>("heightmap");
+            Texture2D grassTexture = m_game.Content.Load<Texture2D>("grassTexture");
+            Terrain m_terrain = new Terrain(graphics, heightMap, grassTexture);
+
             
             // Create the Game Objects
-            //Unit armyGuy = new Unit();
-            //armyGuy.Model3D = m_game.ResourceManager.GetAsset(typeof(AnimatedModel), "t-pose_3") as AnimatedModel;
-            //armyGuy.Transform.Scale = new Vector3(0.007f);
-            //armyGuy.Transform.Position = new Vector3(0.2f, -0.5f, -5.50f);
-            //armyGuy.CullDraw = false;
+            Unit armyGuy = new Unit();
+            armyGuy.Model3D = m_game.ResourceManager.GetAsset(typeof(AnimatedModel), "t-pose_3") as AnimatedModel;
+            armyGuy.Transform.Scale = new Vector3(0.007f);
+            armyGuy.Transform.Position = new Vector3(0.2f, -0.5f, -5.50f);
+            armyGuy.CullDraw = false;
             //armyGuy.RenderBounds = true;
+
+            // Load the models which contain animations
+            AnimatedModel walk = CustomContentLoader.LoadAnimatedModel(m_game.Content, "walk");
+            AnimationClip clip = walk.Clips[0];
+
+            // Set our animations to the gameObjects
+            AnimationPlayer armyGuyPlayer = armyGuy.PlayClip(clip);
+            armyGuyPlayer.Looping = true;
 
             // Create Planets
             Texture2D tyrilTexture = m_game.Content.Load<Texture2D>("Planet Textures\\Tyril Texture");
@@ -93,21 +103,9 @@ namespace EmpiresOfTheIV.Game
             tyril.AddSatellite(lura);
 
             // Add to the Scene
-            m_game.SceneManager.CurrentScene.SceneNode.AddChild(tyril.Transform);
-            //m_game.SceneManager.CurrentScene.SceneNode.AddChild(armyGuy.Transform);
-            
-            // Load the models which contain animations
-            //AnimatedModel walk = CustomContentLoader.LoadAnimatedModel(m_game.Content, "walk");
-            //AnimationClip clip = walk.Clips[0];
-            
-            // Set our animations to the gameObjects
-            //AnimationPlayer armyGuyPlayer = armyGuy.PlayClip(clip);
-            //armyGuyPlayer.Looping = true;
-
-
-
-            
-            //m_game.SceneManager.CurrentScene.Camera.MoveVertical(30.0f);
+            m_game.SceneManager.CurrentScene.SceneNode.AddChild(m_terrain.Transform);
+            m_game.SceneManager.CurrentScene.SceneNode.AddChild(armyGuy.Transform);
+            //m_game.SceneManager.CurrentScene.SceneNode.AddChild(tyril.Transform);
         }
     }
 }

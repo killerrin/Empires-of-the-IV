@@ -14,7 +14,7 @@ namespace EmpiresOfTheIV.Game.Menus
     public class InGameMenu : GameMenu,
                               IUpdatable, IRenderable
     {
-
+        private static bool m_loadedOnceAlready = false;
         #region Fields/Properties
 
         #endregion
@@ -28,6 +28,16 @@ namespace EmpiresOfTheIV.Game.Menus
         public override void MenuLoaded()
         {
             base.MenuLoaded();
+
+            if (!m_loadedOnceAlready)
+            {
+
+                m_loadedOnceAlready = true;
+            }
+
+            //if (NavigationSaveState == Anarian.Enumerators.NavigationSaveState.KeepSate)
+            //{
+            //}
         }
 
         #region Interface Implimentations
