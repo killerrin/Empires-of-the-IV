@@ -77,8 +77,8 @@ namespace EmpiresOfTheIV
         {
             // Disable any controls here
             hostButton.IsEnabled = false;
-            connectButton.IsEnabled = false;
-            opponentsIPTextBox.IsEnabled = false;
+            //connectButton.IsEnabled = false;
+            //opponentsIPTextBox.IsEnabled = false;
 
             // Start Listening
             Consts.Game.GameManager.NetworkManager.StartListening(NetworkType.LAN);

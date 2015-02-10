@@ -1,4 +1,5 @@
-﻿using KillerrinStudiosToolkit.Enumerators;
+﻿using KillerrinStudiosToolkit;
+using KillerrinStudiosToolkit.Enumerators;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -37,6 +38,12 @@ namespace EmpiresOfTheIV
             Consts.Game.GameManager.NetworkManager.OnMessageRecieved += NetworkManager_OnMessageRecieved;
             Consts.Game.GameManager.StateManager.OnBackButtonPressed += StateManager_OnBackButtonPressed;
             Consts.Game.GameManager.StateManager.HandleBackButtonPressed = false;
+
+            try
+            {
+                myIP.Text = "Your IP: " + LANHelper.CurrentIPAddressAsString();
+            }
+            catch (Exception ex) { Debug.WriteLine(ex.PrintException("Showing IP")); }
 
             base.OnNavigatedTo(e);
         }
