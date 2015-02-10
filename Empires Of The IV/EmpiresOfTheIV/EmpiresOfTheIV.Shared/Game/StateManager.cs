@@ -31,6 +31,8 @@ namespace EmpiresOfTheIV.Game
         protected EmpiresOfTheIVGame m_game;
         public EmpiresOfTheIVGame Game { get { return m_game; } protected set { m_game = value; } }
 
+        public bool Loaded { get; protected set; }
+
         #region Fields/Properties
         bool m_goingBack;
 
@@ -65,6 +67,8 @@ namespace EmpiresOfTheIV.Game
 
         public StateManager(EmpiresOfTheIVGame game, Color fadeColor)
         {
+            Loaded = false;
+
             m_game = game;
             m_exit = false;
 
@@ -76,6 +80,8 @@ namespace EmpiresOfTheIV.Game
             ResetFlags();
 
             PlatformMenuAdapter.OnBackButtonPressed += PlatformMenuAdapter_OnBackButtonPressed;
+
+            Loaded = true;
         }
 
         protected void ResetFlags()

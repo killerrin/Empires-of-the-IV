@@ -47,6 +47,8 @@ namespace EmpiresOfTheIV
 
             // Create the Game!
             CreateGame();
+            //if (Consts.Game == null)
+            //    Consts.Game = XamlGame<EmpiresOfTheIVGame>.Create(Consts.LaunchArguments, Window.Current.CoreWindow, this);
         }
 
         private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)

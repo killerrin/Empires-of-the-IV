@@ -30,9 +30,9 @@ namespace EmpiresOfTheIV.Game
 
             // Subscribe to our Events
             // Pointer
-            //m_game.InputManager.PointerDown += InputManager_PointerDown;
-            //m_game.InputManager.PointerPressed += InputManager_PointerClicked;
-            //m_game.InputManager.PointerMoved += InputManager_PointerMoved;
+            m_game.InputManager.PointerDown += InputManager_PointerDown;
+            m_game.InputManager.PointerPressed += InputManager_PointerClicked;
+            m_game.InputManager.PointerMoved += InputManager_PointerMoved;
             
             // Keyboard
             m_game.InputManager.Keyboard.KeyboardDown += Keyboard_KeyboardDown;

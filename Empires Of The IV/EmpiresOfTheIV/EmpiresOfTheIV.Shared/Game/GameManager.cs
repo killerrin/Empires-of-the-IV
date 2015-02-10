@@ -65,6 +65,8 @@ namespace EmpiresOfTheIV.Game
         {
             // Load the State Manager
             m_stateManager = new StateManager(m_game, Color.Black);
+            //m_stateManager.LoadStateManager(Color.Black);
+
             m_stateManager.OnBackButtonPressed += m_stateManager_OnBackButtonPressed;
             m_stateManager.OnExit += OnExitTriggered;
         }
@@ -81,7 +83,9 @@ namespace EmpiresOfTheIV.Game
             Windows.UI.Xaml.Application.Current.Exit();
         }
 
-        public void LoadContent() {  }
+        public void LoadContent() {
+            m_stateManager.LoadStateManager(Color.Black);
+        }
 
 
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
@@ -132,17 +136,17 @@ namespace EmpiresOfTheIV.Game
                 default: break;
             }
 
-            //// Begin Regular Updates
-            //if (m_gameInputManager.rayPosOnTerrain.HasValue) {
-            //    m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).MoveToPosition(gameTime, m_gameInputManager.rayPosOnTerrain.Value);
-            //}
-            //
-            //float height = ((Terrain)m_game.SceneManager.CurrentScene.SceneNode.GetChild(0).GameObject).GetHeightAtPoint(m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position);
-            //if (height != float.MaxValue) {
-            //    Vector3 pos = m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position;
-            //    pos.Y = height;
-            //    m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position = pos;
-            //}
+            // Begin Regular Updates
+            if (m_gameInputManager.rayPosOnTerrain.HasValue) {
+                m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).MoveToPosition(gameTime, m_gameInputManager.rayPosOnTerrain.Value);
+            }
+            
+            float height = ((Terrain)m_game.SceneManager.CurrentScene.SceneNode.GetChild(0).GameObject).GetHeightAtPoint(m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position);
+            if (height != float.MaxValue) {
+                Vector3 pos = m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position;
+                pos.Y = height;
+                m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position = pos;
+            }
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
