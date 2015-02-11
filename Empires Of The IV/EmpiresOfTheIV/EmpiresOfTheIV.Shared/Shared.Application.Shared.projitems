@@ -34,7 +34,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\PausedMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\InGameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\EmpireSelectionMenu.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\PlayGameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\CreditsMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\OptionsMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\MainMenu.cs" />

@@ -14,18 +14,17 @@ namespace EmpiresOfTheIV.Game.Enumerators
         SplashScreen,
         
         MainMenu,
-            PlayGame,
-                Singleplayer,
-                BluetoothMultiplayer,
-                LanMultiplayer,
+            Singleplayer,
+            BluetoothMultiplayer,
+            LanMultiplayer,
 
-                    GameLobby,
-                        EmpireSelection,
+                GameLobby,
+                    EmpireSelection,
 
-                            InGame, //--|
-                            Paused, //--|
-                                    //  |
-                                    GameOver,
+                        InGame, //--|
+                        Paused, //--|
+                                //  |
+                                GameOver,
 
             Options,
             Credits     
