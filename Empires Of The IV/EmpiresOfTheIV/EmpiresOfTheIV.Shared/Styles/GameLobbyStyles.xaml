@@ -3,29 +3,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:EmpiresOfTheIV.Styles">
 
-    <ControlTemplate x:Key="TeamsHubSection" TargetType="HubSection">
-        <Grid HorizontalAlignment="Stretch" Margin="{TemplateBinding Padding}" VerticalAlignment="Stretch">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <TextBlock x:Name="HeaderButton" Text="{TemplateBinding Header}" FontWeight="{ThemeResource HubSectionHeaderThemeFontWeight}" FontSize="{ThemeResource HubSectionHeaderThemeFontSize}" Margin="{ThemeResource HubSectionHeaderThemeMargin}" Grid.Row="1"/>
-            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Grid.Row="2" VerticalAlignment="Stretch"/>
-        </Grid>
-    </ControlTemplate>
+    <Style x:Key="GameLobbyTeamHeaderText" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource EmpiresOfTheIVMenuButtonBrush}"/>
 
-    <ControlTemplate x:Key="ChatHubSection" TargetType="HubSection">
-        <Grid HorizontalAlignment="Stretch" Margin="{TemplateBinding Padding}" VerticalAlignment="Stretch">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <TextBlock x:Name="HeaderButton" Text="{TemplateBinding Header}" FontWeight="{ThemeResource HubSectionHeaderThemeFontWeight}" FontSize="{ThemeResource HubSectionHeaderThemeFontSize}" Margin="{ThemeResource HubSectionHeaderThemeMargin}" Grid.Row="1"/>
-            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Grid.Row="2" VerticalAlignment="Stretch"/>
-        </Grid>
-    </ControlTemplate>
+        <Setter Property="Margin" Value="0,0,0,0"/>
+        <Setter Property="Width" Value="auto"/>
+
+        <Setter Property="FontFamily" Value="{StaticResource EmpiresOfTheIVFont}"/>
+        <Setter Property="FontSize" Value="32"/>
+    </Style>
 
     <Style x:Key="GameLobbyStartButton" TargetType="Button">
         <Setter Property="Foreground" Value="{StaticResource EmpiresOfTheIVMenuButtonBrush}"/>
@@ -39,7 +25,7 @@
         <Setter Property="VerticalContentAlignment" Value="Center"/>
 
         <Setter Property="FontFamily" Value="{StaticResource EmpiresOfTheIVFont}"/>
-        <Setter Property="FontSize" Value="62"/>
+        <Setter Property="FontSize" Value="52"/>
     </Style>
     
 </ResourceDictionary>

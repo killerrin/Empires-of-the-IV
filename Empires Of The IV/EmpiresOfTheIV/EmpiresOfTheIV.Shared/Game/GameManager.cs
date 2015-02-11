@@ -65,8 +65,6 @@ namespace EmpiresOfTheIV.Game
         {
             // Load the State Manager
             m_stateManager = new StateManager(m_game);
-            //m_stateManager.LoadStateManager(Color.Black);
-
             m_stateManager.OnBackButtonPressed += m_stateManager_OnBackButtonPressed;
             m_stateManager.OnExit += OnExitTriggered;
         }
@@ -115,6 +113,7 @@ namespace EmpiresOfTheIV.Game
 
                 // Set the flag and we're done loading
                 m_doOnlyOnce = true;
+                //return;
             }
 
             // First, Update the StateManager
@@ -126,7 +125,6 @@ namespace EmpiresOfTheIV.Game
                 case GameState.MainMenu:                break;
                 case GameState.Options:                 break;
                 case GameState.Credits:                 break;
-                case GameState.PlayGame:                break;
 
                 case GameState.BluetoothMultiplayer:    break;
                 case GameState.LanMultiplayer:          break;
@@ -141,27 +139,31 @@ namespace EmpiresOfTheIV.Game
             }
 
             // Begin Regular Updates
-            if (m_gameInputManager.rayPosOnTerrain.HasValue) {
-                m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).MoveToPosition(gameTime, m_gameInputManager.rayPosOnTerrain.Value);
-            }
-            
-            float height = ((Terrain)m_game.SceneManager.CurrentScene.SceneNode.GetChild(0).GameObject).GetHeightAtPoint(m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position);
-            if (height != float.MaxValue) {
-                Vector3 pos = m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position;
-                pos.Y = height;
-                m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position = pos;
-            }
+            //if (m_gameInputManager.rayPosOnTerrain.HasValue) {
+            //    m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).MoveToPosition(gameTime, m_gameInputManager.rayPosOnTerrain.Value);
+            //}
+            //
+            //float height = ((Terrain)m_game.SceneManager.CurrentScene.SceneNode.GetChild(0).GameObject).GetHeightAtPoint(m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position);
+            //if (height != float.MaxValue) {
+            //    Vector3 pos = m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position;
+            //    pos.Y = height;
+            //    m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position = pos;
+            //}
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
+            if (!m_doOnlyOnce || !m_stateManager.Loaded)
+            {
+                return;
+            }
+
             switch (m_stateManager.CurrentState) {
                 case GameState.SplashScreen:            m_game.GraphicsDevice.Clear(Color.Black);   break;
 
                 case GameState.MainMenu:                break;
                 case GameState.Options:                 break;
                 case GameState.Credits:                 break;
-                case GameState.PlayGame:                break;
 
                 case GameState.BluetoothMultiplayer:    break;
                 case GameState.LanMultiplayer:          break;

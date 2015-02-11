@@ -15,16 +15,6 @@
         <Setter Property="VerticalContentAlignment" Value="Center"/>
 
         <Setter Property="FontFamily" Value="{StaticResource EmpiresOfTheIVFont}"/>
-        <Setter Property="FontSize" Value="62"/>
-    </Style>
-
-    <Style x:Key="GameLobbyTeamHeaderText" TargetType="TextBlock">
-        <Setter Property="Foreground" Value="{StaticResource EmpiresOfTheIVMenuButtonBrush}"/>
-
-        <Setter Property="Margin" Value="0,0,0,0"/>
-        <Setter Property="Width" Value="auto"/>
-
-        <Setter Property="FontFamily" Value="{StaticResource EmpiresOfTheIVFont}"/>
-        <Setter Property="FontSize" Value="36"/>
+        <Setter Property="FontSize" Value="52"/>
     </Style>
 </ResourceDictionary>

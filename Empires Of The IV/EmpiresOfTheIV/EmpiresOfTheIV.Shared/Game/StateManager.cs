@@ -80,8 +80,6 @@ namespace EmpiresOfTheIV.Game
             ResetFlags();
 
             PlatformMenuAdapter.OnBackButtonPressed += PlatformMenuAdapter_OnBackButtonPressed;
-
-            Loaded = true;
         }
 
         protected void ResetFlags()
@@ -97,6 +95,7 @@ namespace EmpiresOfTheIV.Game
             m_fadeEffect = new Fade(m_game.GraphicsDevice, fadeColor, 0.002f);
             m_fadeEffect.ChangeWithoutFade(FadeStatus.FadingIn);
             m_fadeEffect.Completed += FadeEffect_Completed;
+            Loaded = true;
         }
 
         void PlatformMenuAdapter_OnBackButtonPressed(object sender, EventArgs e)
@@ -140,6 +139,8 @@ namespace EmpiresOfTheIV.Game
         #region Update/Draw
         public void Update(GameTime gameTime)
         {
+            if (!Loaded) return;
+
             // Update the Fade
             m_fadeEffect.ApplyEffect(gameTime);
 
@@ -151,6 +152,8 @@ namespace EmpiresOfTheIV.Game
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
+            if (!Loaded) return;
+
             // Draw the Current Menu
             if (!m_exit && CurrentMenu != null)
                 CurrentMenu.Draw(gameTime, spriteBatch, graphics);
@@ -174,14 +177,13 @@ namespace EmpiresOfTheIV.Game
                 case GameState.MainMenu:                newMenu = new MainMenu(m_game, parameter); break;
                 case GameState.Options:                 newMenu = new OptionsMenu(m_game, parameter); break;
                 case GameState.Credits:                 newMenu = new CreditsMenu(m_game, parameter); break;
-                case GameState.PlayGame:                newMenu = new PlayGameMenu(m_game, parameter); break;
 
                 case GameState.Singleplayer:            newMenu = new GameLobbyMenu(m_game, parameter, GameConnectionType.Singleplayer); break;
                 case GameState.BluetoothMultiplayer:    newMenu = new BluetoothMultiplayerMenu(m_game, parameter); break;
                 case GameState.LanMultiplayer:          newMenu = new LanMultiplayerMenu(m_game, parameter); break;
 
                 case GameState.GameLobby:               GameConnectionType connType = GameConnectionType.None;
-                                                        if (CurrentMenu.GetType() == typeof(PlayGameMenu)) connType = GameConnectionType.Singleplayer;
+                                                        if (CurrentMenu.GetType() == typeof(MainMenu)) connType = GameConnectionType.Singleplayer;
                                                         if (CurrentMenu.GetType() == typeof(BluetoothMultiplayerMenu)) connType = GameConnectionType.BluetoothMultiplayer;
                                                         if (CurrentMenu.GetType() == typeof(LanMultiplayerMenu)) connType = GameConnectionType.LANMultiplayer;
 
@@ -331,7 +333,6 @@ namespace EmpiresOfTheIV.Game
                         case GameState.MainMenu:                    MainPage.PageFrame.Navigate(typeof(MainMenuPage), m_pageParameterFlag); break;
                         case GameState.Options:                     MainPage.PageFrame.Navigate(typeof(OptionsPage), m_pageParameterFlag); break;
                         case GameState.Credits:                     MainPage.PageFrame.Navigate(typeof(CreditsPage), m_pageParameterFlag); break;
-                        case GameState.PlayGame:                    MainPage.PageFrame.Navigate(typeof(PlayGamePage), m_pageParameterFlag); break;
                         
                         case GameState.Singleplayer:                MainPage.PageFrame.Navigate(typeof(GameLobbyPage), m_pageParameterFlag); break;
                         case GameState.BluetoothMultiplayer:        MainPage.PageFrame.Navigate(typeof(BluetoothMultiplayerPage), m_pageParameterFlag); break;
