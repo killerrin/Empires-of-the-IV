@@ -68,10 +68,22 @@ namespace EmpiresOfTheIV
         #endregion
 
         #region Main Menu
-        public static void MainMenu_PlayButton_Click()
+        public static void MainMenu_SingleplayerButton_Click()
         {
             if (Consts.EarlyExitCheck()) return;
-            Consts.Game.GameManager.StateManager.Navigate(GameState.PlayGame);
+            Consts.Game.GameManager.StateManager.Navigate(GameState.Singleplayer);
+        }
+
+        public static void MainMenu_BluetoothMultiplayerButton_Click()
+        {
+            if (Consts.EarlyExitCheck()) return;
+            Consts.Game.GameManager.StateManager.Navigate(GameState.BluetoothMultiplayer);
+        }
+
+        public static void MainMenu_LANMultiplayerButton_Click()
+        {
+            if (Consts.EarlyExitCheck()) return;
+            Consts.Game.GameManager.StateManager.Navigate(GameState.LanMultiplayer);
         }
 
         public static void MainMenu_OptionsButton_Click()
@@ -84,26 +96,6 @@ namespace EmpiresOfTheIV
         {
             if (Consts.EarlyExitCheck()) return;
             Consts.Game.GameManager.StateManager.Navigate(GameState.Credits);
-        }
-        #endregion
-
-        #region PlayGame Menu
-        public static void PlayGameMenu_SingleplayerButton_Click()
-        {
-            if (Consts.EarlyExitCheck()) return;
-            Consts.Game.GameManager.StateManager.Navigate(GameState.Singleplayer);
-        }
-
-        public static void PlayGameMenu_BluetoothMultiplayerButton_Click()
-        {
-            if (Consts.EarlyExitCheck()) return;
-            Consts.Game.GameManager.StateManager.Navigate(GameState.BluetoothMultiplayer);
-        }
-
-        public static void PlayGameMenu_LANMultiplayerButton_Click()
-        {
-            if (Consts.EarlyExitCheck()) return;
-            Consts.Game.GameManager.StateManager.Navigate(GameState.LanMultiplayer);
         }
         #endregion
 

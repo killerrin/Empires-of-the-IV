@@ -14,15 +14,18 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.75*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
  
         <StackPanel x:Name="menuOptions" Grid.Column="1" Grid.Row="1" Orientation="Vertical">
-            <Button Content="Play"      Style="{StaticResource GenericMenuButton}" Click="PlayButton_Click" />
-            <Button Content="Options"   Style="{StaticResource GenericMenuButton}" Click="OptionsButton_Click"/>
-            <Button Content="Credits"   Style="{StaticResource GenericMenuButton}" Click="CreditsButton_Click"/>
+            <Button Content="Singleplayer"  Visibility="Visible"    Style="{StaticResource GenericMenuButton}" Click="SingleplayerButton_Click" />
+            <Button Content="Bluetooth"     Visibility="Collapsed"  Style="{StaticResource GenericMenuButton}" Click="BluetoothMultiplayerButton_Click"/>
+            <Button Content="Lan"           Visibility="Visible"    Style="{StaticResource GenericMenuButton}" Click="LanMultiplayerButton_Click"/>
+
+            <Button Content="Options"       Visibility="Visible"    Style="{StaticResource GenericMenuButton}" Click="OptionsButton_Click"/>
+            <Button Content="Credits"       Visibility="Visible"    Style="{StaticResource GenericMenuButton}" Click="CreditsButton_Click"/>
         </StackPanel>
     </Grid>
 </Page>

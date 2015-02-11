@@ -26,26 +26,5 @@ namespace EmpiresOfTheIV
         {
             this.InitializeComponent();
         }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            Consts.Game.GameManager.StateManager.HandleBackButtonPressed = true;
-            base.OnNavigatedTo(e);
-        }
-
-        private void SingleplayerButton_Click(object sender, RoutedEventArgs e)
-        {
-            PlatformMenuAdapter.PlayGameMenu_SingleplayerButton_Click();
-        }
-
-        private void BluetoothMultiplayerButton_Click(object sender, RoutedEventArgs e)
-        {
-            PlatformMenuAdapter.PlayGameMenu_BluetoothMultiplayerButton_Click();
-        }
-
-        private void LanMultiplayerButton_Click(object sender, RoutedEventArgs e)
-        {
-            PlatformMenuAdapter.PlayGameMenu_LANMultiplayerButton_Click();
-        }
     }
 }
