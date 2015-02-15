@@ -58,7 +58,8 @@ namespace EmpiresOfTheIV.Game
             // Load the Assets
             m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Texture2D), "KillerrinStudiosLogo");
             m_game.ResourceManager.LoadAsset(m_game.Content, typeof(AnimatedModel), "t-pose_3");
-            
+            m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Model), "UnanianFactory");
+
             // Load the Terrain
             Debug.WriteLine("Loading Terrain");
             Texture2D heightMap = m_game.Content.Load<Texture2D>("heightmap");
@@ -72,7 +73,13 @@ namespace EmpiresOfTheIV.Game
             armyGuy.Transform.Scale = new Vector3(0.007f);
             armyGuy.Transform.Position = new Vector3(0.2f, -0.5f, -5.50f);
             armyGuy.CullDraw = false;
-            //armyGuy.RenderBounds = true;
+            armyGuy.RenderBounds = true;
+
+            Building unanianFactory = new Building();
+            unanianFactory.Model3D = m_game.ResourceManager.GetAsset(typeof(Model), "UnanianFactory") as Model;
+            unanianFactory.CullDraw = false;
+            unanianFactory.RenderBounds = true;
+
 
             // Load the models which contain animations
             Debug.WriteLine("Loading Animations");
@@ -113,6 +120,7 @@ namespace EmpiresOfTheIV.Game
             Debug.WriteLine("Adding to Scene");
             m_game.SceneManager.CurrentScene.SceneNode.AddChild(m_terrain.Transform);
             m_game.SceneManager.CurrentScene.SceneNode.AddChild(armyGuy.Transform);
+            m_game.SceneManager.CurrentScene.SceneNode.AddChild(unanianFactory.Transform);
             m_game.SceneManager.CurrentScene.SceneNode.AddChild(tyril.Transform);
         }
     }
