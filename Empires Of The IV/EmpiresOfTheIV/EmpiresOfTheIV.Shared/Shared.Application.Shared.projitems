@@ -24,6 +24,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\ChatManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\GameMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\GameModel1v1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Factories\Factory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Factories\FactoryBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Planet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\BluetoothMultiplayerMenu.cs" />
