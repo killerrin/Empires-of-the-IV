@@ -20,6 +20,7 @@ using Anarian.Enumerators;
 using Anarian.Helpers;
 using Anarian.Interfaces;
 using EmpiresOfTheIV.Game.GameObjects;
+using Anarian.Pathfinding;
 
 namespace EmpiresOfTheIV.Game
 {
@@ -65,6 +66,9 @@ namespace EmpiresOfTheIV.Game
             Texture2D heightMap = m_game.Content.Load<Texture2D>("heightmap");
             Texture2D grassTexture = m_game.Content.Load<Texture2D>("grassTexture");
             Terrain m_terrain = new Terrain(graphics, heightMap, grassTexture);
+            //m_terrain.SetupGrid(true, AStarTerrainRule.ImpassableRule(RuleMeasureType.Absolute, Comparison.LessThanEqualTo, 10.0f),
+            //                          AStarTerrainRule.PassableRule(RuleMeasureType.Absolute, Comparison.LessThanEqualTo, 15.0f));
+            //m_terrain.DebugPrintGrid();
            
             // Create the Game Objects
             Debug.WriteLine("Loading Game Objects");
