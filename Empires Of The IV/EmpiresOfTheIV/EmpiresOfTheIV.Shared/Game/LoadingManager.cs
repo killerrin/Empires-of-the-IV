@@ -58,7 +58,7 @@ namespace EmpiresOfTheIV.Game
             // Load the Assets
             m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Texture2D), "KillerrinStudiosLogo");
             m_game.ResourceManager.LoadAsset(m_game.Content, typeof(AnimatedModel), "t-pose_3");
-            m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Model), "UnanianFactory");
+            m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Model), "Factory Base");
 
             // Load the Terrain
             Debug.WriteLine("Loading Terrain");
@@ -76,7 +76,7 @@ namespace EmpiresOfTheIV.Game
             armyGuy.RenderBounds = true;
 
             Building unanianFactory = new Building();
-            unanianFactory.Model3D = m_game.ResourceManager.GetAsset(typeof(Model), "UnanianFactory") as Model;
+            unanianFactory.Model3D = m_game.ResourceManager.GetAsset(typeof(Model), "Factory Base") as Model;
             unanianFactory.CullDraw = false;
             unanianFactory.RenderBounds = true;
 
@@ -92,12 +92,12 @@ namespace EmpiresOfTheIV.Game
 
             // Create Planets
             Debug.WriteLine("Loading Tyril");
-            Texture2D tyrilTexture = m_game.Content.Load<Texture2D>("Planet Textures\\Tyril Texture");
+            Texture2D tyrilTexture = m_game.Content.Load<Texture2D>("Tyril Texture");
             Planet tyril = new Planet(graphics, tyrilTexture, MathHelper.ToRadians(-25.0f), Vector3.Zero, new Vector3(0.00020f, 0.0f, 0.0f), Vector3.Zero);
             tyril.Transform.Scale = new Vector3(10.0f);
 
             Debug.WriteLine("Loading Hope");
-            Texture2D hopeTexture = m_game.Content.Load<Texture2D>("Planet Textures\\Hope Texture");
+            Texture2D hopeTexture = m_game.Content.Load<Texture2D>("Hope Texture");
             Planet hope = new Planet(graphics, hopeTexture, MathHelper.ToRadians(-20.0f), new Vector3(20.0f, 2.0f, 0.0f), new Vector3(0.00050f, 0.0f, 0.0f), new Vector3(0.00040f, 0.0f, 0.0f));
             hope.Transform.Scale = new Vector3(1.5f);
 
