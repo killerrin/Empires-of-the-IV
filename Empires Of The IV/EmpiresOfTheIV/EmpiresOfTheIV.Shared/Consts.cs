@@ -10,6 +10,8 @@ namespace EmpiresOfTheIV
         public static EmpiresOfTheIVGame Game;
         public static string LaunchArguments;
 
+        public static Random random = new Random();
+
         /// <summary>
         /// Used as an early exit check to determine if the Game is setup and ready to be interacted with
         /// </summary>

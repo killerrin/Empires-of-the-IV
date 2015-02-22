@@ -63,7 +63,7 @@ namespace EmpiresOfTheIV.Game
 
             // Load the Terrain
             Debug.WriteLine("Loading Terrain");
-            Texture2D heightMap = m_game.Content.Load<Texture2D>("heightmap");
+            Texture2D heightMap = m_game.Content.Load<Texture2D>("Radient Flatlands HeightMap");
             Texture2D grassTexture = m_game.Content.Load<Texture2D>("grassTexture");
             Terrain m_terrain = new Terrain(graphics, heightMap, grassTexture);
             //m_terrain.SetupGrid(true, AStarTerrainRule.ImpassableRule(RuleMeasureType.Absolute, Comparison.LessThanEqualTo, 10.0f),
@@ -81,6 +81,7 @@ namespace EmpiresOfTheIV.Game
 
             Building unanianFactory = new Building();
             unanianFactory.Model3D = m_game.ResourceManager.GetAsset(typeof(Model), "Factory Base") as Model;
+            unanianFactory.Transform.Position = new Vector3(0.0f, -10.0f, 0.0f);
             unanianFactory.CullDraw = false;
             unanianFactory.RenderBounds = true;
 

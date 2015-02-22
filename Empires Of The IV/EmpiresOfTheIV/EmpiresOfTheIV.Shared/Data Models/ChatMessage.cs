@@ -19,6 +19,14 @@ namespace EmpiresOfTheIV.Data_Models
             Image = image;
             Name = name;
             Message = message;
+            TimeStamp = timeStamp;
+        }
+        public ChatMessage(Uri image, string name, string message)
+        {
+            Image = image;
+            Name = name;
+            Message = message;
+            TimeStamp = DateTime.UtcNow;
         }
     }
 }

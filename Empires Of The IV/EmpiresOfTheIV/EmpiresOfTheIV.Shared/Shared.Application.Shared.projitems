@@ -113,12 +113,19 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Unit.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\LoadingManager.cs" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\ListeningEarcon.wav" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\Map Images\Radient Flatlands MiniMap.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="$(MSBuildThisFileDirectory)Assets\microphone.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\Space and Astronomy.ttf" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\stop.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\UnlockWhite.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Styles\ChatStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)Styles\Constants.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -246,6 +253,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)Content\Raw Models\Factory Base Texture_0.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Radient Flatlands HeightMap.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

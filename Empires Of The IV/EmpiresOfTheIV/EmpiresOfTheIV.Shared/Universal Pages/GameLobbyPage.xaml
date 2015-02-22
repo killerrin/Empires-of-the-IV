@@ -11,13 +11,71 @@
         <ScrollViewer HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                       ScrollViewer.VerticalScrollMode="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled"
                       ScrollViewer.HorizontalScrollMode="Enabled" ScrollViewer.HorizontalScrollBarVisibility="Auto">
-            <Grid Width="auto" VerticalAlignment="Stretch" Margin="20,20,20,20">
+            <Grid Width="auto" VerticalAlignment="Stretch" Margin="0,0,20,0">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="300" Width="auto"/>
                     <ColumnDefinition MinWidth="500" Width="auto"/>
-                    <ColumnDefinition MinWidth="500" Width="auto"/>
+                    <ColumnDefinition MinWidth="600" Width="auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Grid Grid.Column="0">
+                <Grid Grid.Column="0" Background="#FF1B6439" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <ScrollViewer VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Padding="10,20,20,10">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Height="Auto">
+                            <TextBlock Text="My IP"  Style="{StaticResource DeviceIPTextBlock}"/>
+                            <TextBlock x:Name="myIP" Style="{StaticResource DeviceIPTextBlock}"/>
+
+                            <ComboBox x:Name="gameModeSelector" Header="Game Mode" Margin="0,20,0,0" HorizontalAlignment="Stretch" 
+                                  Foreground="White" Background="Transparent"
+		                          PlaceholderText="1v1" SelectedIndex="0" 
+                                  SelectionChanged="GameModeSelector_Changed">
+                                <x:String>1v1</x:String>
+                                <!--<x:String>Free For All</x:String> -->
+                                <!--<x:String>Team Based</x:String>   -->
+                                <!--<x:String>Tower Defence</x:String>-->
+                            </ComboBox>
+
+                            <ComboBox x:Name="mapSelector" Header="Map" Margin="0,20,0,0" HorizontalAlignment="Stretch" 
+                                  Foreground="White" Background="Transparent"
+		                          PlaceholderText="Radient Flatlands" SelectedIndex="0" 
+                                  SelectionChanged="MapSelector_Changed">
+                                <x:String>Random</x:String>
+                                <x:String>Radient Flatlands</x:String>
+                            </ComboBox>
+
+                            <StackPanel Orientation="Vertical" Margin="0,20,0,0" HorizontalAlignment="Center">
+                                <TextBlock x:Name="mapName" Text="{Binding ElementName=mapSelector, Path=SelectedItem}" />
+                                <Image     x:Name="mapImage" Width="200" Height="200">
+                                    <Image.Source>
+                                        <BitmapImage CreateOptions="None"/>
+                                    </Image.Source>
+                                </Image>
+
+                                <StackPanel Orientation="Vertical" Margin="0,20,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Map Size"  Foreground="White"/>
+                                        <TextBlock x:Name="mapSize" Foreground="White" Text="" Margin="10,0,0,0"/>
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Player Limit" Foreground="White"/>
+                                        <TextBlock x:Name="mapLimit"   Foreground="White" Text="" Margin="10,0,0,0"/>
+                                    </StackPanel>
+
+                                    <TextBlock Text="Description" Margin="0,20,0,0" Foreground="White"/>
+                                    <TextBlock x:Name="mapDescription" Text="" Width="200" TextWrapping="Wrap" Foreground="White" />
+                                </StackPanel>
+
+                                
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+
+                <Grid Grid.Column="1" Margin="20,0,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
@@ -27,23 +85,22 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-
                     <ScrollViewer Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="0,0,20,0">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Height="auto">
-                            <TextBlock x:Name="myIP" Text="Your IP:" Margin="10,10,0,0" Style="{StaticResource DeviceIPTextBlock}"/>
-                            
                             <StackPanel x:Name="team1StackPanel" Margin="0,20,0,0" Orientation="Vertical" HorizontalAlignment="Stretch" Height="auto">
-                                <TextBlock Text="Team 1" Style="{StaticResource GameLobbyTeamHeaderText}"/>
+                                <Button Content="Team 1" Tapped="JoinTeam1_Tapped" Style="{StaticResource GameLobbyTeamHeaderButton}" />
+                                
                                 <ListBox x:Name="team1ListBox" 
                                          Tapped="Team1SelectionChanged" >
-                                    <Run>Test Data 1</Run>
+                                    <!--<x:String>Test Data 1</x:String>-->
                                 </ListBox>
                             </StackPanel>
                             <StackPanel x:Name="team2StackPanel" Margin="0,20,0,0" Orientation="Vertical" HorizontalAlignment="Stretch" Height="auto">
-                                <TextBlock Text="Team 2" Style="{StaticResource GameLobbyTeamHeaderText}"/>
+                                <Button Content="Team 2" Tapped="JoinTeam2_Tapped" Style="{StaticResource GameLobbyTeamHeaderButton}" />
+                                
                                 <ListBox x:Name="team2ListBox" 
                                          Tapped="Team2SelectionChanged">
-                                    <Run>Test Data 2</Run>
+                                    <!--<x:String>Test Data 2</x:String>-->
                                 </ListBox>
                             </StackPanel>
                         </StackPanel>
@@ -52,7 +109,7 @@
                     <Button x:Name="gameStartButton" Content="Start" Grid.Row="2" Style="{StaticResource GameLobbyStartButton}" Tapped="gameStartButton_Tapped"/>
                 </Grid>
 
-                <Grid Grid.Column="1" Margin="20,0,0,0">
+                <Grid Grid.Column="2" Margin="20,0,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
@@ -61,13 +118,12 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <ScrollViewer Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="0,0,20,0">
-                        <TextBlock x:Name="chatTextBlock" HorizontalAlignment="Stretch" Height="auto" 
-                                       TextWrapping="WrapWholeWords" Margin="0,0,0,0"
-                                       Text="" />
-                    </ScrollViewer>
+                    <ListBox x:Name="chatLog" Grid.Column="0" Grid.Row="0" Background="Transparent"
+                             Tapped="ChatLog_Tapped"
+						     ItemTemplate="{StaticResource ChatLog_Template}"
+						     ItemContainerStyle="{StaticResource ChatLog_ItemContainerStyle}" />
 
-                    <Grid Grid.Column="0" Grid.Row="1" Margin="0,20,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Grid Grid.Column="0" Grid.Row="1" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="5*" />
                             <ColumnDefinition Width="1.5*" />
