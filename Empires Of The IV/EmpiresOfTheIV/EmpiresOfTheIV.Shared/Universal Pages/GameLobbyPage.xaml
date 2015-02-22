@@ -22,7 +22,6 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-
                     <ScrollViewer VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Padding="10,20,20,10">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Height="Auto">
                             <TextBlock Text="My IP"  Style="{StaticResource DeviceIPTextBlock}"/>
@@ -46,7 +45,7 @@
                                 <x:String>Radient Flatlands</x:String>
                             </ComboBox>
 
-                            <StackPanel Orientation="Vertical" Margin="0,20,0,0" HorizontalAlignment="Center">
+                            <StackPanel Orientation="Vertical" Margin="0,20,0,0" HorizontalAlignment="Center">                              
                                 <TextBlock x:Name="mapName" Text="{Binding ElementName=mapSelector, Path=SelectedItem}" />
                                 <Image     x:Name="mapImage" Width="200" Height="200">
                                     <Image.Source>
@@ -68,8 +67,6 @@
                                     <TextBlock Text="Description" Margin="0,20,0,0" Foreground="White"/>
                                     <TextBlock x:Name="mapDescription" Text="" Width="200" TextWrapping="Wrap" Foreground="White" />
                                 </StackPanel>
-
-                                
                             </StackPanel>
                         </StackPanel>
                     </ScrollViewer>
@@ -108,7 +105,7 @@
 
                     <Button x:Name="gameStartButton" Content="Start" Grid.Row="2" Style="{StaticResource GameLobbyStartButton}" Tapped="gameStartButton_Tapped"/>
                 </Grid>
-
+                
                 <Grid Grid.Column="2" Margin="20,0,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -132,13 +129,16 @@
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
 
-                        <TextBox x:Name="chatTextBox" PlaceholderText="Type a message here" 
-                                        Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                        <Button x:Name="chatSendButton" Content="Send" 
+                        <TextBox x:Name="chatTextBox" PlaceholderText="Type a message here" InputScope="Chat" 
+                                 IsTapEnabled="True" IsEnabled="True" IsHitTestVisible="True" KeyDown="ChatTextBox_KeyDown"
+                                 GotFocus="ChatTextBox_GotFocus" LostFocus="ChatTextBox_LostFocus"
+                                 Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        <Button x:Name="chatSendButton" Content="Send" Tapped="ChatSendButton_Tapped" Loaded="ChatSendButton_Loaded"
                                         Grid.Column="1" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
                     </Grid>
-                </Grid>
+                </Grid> 
+                
             </Grid>
             
         </ScrollViewer>

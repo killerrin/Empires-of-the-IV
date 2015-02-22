@@ -18,7 +18,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="0.5*"/>
         </Grid.RowDefinitions>
- 
+        
         <StackPanel x:Name="menuOptions" Grid.Column="1" Grid.Row="1" Orientation="Vertical">
             <Button Content="Singleplayer"  Visibility="Visible"    Style="{StaticResource GenericMenuButton}" Click="SingleplayerButton_Click" />
             <Button Content="Bluetooth"     Visibility="Collapsed"  Style="{StaticResource GenericMenuButton}" Click="BluetoothMultiplayerButton_Click"/>
@@ -27,5 +27,6 @@
             <Button Content="Options"       Visibility="Visible"    Style="{StaticResource GenericMenuButton}" Click="OptionsButton_Click"/>
             <Button Content="Credits"       Visibility="Visible"    Style="{StaticResource GenericMenuButton}" Click="CreditsButton_Click"/>
         </StackPanel>
+        
     </Grid>
 </Page>

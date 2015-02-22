@@ -60,7 +60,6 @@ namespace EmpiresOfTheIV
             items.Add(new ChatMessage(new Uri("http://asset3.neogaf.com/forum/image.php?u=483446&dateline=1417594199", UriKind.Absolute), "killer rin", "Hello", DateTime.UtcNow));
             items.Add(new ChatMessage(new Uri("http://asset3.neogaf.com/forum/image.php?u=483446&dateline=1417594199", UriKind.Absolute), "killer rin", "Hello", DateTime.UtcNow));
             chatLog.ItemsSource = items;
-
             base.OnNavigatedTo(e);
         }
 
@@ -140,13 +139,70 @@ namespace EmpiresOfTheIV
 
         }
 
+
+
+        #region Chat Events
         private void ChatLog_Tapped(object sender, TappedRoutedEventArgs e)
         {
 
         }
 
-        #region Chat Events
+        private void ChatSendButton_Loaded(object sender, RoutedEventArgs e)
+        {
+#if WINDOWS_PHONE_APP
+            chatSendButton.Content = "Open Keyboard";
+#endif
+        }
 
+
+        bool chatTextBoxCurrentlyFocused = false;
+        private void ChatTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            //Debug.WriteLine("Chat TextBox GotFocus");
+            chatTextBoxCurrentlyFocused = true;
+            chatSendButton.Content = "Send";
+        }
+        private void ChatTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Chat TextBox LostFocus");
+            chatTextBoxCurrentlyFocused = false;
+
+#if WINDOWS_PHONE_APP
+            chatSendButton.Content = "Open Keyboard";
+#endif
+        }
+
+
+        private void ChatSendButton_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+#if WINDOWS_PHONE_APP
+            if (!chatTextBoxCurrentlyFocused)
+            {
+                chatTextBox.Focus(FocusState.Programmatic);
+                return;
+            }
+#endif
+            SendMessage(chatTextBox.Text);
+        }
+
+        private void ChatTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == Windows.System.VirtualKey.Enter) SendMessage(chatTextBox.Text);
+        }
+
+        private async void SendMessage(string msg)
+        {
+            if (string.IsNullOrEmpty(msg)) return;
+            Debug.WriteLine("SendMessage("+msg+")");
+
+            // Reset the ChatBox
+            XamlControlHelper.LoseFocusOnTextBox(chatTextBox);
+            chatTextBox.Text = "";
+        }
         #endregion
+
+
+
+
     }
 }
