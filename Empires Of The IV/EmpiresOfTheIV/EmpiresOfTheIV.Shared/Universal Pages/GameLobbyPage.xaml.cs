@@ -35,9 +35,13 @@ namespace EmpiresOfTheIV
     {
         string pageparam = "";
 
-
         ChatManager chatManager;
         string username;
+
+        int totalMaps = 2;
+        int totalGameModes = 2;
+
+        bool gameStarting = false;
 
         public GameLobbyPage()
         {
@@ -47,35 +51,6 @@ namespace EmpiresOfTheIV
             this.InitializeComponent();
 
             Debug.WriteLine("GameLobbyPage loaded");
-        }
-
-        void GameLobbyPage_Loaded(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                myIP.Text = LANHelper.CurrentIPAddressAsString();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.PrintException("Showing IP"));
-            }
-
-            // Get our username
-            username = SystemInfoHelper.GetMachineName();
-            if (string.IsNullOrEmpty(username)) { username = "Player" + Consts.random.Next(4285745); }
-
-            // Create our Chat Manager
-            chatManager = new ChatManager();
-            chatLog.ItemsSource = chatManager.ChatMessages;;
-
-            switch (pageparam)
-            {
-                case "Singleplayer": break;
-                case "HostLan": break;
-                case "ClientLan": SetClientAbilities(); break;
-                default:
-                    break;
-            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -105,6 +80,61 @@ namespace EmpiresOfTheIV
             
         }
 
+        void GameLobbyPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                myIP.Text = LANHelper.CurrentIPAddressAsString();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.PrintException("Showing IP"));
+            }
+
+            // Get our username
+            username = SystemInfoHelper.GetMachineName();
+            if (string.IsNullOrEmpty(username)) { username = "Player" + Consts.random.Next(42845); }
+            myUsername.Text = username;
+
+            // Create our Chat Manager
+            chatManager = new ChatManager();
+            chatLog.ItemsSource = chatManager.ChatMessages; ;
+
+            // Set the Host/Client UI Abilities
+            SetAbilities();
+        }
+
+        private void SetAbilities()
+        {
+            switch (pageparam)
+            {
+                case "Singleplayer":    SetHostAbilities();     break;
+                case "HostLan":         SetHostAbilities();     break;
+                case "ClientLan":       SetClientAbilities();   break;
+                default:
+                    break;
+            }
+        }
+
+        private void SetHostAbilities()
+        {
+            gameModeSelector.IsEnabled = true;
+            mapSelector.IsEnabled = true;
+            gameStartButton.IsEnabled = true;
+        }
+
+        private void SetClientAbilities()
+        {
+            gameModeSelector.IsEnabled = false;
+            mapSelector.IsEnabled = false;
+            gameStartButton.IsEnabled = false;
+
+            // Now request startup data
+            SystemPacket packet = new SystemPacket(true, SystemPacketID.RequestSetupData, "");
+            string packetSerialized = packet.ThisToJson();
+            Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+        }
+
         #region Networking
         /// <summary>
         /// Will only get fired if the player is the host
@@ -118,16 +148,20 @@ namespace EmpiresOfTheIV
             // Get the regular object
             JObject jObject = JObject.Parse(e.Message);
             EotIVPacket regularPacket = JsonConvert.DeserializeObject<EotIVPacket>(jObject.ToString());
+            Debug.WriteLine("Deserialized Packet");
 
             // Now parse the object to get the right derived class
             if (regularPacket.PacketType == PacketType.Chat)
             {
                 Debug.WriteLine("Chat Packet Recieved");
                 ChatPacket chatPacket = JsonConvert.DeserializeObject<ChatPacket>(jObject.ToString());
-                chatManager.AddMessage(chatPacket.Message);
 
                 CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
+                        //chatJObject jObject = JObject.Parse(chatPacket.Message);
+                        //ChatMessage message = JsonConvert.DeserializeObject<ChatMessage>(chatJObject.ToString());
+
+                        chatManager.AddMessage(chatPacket.Message);
                         chatLog.ItemsSource = chatManager.ChatMessages;
                     }
                 );
@@ -137,18 +171,41 @@ namespace EmpiresOfTheIV
                 Debug.WriteLine("System Packet Recieved");
                 SystemPacket systemPacket = JsonConvert.DeserializeObject<SystemPacket>(jObject.ToString());
 
-                if (systemPacket.ID == SystemPacketID.GameModeChanged) {
-                    Debug.WriteLine("Changing Game Mode: " + systemPacket.Command);
-                    gameModeSelector.SelectedIndex = Convert.ToInt32(systemPacket.Command);
-                }
-                else if (systemPacket.ID == SystemPacketID.MapChanged) {
-                    Debug.WriteLine("Changing Map: " + systemPacket.Command);
-                    mapSelector.SelectedIndex = Convert.ToInt32(systemPacket.Command);
-                }
-                else if (systemPacket.ID == SystemPacketID.RequestSetupData) {
+                if (systemPacket.ID == SystemPacketID.RequestSetupData) {
                     Debug.WriteLine("Client Requesting Startup Data");
                     SendGameModeChanged();
                     SendMapChanged();
+                }
+                else if (systemPacket.ID == SystemPacketID.GameModeChanged) {
+                    Debug.WriteLine("Host Changed the Game Mode: " + systemPacket.Command);
+                    gameModeSelector.SelectedIndex = Convert.ToInt32(systemPacket.Command);
+                }
+                else if (systemPacket.ID == SystemPacketID.MapChanged) {
+                    Debug.WriteLine("Host Changed the Map: " + systemPacket.Command);
+                    mapSelector.SelectedIndex = Convert.ToInt32(systemPacket.Command);
+                }
+                else if (systemPacket.ID == SystemPacketID.JoinTeam1)
+                {
+                    Debug.WriteLine("A Player Joined Team 1");
+
+                }
+                else if (systemPacket.ID == SystemPacketID.JoinTeam2)
+                {
+                    Debug.WriteLine("A Player Joined Team 2");
+
+                }
+                else if (systemPacket.ID == SystemPacketID.GameStarted)
+                {
+                    if (systemPacket.Command == true.ToString())
+                    {
+                        Debug.WriteLine("Host Started the Game");
+                        gameStartButton.Content = "Cancel";
+                    }
+                    else if (systemPacket.Command == false.ToString())
+                    {
+                        Debug.WriteLine("The Host Cancelled the Game Start");
+                        gameStartButton.Content = "Start";
+                    }
                 }
             }
         }
@@ -181,19 +238,33 @@ namespace EmpiresOfTheIV
                 }
             );
         }
-        #endregion
 
-        private void SetClientAbilities()
+        private void SendStartGame()
         {
-            gameModeSelector.IsEnabled = false;
-            mapSelector.IsEnabled = false;
-            gameStartButton.IsEnabled = false;
+            Debug.WriteLine("Sending Game Start");
 
-            // Now request startup data
-            SystemPacket packet = new SystemPacket(true, SystemPacketID.RequestSetupData, "");
-            string packetSerialized = packet.ThisToJson();
-            Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+            CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    SystemPacket packet = new SystemPacket(true, SystemPacketID.GameStarted, true.ToString());
+                    string packetSerialized = packet.ThisToJson();
+                    Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                }
+            );
         }
+
+        private void SendCancelStartGame()
+        {
+            Debug.WriteLine("Sending Game Start");
+
+            CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    SystemPacket packet = new SystemPacket(true, SystemPacketID.GameStarted, false.ToString());
+                    string packetSerialized = packet.ThisToJson();
+                    Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                }
+            );
+        }
+        #endregion
 
         #region GameLobby Events
         private void JoinTeam1_Tapped(object sender, TappedRoutedEventArgs e)
@@ -217,7 +288,48 @@ namespace EmpiresOfTheIV
 
         private void gameStartButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            if (gameStarting)
+            {
+                gameStartButton.Content = "Start";
+                
+                SetAbilities();
+                gameStarting = false;
 
+                SendCancelStartGame();
+                return;
+            }
+            
+            bool returnEarly = false;
+            
+            // If the Game Mode or Map is set to random, set them now
+            if (gameModeSelector.SelectedIndex == 0)
+            {
+                gameModeSelector.SelectedItem = null;
+                gameModeSelector.SelectedIndex = 0;
+                returnEarly = true;
+            }
+
+            if (mapSelector.SelectedIndex == 0)
+            {
+                mapSelector.SelectedItem = null;
+                mapSelector.SelectedIndex = 0;
+                returnEarly = true;
+            }
+
+            if (returnEarly)
+            {
+                return;
+            }
+
+            // Set the controls
+            gameStartButton.Content = "Cancel";
+            
+            mapSelector.IsEnabled = false;
+            gameModeSelector.IsEnabled = false;
+            gameStarting = true;
+
+            // If we are good to start, send the start command
+            SendStartGame();
         }
         #endregion
 
@@ -230,7 +342,7 @@ namespace EmpiresOfTheIV
             switch (mapSelector.SelectedIndex)
             {
                 case 0:
-                    int index = Consts.random.Next(1, 2);
+                    int index = Consts.random.Next(1, totalMaps);
                     mapSelector.SelectedIndex = index;
                     return;
                 case 1: //<sys:String>Flatlands</sys:String>
@@ -257,7 +369,7 @@ namespace EmpiresOfTheIV
             switch (gameModeSelector.SelectedIndex)
             {
                 case 0:
-                    int index = Consts.random.Next(1, 2);
+                    int index = Consts.random.Next(1, totalGameModes);
                     gameModeSelector.SelectedIndex = index;
                     return;
                 case 1: //<sys:String>1v1</sys:String>
@@ -306,11 +418,17 @@ namespace EmpiresOfTheIV
         }
         private void ChatTextBox_KeyDown(object sender, KeyRoutedEventArgs e)
         {
+            if (e.Handled) return;
+
+//#if WINDOWS_PHONE_APP
             if (e.Key == Windows.System.VirtualKey.Enter)
             {
                 string chatText = ("" + chatTextBox.Text);
                 SendMessage(chatText);
+                e.Handled = true;
             }
+//#endif
+
         }
         #endregion
 
@@ -339,6 +457,8 @@ namespace EmpiresOfTheIV
         private void SendMessage(string msg)
         {
             if (string.IsNullOrEmpty(msg)) return;
+            if (string.IsNullOrWhiteSpace(msg)) return;
+
             Debug.WriteLine("SendMessage(" + msg + ")");
 
             // Send the Message

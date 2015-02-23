@@ -35,7 +35,7 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBox    Grid.Column="0"    x:Name="opponentsIPTextBox"  PlaceholderText="Please enter Opponents IP" HorizontalAlignment="Stretch" IsEnabled="True" GotFocus="IPTextBox_GotFocus" LostFocus="IPTextBox_LostFocus"/>
+                    <TextBox    Grid.Column="0"    x:Name="opponentsIPTextBox"  PlaceholderText="Please enter Opponents IP" HorizontalAlignment="Stretch" IsEnabled="True" GotFocus="IPTextBox_GotFocus" LostFocus="IPTextBox_LostFocus" KeyUp="IPTextBox_KeyUp"/>
                     <Button     Grid.Column="1"    x:Name="openKeyboardButton"   Content="Open Keyboard" HorizontalAlignment="Right" Tapped="OpenKeyboard_Tapped"/>
                 </Grid>
                 

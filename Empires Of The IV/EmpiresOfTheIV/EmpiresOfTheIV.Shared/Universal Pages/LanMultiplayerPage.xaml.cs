@@ -174,6 +174,18 @@ namespace EmpiresOfTheIV
             openKeyboardButton.Content = "Open Keyboard";
 #endif
         }
+
+        private void IPTextBox_KeyUp(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Handled) return;
+
+            if (e.Key == Windows.System.VirtualKey.Enter)
+            {
+                ConnectToHost();
+                e.Handled = true;
+            }
+        }
+
         private void OpenKeyboard_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if (ipTextBoxCurrentlyFocused)

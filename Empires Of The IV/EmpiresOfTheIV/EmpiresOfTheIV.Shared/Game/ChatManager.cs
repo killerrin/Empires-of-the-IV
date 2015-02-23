@@ -1,4 +1,5 @@
 ﻿using EmpiresOfTheIV.Data_Models;
+using KillerrinStudiosToolkit;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,12 +12,11 @@ using System.Text;
 
 namespace EmpiresOfTheIV.Game
 {
-    public class ChatManager : IEnumerable<ChatMessage> //, INotifyCollectionChanged, INotifyPropertyChanged
+    public class ChatManager : IEnumerable<ChatMessage>, INotifyCollectionChanged
     {
         public static readonly Uri DefaultAvatar = new Uri("http://www.killerrin.com/wikis/eot-iv/skins/logo.png", UriKind.Absolute);
 
-        protected List<ChatMessage> m_chatMessages;
-        public List<ChatMessage> ChatMessages { get { return m_chatMessages; } private set { m_chatMessages = value; } }
+        public ObservableCollection<ChatMessage> ChatMessages;
 
         public int MessageCount { get { return ChatMessages.Count; } }
 
@@ -26,7 +26,7 @@ namespace EmpiresOfTheIV.Game
 
         public ChatManager()
         {
-            m_chatMessages = new List<ChatMessage>();
+            ChatMessages = new ObservableCollection<ChatMessage>();
             CurrentAvatar = DefaultAvatar;
 
             m_lockObject = new object();
@@ -48,27 +48,26 @@ namespace EmpiresOfTheIV.Game
             lock (m_lockObject)
             {
                 //Debug.WriteLine("Adding Message");
-                m_chatMessages.Add(message);
-                m_chatMessages.Sort((a, b) => a.TimeStamp.CompareTo(b.TimeStamp));
 
-                //try
-                //{
-                //    if (PropertyChanged != null)
-                //        PropertyChanged(this, new PropertyChangedEventArgs("ChatMessages"));
-                //}
-                //catch (Exception) { }
+                // Check for duplicates
+                if (message.Equals(ChatMessages.Count - 1)) return;
 
-                //try
-                //{
-                //    if (CollectionChanged != null)
-                //        CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add));
-                //}
-                //catch (Exception) { }
+                ChatMessages.Add(message);
+                //ChatMessages.Sort();
+
+                try
+                {
+                    if (CollectionChanged != null)
+                        CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add));
+                }
+                catch (Exception) { }
             }
         }
 
 
         #region Interface Implimentations
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        
         IEnumerator IEnumerable.GetEnumerator()
         {
             // Lets call the generic version here
@@ -88,7 +87,5 @@ namespace EmpiresOfTheIV.Game
             protected set { ChatMessages[i] = value; }
         }
 
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

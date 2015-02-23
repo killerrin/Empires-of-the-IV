@@ -8,13 +8,19 @@ namespace EmpiresOfTheIV.Game.Networking
     {
         None,
 
+        RequestSetupData,
+        
         GameModeChanged,
         MapChanged,
-        GameStarted,
-
-        RequestSetupData,
 
         JoinTeam1,
-        JoinTeam2
+        JoinTeam2,
+
+        GameStarted,
+
+        Pause,
+        Resume,
+
+        Quit
     }
 }
