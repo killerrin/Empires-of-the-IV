@@ -8,15 +8,21 @@ namespace EmpiresOfTheIV.Game.Networking
 {
     public class SystemPacket : EotIVPacket
     {
-        public SystemPacket(bool requiresAck)
+        public SystemPacketID ID { get; set; }
+        public string Command { get; set; }
+
+        public SystemPacket(bool requiresAck, SystemPacketID id, string command)
             : base(requiresAck, PacketType.System)
         {
+            ID = id;
+            Command = command;
         }
 
         public void SetFromOtherPacket(SystemPacket o)
         {
             base.SetFromOtherPacket(o);
-
+            ID = o.ID;
+            Command = o.Command;
         }
 
         public override string ThisToJson()

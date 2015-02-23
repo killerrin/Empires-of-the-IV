@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EmpiresOfTheIV.Data_Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -8,9 +9,9 @@ namespace EmpiresOfTheIV.Game.Networking
 {
     public class ChatPacket : EotIVPacket
     {
-        string Message { get; set; }
+        public ChatMessage Message { get; set; }
 
-        public ChatPacket(bool requiresAck, string message)
+        public ChatPacket(bool requiresAck, ChatMessage message)
             : base(requiresAck, PacketType.Chat)
         {
             Message = message;

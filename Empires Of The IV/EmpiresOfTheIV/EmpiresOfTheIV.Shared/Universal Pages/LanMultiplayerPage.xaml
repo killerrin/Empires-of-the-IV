@@ -28,7 +28,17 @@
 
             <StackPanel Grid.Row="0" Orientation="Vertical">
                 <TextBlock x:Name="myIP" Text="Your IP:" Margin="10,10,0,0" Style="{StaticResource DeviceIPTextBlock}"/>
-                <TextBox x:Name="opponentsIPTextBox"  PlaceholderText="Please enter Opponents IP" IsEnabled="True"/>
+                
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox    Grid.Column="0"    x:Name="opponentsIPTextBox"  PlaceholderText="Please enter Opponents IP" HorizontalAlignment="Stretch" IsEnabled="True" GotFocus="IPTextBox_GotFocus" LostFocus="IPTextBox_LostFocus"/>
+                    <Button     Grid.Column="1"    x:Name="openKeyboardButton"   Content="Open Keyboard" HorizontalAlignment="Right" Tapped="OpenKeyboard_Tapped"/>
+                </Grid>
+                
                 <TextBlock x:Name="statusTextBlock" VerticalAlignment="Bottom" Style="{StaticResource DeviceIPTextBlock}"/>
             </StackPanel>
 

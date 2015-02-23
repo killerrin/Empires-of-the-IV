@@ -31,6 +31,7 @@
                                   Foreground="White" Background="Transparent"
 		                          PlaceholderText="1v1" SelectedIndex="0" 
                                   SelectionChanged="GameModeSelector_Changed">
+                                <x:String>Random</x:String>
                                 <x:String>1v1</x:String>
                                 <!--<x:String>Free For All</x:String> -->
                                 <!--<x:String>Team Based</x:String>   -->
@@ -116,7 +117,7 @@
                     </Grid.RowDefinitions>
 
                     <ListBox x:Name="chatLog" Grid.Column="0" Grid.Row="0" Background="Transparent"
-                             Tapped="ChatLog_Tapped"
+                             Tapped="ChatLog_Tapped" SelectionChanged="ChatLog_SelectionChanged"
 						     ItemTemplate="{StaticResource ChatLog_Template}"
 						     ItemContainerStyle="{StaticResource ChatLog_ItemContainerStyle}" />
 

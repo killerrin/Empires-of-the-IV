@@ -117,40 +117,69 @@ namespace EmpiresOfTheIV
         {
             //if (m_attemptingToConnect) return;
             if (string.IsNullOrEmpty(opponentsIPTextBox.Text)) return;
+            Debug.WriteLine("Attempting to connect to Host");
 
             try
             {
+
                 m_attemptingToConnect = true;
                 XamlControlHelper.ChangeProgressIndicator(progressRing, true);
+                Debug.WriteLine("Progress Indicator Set");
+                
                 Consts.Game.GameManager.NetworkManager.Connect(NetworkType.LAN, opponentsIPTextBox.Text);
             }
-            catch (Exception) { }
+            catch (Exception) { Debug.WriteLine("Exception"); }
         }
 
         void NetworkManager_OnConnected(object sender, KillerrinStudiosToolkit.Events.OnConnectedEventArgs e)
         {
-                try {
-                    CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                    {
-                        m_attemptingToConnect = false;
+            Debug.WriteLine("Connected");
 
-                        // Disable any controls here
-                        XamlControlHelper.ChangeProgressIndicator(progressRing, false);
-                        hostButton.IsEnabled = false;
-                        connectButton.IsEnabled = false;
-                        opponentsIPTextBox.IsEnabled = false;
+            try {
+                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    m_attemptingToConnect = false;
 
-                        // Describe from Events
-                        Consts.Game.GameManager.NetworkManager.OnConnected -= NetworkManager_OnConnected;
-                        Consts.Game.GameManager.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
+                    // Disable any controls here
+                    XamlControlHelper.ChangeProgressIndicator(progressRing, false);
+                    hostButton.IsEnabled = false;
+                    connectButton.IsEnabled = false;
+                    opponentsIPTextBox.IsEnabled = false;
 
-                        // Tell the game we're off
-                        PlatformMenuAdapter.LanMultiplayerMenu_ConnectButton_Click();
-                    });
-                }
-                finally {
-                }
-     
+                    // Describe from Events
+                    Consts.Game.GameManager.NetworkManager.OnConnected -= NetworkManager_OnConnected;
+                    Consts.Game.GameManager.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
+
+                    // Tell the game we're off
+                    PlatformMenuAdapter.LanMultiplayerMenu_ConnectButton_Click();
+                });
+            }
+            catch(Exception) { }
+        }
+
+
+        bool ipTextBoxCurrentlyFocused = false;
+        private void IPTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("IPAddress TextBox GotFocus");
+            ipTextBoxCurrentlyFocused = true;
+            openKeyboardButton.Content = "Close Keyboard";
+        }
+        private void IPTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("IPAddress TextBox LostFocus");
+            ipTextBoxCurrentlyFocused = false;
+
+#if WINDOWS_PHONE_APP
+            openKeyboardButton.Content = "Open Keyboard";
+#endif
+        }
+        private void OpenKeyboard_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (ipTextBoxCurrentlyFocused)
+                XamlControlHelper.LoseFocusOnTextBox(opponentsIPTextBox);
+            else
+                opponentsIPTextBox.Focus(FocusState.Programmatic);
         }
     }
 }

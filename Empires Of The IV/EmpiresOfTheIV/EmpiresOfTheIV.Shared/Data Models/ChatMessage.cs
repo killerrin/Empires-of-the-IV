@@ -1,11 +1,13 @@
 ﻿using KillerrinStudiosToolkit.Converters;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace EmpiresOfTheIV.Data_Models
 {
-    public class ChatMessage
+    public class ChatMessage : IComparable
     {
         public Uri Image { get; set; }
         public string Name { get; set; }
@@ -28,5 +30,37 @@ namespace EmpiresOfTheIV.Data_Models
             Message = message;
             TimeStamp = DateTime.UtcNow;
         }
+
+        int IComparable.CompareTo(object obj)
+        {
+            return CompareTo((ChatMessage)obj);
+        }
+        public int CompareTo(ChatMessage obj)
+        {
+            return TimeStamp.CompareTo(obj.TimeStamp);
+        }
+
+        #region Serialization Tools
+        public void SetFromOtherMessage(ChatMessage o)
+        {
+            Image = o.Image;
+            Name = o.Name;
+            Message = o.Message;
+            TimeStamp = o.TimeStamp;
+        }
+
+        public string ThisToJson()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+
+        public void JsonToThis(string json)
+        {
+            JObject jObject = JObject.Parse(json);
+            ChatMessage message = JsonConvert.DeserializeObject<ChatMessage>(jObject.ToString());
+
+            SetFromOtherMessage(message);
+        }
+        #endregion
     }
 }

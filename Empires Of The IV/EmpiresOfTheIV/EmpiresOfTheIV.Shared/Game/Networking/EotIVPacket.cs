@@ -9,7 +9,7 @@ namespace EmpiresOfTheIV.Game.Networking
 {
     public class EotIVPacket : Packet
     {
-        PacketType PacketType { get; set; }
+        public PacketType PacketType { get; set; }
 
         public EotIVPacket(bool requiresAck, PacketType packetType)
             :base(requiresAck)

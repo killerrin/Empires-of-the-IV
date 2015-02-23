@@ -16,12 +16,12 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Data Models\ChatMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\ChatManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Commands\CommandType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameConnectionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\NetworkStage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\AGameModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\ChatManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\GameMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\GameModel1v1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Factories\Factory.cs" />
@@ -45,6 +45,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\ChatPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\EotIVPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\PacketType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\SystemPacketID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\NetworkManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\AIPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Cost.cs" />
