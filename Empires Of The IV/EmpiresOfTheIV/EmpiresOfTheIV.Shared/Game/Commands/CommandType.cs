@@ -7,19 +7,25 @@ namespace EmpiresOfTheIV.Game.Enumerators
 {
     public enum CommandType
     {
+        Select,
+
+        ///--------------------
+        /// Networked Commands
+        ///--------------------
+        //-- Universal Commands
         // Movement Commands
         Move,
-        Patrol,
+        // Management Commands
+        BuildFactory,
+        BuildUnit,
+        SetFactoryRallyPoint,
+        // Other Commands
+        Cancel,
 
+        //-- Host Commands
         // Attack Commands
         Attack,
         Damage,
-
-        // Management Commands
-        Build,
-
-        // Other Commands
-        Cancel,
-        Remove
+        Kill,
     }
 }

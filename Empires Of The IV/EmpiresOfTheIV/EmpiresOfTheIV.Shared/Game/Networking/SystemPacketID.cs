@@ -16,7 +16,13 @@ namespace EmpiresOfTheIV.Game.Networking
         JoinTeam1,
         JoinTeam2,
 
-        GameStarted,
+        GameStart,
+        GameBegin,
+
+        GameLoaded,
+        WaitingForData,
+
+        GameSync,
 
         Pause,
         Resume,

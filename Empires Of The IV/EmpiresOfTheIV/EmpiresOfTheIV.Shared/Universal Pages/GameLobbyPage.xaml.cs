@@ -1,6 +1,7 @@
 ﻿using EmpiresOfTheIV.Data_Models;
 using EmpiresOfTheIV.Game;
 using EmpiresOfTheIV.Game.Networking;
+using EmpiresOfTheIV.Game.Players;
 using KillerrinStudiosToolkit;
 using KillerrinStudiosToolkit.Enumerators;
 using Newtonsoft.Json;
@@ -36,6 +37,9 @@ namespace EmpiresOfTheIV
         string pageparam = "";
 
         ChatManager chatManager;
+        Team team1;
+        Team team2;
+
         string username;
 
         int totalMaps = 2;
@@ -82,16 +86,11 @@ namespace EmpiresOfTheIV
 
         void GameLobbyPage_Loaded(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                myIP.Text = LANHelper.CurrentIPAddressAsString();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.PrintException("Showing IP"));
-            }
+            // Get the IP Address
+            try { myIP.Text = LANHelper.CurrentIPAddressAsString(); }
+            catch (Exception) { }
 
-            // Get our username
+            // Get our Username
             username = SystemInfoHelper.GetMachineName();
             if (string.IsNullOrEmpty(username)) { username = "Player" + Consts.random.Next(42845); }
             myUsername.Text = username;
@@ -99,6 +98,10 @@ namespace EmpiresOfTheIV
             // Create our Chat Manager
             chatManager = new ChatManager();
             chatLog.ItemsSource = chatManager.ChatMessages; ;
+
+            // Create our Teams
+            team1 = new Team(TeamID.TeamOne);
+            team2 = new Team(TeamID.TeamTwo);
 
             // Set the Host/Client UI Abilities
             SetAbilities();
@@ -158,9 +161,6 @@ namespace EmpiresOfTheIV
 
                 CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
-                        //chatJObject jObject = JObject.Parse(chatPacket.Message);
-                        //ChatMessage message = JsonConvert.DeserializeObject<ChatMessage>(chatJObject.ToString());
-
                         chatManager.AddMessage(chatPacket.Message);
                         chatLog.ItemsSource = chatManager.ChatMessages;
                     }
@@ -194,7 +194,7 @@ namespace EmpiresOfTheIV
                     Debug.WriteLine("A Player Joined Team 2");
 
                 }
-                else if (systemPacket.ID == SystemPacketID.GameStarted)
+                else if (systemPacket.ID == SystemPacketID.GameStart)
                 {
                     if (systemPacket.Command == true.ToString())
                     {
@@ -245,7 +245,7 @@ namespace EmpiresOfTheIV
 
             CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
-                    SystemPacket packet = new SystemPacket(true, SystemPacketID.GameStarted, true.ToString());
+                    SystemPacket packet = new SystemPacket(true, SystemPacketID.GameStart, true.ToString());
                     string packetSerialized = packet.ThisToJson();
                     Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
                 }
@@ -258,7 +258,7 @@ namespace EmpiresOfTheIV
 
             CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
-                    SystemPacket packet = new SystemPacket(true, SystemPacketID.GameStarted, false.ToString());
+                    SystemPacket packet = new SystemPacket(true, SystemPacketID.GameStart, false.ToString());
                     string packetSerialized = packet.ThisToJson();
                     Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
                 }
@@ -283,7 +283,7 @@ namespace EmpiresOfTheIV
         }
         private void Team2SelectionChanged(object sender, TappedRoutedEventArgs e)
         {
-
+            //Frame.Navigate(typeof(EmpireSelectionPage));
         }
 
         private void gameStartButton_Tapped(object sender, TappedRoutedEventArgs e)

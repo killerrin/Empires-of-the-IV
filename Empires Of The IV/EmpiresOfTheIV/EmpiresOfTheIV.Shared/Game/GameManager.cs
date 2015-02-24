@@ -139,16 +139,16 @@ namespace EmpiresOfTheIV.Game
             }
 
             // Begin Regular Updates
-            //if (m_gameInputManager.rayPosOnTerrain.HasValue) {
-            //    m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).MoveToPosition(gameTime, m_gameInputManager.rayPosOnTerrain.Value);
-            //}
-            //
-            //float height = ((Terrain)m_game.SceneManager.CurrentScene.SceneNode.GetChild(0).GameObject).GetHeightAtPoint(m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position);
-            //if (height != float.MaxValue) {
-            //    Vector3 pos = m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position;
-            //    pos.Y = height;
-            //    m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position = pos;
-            //}
+            if (m_gameInputManager.rayPosOnTerrain.HasValue) {
+                m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).MoveToPosition(gameTime, m_gameInputManager.rayPosOnTerrain.Value);
+            }
+            
+            float height = ((Terrain)m_game.SceneManager.CurrentScene.SceneNode.GetChild(0).GameObject).GetHeightAtPoint(m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position);
+            if (height != float.MaxValue) {
+                Vector3 pos = m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position;
+                pos.Y = height;
+                m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position = pos;
+            }
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
