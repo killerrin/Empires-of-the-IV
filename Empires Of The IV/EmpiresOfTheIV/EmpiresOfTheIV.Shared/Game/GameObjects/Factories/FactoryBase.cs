@@ -1,4 +1,6 @@
 ﻿using Anarian.DataStructures;
+using Anarian.Interfaces;
+using EmpiresOfTheIV.Game.Enumerators;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -7,38 +9,54 @@ using System.Text;
 
 namespace EmpiresOfTheIV.Game.GameObjects.Factories
 {
-    public class FactoryBase : Building
+    public class FactoryBase : IUpdatable, IRenderable
     {
-        public Factory Factory;
-        public bool IsFactoryOnBase { get { return (Factory != null); } }
+        
+        public uint FactoryBaseID { get; private set; }
 
-        public FactoryBase()
+        public StaticGameObject Base;
+        public Factory Factory;
+
+        #region Properties
+        public bool IsFactoryOnBase { get { return (Factory != null); } }
+        #endregion
+
+        public FactoryBase(uint id)
             :base()
         {
-
+            FactoryBaseID = id;
         }
 
-        public override bool CheckRayIntersection(Ray ray)
+        public FactoryBaseRayIntersection CheckRayIntersection(Ray ray)
         {
-            bool thisIntersection = base.CheckRayIntersection(ray);
-
             bool factoryIntersection = false;
+            bool factoryBaseIntersection = false;
+
+            // Check the collision off of the Factory
             if (Factory != null)
                 factoryIntersection = Factory.CheckRayIntersection(ray);
+            if (factoryIntersection) return FactoryBaseRayIntersection.Factory;
+            
+            // Check the collison off of the Factory Base
+            if (Base != null)
+                factoryBaseIntersection = Base.CheckRayIntersection(ray);
+            if (factoryBaseIntersection) return FactoryBaseRayIntersection.FactoryBase;
 
-            if (thisIntersection || factoryIntersection) return true;
-            return false; 
+            // No collision detected
+            return FactoryBaseRayIntersection.None; 
         }
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
+            if (Base != null)
+                Base.Update(gameTime);
 
             if (Factory != null)
                 Factory.Update(gameTime);
         }
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
         {
-            base.Draw(gameTime, spriteBatch, graphics, camera);
+            if (Base != null)
+                Base.Draw(gameTime, spriteBatch, graphics, camera);
 
             if (Factory != null)
                 Factory.Draw(gameTime, spriteBatch, graphics, camera);

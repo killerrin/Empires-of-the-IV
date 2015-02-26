@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data Models\ChatMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\ChatManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Commands\CommandType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\FactoryBaseRayIntersection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameConnectionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\NetworkStage.cs" />
