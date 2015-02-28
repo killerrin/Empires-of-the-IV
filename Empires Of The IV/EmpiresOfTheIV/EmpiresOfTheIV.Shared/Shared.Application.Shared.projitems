@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameConnectionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\NetworkStage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameConsts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\AGameModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\GameMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\GameModel1v1.cs" />

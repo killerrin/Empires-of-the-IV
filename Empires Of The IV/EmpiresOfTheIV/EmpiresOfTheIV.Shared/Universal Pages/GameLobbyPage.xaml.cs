@@ -60,6 +60,7 @@ namespace EmpiresOfTheIV
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             Consts.Game.GameManager.NetworkManager.OnConnected += NetworkManager_OnConnected;
+            Consts.Game.GameManager.NetworkManager.OnDisconnected += NetworkManager_OnDisconnected;
             Consts.Game.GameManager.NetworkManager.OnMessageRecieved += NetworkManager_OnMessageRecieved;
 
             Consts.Game.GameManager.StateManager.OnBackButtonPressed += StateManager_OnBackButtonPressed;
@@ -107,6 +108,19 @@ namespace EmpiresOfTheIV
             SetAbilities();
         }
 
+        private void maxUnitSlider_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Set the Maximum on the slider for that specific platform
+#if WINDOWS_PHONE_APP
+            maxUnitSlider.Maximum = GameConsts.MaxUnitsOnWindowsPhonePerPlayer;
+#elif WINDOWS_APP
+            maxUnitSlider.Maximum = GameConsts.MaxUnitsOnWindowsPerPlayer;
+#endif
+            
+            // Update the Header
+            maxUnitSlider.Header = "Max Units: " + maxUnitSlider.Value;
+        }
+
         private void SetAbilities()
         {
             switch (pageparam)
@@ -131,9 +145,13 @@ namespace EmpiresOfTheIV
             gameModeSelector.IsEnabled = false;
             mapSelector.IsEnabled = false;
             gameStartButton.IsEnabled = false;
+            maxUnitSlider.IsEnabled = false;
 
             // Now request startup data
-            SystemPacket packet = new SystemPacket(true, SystemPacketID.RequestSetupData, "");
+            string sendData = (int)KillerrinApplicationData.OSType + "|" +
+                              username;
+
+            SystemPacket packet = new SystemPacket(true, SystemPacketID.RequestSetupData, sendData);
             string packetSerialized = packet.ThisToJson();
             Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
         }
@@ -146,8 +164,18 @@ namespace EmpiresOfTheIV
         {
             Debug.WriteLine("Connected to: " + e.NetworkConnectionEndpoint.Value.ToString() + " over " + e.NetworkType.ToString());
         }
+        void NetworkManager_OnDisconnected(object sender, EventArgs e)
+        {
+
+        }
+
         void NetworkManager_OnMessageRecieved(object sender, KillerrinStudiosToolkit.Events.ReceivedMessageEventArgs e)
         {
+            if (e.Message == Consts.Game.GameManager.NetworkManager.LanHelper.ConnectionCloseMessage)
+            {
+                return;
+            }
+
             // Get the regular object
             JObject jObject = JObject.Parse(e.Message);
             EotIVPacket regularPacket = JsonConvert.DeserializeObject<EotIVPacket>(jObject.ToString());
@@ -172,13 +200,50 @@ namespace EmpiresOfTheIV
                 SystemPacket systemPacket = JsonConvert.DeserializeObject<SystemPacket>(jObject.ToString());
 
                 if (systemPacket.ID == SystemPacketID.RequestSetupData) {
-                    Debug.WriteLine("Client Requesting Startup Data");
+                    Debug.WriteLine("Client Requesting Startup Data: " + systemPacket.Command);
+
+                    string[] splitCommands = systemPacket.Command.Split('|');
+
                     SendGameModeChanged();
                     SendMapChanged();
+
+                    CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                        {
+                            // If the host is a Windows Phone, we dont really need to do the check as our maximum will always be the Windows Phone Maximum
+                            if (KillerrinApplicationData.OSType == ClientOSType.WindowsPhone81)
+                            {
+                                maxUnitSlider.Maximum = GameConsts.MaxUnitsOnWindowsPhonePerPlayer;
+                            }
+                            else // We set our maximum based off of what our opponent is capable of
+                            {
+                                int ostype = Convert.ToInt32(splitCommands[0]);
+                                ClientOSType opponentOSType = (ClientOSType)ostype;
+                                Debug.WriteLine("Opponent Device Type: " + opponentOSType.ToString());
+                                switch (opponentOSType)
+                                {
+                                    case ClientOSType.Windows81: maxUnitSlider.Maximum = GameConsts.MaxUnitsOnWindowsPerPlayer; break;
+                                    case ClientOSType.WindowsPhone81: maxUnitSlider.Maximum = GameConsts.MaxUnitsOnWindowsPhonePerPlayer; break;
+                                    case ClientOSType.Windows10: break;
+                                    case ClientOSType.Other: break;
+                                    default: break;
+                                }
+                            }
+                            SendMaxUnitsChanged();
+                        }
+                    );
+
                 }
                 else if (systemPacket.ID == SystemPacketID.GameModeChanged) {
                     Debug.WriteLine("Host Changed the Game Mode: " + systemPacket.Command);
                     gameModeSelector.SelectedIndex = Convert.ToInt32(systemPacket.Command);
+                }
+                else if (systemPacket.ID == SystemPacketID.UnitMaxChanged)
+                {
+                    Debug.WriteLine("Host Changed the Unit Max: " + systemPacket.Command);
+
+                    string[] splitCommands = systemPacket.Command.Split('|');
+                    maxUnitSlider.Value = Convert.ToDouble(splitCommands[0]);
+                    maxUnitSlider.Maximum = Convert.ToDouble(splitCommands[1]);
                 }
                 else if (systemPacket.ID == SystemPacketID.MapChanged) {
                     Debug.WriteLine("Host Changed the Map: " + systemPacket.Command);
@@ -233,6 +298,22 @@ namespace EmpiresOfTheIV
                     if (gameModeSelector.SelectedIndex == 0) return;
 
                     SystemPacket packet = new SystemPacket(true, SystemPacketID.GameModeChanged, gameModeSelector.SelectedIndex.ToString());
+                    string packetSerialized = packet.ThisToJson();
+                    Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                }
+            );
+        }
+
+        private void SendMaxUnitsChanged()
+        {
+            Debug.WriteLine("Sending Unit Max Changed");
+
+            CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    string sendData = maxUnitSlider.Value.ToString() + "|" +
+                                      maxUnitSlider.Maximum.ToString();
+
+                    SystemPacket packet = new SystemPacket(true, SystemPacketID.UnitMaxChanged, sendData);
                     string packetSerialized = packet.ThisToJson();
                     Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
                 }
@@ -334,6 +415,40 @@ namespace EmpiresOfTheIV
         #endregion
 
         #region Game Mode Events
+        private void GameModeSelector_Changed(object sender, SelectionChangedEventArgs e)
+        {
+            if (gameModeSelector == null) { return; }
+            if (gameModeSelector.SelectedItem == null) { return; }
+
+            switch (gameModeSelector.SelectedIndex)
+            {
+                case 0:
+                    int index = Consts.random.Next(1, totalGameModes);
+                    gameModeSelector.SelectedIndex = index;
+                    return;
+                case 1: //<sys:String>1v1</sys:String>
+                    break;
+                default:
+                    break;
+            }
+
+            if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+            {
+                SendGameModeChanged();
+            }
+        }
+
+        private void MaxUnitSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            if (maxUnitSlider == null) return;
+            maxUnitSlider.Header = "Max Units: " + maxUnitSlider.Value;
+
+            if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+            {
+                SendMaxUnitsChanged();
+            }
+        }
+        
         private void MapSelector_Changed(object sender, SelectionChangedEventArgs e)
         {
             if (mapSelector == null) { return; }
@@ -358,29 +473,6 @@ namespace EmpiresOfTheIV
             if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
             {
                 SendMapChanged();
-            }
-        }
-
-        private void GameModeSelector_Changed(object sender, SelectionChangedEventArgs e)
-        {
-            if (gameModeSelector == null) { return; }
-            if (gameModeSelector.SelectedItem == null) { return; }
-
-            switch (gameModeSelector.SelectedIndex)
-            {
-                case 0:
-                    int index = Consts.random.Next(1, totalGameModes);
-                    gameModeSelector.SelectedIndex = index;
-                    return;
-                case 1: //<sys:String>1v1</sys:String>
-                    break;
-                default:
-                    break;
-            }
-
-            if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
-            {
-                SendGameModeChanged();
             }
         }
         #endregion

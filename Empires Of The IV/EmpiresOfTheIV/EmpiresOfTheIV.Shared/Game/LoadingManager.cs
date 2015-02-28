@@ -98,7 +98,7 @@ namespace EmpiresOfTheIV.Game
             // Phone Character Limit ~60 - 30 Each Player
 
             List<Unit> armyUnits = new List<Unit>();
-            for (int i = 0; i < 60; i++)
+            for (int i = 0; i < GameConsts.MaxUnitsOnWindowsPhone; i++)
             {
                 var unit = new Unit();
                 unit.Model3D = m_game.ResourceManager.GetAsset(typeof(AnimatedModel), "t-pose_3") as AnimatedModel;

@@ -11,6 +11,7 @@ namespace EmpiresOfTheIV.Game.Networking
         RequestSetupData,
         
         GameModeChanged,
+        UnitMaxChanged,
         MapChanged,
 
         JoinTeam1,
