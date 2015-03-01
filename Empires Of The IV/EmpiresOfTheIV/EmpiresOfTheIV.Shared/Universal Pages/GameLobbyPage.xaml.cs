@@ -43,7 +43,9 @@ namespace EmpiresOfTheIV
         Team team1;
         Team team2;
 
-        string username;
+
+        string username;    // My Username
+        uint playerID;      // My Player ID
 
         int totalMaps = 2;
         int totalGameModes = 2;
@@ -109,14 +111,6 @@ namespace EmpiresOfTheIV
 
             playerIDManager = new IDManager();
 
-            if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
-            {
-                team1.AddToTeam(PlayerType.Human, playerIDManager.GetNewID(), username);
-            }
-
-            team1ListBox.ItemsSource = team1.Players;
-            team2ListBox.ItemsSource = team2.Players;
-
             // Set the Host/Client UI Abilities
             SetAbilities();
         }
@@ -151,6 +145,13 @@ namespace EmpiresOfTheIV
             gameModeSelector.IsEnabled = true;
             mapSelector.IsEnabled = true;
             gameStartButton.IsEnabled = true;
+
+            // Add the Host to its team
+            team1.AddToTeam(PlayerType.Human, playerIDManager.GetNewID(), username);
+            playerID = team1[0].ID;
+
+            team1ListBox.ItemsSource = team1.Players;
+            team2ListBox.ItemsSource = team2.Players;
         }
 
         private void SetClientAbilities()
@@ -318,6 +319,9 @@ namespace EmpiresOfTheIV
                     team1 = JsonConvert.DeserializeObject<Team>(team1JObject.ToString());   Debug.WriteLine("Team 1 Deserialized");
                     team2 = JsonConvert.DeserializeObject<Team>(team2JObject.ToString());   Debug.WriteLine("Team 2 Deserialized");
 
+                    if (team1.Exists(username)) { playerID = team1.GetPlayer(username).ID; }
+                    if (team2.Exists(username)) { playerID = team2.GetPlayer(username).ID; }
+
                     CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                         {
                             team1ListBox.ItemsSource = null;
@@ -332,11 +336,41 @@ namespace EmpiresOfTheIV
                 {
                     Debug.WriteLine("A Player Joined Team 1");
 
+                    string[] splitCommands = systemPacket.Command.Split('|');
+                    string opponentUsername = splitCommands[0];
+                    uint opponentPlayerID = Convert.ToUInt32(splitCommands[1]);
+
+                    Player me = team2.GetPlayer(opponentPlayerID);
+                    team2.RemovePlayer(opponentPlayerID);
+                    team1.AddToTeam(me);
+
+                    team1ListBox.ItemsSource = null;
+                    team1ListBox.ItemsSource = team1.Players;
+
+                    team2ListBox.ItemsSource = null;
+                    team2ListBox.ItemsSource = team2.Players;
+                    
+                    SendTeamsChanged();
                 }
                 else if (systemPacket.ID == SystemPacketID.JoinTeam2)
                 {
                     Debug.WriteLine("A Player Joined Team 2");
 
+                    string[] splitCommands = systemPacket.Command.Split('|');
+                    string opponentUsername = splitCommands[0];
+                    uint opponentPlayerID = Convert.ToUInt32(splitCommands[1]);
+
+                    Player me = team1.GetPlayer(opponentPlayerID);
+                    team1.RemovePlayer(opponentPlayerID);
+                    team2.AddToTeam(me);
+
+                    team1ListBox.ItemsSource = null;
+                    team1ListBox.ItemsSource = team1.Players;
+
+                    team2ListBox.ItemsSource = null;
+                    team2ListBox.ItemsSource = team2.Players;
+
+                    SendTeamsChanged();
                 }
                 else if (systemPacket.ID == SystemPacketID.GameStart)
                 {
@@ -399,6 +433,38 @@ namespace EmpiresOfTheIV
             );
         }
 
+        private void SendJoinTeam1()
+        {
+            Debug.WriteLine("Sending Join Team 1");
+
+            CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    string sendData = username + "|" +
+                                      playerID;
+
+                    SystemPacket packet = new SystemPacket(true, SystemPacketID.JoinTeam1, sendData);
+                    string packetSerialized = packet.ThisToJson();
+                    Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                }
+            );
+        }
+
+        private void SendJoinTeam2()
+        {
+            Debug.WriteLine("Sending Join Team 2");
+
+            CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    string sendData = username + "|" +
+                                      playerID;
+
+                    SystemPacket packet = new SystemPacket(true, SystemPacketID.JoinTeam2, sendData);
+                    string packetSerialized = packet.ThisToJson();
+                    Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                }
+            );
+        }
+
         private void SendTeamsChanged()
         {
             Debug.WriteLine("Sending Teams Changed");
@@ -445,10 +511,62 @@ namespace EmpiresOfTheIV
         #region GameLobby Events
         private void JoinTeam1_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            Debug.WriteLine("JoinTeam1 Tapped");
+            return;
+            if (team1.Exists(playerID)) return;
 
+            if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Client &&
+                pageparam != "Singleplayer")
+            {
+                SendJoinTeam1();
+            }
+            else
+            {
+                Player me = team2.GetPlayer(playerID);
+                team2.RemovePlayer(playerID);
+                team1.AddToTeam(me);
+
+                team1ListBox.ItemsSource = null;
+                team1ListBox.ItemsSource = team1.Players;
+
+                team2ListBox.ItemsSource = null;
+                team2ListBox.ItemsSource = team2.Players;
+
+                if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+                {
+                    SendTeamsChanged();
+                }
+            }
         }
         private void JoinTeam2_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            Debug.WriteLine("JoinTeam2 Tapped");
+            return;
+            if (team2.Exists(playerID)) return;
+            
+            if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Client && 
+                pageparam != "Singleplayer")
+            {
+                SendJoinTeam2();
+            }
+            else
+            {
+                Player me = team1.GetPlayer(playerID);
+                team1.RemovePlayer(playerID);
+                team2.AddToTeam(me);
+
+                team1ListBox.ItemsSource = null;
+                team1ListBox.ItemsSource = team1.Players;
+
+                team2ListBox.ItemsSource = null;
+                team2ListBox.ItemsSource = team2.Players;
+
+                if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+                {
+                    SendTeamsChanged();
+                }
+            }
+
 
         }
         

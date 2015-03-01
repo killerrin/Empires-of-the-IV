@@ -11,21 +11,19 @@ namespace EmpiresOfTheIV.Game.Players
 {
     public class Player : IUpdatable, IRenderable
     {
-        public int PlayerID { get; set; }
-        public string PlayerName { get; set; }
-
+        public uint ID { get; set; }
+        public string Name { get; set; }
         public PlayerType PlayerType { get; set; }
 
-        //public Economy PlayerEconomy { get; protected set; }
-
+        public Economy Economy { get; protected set; }
 
         public Player(uint playerID, string playerName, PlayerType playerType)
         {
-            PlayerID = Convert.ToInt32(playerID);
-            PlayerName = playerName;
-
-            //PlayerEconomy = new Economy(PlayerID);
+            ID = playerID;
+            Name = playerName;
             PlayerType = playerType;
+
+            Economy = new Economy(ID);
         }
 
         public static Player HumanPlayer(uint playerID, string playerName)
@@ -43,7 +41,7 @@ namespace EmpiresOfTheIV.Game.Players
         #endregion
 
         public virtual void Update(GameTime gameTime) {
-            //PlayerEconomy.Update(gameTime);
+            Economy.Update(gameTime);
         }
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
         {

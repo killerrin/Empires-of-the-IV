@@ -5,7 +5,7 @@
 
     <DataTemplate x:Key="TeamListBoxItemTemplate">
         <StackPanel Orientation="Vertical">
-            <TextBlock Text="{Binding PlayerName}" />
+            <TextBlock Text="{Binding Name}" />
         </StackPanel>
     </DataTemplate>
 
