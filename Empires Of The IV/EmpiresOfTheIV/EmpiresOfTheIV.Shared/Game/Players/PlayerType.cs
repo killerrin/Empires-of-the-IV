@@ -6,8 +6,7 @@ namespace EmpiresOfTheIV.Game.Players
 {
     public enum PlayerType
     {
-        LocalPlayer,
-        NetworkedPlayer,
+        Human,
         AI
     }
 }

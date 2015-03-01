@@ -97,15 +97,15 @@
 							<StackPanel x:Name="team1StackPanel" Margin="0,20,0,0" Orientation="Vertical" HorizontalAlignment="Stretch" Height="auto">
 								<Button Content="Team 1" Tapped="JoinTeam1_Tapped" Style="{StaticResource GameLobbyTeamHeaderButton}" />
 								
-								<ListBox x:Name="team1ListBox" 
+								<ListBox x:Name="team1ListBox" ItemTemplate="{StaticResource TeamListBoxItemTemplate}"
 										 Tapped="Team1SelectionChanged" >
 									<!--<x:String>Test Data 1</x:String>-->
 								</ListBox>
 							</StackPanel>
 							<StackPanel x:Name="team2StackPanel" Margin="0,20,0,0" Orientation="Vertical" HorizontalAlignment="Stretch" Height="auto">
 								<Button Content="Team 2" Tapped="JoinTeam2_Tapped" Style="{StaticResource GameLobbyTeamHeaderButton}" />
-								
-								<ListBox x:Name="team2ListBox" 
+
+                                <ListBox x:Name="team2ListBox" ItemTemplate="{StaticResource TeamListBoxItemTemplate}"
 										 Tapped="Team2SelectionChanged">
 									<!--<x:String>Test Data 2</x:String>-->
 								</ListBox>

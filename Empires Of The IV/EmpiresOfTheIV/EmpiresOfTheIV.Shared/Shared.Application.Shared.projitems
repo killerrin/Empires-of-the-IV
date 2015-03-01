@@ -49,13 +49,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\PacketType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\SystemPacketID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\NetworkManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\AIPlayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Cost.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Economy.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\LocalPlayer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\APlayer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\NetworkedPlayer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\PlayerIDManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\PlayerType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Resource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\ResourceType.cs" />

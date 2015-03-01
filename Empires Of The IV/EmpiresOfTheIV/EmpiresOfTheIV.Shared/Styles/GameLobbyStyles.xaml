@@ -3,6 +3,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:EmpiresOfTheIV.Styles">
 
+    <DataTemplate x:Key="TeamListBoxItemTemplate">
+        <StackPanel Orientation="Vertical">
+            <TextBlock Text="{Binding PlayerName}" />
+        </StackPanel>
+    </DataTemplate>
+
     <Style x:Key="GameLobbyTeamHeaderButton" TargetType="Button">
         <Setter Property="Foreground" Value="{StaticResource EmpiresOfTheIVMenuButtonBrush}"/>
         <Setter Property="BorderBrush" Value="{x:Null}"/>

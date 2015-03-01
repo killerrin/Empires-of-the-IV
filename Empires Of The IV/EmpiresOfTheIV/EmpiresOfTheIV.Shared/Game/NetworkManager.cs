@@ -143,17 +143,26 @@ namespace EmpiresOfTheIV.Game
 
             Debug.WriteLine("Connecting to Server");
 
-            HostSettings = HostType.Client;
-            NetworkType = networkType;
-            CurrentNetworkStage = NetworkStage.HandshakingConnection;
-            
-            if (NetworkType == NetworkType.LAN)
+            try
             {
-                LanHelper.ConnectTCP(new NetworkConnectionEndpoint(IP, NetworkPort));
-            }
-            else if (NetworkType == NetworkType.Bluetooth)
-            {
+                HostSettings = HostType.Client;
+                NetworkType = networkType;
+                CurrentNetworkStage = NetworkStage.HandshakingConnection;
 
+                if (NetworkType == NetworkType.LAN)
+                {
+                    LanHelper.ConnectTCP(new NetworkConnectionEndpoint(IP, NetworkPort));
+                }
+                else if (NetworkType == NetworkType.Bluetooth)
+                {
+
+                }
+            }
+            catch(Exception)
+            {
+                HostSettings = HostType.Client;
+                NetworkType = NetworkType.NFC;
+                CurrentNetworkStage = NetworkStage.None;
             }
         }
 
