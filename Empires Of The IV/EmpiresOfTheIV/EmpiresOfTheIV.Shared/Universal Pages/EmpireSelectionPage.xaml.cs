@@ -36,9 +36,9 @@ namespace EmpiresOfTheIV
             base.OnNavigatedTo(e);
 
             m_empires = new ObservableCollection<NameImageDescription>();
-            m_empires.Add(new NameImageDescription("Unanian Empire", new Uri("http://killerrin.com/wikis/eot-iv/images/thumb/b/bb/UnaniFlag.png/300px-UnaniFlag.png", UriKind.Absolute), "UNANIANDESCRIPTION"));
-            m_empires.Add(new NameImageDescription("Crescanian Confederacy", new Uri("http://killerrin.com/wikis/eot-iv/images/thumb/7/77/C.C_Flag.png/300px-C.C_Flag.png", UriKind.Absolute), "CRESCANIANDESCRIPTION"));
-            m_empires.Add(new NameImageDescription("Kingdom of Edolas", new Uri("http://killerrin.com/wikis/eot-iv/images/thumb/8/81/Edolas_Flag.png/300px-Edolas_Flag.png", UriKind.Absolute), "EDOLASDESCRIPTION"));
+            m_empires.Add(new NameImageDescription("Unanian Empire", new Uri("ms-appx:///Assets/Empire Flags/Unanian Flag.png", UriKind.Absolute), "UNANIANDESCRIPTION"));
+            m_empires.Add(new NameImageDescription("Crescanian Confederacy", new Uri("ms-appx:///Assets/Empire Flags/Crescanian Confederation Flag.png", UriKind.Absolute), "CRESCANIANDESCRIPTION"));
+            m_empires.Add(new NameImageDescription("Kingdom of Edolas", new Uri("ms-appx:///Assets/Empire Flags/The Kingdom Of Edolas Flag.png", UriKind.Absolute), "EDOLASDESCRIPTION"));
             empireSelection_GridView.ItemsSource = m_empires;
         }
 

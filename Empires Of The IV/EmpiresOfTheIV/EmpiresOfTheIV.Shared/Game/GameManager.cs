@@ -133,7 +133,6 @@ namespace EmpiresOfTheIV.Game
                 case GameState.EmpireSelection:         break;
 
                 case GameState.InGame:                  break;
-                case GameState.Paused:                  break;
                 case GameState.GameOver:                break;
                 default: break;
             }
@@ -172,7 +171,6 @@ namespace EmpiresOfTheIV.Game
                 case GameState.EmpireSelection:         break;
 
                 case GameState.InGame:                  break;
-                case GameState.Paused:                  break;
                 case GameState.GameOver:                break;
                 default:                                break;
             }

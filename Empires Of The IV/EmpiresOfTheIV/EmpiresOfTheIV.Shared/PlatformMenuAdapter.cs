@@ -24,6 +24,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
 using EmpiresOfTheIV.Game.Enumerators;
 using KillerrinStudiosToolkit.Events;
+using EmpiresOfTheIV.Game.Menus.PageParameters;
 
 namespace EmpiresOfTheIV
 {
@@ -110,6 +111,14 @@ namespace EmpiresOfTheIV
         {
             if (Consts.EarlyExitCheck()) return;
             Consts.Game.GameManager.StateManager.Navigate(GameState.GameLobby, "ClientLan");
+        }
+        #endregion
+
+        #region Game Lobby Menus
+        public static void GameLobbyMenu_StartGame_Click(InGamePageParameter parameter)
+        {
+            if (Consts.EarlyExitCheck()) return;
+            Consts.Game.GameManager.StateManager.Navigate(GameState.InGame, parameter);
         }
         #endregion
     }

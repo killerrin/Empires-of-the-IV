@@ -14,7 +14,7 @@ namespace EmpiresOfTheIV.Game
 {
     public class ChatManager : IEnumerable<ChatMessage>, INotifyCollectionChanged
     {
-        public static readonly Uri DefaultAvatar = new Uri("http://www.killerrin.com/wikis/eot-iv/skins/logo.png", UriKind.Absolute);
+        public static readonly Uri DefaultAvatar = new Uri("ms-appx:///Assets/Player/Default Avatar.png", UriKind.Absolute);
 
         public ObservableCollection<ChatMessage> ChatMessages;
 

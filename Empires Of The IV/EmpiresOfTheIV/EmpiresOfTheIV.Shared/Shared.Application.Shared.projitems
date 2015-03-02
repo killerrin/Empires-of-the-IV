@@ -19,12 +19,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\ChatManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Commands\CommandType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\FactoryBaseRayIntersection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameConnectionType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\MapName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\NetworkStage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\PausedState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameConsts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\AGameModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\GameMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\GameModel1v1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Factories\Factory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Factories\FactoryBase.cs" />
@@ -35,7 +37,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\GameOverMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\BlankMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\LanMultiplayerMenu.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\PausedMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\PageParameters\InGamePageParameter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\InGameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\EmpireSelectionMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\CreditsMenu.cs" />
@@ -51,6 +53,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\NetworkManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Cost.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Economy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Players\EmpireType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Player.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\PlayerType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Resource.cs" />
@@ -101,6 +104,15 @@
     <Content Include="$(MSBuildThisFileDirectory)Assets\CortanaMicrophone.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\download.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\edit.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\Empire Flags\Crescanian Confederation Flag.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Assets\Empire Flags\The Kingdom Of Edolas Flag.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Assets\Empire Flags\Unanian Flag.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="$(MSBuildThisFileDirectory)Assets\KillerrinStudiosLogo.png" />
     <Compile Include="$(MSBuildThisFileDirectory)Consts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EmpiresOfTheIVGame.cs" />
@@ -116,6 +128,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="$(MSBuildThisFileDirectory)Assets\microphone.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Assets\Player\Default Avatar.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="$(MSBuildThisFileDirectory)Assets\Space and Astronomy.ttf" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\stop.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\UnlockWhite.png" />

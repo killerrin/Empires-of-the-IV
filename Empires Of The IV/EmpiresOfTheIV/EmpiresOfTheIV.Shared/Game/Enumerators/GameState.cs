@@ -21,9 +21,7 @@ namespace EmpiresOfTheIV.Game.Enumerators
                 GameLobby,
                     EmpireSelection,
 
-                        InGame, //--|
-                        Paused, //--|
-                                //  |
+                        InGame,
                                 GameOver,
 
             Options,

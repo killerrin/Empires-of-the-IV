@@ -193,7 +193,6 @@ namespace EmpiresOfTheIV.Game
                 case GameState.EmpireSelection:         newMenu = new EmpireSelectionMenu(m_game, parameter); break;
 
                 case GameState.InGame:                  newMenu = new InGameMenu(m_game, parameter); break;
-                case GameState.Paused:                  newMenu = new PausedMenu(m_game, parameter); break;
                 case GameState.GameOver:                newMenu = new GameOverMenu(m_game, parameter); break;
 
                 case GameState.None:                    
@@ -342,7 +341,6 @@ namespace EmpiresOfTheIV.Game
                         case GameState.EmpireSelection:             MainPage.PageFrame.Navigate(typeof(EmpireSelectionPage), m_pageParameterFlag);break;
 
                         case GameState.InGame:                      MainPage.PageFrame.Navigate(typeof(InGamePage), m_pageParameterFlag); break;
-                        case GameState.Paused:                      MainPage.PageFrame.Navigate(typeof(PausedPage), m_pageParameterFlag); break;
                         case GameState.GameOver:                    MainPage.PageFrame.Navigate(typeof(GameOverPage), m_pageParameterFlag); break;
                         default:
                         case GameState.None:                        MainPage.PageFrame.Navigate(typeof(BlankPage), m_pageParameterFlag); break;

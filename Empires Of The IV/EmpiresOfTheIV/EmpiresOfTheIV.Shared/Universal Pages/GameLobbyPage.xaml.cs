@@ -1,6 +1,8 @@
 ﻿using Anarian.IDManagers;
 using EmpiresOfTheIV.Data_Models;
 using EmpiresOfTheIV.Game;
+using EmpiresOfTheIV.Game.Enumerators;
+using EmpiresOfTheIV.Game.Menus.PageParameters;
 using EmpiresOfTheIV.Game.Networking;
 using EmpiresOfTheIV.Game.Players;
 using KillerrinStudiosToolkit;
@@ -43,14 +45,14 @@ namespace EmpiresOfTheIV
         Team team1;
         Team team2;
 
-
         string username;    // My Username
         uint playerID;      // My Player ID
 
         int totalMaps = 2;
         int totalGameModes = 2;
 
-        bool gameStarting = false;
+        bool gameStarting;
+        bool enableChangingTeams = false;
 
         public GameLobbyPage()
         {
@@ -78,8 +80,11 @@ namespace EmpiresOfTheIV
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
+            Debug.WriteLine("Unsubscribed from GameLobbyPage");
             Consts.Game.GameManager.NetworkManager.OnConnected -= NetworkManager_OnConnected;
+            Consts.Game.GameManager.NetworkManager.OnDisconnected -= NetworkManager_OnDisconnected;
             Consts.Game.GameManager.NetworkManager.OnMessageRecieved -= NetworkManager_OnMessageRecieved;
+
             Consts.Game.GameManager.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
 
             base.OnNavigatedFrom(e);
@@ -101,9 +106,17 @@ namespace EmpiresOfTheIV
             if (string.IsNullOrEmpty(username)) { username = "Player" + Consts.random.Next(42845); }
             myUsername.Text = username;
 
+            gameStarting = false;
+
             // Create our Chat Manager
             chatManager = new ChatManager();
             chatLog.ItemsSource = chatManager.ChatMessages; ;
+
+            if (enableChangingTeams)
+            {
+                joinTeam1Button.IsEnabled = true;
+                joinTeam2Button.IsEnabled = true;
+            }
 
             // Create our Teams
             team1 = new Team(TeamID.TeamOne);
@@ -374,16 +387,33 @@ namespace EmpiresOfTheIV
                 }
                 else if (systemPacket.ID == SystemPacketID.GameStart)
                 {
-                    if (systemPacket.Command == true.ToString())
+                    if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
                     {
-                        Debug.WriteLine("Host Started the Game");
-                        gameStartButton.Content = "Cancel";
+                        Debug.WriteLine("Clients Responded to GameStart. Starting Game");
+                        SendTransitionAndGameLoad();
+                        StartGame();
                     }
-                    else if (systemPacket.Command == false.ToString())
+                    else
                     {
-                        Debug.WriteLine("The Host Cancelled the Game Start");
-                        gameStartButton.Content = "Start";
+                        if (systemPacket.Command == true.ToString())
+                        {
+                            Debug.WriteLine("Host Started the Game");
+                            gameStartButton.Content = "Cancel";
+                            gameStarting = true;
+
+                            SendStartGame();
+                        }
+                        else if (systemPacket.Command == false.ToString())
+                        {
+                            Debug.WriteLine("The Host Cancelled the Game Start");
+                            gameStartButton.Content = "Start";
+                            gameStarting = false;
+                        }
                     }
+                }
+                else if (systemPacket.ID == SystemPacketID.TransitionAndGameLoad)
+                {
+                    StartGame();
                 }
             }
         }
@@ -487,6 +517,15 @@ namespace EmpiresOfTheIV
 
             CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
+                    // Since we are the host, we do a final sync
+                    if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+                    {
+                        SendGameModeChanged();
+                        SendMaxUnitsChanged();
+                        SendMapChanged();
+                        SendTeamsChanged();
+                    }
+
                     SystemPacket packet = new SystemPacket(true, SystemPacketID.GameStart, true.ToString());
                     string packetSerialized = packet.ThisToJson();
                     Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
@@ -506,13 +545,63 @@ namespace EmpiresOfTheIV
                 }
             );
         }
+
+        private void SendTransitionAndGameLoad()
+        {
+            Debug.WriteLine("Sending Game Start");
+
+            CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                SystemPacket packet = new SystemPacket(true, SystemPacketID.TransitionAndGameLoad, true.ToString());
+                string packetSerialized = packet.ThisToJson();
+                Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+            }
+            );
+        }
         #endregion
+
+        public void StartGame()
+        {
+            // Create the page parameter and send us off
+            CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                    {
+                        InGamePageParameter pageParameter = new InGamePageParameter();
+
+                        switch (gameModeSelector.SelectedIndex)
+                        {
+                            case 0:
+                            case 1:
+                            default: pageParameter.GameType = GameMode.OneVSOne;           break;
+                        }
+
+                        switch (mapSelector.SelectedIndex)
+                        {
+                            case 0:
+                            case 1:
+                            default: pageParameter.MapName = MapName.RadientFlatlands;     break;
+                        }
+
+                        pageParameter.maxUnitsPerPlayer = maxUnitSlider.Value;
+                        
+                        pageParameter.myUserName = username;
+                        pageParameter.myPlayerID = playerID;
+                        
+                        pageParameter.team1 = team1;
+                        pageParameter.team2 = team2;
+
+                        pageParameter.chatManager = chatManager;
+                        
+                        PlatformMenuAdapter.GameLobbyMenu_StartGame_Click(pageParameter);
+                    }
+                );
+        }
 
         #region GameLobby Events
         private void JoinTeam1_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            if (!enableChangingTeams) return;
+
             Debug.WriteLine("JoinTeam1 Tapped");
-            return;
             if (team1.Exists(playerID)) return;
 
             if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Client &&
@@ -540,8 +629,9 @@ namespace EmpiresOfTheIV
         }
         private void JoinTeam2_Tapped(object sender, TappedRoutedEventArgs e)
         {
+            if (!enableChangingTeams) return;
+
             Debug.WriteLine("JoinTeam2 Tapped");
-            return;
             if (team2.Exists(playerID)) return;
             
             if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Client && 
@@ -574,10 +664,16 @@ namespace EmpiresOfTheIV
         private void Team1SelectionChanged(object sender, TappedRoutedEventArgs e)
         {
             //Frame.Navigate(typeof(EmpireSelectionPage));
+
+            XamlControlHelper.LoseFocusOnTextBox(team1ListBox);
+            team1ListBox.SelectedItem = null;
         }
         private void Team2SelectionChanged(object sender, TappedRoutedEventArgs e)
         {
             //Frame.Navigate(typeof(EmpireSelectionPage));
+
+            XamlControlHelper.LoseFocusOnTextBox(team2ListBox);
+            team2ListBox.SelectedItem = null;
         }
 
         private void gameStartButton_Tapped(object sender, TappedRoutedEventArgs e)

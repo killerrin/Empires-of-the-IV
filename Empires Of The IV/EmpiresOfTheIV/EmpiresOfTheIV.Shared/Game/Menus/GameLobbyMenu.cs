@@ -14,7 +14,7 @@ using System.Text;
 namespace EmpiresOfTheIV.Game.Menus
 {
     public class GameLobbyMenu : GameMenu,
-                                    IUpdatable, IRenderable
+                                 IUpdatable, IRenderable
     {
 
         #region Fields/Properties

@@ -5,13 +5,23 @@
 
     <DataTemplate x:Key="TeamListBoxItemTemplate">
         <StackPanel Orientation="Vertical">
-            <TextBlock Text="{Binding Name}" />
+            <StackPanel Orientation="Horizontal">
+                <Image Width="80" Height="60" Margin="0,0,0,0" VerticalAlignment="Top">
+                    <Image.Source>
+                        <BitmapImage UriSource="ms-appx:///Assets/Empire Flags/Unanian Flag.png" />
+                    </Image.Source>
+                </Image>
+                
+                <TextBlock Text="{Binding Name}" Margin="20,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
         </StackPanel>
     </DataTemplate>
 
     <Style x:Key="GameLobbyTeamHeaderButton" TargetType="Button">
         <Setter Property="Foreground" Value="{StaticResource EmpiresOfTheIVMenuButtonBrush}"/>
         <Setter Property="BorderBrush" Value="{x:Null}"/>
+        
+        <Setter Property="BorderThickness" Value="0" />
 
         <Setter Property="Margin" Value="0,0,0,0"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -28,6 +38,8 @@
         <Setter Property="Foreground" Value="{StaticResource EmpiresOfTheIVMenuButtonBrush}"/>
         <Setter Property="BorderBrush" Value="{x:Null}"/>
 
+        <Setter Property="BorderThickness" Value="0" />
+        
         <Setter Property="Margin" Value="0,0,0,0"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
         <Setter Property="VerticalAlignment" Value="Stretch"/>

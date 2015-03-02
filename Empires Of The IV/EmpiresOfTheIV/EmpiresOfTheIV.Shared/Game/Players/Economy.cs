@@ -9,12 +9,14 @@ namespace EmpiresOfTheIV.Game.Players
 {
     public class Economy : IUpdatable
     {
-        //public APlayer Player { get; protected set; }
+        //public Player Owner { get; protected set; }
         public uint PlayerID { get; protected set; }
+        
         public Resource Currency { get; protected set; }
         public Resource Metal { get; protected set; }
         public Resource Energy { get; protected set; }
-        //public Resource UnitCap { get; protected set; }
+
+        public Resource UnitCap { get; protected set; }
 
         public Economy(uint playerID)//APlayer player)
         {
@@ -24,14 +26,16 @@ namespace EmpiresOfTheIV.Game.Players
             Currency = new Resource(ResourceType.Currency);
             Metal = new Resource(ResourceType.Metal);
             Energy = new Resource(ResourceType.Energy);
-            //UnitCap = new Resource(ResourceType.Unit);
+
+            UnitCap = new Resource(ResourceType.Unit);
         }
 
         public bool CanAfford(Cost cost)
         {
             return (Currency.CurrentAmount  >= cost.CurrencyCost)   &&
                    (Metal.CurrentAmount     >= cost.MetalCost)      &&
-                   (Energy.CurrentAmount    >= cost.EnergyCost);
+                   (Energy.CurrentAmount    >= cost.EnergyCost)     &&
+                   (UnitCap.CurrentAmount   >= cost.UnitCost);
         }
 
         public void AddCost(Cost cost)
@@ -41,6 +45,7 @@ namespace EmpiresOfTheIV.Game.Players
             Currency.CurrentAmount  += cost.CurrencyCost;
             Metal.CurrentAmount     += cost.MetalCost;
             Energy.CurrentAmount    += cost.EnergyCost;
+            UnitCap.CurrentAmount   += cost.UnitCost;
         }
 
         public bool SubtractCost(Cost cost)
@@ -50,6 +55,7 @@ namespace EmpiresOfTheIV.Game.Players
             Currency.CurrentAmount  -= cost.CurrencyCost;
             Metal.CurrentAmount     -= cost.MetalCost;
             Energy.CurrentAmount    -= cost.EnergyCost;
+            UnitCap.CurrentAmount   -= cost.UnitCost;
             return true;
         }
 

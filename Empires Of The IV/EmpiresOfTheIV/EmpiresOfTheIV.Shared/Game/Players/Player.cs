@@ -15,6 +15,8 @@ namespace EmpiresOfTheIV.Game.Players
         public string Name { get; set; }
         public PlayerType PlayerType { get; set; }
 
+        public EmpireType EmpireType { get; set; }
+
         public Economy Economy { get; protected set; }
 
         public Player(uint playerID, string playerName, PlayerType playerType)
@@ -22,6 +24,8 @@ namespace EmpiresOfTheIV.Game.Players
             ID = playerID;
             Name = playerName;
             PlayerType = playerType;
+
+            EmpireType = EmpireType.UnanianEmpire;
 
             Economy = new Economy(ID);
         }

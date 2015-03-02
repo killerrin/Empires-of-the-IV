@@ -10,23 +10,28 @@ namespace EmpiresOfTheIV.Game.Players
     {
         public ResourceType ResourceType { get; protected set; }
 
-        public float RateOfAccumilation { get; set; }
-        public float AccumilationModifier { get; set; }
-        public float CurrentAmount { get; set; }
+        public double RateOfAccumilation { get; set; }
+        public double AccumilationModifier { get; set; }
+
+        public double CurrentAmount { get; set; }
+        public double MaxAmount { get; set; }
 
         public Resource(ResourceType resourceType)
         {
             ResourceType = resourceType;
 
-            RateOfAccumilation = 1.0f;
-            AccumilationModifier = 1.0f;
-            CurrentAmount = 0.0f;
+            RateOfAccumilation = 1.0;
+            AccumilationModifier = 1.0;
+            CurrentAmount = 0.0;
+
+            MaxAmount = double.MaxValue - 10.0;
         }
 
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         public void Update(GameTime gameTime)
         {
-            CurrentAmount += ((RateOfAccumilation * AccumilationModifier) * (float)gameTime.ElapsedGameTime.TotalMilliseconds);
+            CurrentAmount += (RateOfAccumilation * AccumilationModifier) * gameTime.ElapsedGameTime.TotalMilliseconds;
+            if (CurrentAmount >= MaxAmount) CurrentAmount = MaxAmount;
         }
     }
 }
