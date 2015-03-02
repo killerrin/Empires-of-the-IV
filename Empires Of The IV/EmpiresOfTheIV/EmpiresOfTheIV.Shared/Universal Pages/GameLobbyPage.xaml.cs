@@ -685,7 +685,10 @@ namespace EmpiresOfTheIV
                 SetAbilities();
                 gameStarting = false;
 
-                SendCancelStartGame();
+                if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+                {
+                    SendCancelStartGame();
+                }
                 return;
             }
             
@@ -718,8 +721,17 @@ namespace EmpiresOfTheIV
             gameModeSelector.IsEnabled = false;
             gameStarting = true;
 
+            if (pageparam == "Singleplayer")
+            {
+                StartGame();
+                return;
+            }
+
             // If we are good to start, send the start command
-            SendStartGame();
+            if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+            {
+                SendStartGame();
+            }
         }
         #endregion
 
