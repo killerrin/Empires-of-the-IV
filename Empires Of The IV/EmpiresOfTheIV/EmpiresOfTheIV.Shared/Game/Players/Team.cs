@@ -223,10 +223,18 @@ namespace EmpiresOfTheIV.Game.Players
         //}
          
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
         #endregion
 
-
+        public override string ToString()
+        {
+            string result = String.Format("Team: {0}, Count: {1} \n  ", TeamID.ToString(), PlayerCount.ToString());
+            foreach(var i in Players)
+            {
+                result += i.ToString() + "\n  "; 
+            }
+            return result;
+        }
 
         public void Update(GameTime gameTime)
         {
@@ -236,7 +244,7 @@ namespace EmpiresOfTheIV.Game.Players
             }
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
             foreach (var p in Players)
             {

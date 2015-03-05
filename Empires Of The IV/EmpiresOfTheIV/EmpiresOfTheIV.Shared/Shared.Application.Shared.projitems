@@ -25,6 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\MapName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\NetworkStage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\PausedState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\UnitID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameConsts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\AGameModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\GameModel1v1.cs" />

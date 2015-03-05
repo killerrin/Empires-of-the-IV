@@ -21,6 +21,7 @@ using Anarian.Helpers;
 using Anarian.Interfaces;
 using EmpiresOfTheIV.Game.GameObjects;
 using Anarian.Pathfinding;
+using System.Threading.Tasks;
 
 namespace EmpiresOfTheIV.Game
 {
@@ -55,7 +56,7 @@ namespace EmpiresOfTheIV.Game
         public void LoadContent(GraphicsDevice graphics)
         {
             //m_game.SceneManager.CurrentScene.Camera.MoveVertical(30.0f);
-
+            
             // Load the Assets
             m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Texture2D), "KillerrinStudiosLogo");
             m_game.ResourceManager.LoadAsset(m_game.Content, typeof(AnimatedModel), "t-pose_3");

@@ -1,4 +1,5 @@
 ﻿using Anarian.DataStructures;
+using Anarian.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -25,7 +26,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
         {
             base.Update(gameTime);
         }
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
             base.Draw(gameTime, spriteBatch, graphics, camera);
         }

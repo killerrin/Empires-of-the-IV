@@ -53,7 +53,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
             if (Factory != null)
                 Factory.Update(gameTime);
         }
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
             if (Base != null)
                 Base.Draw(gameTime, spriteBatch, graphics, camera);

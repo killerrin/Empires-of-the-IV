@@ -41,13 +41,18 @@ namespace EmpiresOfTheIV.Game.Players
 
         #region Interface Implimentation
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
         #endregion
+
+        public override string ToString()
+        {
+            return String.Format("ID: {0} | Name: {1} | PlayerType: {2}", ID.ToString(), Name, PlayerType.ToString());
+        }
 
         public virtual void Update(GameTime gameTime) {
             Economy.Update(gameTime);
         }
-        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
+        public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
 
         }

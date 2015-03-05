@@ -60,7 +60,7 @@ namespace EmpiresOfTheIV.Game
         #region Interface Implimentations
         void IDisposable.Dispose() { Dispose(); }
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
         #endregion
 
         public void Update(GameTime gameTime)
@@ -68,7 +68,7 @@ namespace EmpiresOfTheIV.Game
 
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
 
         }
@@ -87,7 +87,7 @@ namespace EmpiresOfTheIV.Game
 
             if (e.Pointer == PointerPress.LeftMouseButton ||
                 e.Pointer == PointerPress.Touch) {
-                Camera camera = m_game.SceneManager.CurrentScene.Camera;
+                Camera camera = m_game.SceneManager.CurrentScene.Camera as Camera;
                 Ray ray = camera.GetMouseRay(
                     e.Position,
                     m_game.Graphics.GraphicsDevice.Viewport
@@ -119,7 +119,7 @@ namespace EmpiresOfTheIV.Game
         void Keyboard_KeyboardDown(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
             //Debug.WriteLine("Keyboard: {0}, Held Down", e.KeyClicked.ToString());
-            Camera cam = m_game.SceneManager.CurrentScene.Camera;
+            Camera cam = m_game.SceneManager.CurrentScene.Camera as Camera;
 
             switch (e.KeyClicked) {
                 case Keys.W:    cam.MoveForward(     0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;

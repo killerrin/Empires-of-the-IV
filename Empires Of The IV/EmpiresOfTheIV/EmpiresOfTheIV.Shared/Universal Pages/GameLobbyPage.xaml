@@ -42,7 +42,7 @@
 								<!--<x:String>Tower Defence</x:String>-->
 							</ComboBox>
 
-							<Slider x:Name="maxUnitSlider" Header="Max Units" Margin="0,20,0,0"
+							<Slider x:Name="maxUnitSlider" Header="Max Units Per Player" Margin="0,20,0,0"
 									Minimum="15" Maximum="125" TickFrequency="1" SnapsTo="Ticks"
 									ValueChanged="MaxUnitSlider_ValueChanged" Loaded="maxUnitSlider_Loaded"/>
 							

@@ -138,7 +138,7 @@ namespace EmpiresOfTheIV
 #endif
             
             // Update the Header
-            maxUnitSlider.Header = "Max Units: " + maxUnitSlider.Value;
+            maxUnitSlider.Header = "Max Units Per Player: " + maxUnitSlider.Value;
         }
 
         private void SetAbilities()
@@ -762,7 +762,7 @@ namespace EmpiresOfTheIV
         private void MaxUnitSlider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
             if (maxUnitSlider == null) return;
-            maxUnitSlider.Header = "Max Units: " + maxUnitSlider.Value;
+            maxUnitSlider.Header = "Max Units Per Player: " + maxUnitSlider.Value;
 
             if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
             {

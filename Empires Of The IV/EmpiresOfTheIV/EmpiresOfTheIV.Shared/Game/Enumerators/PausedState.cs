@@ -7,6 +7,7 @@ namespace EmpiresOfTheIV.Game.Enumerators
     public enum PausedState
     {
         Paused,
-        Unpaused
+        Unpaused,
+        WaitingForData
     }
 }

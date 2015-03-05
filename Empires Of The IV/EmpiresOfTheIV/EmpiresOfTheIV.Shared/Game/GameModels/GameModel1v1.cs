@@ -27,7 +27,7 @@ namespace EmpiresOfTheIV.Game.GameModels
             Team2.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera)
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
             Team1.Draw(gameTime, spriteBatch, graphics, camera);
             Team2.Draw(gameTime, spriteBatch, graphics, camera);

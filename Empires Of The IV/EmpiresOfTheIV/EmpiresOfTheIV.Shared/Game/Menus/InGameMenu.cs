@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace EmpiresOfTheIV.Game.Menus
@@ -36,6 +37,7 @@ namespace EmpiresOfTheIV.Game.Menus
             m_networkManager = m_game.GameManager.NetworkManager;
             m_pausedState = PausedState.Unpaused;
 
+            // Subscribe to Events
             m_networkManager.OnConnected += NetworkManager_OnConnected;
             m_networkManager.OnDisconnected += NetworkManager_OnDisconnected;
             m_networkManager.OnMessageRecieved += NetworkManager_OnMessageRecieved;
@@ -45,8 +47,8 @@ namespace EmpiresOfTheIV.Game.Menus
 
             // Save the parameters
             m_pageParameter = (InGamePageParameter)parameter;
-            m_team1 = m_pageParameter.team1;
-            m_team2 = m_pageParameter.team2;
+            m_team1 = m_pageParameter.team1;     Debug.WriteLine(m_team1.ToString());
+            m_team2 = m_pageParameter.team2;     Debug.WriteLine(m_team2.ToString());
 
             m_chatManager = m_pageParameter.chatManager;
         }
@@ -87,7 +89,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
         #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, Camera camera) { Draw(gameTime, spriteBatch, graphics); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics); }
         #endregion
 
         public override void Update(GameTime gameTime)

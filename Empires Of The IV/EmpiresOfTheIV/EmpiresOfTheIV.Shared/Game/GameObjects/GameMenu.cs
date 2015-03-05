@@ -42,7 +42,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
         #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, Camera camera) { Draw(gameTime, spriteBatch, graphicsDevice); }
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, ICamera camera) { Draw(gameTime, spriteBatch, graphicsDevice); }
         #endregion
 
         public virtual void Update(GameTime gameTime)
