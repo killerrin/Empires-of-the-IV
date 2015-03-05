@@ -100,5 +100,10 @@ namespace EmpiresOfTheIV.Game.GameObjects
                 sat.Draw(gameTime, spriteBatch, graphics, camera);
             }
         }
+
+        protected override void SetupEffects(Effect effect, GraphicsDevice graphics, ICamera camera, GameTime gameTime)
+        {
+            base.SetupEffects(effect, graphics, camera, gameTime);
+        }
     }
 }
