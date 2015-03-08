@@ -87,7 +87,7 @@ namespace EmpiresOfTheIV.Game
 
             if (e.Pointer == PointerPress.LeftMouseButton ||
                 e.Pointer == PointerPress.Touch) {
-                Camera camera = m_game.SceneManager.CurrentScene.Camera as Camera;
+                UniversalCamera camera = m_game.SceneManager.CurrentScene.Camera as UniversalCamera;
                 Ray ray = camera.GetMouseRay(
                     e.Position,
                     m_game.Graphics.GraphicsDevice.Viewport
@@ -119,35 +119,47 @@ namespace EmpiresOfTheIV.Game
         void Keyboard_KeyboardDown(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
             //Debug.WriteLine("Keyboard: {0}, Held Down", e.KeyClicked.ToString());
-            Camera cam = m_game.SceneManager.CurrentScene.Camera as Camera;
+            ICamera cam = m_game.SceneManager.CurrentScene.Camera;
+            IMoveable camMoveable = m_game.SceneManager.CurrentScene.Camera as IMoveable;
+            UniversalCamera uniCam = m_game.SceneManager.CurrentScene.Camera as UniversalCamera;
 
             switch (e.KeyClicked) {
-                case Keys.W:    cam.MoveForward(     0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
-                case Keys.S:    cam.MoveForward(    -0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
-                case Keys.A:    cam.MoveHorizontal( -0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
-                case Keys.D:    cam.MoveHorizontal(  0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
-                case Keys.Q:    cam.MoveVertical(   -0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
-                case Keys.E:    cam.MoveVertical(    0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
-                case Keys.O:    cam.MoveDepth(      -0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
-                case Keys.L:    cam.MoveDepth(       0.020f   * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                case Keys.W:    camMoveable.MoveForward(    e.GameTime,      0.08f * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                case Keys.S:    camMoveable.MoveForward(    e.GameTime,     -0.08f * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                case Keys.A:    camMoveable.MoveHorizontal( e.GameTime,     -0.08f * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                case Keys.D:    camMoveable.MoveHorizontal( e.GameTime,      0.08f * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                case Keys.Q:    camMoveable.MoveVertical(   e.GameTime,     -0.08f * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                case Keys.E:    camMoveable.MoveVertical(   e.GameTime,      0.08f * (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                //case Keys.O:    cam.MoveDepth(      -0.020f   ); break; //* (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                //case Keys.L:    cam.MoveDepth(       0.020f   ); break; //* (float)e.GameTime.ElapsedGameTime.TotalMilliseconds);    break;
+                //
+                case Keys.NumPad8:  cam.Pitch = uniCam.Pitch + MathHelper.ToRadians(2);     break;
+                case Keys.NumPad2:  cam.Pitch = uniCam.Pitch + MathHelper.ToRadians(-2);    break;
 
-                case Keys.Up:
-                    cam.AddPitch(MathHelper.ToRadians(2));
-                    break;
-                case Keys.Down:
-                    cam.AddPitch(MathHelper.ToRadians(-2));
-                    break;
-                case Keys.Left:
-                    cam.AddYaw(MathHelper.ToRadians(2));
-                    break;
-                case Keys.Right:
-                    cam.AddYaw(MathHelper.ToRadians(-2));
-                    break;
+                case Keys.NumPad4:  cam.Yaw = uniCam.Yaw + MathHelper.ToRadians(2);         break;
+                case Keys.NumPad6:  cam.Yaw = uniCam.Yaw + MathHelper.ToRadians(-2);        break;
+
+                case Keys.NumPad1:
+                case Keys.NumPad7:  cam.Roll = uniCam.Roll + MathHelper.ToRadians(2);       break;
+                
+                case Keys.NumPad3:
+                case Keys.NumPad9:  cam.Roll = uniCam.Roll + MathHelper.ToRadians(-2);      break;
+
+                case Keys.NumPad0:  uniCam.ResetCamera();                                   break;
+                case Keys.NumPad5:  uniCam.ResetRotations();                                break;
             }
         }
         void Keyboard_KeyboardPressed(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
-            //Debug.WriteLine("{0}, Pressed", e.KeyClicked.ToString());
+            Debug.WriteLine("{0}, Pressed", e.KeyClicked.ToString());
+            UniversalCamera uniCam = m_game.SceneManager.CurrentScene.Camera as UniversalCamera;
+
+            switch (e.KeyClicked)
+            {
+                case Keys.Space:
+                    uniCam.SwitchCameraMode();
+                    break;
+            }
         }
         #endregion
 

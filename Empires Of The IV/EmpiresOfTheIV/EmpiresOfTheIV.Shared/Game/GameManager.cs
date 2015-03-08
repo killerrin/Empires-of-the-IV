@@ -148,6 +148,9 @@ namespace EmpiresOfTheIV.Game
                 pos.Y = height;
                 m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).Position = pos;
             }
+
+            UniversalCamera uniCamera = m_game.SceneManager.CurrentScene.Camera as UniversalCamera;
+            uniCamera.WorldPositionToChase = m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).WorldMatrix;
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
