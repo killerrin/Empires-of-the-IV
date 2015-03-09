@@ -66,12 +66,12 @@ namespace EmpiresOfTheIV
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            Consts.Game.GameManager.NetworkManager.OnConnected += NetworkManager_OnConnected;
-            Consts.Game.GameManager.NetworkManager.OnDisconnected += NetworkManager_OnDisconnected;
-            Consts.Game.GameManager.NetworkManager.OnMessageRecieved += NetworkManager_OnMessageRecieved;
+            Consts.Game.NetworkManager.OnConnected += NetworkManager_OnConnected;
+            Consts.Game.NetworkManager.OnDisconnected += NetworkManager_OnDisconnected;
+            Consts.Game.NetworkManager.OnMessageRecieved += NetworkManager_OnMessageRecieved;
 
-            Consts.Game.GameManager.StateManager.OnBackButtonPressed += StateManager_OnBackButtonPressed;
-            Consts.Game.GameManager.StateManager.HandleBackButtonPressed = false;
+            Consts.Game.StateManager.OnBackButtonPressed += StateManager_OnBackButtonPressed;
+            Consts.Game.StateManager.HandleBackButtonPressed = false;
 
             pageparam = e.Parameter as string;
 
@@ -81,11 +81,11 @@ namespace EmpiresOfTheIV
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             Debug.WriteLine("Unsubscribed from GameLobbyPage");
-            Consts.Game.GameManager.NetworkManager.OnConnected -= NetworkManager_OnConnected;
-            Consts.Game.GameManager.NetworkManager.OnDisconnected -= NetworkManager_OnDisconnected;
-            Consts.Game.GameManager.NetworkManager.OnMessageRecieved -= NetworkManager_OnMessageRecieved;
+            Consts.Game.NetworkManager.OnConnected -= NetworkManager_OnConnected;
+            Consts.Game.NetworkManager.OnDisconnected -= NetworkManager_OnDisconnected;
+            Consts.Game.NetworkManager.OnMessageRecieved -= NetworkManager_OnMessageRecieved;
 
-            Consts.Game.GameManager.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
+            Consts.Game.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
 
             base.OnNavigatedFrom(e);
         }
@@ -180,7 +180,7 @@ namespace EmpiresOfTheIV
 
             SystemPacket packet = new SystemPacket(true, SystemPacketID.RequestSetupData, sendData);
             string packetSerialized = packet.ThisToJson();
-            Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+            Consts.Game.NetworkManager.SendMessage(packetSerialized);
         }
 
         #region Networking
@@ -198,7 +198,7 @@ namespace EmpiresOfTheIV
 
         void NetworkManager_OnMessageRecieved(object sender, KillerrinStudiosToolkit.Events.ReceivedMessageEventArgs e)
         {
-            if (e.Message == Consts.Game.GameManager.NetworkManager.LanHelper.ConnectionCloseMessage)
+            if (e.Message == Consts.Game.NetworkManager.LanHelper.ConnectionCloseMessage)
             {
                 return;
             }
@@ -387,7 +387,7 @@ namespace EmpiresOfTheIV
                 }
                 else if (systemPacket.ID == SystemPacketID.GameStart)
                 {
-                    if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+                    if (Consts.Game.NetworkManager.HostSettings == HostType.Host)
                     {
                         Debug.WriteLine("Clients Responded to GameStart. Starting Game");
                         SendTransitionAndGameLoad();
@@ -428,7 +428,7 @@ namespace EmpiresOfTheIV
 
                     SystemPacket packet = new SystemPacket(true, SystemPacketID.MapChanged, mapSelector.SelectedIndex.ToString());
                     string packetSerialized = packet.ThisToJson();
-                    Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                    Consts.Game.NetworkManager.SendMessage(packetSerialized);
                 }
             );
         }
@@ -442,7 +442,7 @@ namespace EmpiresOfTheIV
 
                     SystemPacket packet = new SystemPacket(true, SystemPacketID.GameModeChanged, gameModeSelector.SelectedIndex.ToString());
                     string packetSerialized = packet.ThisToJson();
-                    Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                    Consts.Game.NetworkManager.SendMessage(packetSerialized);
                 }
             );
         }
@@ -458,7 +458,7 @@ namespace EmpiresOfTheIV
 
                     SystemPacket packet = new SystemPacket(true, SystemPacketID.UnitMaxChanged, sendData);
                     string packetSerialized = packet.ThisToJson();
-                    Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                    Consts.Game.NetworkManager.SendMessage(packetSerialized);
                 }
             );
         }
@@ -474,7 +474,7 @@ namespace EmpiresOfTheIV
 
                     SystemPacket packet = new SystemPacket(true, SystemPacketID.JoinTeam1, sendData);
                     string packetSerialized = packet.ThisToJson();
-                    Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                    Consts.Game.NetworkManager.SendMessage(packetSerialized);
                 }
             );
         }
@@ -490,7 +490,7 @@ namespace EmpiresOfTheIV
 
                     SystemPacket packet = new SystemPacket(true, SystemPacketID.JoinTeam2, sendData);
                     string packetSerialized = packet.ThisToJson();
-                    Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                    Consts.Game.NetworkManager.SendMessage(packetSerialized);
                 }
             );
         }
@@ -505,7 +505,7 @@ namespace EmpiresOfTheIV
 
                     SystemPacket packet = new SystemPacket(true, SystemPacketID.TeamsChanged, sendData);
                     string packetSerialized = packet.ThisToJson();
-                    Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                    Consts.Game.NetworkManager.SendMessage(packetSerialized);
                 }
             );
 
@@ -518,7 +518,7 @@ namespace EmpiresOfTheIV
             CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
                     // Since we are the host, we do a final sync
-                    if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+                    if (Consts.Game.NetworkManager.HostSettings == HostType.Host)
                     {
                         SendGameModeChanged();
                         SendMaxUnitsChanged();
@@ -528,7 +528,7 @@ namespace EmpiresOfTheIV
 
                     SystemPacket packet = new SystemPacket(true, SystemPacketID.GameStart, true.ToString());
                     string packetSerialized = packet.ThisToJson();
-                    Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                    Consts.Game.NetworkManager.SendMessage(packetSerialized);
                 }
             );
         }
@@ -541,7 +541,7 @@ namespace EmpiresOfTheIV
                 {
                     SystemPacket packet = new SystemPacket(true, SystemPacketID.GameStart, false.ToString());
                     string packetSerialized = packet.ThisToJson();
-                    Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                    Consts.Game.NetworkManager.SendMessage(packetSerialized);
                 }
             );
         }
@@ -554,7 +554,7 @@ namespace EmpiresOfTheIV
             {
                 SystemPacket packet = new SystemPacket(true, SystemPacketID.TransitionAndGameLoad, true.ToString());
                 string packetSerialized = packet.ThisToJson();
-                Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                Consts.Game.NetworkManager.SendMessage(packetSerialized);
             }
             );
         }
@@ -582,9 +582,13 @@ namespace EmpiresOfTheIV
                         }
 
                         pageParameter.maxUnitsPerPlayer = maxUnitSlider.Value;
-                        
-                        pageParameter.myUserName = username;
-                        pageParameter.myPlayerID = playerID;
+
+                        Player me = null;
+                        if (team1.Exists(username))
+                            me = team1.GetPlayer(username);
+                        if (team2.Exists(username))
+                            me = team2.GetPlayer(username);
+                        pageParameter.me = me;
                         
                         pageParameter.team1 = team1;
                         pageParameter.team2 = team2;
@@ -604,7 +608,7 @@ namespace EmpiresOfTheIV
             Debug.WriteLine("JoinTeam1 Tapped");
             if (team1.Exists(playerID)) return;
 
-            if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Client &&
+            if (Consts.Game.NetworkManager.HostSettings == HostType.Client &&
                 pageparam != "Singleplayer")
             {
                 SendJoinTeam1();
@@ -621,7 +625,7 @@ namespace EmpiresOfTheIV
                 team2ListBox.ItemsSource = null;
                 team2ListBox.ItemsSource = team2.Players;
 
-                if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+                if (Consts.Game.NetworkManager.HostSettings == HostType.Host)
                 {
                     SendTeamsChanged();
                 }
@@ -634,7 +638,7 @@ namespace EmpiresOfTheIV
             Debug.WriteLine("JoinTeam2 Tapped");
             if (team2.Exists(playerID)) return;
             
-            if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Client && 
+            if (Consts.Game.NetworkManager.HostSettings == HostType.Client && 
                 pageparam != "Singleplayer")
             {
                 SendJoinTeam2();
@@ -651,7 +655,7 @@ namespace EmpiresOfTheIV
                 team2ListBox.ItemsSource = null;
                 team2ListBox.ItemsSource = team2.Players;
 
-                if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+                if (Consts.Game.NetworkManager.HostSettings == HostType.Host)
                 {
                     SendTeamsChanged();
                 }
@@ -685,7 +689,7 @@ namespace EmpiresOfTheIV
                 SetAbilities();
                 gameStarting = false;
 
-                if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+                if (Consts.Game.NetworkManager.HostSettings == HostType.Host)
                 {
                     SendCancelStartGame();
                 }
@@ -728,7 +732,7 @@ namespace EmpiresOfTheIV
             }
 
             // If we are good to start, send the start command
-            if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+            if (Consts.Game.NetworkManager.HostSettings == HostType.Host)
             {
                 SendStartGame();
             }
@@ -753,7 +757,7 @@ namespace EmpiresOfTheIV
                     break;
             }
 
-            if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+            if (Consts.Game.NetworkManager.HostSettings == HostType.Host)
             {
                 SendGameModeChanged();
             }
@@ -764,7 +768,7 @@ namespace EmpiresOfTheIV
             if (maxUnitSlider == null) return;
             maxUnitSlider.Header = "Max Units Per Player: " + maxUnitSlider.Value;
 
-            if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+            if (Consts.Game.NetworkManager.HostSettings == HostType.Host)
             {
                 SendMaxUnitsChanged();
             }
@@ -791,7 +795,7 @@ namespace EmpiresOfTheIV
                     break;
             }
 
-            if (Consts.Game.GameManager.NetworkManager.HostSettings == HostType.Host)
+            if (Consts.Game.NetworkManager.HostSettings == HostType.Host)
             {
                 SendMapChanged();
             }
@@ -881,7 +885,7 @@ namespace EmpiresOfTheIV
 
             try
             {
-                Consts.Game.GameManager.NetworkManager.SendMessage(packetSerialized);
+                Consts.Game.NetworkManager.SendMessage(packetSerialized);
             }
             catch (Exception) { }
 

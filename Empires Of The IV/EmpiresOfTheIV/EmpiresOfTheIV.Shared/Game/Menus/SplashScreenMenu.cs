@@ -26,7 +26,7 @@ namespace EmpiresOfTheIV.Game.Menus
         public SplashScreenMenu(EmpiresOfTheIVGame game, object parameter)
             : base(game, parameter, GameState.SplashScreen)
         {
-            if (AlreadyLoaded) { game.GameManager.StateManager.ForceExitGame(); }
+            if (AlreadyLoaded) { game.StateManager.ForceExitGame(); }
             AlreadyLoaded = true;
 
             m_timer = new Timer(TimeSpan.FromSeconds(3.0));
@@ -85,11 +85,11 @@ namespace EmpiresOfTheIV.Game.Menus
             Debug.WriteLine("SplashScreenTimer: Completed");
 
             // Set the flags
-            m_game.GameManager.StateManager.HideFrameBeforeTransition = false;
-            m_game.GameManager.StateManager.RemovePreviousOnCompleted = true;
+            m_game.StateManager.HideFrameBeforeTransition = false;
+            m_game.StateManager.RemovePreviousOnCompleted = true;
 
             // Navigate to the MainMenu
-            m_game.GameManager.StateManager.Navigate(GameState.MainMenu);
+            m_game.StateManager.Navigate(GameState.MainMenu);
         }
         #endregion
     }

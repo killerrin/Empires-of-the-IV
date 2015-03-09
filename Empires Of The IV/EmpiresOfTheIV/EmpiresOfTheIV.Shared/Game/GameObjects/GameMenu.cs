@@ -40,6 +40,13 @@ namespace EmpiresOfTheIV.Game.GameObjects
             m_level.LevelLoaded();
         }
 
+        public virtual void MenuExited()
+        {
+            base.MenuExited();
+
+            m_level.LevelExited();
+        }
+
         #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, ICamera camera) { Draw(gameTime, spriteBatch, graphicsDevice); }

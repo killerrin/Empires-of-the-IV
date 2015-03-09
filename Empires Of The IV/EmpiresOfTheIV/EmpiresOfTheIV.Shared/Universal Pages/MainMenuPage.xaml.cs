@@ -34,7 +34,7 @@ namespace EmpiresOfTheIV
         }
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            Consts.Game.GameManager.StateManager.HandleBackButtonPressed = true;
+            Consts.Game.StateManager.HandleBackButtonPressed = true;
             base.OnNavigatedTo(e);
         }
 

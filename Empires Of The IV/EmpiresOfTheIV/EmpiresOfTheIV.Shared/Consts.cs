@@ -21,8 +21,7 @@ namespace EmpiresOfTheIV
             if (MainPage.PageFrame == null) return true;
 
             if (Consts.Game == null) return true;
-            if (Consts.Game.GameManager == null) return true;
-            if (Consts.Game.GameManager.StateManager == null) return true;
+            if (Consts.Game.StateManager == null) return true;
 
             return false;
         }

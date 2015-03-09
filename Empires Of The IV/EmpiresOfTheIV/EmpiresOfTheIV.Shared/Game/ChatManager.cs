@@ -64,6 +64,16 @@ namespace EmpiresOfTheIV.Game
             }
         }
 
+        public override string ToString()
+        {
+            string result = "";
+            foreach (var message in ChatMessages)
+            {
+                result += message.ToString() + " \n";
+            }
+            return result;
+        }
+
 
         #region Interface Implimentations
         public event NotifyCollectionChangedEventHandler CollectionChanged;
@@ -86,6 +96,5 @@ namespace EmpiresOfTheIV.Game
             get { return ChatMessages[i]; }
             protected set { ChatMessages[i] = value; }
         }
-
     }
 }

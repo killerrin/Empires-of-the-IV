@@ -13,6 +13,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
                         IUpdatable, IRenderable, ISelectableEntity
     {
         #region Fields/Properties
+        uint m_unitID;
+        public uint UnitID { get { return m_unitID; } protected set { m_unitID = value; } }
+
         bool m_selectable;
         public bool Selectable
         {
@@ -31,9 +34,11 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public Mana Mana { get { return GetComponent(typeof(Mana)) as Mana; } }
         #endregion
 
-        public Unit()
+        public Unit(uint unitID)
             : base()
         {
+            m_unitID = unitID;
+
             Selectable = true;
             Selected = false;
 

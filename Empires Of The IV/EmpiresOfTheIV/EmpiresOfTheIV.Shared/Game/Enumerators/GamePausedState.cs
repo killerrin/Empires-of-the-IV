@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EmpiresOfTheIV.Game.Enumerators
 {
-    public enum PausedState
+    public enum GamePausedState
     {
         Paused,
         Unpaused,

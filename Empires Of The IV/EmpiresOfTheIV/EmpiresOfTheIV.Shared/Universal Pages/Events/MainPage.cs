@@ -40,10 +40,9 @@ namespace EmpiresOfTheIV
 
             while (true) {
                 if (Consts.Game == null) continue;
-                if (Consts.Game.GameManager == null) continue;
-                if (Consts.Game.GameManager.StateManager == null) continue;
+                if (Consts.Game.StateManager == null) continue;
             
-                Consts.Game.GameManager.StateManager.Navigate(GameState.SplashScreen);
+                Consts.Game.StateManager.Navigate(GameState.SplashScreen);
                 break;
             }
         }

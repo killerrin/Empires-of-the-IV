@@ -35,6 +35,9 @@ namespace EmpiresOfTheIV.Game.Menus
                 m_overlay = new Overlay(m_game.GraphicsDevice, Color.Black);
                 m_overlay.FadePercentage = 0.5f;
             }
+
+            // Turn on the Unified Menu
+            m_game.SceneManager.Active = true;
         }
 
         #region Interface Implimentations

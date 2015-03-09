@@ -34,9 +34,9 @@ namespace EmpiresOfTheIV
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            Consts.Game.GameManager.NetworkManager.ConnectionStatusChanged += BluetoothConnectionHelper_ConnectionStatusChanged;
-            Consts.Game.GameManager.NetworkManager.OnMessageRecieved += BluetoothConnectionHelper_MessageRecieved;
-            Consts.Game.GameManager.NetworkManager.PeersFound += BluetoothConnectionHelper_PeersFound;
+            Consts.Game.NetworkManager.ConnectionStatusChanged += BluetoothConnectionHelper_ConnectionStatusChanged;
+            Consts.Game.NetworkManager.OnMessageRecieved += BluetoothConnectionHelper_MessageRecieved;
+            Consts.Game.NetworkManager.PeersFound += BluetoothConnectionHelper_PeersFound;
             
             ObservableCollection<NameDescription> devices = new ObservableCollection<NameDescription>();
             devices.Add(new NameDescription("Lumia", ""));

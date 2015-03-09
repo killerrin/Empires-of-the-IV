@@ -72,31 +72,31 @@ namespace EmpiresOfTheIV
         public static void MainMenu_SingleplayerButton_Click()
         {
             if (Consts.EarlyExitCheck()) return;
-            Consts.Game.GameManager.StateManager.Navigate(GameState.Singleplayer, "Singleplayer");
+            Consts.Game.StateManager.Navigate(GameState.Singleplayer, "Singleplayer");
         }
 
         public static void MainMenu_BluetoothMultiplayerButton_Click()
         {
             if (Consts.EarlyExitCheck()) return;
-            Consts.Game.GameManager.StateManager.Navigate(GameState.BluetoothMultiplayer);
+            Consts.Game.StateManager.Navigate(GameState.BluetoothMultiplayer);
         }
 
         public static void MainMenu_LANMultiplayerButton_Click()
         {
             if (Consts.EarlyExitCheck()) return;
-            Consts.Game.GameManager.StateManager.Navigate(GameState.LanMultiplayer);
+            Consts.Game.StateManager.Navigate(GameState.LanMultiplayer);
         }
 
         public static void MainMenu_OptionsButton_Click()
         {
             if (Consts.EarlyExitCheck()) return;
-            Consts.Game.GameManager.StateManager.Navigate(GameState.Options);
+            Consts.Game.StateManager.Navigate(GameState.Options);
         }
 
         public static void MainMenu_CreditsButton_Click()
         {
             if (Consts.EarlyExitCheck()) return;
-            Consts.Game.GameManager.StateManager.Navigate(GameState.Credits);
+            Consts.Game.StateManager.Navigate(GameState.Credits);
         }
         #endregion
 
@@ -104,13 +104,17 @@ namespace EmpiresOfTheIV
         public static void LanMultiplayerMenu_HostButton_Click()
         {
             if (Consts.EarlyExitCheck()) return;
-            Consts.Game.GameManager.StateManager.Navigate(GameState.GameLobby, "HostLan");
+
+            Consts.Game.StateManager.RemovePreviousOnCompleted = true;
+            Consts.Game.StateManager.Navigate(GameState.GameLobby, "HostLan");
         }
 
         public static void LanMultiplayerMenu_ConnectButton_Click()
         {
             if (Consts.EarlyExitCheck()) return;
-            Consts.Game.GameManager.StateManager.Navigate(GameState.GameLobby, "ClientLan");
+
+            Consts.Game.StateManager.RemovePreviousOnCompleted = true;
+            Consts.Game.StateManager.Navigate(GameState.GameLobby, "ClientLan");
         }
         #endregion
 
@@ -118,7 +122,9 @@ namespace EmpiresOfTheIV
         public static void GameLobbyMenu_StartGame_Click(InGamePageParameter parameter)
         {
             if (Consts.EarlyExitCheck()) return;
-            Consts.Game.GameManager.StateManager.Navigate(GameState.InGame, parameter);
+
+            Consts.Game.StateManager.RemovePreviousOnCompleted = true;
+            Consts.Game.StateManager.Navigate(GameState.InGame, parameter);
         }
         #endregion
     }

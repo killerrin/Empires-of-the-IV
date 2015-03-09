@@ -38,10 +38,10 @@ namespace EmpiresOfTheIV
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            Consts.Game.GameManager.NetworkManager.OnConnected += NetworkManager_OnConnected;
-            Consts.Game.GameManager.StateManager.OnBackButtonPressed += StateManager_OnBackButtonPressed;
+            Consts.Game.NetworkManager.OnConnected += NetworkManager_OnConnected;
+            Consts.Game.StateManager.OnBackButtonPressed += StateManager_OnBackButtonPressed;
 
-            Consts.Game.GameManager.StateManager.HandleBackButtonPressed = true;
+            Consts.Game.StateManager.HandleBackButtonPressed = true;
 
             // Set some variables
             m_attemptingToConnect = false;
@@ -58,8 +58,8 @@ namespace EmpiresOfTheIV
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             Debug.WriteLine("Navigating From LAN Page");
-            Consts.Game.GameManager.NetworkManager.OnConnected -= NetworkManager_OnConnected;
-            Consts.Game.GameManager.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
+            Consts.Game.NetworkManager.OnConnected -= NetworkManager_OnConnected;
+            Consts.Game.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
             base.OnNavigatedFrom(e);
         }
 
@@ -67,7 +67,7 @@ namespace EmpiresOfTheIV
         {
             if (m_attemptingToConnect)
             {
-                Consts.Game.GameManager.NetworkManager.Disconnect();
+                Consts.Game.NetworkManager.Disconnect();
                 m_attemptingToConnect = false;
             }
         }
@@ -81,11 +81,11 @@ namespace EmpiresOfTheIV
             //opponentsIPTextBox.IsEnabled = false;
 
             // Start Listening
-            Consts.Game.GameManager.NetworkManager.StartListening(NetworkType.LAN);
+            Consts.Game.NetworkManager.StartListening(NetworkType.LAN);
 
             // Describe from Events
-            Consts.Game.GameManager.NetworkManager.OnConnected -= NetworkManager_OnConnected;
-            Consts.Game.GameManager.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
+            Consts.Game.NetworkManager.OnConnected -= NetworkManager_OnConnected;
+            Consts.Game.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
 
             // Tell the game we're off
             PlatformMenuAdapter.LanMultiplayerMenu_HostButton_Click();
@@ -126,7 +126,7 @@ namespace EmpiresOfTheIV
                 XamlControlHelper.ChangeProgressIndicator(progressRing, true);
                 Debug.WriteLine("Progress Indicator Set");
                 
-                Consts.Game.GameManager.NetworkManager.Connect(NetworkType.LAN, opponentsIPTextBox.Text);
+                Consts.Game.NetworkManager.Connect(NetworkType.LAN, opponentsIPTextBox.Text);
             }
             catch (Exception) { Debug.WriteLine("Exception"); }
         }
@@ -147,8 +147,8 @@ namespace EmpiresOfTheIV
                     opponentsIPTextBox.IsEnabled = false;
 
                     // Describe from Events
-                    Consts.Game.GameManager.NetworkManager.OnConnected -= NetworkManager_OnConnected;
-                    Consts.Game.GameManager.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
+                    Consts.Game.NetworkManager.OnConnected -= NetworkManager_OnConnected;
+                    Consts.Game.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
 
                     // Tell the game we're off
                     PlatformMenuAdapter.LanMultiplayerMenu_ConnectButton_Click();
