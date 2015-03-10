@@ -1,4 +1,5 @@
-﻿using Anarian.DataStructures.Rendering;
+﻿using Anarian.DataStructures;
+using Anarian.DataStructures.Rendering;
 using Anarian.Helpers;
 using Anarian.Interfaces;
 using Anarian.Pathfinding;
@@ -12,7 +13,7 @@ using System.Text;
 
 namespace EmpiresOfTheIV.Game.GameObjects
 {
-    public class Map : IUpdatable, IRenderable
+    public class Map : AnarianObject, IUpdatable, IRenderable
     {
         public MapName Name { get; protected set; }
         public Vector2 Size { get { return new Vector2(Terrain.HeightData.TerrainWidth, Terrain.HeightData.TerrainHeight); } }
@@ -24,6 +25,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public List<UnitType> AvailableUnitTypes { get; protected set; }
 
         public Map(MapName mapName, Texture2D backgroundImage, Terrain terrain, params FactoryBase[] bases)
+            :base()
         {
             Name = mapName;
 
@@ -47,6 +49,28 @@ namespace EmpiresOfTheIV.Game.GameObjects
                 if (i == unitType) 
                     return true;
             return false;
+        }
+        #endregion
+
+        #region Factory Bases
+        public void AddFactoryBase(params FactoryBase[] bases) { foreach (var i in bases) FactoryBases.Add(i); }
+        public void RemoveFactoryBase(uint baseID) 
+        {
+            for (int i = 0; i < FactoryBases.Count; i++)
+            {
+                if (FactoryBases[i].FactoryBaseID == baseID)
+                {
+                    FactoryBases.RemoveAt(i);
+                    return;
+                }
+            }
+        }
+        public FactoryBase GetFactoryBase(uint baseID)
+        {
+            foreach (var i in FactoryBases)
+                if (i.FactoryBaseID == baseID)
+                    return i;
+            return null;
         }
         #endregion
 

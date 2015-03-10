@@ -47,6 +47,11 @@ namespace EmpiresOfTheIV.Game.GameObjects
             m_level.LevelExited();
         }
 
+        public virtual void SendMessage(object message)
+        {
+            base.SendMessage(message);
+        }
+
         #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice, ICamera camera) { Draw(gameTime, spriteBatch, graphicsDevice); }

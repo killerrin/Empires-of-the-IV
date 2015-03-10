@@ -9,7 +9,7 @@ using System.Text;
 
 namespace EmpiresOfTheIV.Game.GameObjects.Factories
 {
-    public class FactoryBase : IUpdatable, IRenderable
+    public class FactoryBase : AnarianObject, IUpdatable, IRenderable
     {
         
         public uint FactoryBaseID { get; private set; }

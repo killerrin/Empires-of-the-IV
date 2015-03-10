@@ -11,6 +11,7 @@ using Anarian.IDManagers;
 using Anarian.Interfaces;
 using EmpiresOfTheIV.Game.Enumerators;
 using EmpiresOfTheIV.Game.GameObjects;
+using EmpiresOfTheIV.Game.GameObjects.Factories;
 using EmpiresOfTheIV.Game.Menus.PageParameters;
 using EmpiresOfTheIV.Game.Players;
 using KillerrinStudiosToolkit.Events;
@@ -57,6 +58,7 @@ namespace EmpiresOfTheIV.Game.Menus
         Map m_map;
         #endregion
 
+        #region Constructors and Messages
         public InGameMenu(EmpiresOfTheIVGame game, object parameter)
             :base(game, parameter, GameState.InGame)
         {
@@ -112,6 +114,12 @@ namespace EmpiresOfTheIV.Game.Menus
             base.MenuExited();
         }
 
+        public override void SendMessage(object message)
+        {
+            base.SendMessage(message);
+        }
+        #endregion
+
         private void StateManager_OnBackButtonPressed(object sender, EventArgs e)
         {
             // De-Subscribe to our Events
@@ -140,6 +148,7 @@ namespace EmpiresOfTheIV.Game.Menus
             m_inactiveUnits = new List<Unit>(totalUnitsInPool);
 
             IDManager unitIDManager = new IDManager();
+            IDManager factoryBaseIDManager = new IDManager();
             #endregion
 
             if (progress != null) progress.Report(20);
@@ -226,11 +235,14 @@ namespace EmpiresOfTheIV.Game.Menus
             Texture2D mapParallax = null;
             Terrain mapTerrain = null;
 
-            Model factoryBaseModel;
+            Model factoryBaseModel = null;
+            FactoryBase[] factoryBases;
 
             switch (m_pageParameter.MapName)
             {
+                #region Radient Flatlands
                 case MapName.RadientFlatlands:
+                    #region Load/Get the Data
                     if (GameConsts.Loading.Map_RadientFlatlands == LoadingStatus.Loaded)
                     {
                         heightMap = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Flatlands HeightMap") as Texture2D;
@@ -255,11 +267,34 @@ namespace EmpiresOfTheIV.Game.Menus
 
                         GameConsts.Loading.Map_RadientFlatlands = LoadingStatus.Loaded;
                     }
-                    
-                    m_map = new Map(MapName.RadientFlatlands, mapParallax, mapTerrain);
+                    #endregion
+
+                    if (progress != null) progress.Report(50);
+
+                    #region Create Factories
+                    factoryBases = new FactoryBase[2];
+                    factoryBases[0] = new FactoryBase(factoryBaseIDManager.GetNewID());
+                    factoryBases[0].Base = new StaticGameObject();
+                    factoryBases[0].Base.Model3D = factoryBaseModel;
+                    factoryBases[0].Base.Transform.Scale = new Vector3(0.05f);
+                    factoryBases[0].Base.Active = true;
+                    factoryBases[0].Base.CullDraw = false;
+                    factoryBases[0].Base.RenderBounds = false;
+
+                    factoryBases[1] = new FactoryBase(factoryBaseIDManager.GetNewID());
+                    //factoryBases[1].Base
+
+                    #endregion
+
+                    // Make the map
+                    m_map = new Map(MapName.RadientFlatlands, mapParallax, mapTerrain, factoryBases);
                     m_map.AddAvailableUnitType(UnitType.Soldier, UnitType.Vehicle, UnitType.Ship, UnitType.Air, UnitType.Space);
                     break;
+                #endregion
+
+                #region Kalia
                 case MapName.Kalia:
+                    #region Load/Get the Data
                     if (GameConsts.Loading.Map_Kalia == LoadingStatus.Loaded)
                     {
                         heightMap = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Kalia HeightMap") as Texture2D;
@@ -286,10 +321,19 @@ namespace EmpiresOfTheIV.Game.Menus
 
                         GameConsts.Loading.Map_Kalia = LoadingStatus.Loaded;
                     }
+#endregion
 
-                    m_map = new Map(MapName.Kalia, mapParallax, mapTerrain);
+                    if (progress != null) progress.Report(50);
+
+                    #region Create Factories
+                    factoryBases = new FactoryBase[2];
+                    #endregion
+
+                    // Make the map
+                    m_map = new Map(MapName.Kalia, mapParallax, mapTerrain, factoryBases);
                     m_map.AddAvailableUnitType(UnitType.Space);
                     break;
+                #endregion
             }
             #endregion
 
@@ -424,20 +468,20 @@ namespace EmpiresOfTheIV.Game.Menus
                 case Keys.Q: camMoveable.Move(e.GameTime, -uniCam.CameraRotation.Up); break;
                 case Keys.E: camMoveable.Move(e.GameTime, uniCam.CameraRotation.Up); break;
 
-                case Keys.NumPad8: cam.Pitch = uniCam.Pitch + MathHelper.ToRadians(2); break;
-                case Keys.NumPad2: cam.Pitch = uniCam.Pitch + MathHelper.ToRadians(-2); break;
+                case Keys.Up:   case Keys.NumPad8: cam.Pitch = uniCam.Pitch + MathHelper.ToRadians(2); break;
+                case Keys.Down: case Keys.NumPad2: cam.Pitch = uniCam.Pitch + MathHelper.ToRadians(-2); break;
 
-                case Keys.NumPad4: cam.Yaw = uniCam.Yaw + MathHelper.ToRadians(2); break;
-                case Keys.NumPad6: cam.Yaw = uniCam.Yaw + MathHelper.ToRadians(-2); break;
+                case Keys.Left:  case Keys.NumPad4: cam.Yaw = uniCam.Yaw + MathHelper.ToRadians(2); break;
+                case Keys.Right: case Keys.NumPad6: cam.Yaw = uniCam.Yaw + MathHelper.ToRadians(-2); break;
 
-                case Keys.NumPad1:
+                case Keys.P: case Keys.NumPad1:
                 case Keys.NumPad7: cam.Roll = uniCam.Roll + MathHelper.ToRadians(2); break;
 
-                case Keys.NumPad3:
+                case Keys.O: case Keys.NumPad3:
                 case Keys.NumPad9: cam.Roll = uniCam.Roll + MathHelper.ToRadians(-2); break;
 
-                case Keys.NumPad0: uniCam.ResetCamera(); break;
-                case Keys.NumPad5: uniCam.ResetRotations(); break;
+                case Keys.D0: case Keys.NumPad0: uniCam.ResetCamera(); break;
+                case Keys.D5: case Keys.NumPad5: uniCam.ResetRotations(); break;
             }
         }
         void Keyboard_KeyboardPressed(object sender, Anarian.Events.KeyboardPressedEventArgs e)
