@@ -127,7 +127,7 @@ namespace EmpiresOfTheIV.Game.Menus
             m_game.InputManager.PointerDown -= InputManager_PointerDown;
             m_game.InputManager.PointerPressed -= InputManager_PointerClicked;
             m_game.InputManager.PointerMoved -= InputManager_PointerMoved;
-
+            
             // Keyboard
             m_game.InputManager.Keyboard.KeyboardDown -= Keyboard_KeyboardDown;
             m_game.InputManager.Keyboard.KeyboardPressed -= Keyboard_KeyboardPressed;
@@ -377,6 +377,18 @@ namespace EmpiresOfTheIV.Game.Menus
                 m_pausedState = GamePausedState.Unpaused;
 
             if (progress != null) progress.Report(99);
+
+            #region Set Default Player Values
+            foreach (var player in m_team1.Players)
+            {
+                //player
+            }
+            foreach (var player in m_team2.Players)
+            {
+                //player
+            }
+            #endregion
+
             await Task.Delay(TimeSpan.FromSeconds(0.5));
 
             // Send the final report and return loaded
