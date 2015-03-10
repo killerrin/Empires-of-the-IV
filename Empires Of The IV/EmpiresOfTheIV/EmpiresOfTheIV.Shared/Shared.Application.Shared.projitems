@@ -117,10 +117,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)EmpiresOfTheIVGame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\BuildingType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\UnitType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\GameInputManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Building.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Unit.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\LoadingManager.cs" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\ListeningEarcon.wav" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\Map Images\Radient Flatlands MiniMap.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -266,6 +264,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)Content\Radient Flatlands HeightMap.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Content\Sound Effects\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Content\Songs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Fonts\EmpiresOfTheIVFont.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

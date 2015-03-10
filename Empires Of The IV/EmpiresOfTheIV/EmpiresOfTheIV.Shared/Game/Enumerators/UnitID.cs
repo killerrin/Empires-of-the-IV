@@ -11,7 +11,7 @@ namespace EmpiresOfTheIV.Game.Enumerators
         // Unanian Empire
         UnanianSoldier,
         UnanianMIDAF,
-        UnanianFighter,
+        UnanianSpaceFighter,
 
         // Crescanian Confederacy
 

@@ -1,6 +1,7 @@
 ﻿using Anarian.DataStructures;
 using Anarian.DataStructures.Components;
 using Anarian.Interfaces;
+using EmpiresOfTheIV.Game.Enumerators;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -13,32 +14,23 @@ namespace EmpiresOfTheIV.Game.GameObjects
                         IUpdatable, IRenderable, ISelectableEntity
     {
         #region Fields/Properties
-        uint m_unitID;
-        public uint UnitID { get { return m_unitID; } protected set { m_unitID = value; } }
+        public uint UnitID { get; protected set; }
+        public UnitType UnitType;
 
-        bool m_selectable;
-        public bool Selectable
-        {
-            get { return m_selectable; }
-            set { m_selectable = value; }
-        }
-
-        bool m_selected;
-        public bool Selected
-        {
-            get { return m_selected; }
-            set { m_selected = value; }
-        }
+        public bool Selectable { get; set; }
+        public bool Selected { get; set; }
 
         public Health Health { get { return GetComponent(typeof(Health)) as Health; } }
         public Mana Mana { get { return GetComponent(typeof(Mana)) as Mana; } }
         #endregion
 
-        public Unit(uint unitID)
+        public Unit(uint unitID, UnitType unitType)
             : base()
         {
-            m_unitID = unitID;
+            UnitID = unitID;
+            UnitType = unitType;
 
+            // Setup base Selection rules
             Selectable = true;
             Selected = false;
 

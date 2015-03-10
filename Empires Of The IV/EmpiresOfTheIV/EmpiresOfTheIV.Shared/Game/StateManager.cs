@@ -65,6 +65,10 @@ namespace EmpiresOfTheIV.Game
         public event EventHandler OnExit;
         public event EventHandler OnBackButtonPressed;
 
+        // Used to interact with the Navigation Process
+        public event EventHandler OnNavigation;
+        public event EventHandler OnGoBack;
+
         public StateManager(EmpiresOfTheIVGame game)
         {
             Loaded = false;
@@ -170,6 +174,10 @@ namespace EmpiresOfTheIV.Game
             if (m_hideFrameBeforeTransition)
                 MainPage.PageFrame.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 
+            // Fire the Navigation Event to allow the game to modify actions taken before navigation begins
+            if (OnNavigation != null)
+                OnNavigation(this, null);
+
             GameMenu newMenu;
             switch (newState) {
                 case GameState.SplashScreen:            newMenu = new SplashScreenMenu(m_game, parameter); break;
@@ -216,6 +224,10 @@ namespace EmpiresOfTheIV.Game
             if (m_hideFrameBeforeTransition)
                 MainPage.PageFrame.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
 
+            // Fire the Navigation Event to allow the game to modify actions taken before navigation begins
+            if (OnNavigation != null)
+                OnNavigation(this, null);
+
             m_goingToMenu = newMenu;
             m_goingBack = false;
             m_exit = false;
@@ -233,6 +245,10 @@ namespace EmpiresOfTheIV.Game
                     MainPage.PageFrame.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
             }
             catch (Exception) { }
+
+            // Fire the Navigation Event to allow the game to modify actions taken before navigation begins
+            if (OnGoBack != null)
+                OnGoBack(this, null);
 
             if (CanGoBack) {
                 m_goingBack = true;

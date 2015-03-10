@@ -2,6 +2,7 @@
 using Anarian.Interfaces;
 using EmpiresOfTheIV.Game.Enumerators;
 using EmpiresOfTheIV.Game.Networking;
+using KillerrinStudiosToolkit.Enumerators;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
@@ -225,6 +226,14 @@ namespace EmpiresOfTheIV.Game.Players
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
         #endregion
+
+        public bool IsPlayerEmpire(EmpireType empireType)
+        {
+            foreach (var i in Players)
+                if (i.EmpireType == empireType)
+                    return true;
+            return false;
+        }
 
         public override string ToString()
         {

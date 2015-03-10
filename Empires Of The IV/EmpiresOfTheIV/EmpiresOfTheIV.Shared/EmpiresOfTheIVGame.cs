@@ -34,17 +34,11 @@ namespace EmpiresOfTheIV
         public static EmpiresOfTheIVGame Current { get; private set; }
 
         #region Managers 
-        protected GameInputManager m_gameInputManager;
-        public GameInputManager GameInputManager { get { return m_gameInputManager; } set { m_gameInputManager = value; } }
-
         protected StateManager m_stateManager;
         public StateManager StateManager { get { return m_stateManager; } set { m_stateManager = value; } }
 
         protected NetworkManager m_networkManager;
         public NetworkManager NetworkManager { get { return m_networkManager; } set { m_networkManager = value; } }
-
-        protected LoadingManager m_loadingManager;
-        public LoadingManager LoadingManager { get { return m_loadingManager; } set { m_loadingManager = value; } }
         #endregion
 
         public EmpiresOfTheIVGame()
@@ -73,7 +67,6 @@ namespace EmpiresOfTheIV
             m_stateManager.OnExit += OnExitTriggered;
             
             m_networkManager = new NetworkManager(this);
-            m_gameInputManager = new GameInputManager(this);
 
 
             graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
@@ -103,38 +96,46 @@ namespace EmpiresOfTheIV
 
             // Load Special Data Once
             ResourceManager.LoadAsset(Content, typeof(Texture2D), "KillerrinStudiosLogo");
+            ResourceManager.LoadAsset(Content, typeof(SpriteFont), "Fonts/EmpiresOfTheIVFont");
 
             // Load the Content
             m_stateManager.LoadStateManager(Color.Black);
 
             #region Unified Menu
-            // Create Planets
-            Debug.WriteLine("Loading Tyril");
-            Texture2D tyrilTexture = Content.Load<Texture2D>("Tyril Texture");
-            Planet tyril = new Planet(GraphicsDevice, tyrilTexture, MathHelper.ToRadians(-25.0f), Vector3.Zero, new Vector3(0.00020f, 0.0f, 0.0f), Vector3.Zero);
-            tyril.Transform.Scale = new Vector3(10.0f);
+            if (GameConsts.Loading.Menu_UnifiedLoaded != LoadingStatus.Loaded)
+            {
+                GameConsts.Loading.Menu_UnifiedLoaded = LoadingStatus.CurrentlyLoading;
 
-            Debug.WriteLine("Loading Hope");
-            //Texture2D hopeTexture = m_game.Content.Load<Texture2D>("Hope Texture");
-            //Planet hope = new Planet(graphics, hopeTexture, MathHelper.ToRadians(-20.0f), new Vector3(20.0f, 2.0f, 0.0f), new Vector3(0.00050f, 0.0f, 0.0f), new Vector3(0.00040f, 0.0f, 0.0f));
-            //hope.Transform.Scale = new Vector3(1.5f);
+                // Create Planets
+                Debug.WriteLine("Loading Tyril");
+                Texture2D tyrilTexture = Content.Load<Texture2D>("Tyril Texture");
+                Planet tyril = new Planet(GraphicsDevice, tyrilTexture, MathHelper.ToRadians(-25.0f), Vector3.Zero, new Vector3(0.00020f, 0.0f, 0.0f), Vector3.Zero);
+                tyril.Transform.Scale = new Vector3(10.0f);
 
-            Debug.WriteLine("Loading Yol");
-            //Texture2D yolTexture = m_game.Content.Load<Texture2D>("Planet Textures\\Yol Texture");
-            //Planet yol = new Planet(graphics, yolTexture, MathHelper.ToRadians(-15.0f), new Vector3(2.0f, 20.0f, 0.0f), new Vector3(0.00040f, 0.0f, 0.0f), new Vector3(0.0f, 0.00040f, 0.0f));
-            //yol.Transform.Scale = new Vector3(1.2f);
+                Debug.WriteLine("Loading Hope");
+                Texture2D hopeTexture = Content.Load<Texture2D>("Hope Texture");
+                Planet hope = new Planet(GraphicsDevice, hopeTexture, MathHelper.ToRadians(-20.0f), new Vector3(20.0f, 2.0f, 0.0f), new Vector3(0.00050f, 0.0f, 0.0f), new Vector3(0.00040f, 0.0f, 0.0f));
+                hope.Transform.Scale = new Vector3(1.5f);
 
-            Debug.WriteLine("Loading Lura");
-            //Texture2D luraTexture = m_game.Content.Load<Texture2D>("Planet Textures\\Lura Texture");
-            //Planet lura = new Planet(graphics, luraTexture, MathHelper.ToRadians(30.0f), new Vector3(-30.0f, 30.0f, 2.0f), new Vector3(0.00020f, 0.0f, 0.0f), new Vector3(0.00020f, 0.00020f, 0.0f));
-            //lura.Transform.Scale = new Vector3(2.0f);
+                Debug.WriteLine("Loading Yol");
+                Texture2D yolTexture = Content.Load<Texture2D>("Yol Texture");
+                Planet yol = new Planet(GraphicsDevice, yolTexture, MathHelper.ToRadians(-15.0f), new Vector3(2.0f, 20.0f, 0.0f), new Vector3(0.00040f, 0.0f, 0.0f), new Vector3(0.0f, 0.00040f, 0.0f));
+                yol.Transform.Scale = new Vector3(1.2f);
 
-            Debug.WriteLine("Adding Satellites");
-            //tyril.AddSatellite(hope);
-            //tyril.AddSatellite(yol);
-            //tyril.AddSatellite(lura);
+                Debug.WriteLine("Loading Lura");
+                //Texture2D luraTexture = m_game.Content.Load<Texture2D>("Lura Texture");
+                //Planet lura = new Planet(graphics, luraTexture, MathHelper.ToRadians(30.0f), new Vector3(-30.0f, 30.0f, 2.0f), new Vector3(0.00020f, 0.0f, 0.0f), new Vector3(0.00020f, 0.00020f, 0.0f));
+                //lura.Transform.Scale = new Vector3(2.0f);
 
-            SceneManager.CurrentScene.SceneNode.AddChild(tyril.Transform);
+                Debug.WriteLine("Adding Satellites");
+                tyril.AddSatellite(hope);
+                tyril.AddSatellite(yol);
+                //tyril.AddSatellite(lura);
+
+                SceneManager.CurrentScene.SceneNode.AddChild(tyril.Transform);
+
+                GameConsts.Loading.Menu_UnifiedLoaded = LoadingStatus.Loaded;
+            }
             #endregion
 
             // Lastly we call PostLoadContent to do MonoGame LoadContent
@@ -161,27 +162,6 @@ namespace EmpiresOfTheIV
         {
             // Update the GameEngine
             base.PreUpdate(gameTime);
-
-            // Because MonoGame opertes in a way where Everything up till the Before is being called before
-            // The initial XAML Page is able to load, We defer some non-essential loading to the first
-            // Update to ensure that the operating system doesn't force-quit the Game during load
-            if (!m_doOnlyOnce)
-            {
-                if (m_stateManager.Loaded)
-                {
-                    //try
-                    //{
-                    m_loadingManager = new LoadingManager(this);
-                    m_loadingManager.LoadContent(GraphicsDevice);
-                    //}
-                    //catch (Exception ex) { Debug.WriteLine(ex.PrintException()); }
-                }
-                else { base.PostUpdate(gameTime); return; }
-
-                // Set the flag and we're done loading
-                m_doOnlyOnce = true;
-                //return;
-            }
 
             // Update the SceneNodes
             base.Update(gameTime);

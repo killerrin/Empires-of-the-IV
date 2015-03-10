@@ -9,6 +9,8 @@ namespace EmpiresOfTheIV.Game.Menus.PageParameters
 {
     public struct InGamePageParameter
     {
+        public GameConnectionType GameConnectionType;
+
         public GameMode GameType;
         public MapName MapName;
         public double maxUnitsPerPlayer;
@@ -22,7 +24,8 @@ namespace EmpiresOfTheIV.Game.Menus.PageParameters
 
         public override string ToString()
         {
-            return "GameType: " + GameType.ToString() + " | " +
+            return "GameConnectionType: " + GameConnectionType.ToString() + " | " +
+                   "GameType: " + GameType.ToString() + " | " +
                    "MapName: " + MapName.ToString() + " | " +
                    "MaxUnitsPerPlayer: " + maxUnitsPerPlayer.ToString() + " | " +
                    "Me: " + me.ToString() + " | " +

@@ -72,7 +72,7 @@ namespace EmpiresOfTheIV
         public static void MainMenu_SingleplayerButton_Click()
         {
             if (Consts.EarlyExitCheck()) return;
-            Consts.Game.StateManager.Navigate(GameState.Singleplayer, "Singleplayer");
+            Consts.Game.StateManager.Navigate(GameState.Singleplayer, GameConnectionType.Singleplayer);
         }
 
         public static void MainMenu_BluetoothMultiplayerButton_Click()
@@ -106,7 +106,7 @@ namespace EmpiresOfTheIV
             if (Consts.EarlyExitCheck()) return;
 
             Consts.Game.StateManager.RemovePreviousOnCompleted = true;
-            Consts.Game.StateManager.Navigate(GameState.GameLobby, "HostLan");
+            Consts.Game.StateManager.Navigate(GameState.GameLobby, GameConnectionType.LANHost);
         }
 
         public static void LanMultiplayerMenu_ConnectButton_Click()
@@ -114,7 +114,7 @@ namespace EmpiresOfTheIV
             if (Consts.EarlyExitCheck()) return;
 
             Consts.Game.StateManager.RemovePreviousOnCompleted = true;
-            Consts.Game.StateManager.Navigate(GameState.GameLobby, "ClientLan");
+            Consts.Game.StateManager.Navigate(GameState.GameLobby, GameConnectionType.LANClient);
         }
         #endregion
 

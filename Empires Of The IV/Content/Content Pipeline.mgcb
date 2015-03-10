@@ -106,3 +106,15 @@
 /processorParam:TextureFormat=Color
 /build:HeightMaps/Radient Flatlands HeightMap.png
 
+#begin HeightMaps/EmpiresOfTheIVFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:HeightMaps/EmpiresOfTheIVFont.spritefont
+
+#begin Fonts/EmpiresOfTheIVFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/EmpiresOfTheIVFont.spritefont
+

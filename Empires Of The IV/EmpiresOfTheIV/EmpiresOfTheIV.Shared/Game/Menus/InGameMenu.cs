@@ -3,8 +3,10 @@ using Anarian.DataStructures;
 using Anarian.DataStructures.Animation;
 using Anarian.DataStructures.Animation.Aux;
 using Anarian.DataStructures.Rendering;
+using Anarian.DataStructures.ScreenEffects;
 using Anarian.Enumerators;
 using Anarian.GUI;
+using Anarian.Helpers;
 using Anarian.IDManagers;
 using Anarian.Interfaces;
 using EmpiresOfTheIV.Game.Enumerators;
@@ -32,6 +34,8 @@ namespace EmpiresOfTheIV.Game.Menus
         NetworkManager m_networkManager;
         GamePausedState m_pausedState;
 
+        Overlay m_overlay;
+
         #region Loading
         private int m_currentLoadingPercentage;
         Progress<int> m_loadingProgress;
@@ -57,11 +61,14 @@ namespace EmpiresOfTheIV.Game.Menus
             :base(game, parameter, GameState.InGame)
         {
             m_networkManager = m_game.NetworkManager;
-            m_pausedState = GamePausedState.Unpaused;
+            m_pausedState = GamePausedState.WaitingForData;
 
             m_currentLoadingPercentage = 0;
             m_loadingProgress = new Progress<int>();
             m_loadingProgress.ProgressChanged += m_loadingProgress_ProgressChanged;
+
+            m_overlay = new Overlay(m_game.GraphicsDevice, Color.Black);
+            m_overlay.FadePercentage = 0.75f;
 
             // Subscribe to Events
             m_networkManager.OnConnected += NetworkManager_OnConnected;
@@ -109,9 +116,9 @@ namespace EmpiresOfTheIV.Game.Menus
         {
             // De-Subscribe to our Events
             // Pointer
-            //m_game.InputManager.PointerDown -= InputManager_PointerDown;
-            //m_game.InputManager.PointerPressed -= InputManager_PointerClicked;
-            //m_game.InputManager.PointerMoved -= InputManager_PointerMoved;
+            m_game.InputManager.PointerDown -= InputManager_PointerDown;
+            m_game.InputManager.PointerPressed -= InputManager_PointerClicked;
+            m_game.InputManager.PointerMoved -= InputManager_PointerMoved;
 
             // Keyboard
             m_game.InputManager.Keyboard.KeyboardDown -= Keyboard_KeyboardDown;
@@ -125,6 +132,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
             #region Setup Variables
             m_gameCamera = new UniversalCamera();
+            m_gameCamera.Position = m_gameCamera.Position + new Vector3(0.0f, 15.0f, 0.0f);
             m_gameCamera.AspectRatio = m_game.SceneManager.CurrentScene.Camera.AspectRatio;
 
             int totalUnitsInPool = (int)(m_pageParameter.maxUnitsPerPlayer * (m_team1.PlayerCount + m_team2.PlayerCount));
@@ -136,49 +144,151 @@ namespace EmpiresOfTheIV.Game.Menus
 
             if (progress != null) progress.Report(20);
 
-            #region Load Assets
-            AnimatedModel tPoseAnimModel = m_game.ResourceManager.LoadAsset(Content, typeof(AnimatedModel), "t-pose_3")  as AnimatedModel;
-            AnimatedModel walkAnimModelAnim = m_game.ResourceManager.LoadAsset(Content, typeof(AnimatedModel), "walk")   as AnimatedModel;
-            AnimationClip walkAnimClip = walkAnimModelAnim.Clips[0];
+            #region Load Empires
+            #region Unanian Empire
+            AnimatedModel unanianGroundSoldierTPose = null;
+            AnimatedModel unanianGroundSoldierAnimation = null;
+            AnimationClip unanianGroundSoldierWalkAnimClip = null;
 
-            Model factoryBaseModel = m_game.ResourceManager.LoadAsset(Content, typeof(Model), "Factory Base") as Model;
+            AnimatedModel unanianSpaceshipFighter = null;
+
+            if (m_team1.IsPlayerEmpire(EmpireType.UnanianEmpire) || m_team2.IsPlayerEmpire(EmpireType.UnanianEmpire))
+            {
+                if (GameConsts.Loading.Empire_UnanianEmpireLoaded == LoadingStatus.Loaded)
+                {
+                    unanianGroundSoldierTPose = m_game.ResourceManager.GetAsset(typeof(AnimatedModel), UnitID.UnanianSoldier.ToString() + "|" + ModelType.AnimatedModel.ToString()) as AnimatedModel;
+                    unanianGroundSoldierAnimation = m_game.ResourceManager.GetAsset(typeof(AnimatedModel), UnitID.UnanianSoldier.ToString() + "|" + ModelType.Animation.ToString()) as AnimatedModel;
+                }
+                else
+                {
+                    GameConsts.Loading.Empire_UnanianEmpireLoaded = LoadingStatus.CurrentlyLoading;
+
+                    unanianGroundSoldierTPose = m_game.ResourceManager.LoadAsset(Content, typeof(AnimatedModel), "t-pose_3", UnitID.UnanianSoldier.ToString() + "|" + ModelType.AnimatedModel.ToString()) as AnimatedModel;
+                    unanianGroundSoldierAnimation = m_game.ResourceManager.LoadAsset(Content, typeof(AnimatedModel), "walk", UnitID.UnanianSoldier.ToString() + "|" + ModelType.Animation.ToString()) as AnimatedModel;
+
+                    GameConsts.Loading.Empire_UnanianEmpireLoaded = LoadingStatus.Loaded;
+                }
+
+                unanianGroundSoldierWalkAnimClip = unanianGroundSoldierAnimation.Clips[0];
+            }
+            #endregion
+
+            #region Crescanian Confederacy
+            AnimatedModel crescanianGroundSoldierTPose = null;
+            AnimatedModel crescanianGroundSoldierAnimation = null;
+            AnimationClip crescanianGroundSoldierWalkAnimClip = null;
+
+            AnimatedModel crescanianSpaceshipFighter = null;
+
+            if (m_team1.IsPlayerEmpire(EmpireType.CrescanianConfederation) || m_team2.IsPlayerEmpire(EmpireType.CrescanianConfederation))
+            {
+                if (GameConsts.Loading.Empire_CrescanianConfederationLoaded == LoadingStatus.Loaded)
+                {
+
+                }
+                else
+                {
+                    GameConsts.Loading.Empire_CrescanianConfederationLoaded = LoadingStatus.CurrentlyLoading;
+
+                    GameConsts.Loading.Empire_CrescanianConfederationLoaded = LoadingStatus.Loaded;
+                }
+            }
+            #endregion
+
+            #region Kingdom of Edolas
+            AnimatedModel kingdomOfEdolasGroundSoldierTPose = null;
+            AnimatedModel kingdomOfEdolasGroundSoldierAnimation = null;
+            AnimationClip kingdomOfEdolasGroundSoldierWalkAnimClip = null;
+
+            AnimatedModel kingdomOfEdolasSpaceshipFighter = null;
+
+            if (m_team1.IsPlayerEmpire(EmpireType.TheKingdomOfEdolas) || m_team2.IsPlayerEmpire(EmpireType.TheKingdomOfEdolas))
+            {
+                if (GameConsts.Loading.Empire_KingdomOfEdolasLoaded == LoadingStatus.Loaded)
+                {
+
+                }
+                else
+                {
+                    GameConsts.Loading.Empire_KingdomOfEdolasLoaded = LoadingStatus.CurrentlyLoading;
+
+                    GameConsts.Loading.Empire_KingdomOfEdolasLoaded = LoadingStatus.Loaded;
+                }
+            }
+            #endregion
             #endregion
 
             if (progress != null) progress.Report(40);
 
             #region Load the Map
-            // Make the Map
             Texture2D heightMap = null;
             Texture2D mapTexture = null;
+            Texture2D mapParallax = null;
             Terrain mapTerrain = null;
+
+            Model factoryBaseModel;
 
             switch (m_pageParameter.MapName)
             {
                 case MapName.RadientFlatlands:
-                    if (GameConsts.Loading.Map_RadientFlatlands != LoadingStatus.Loaded)
+                    if (GameConsts.Loading.Map_RadientFlatlands == LoadingStatus.Loaded)
+                    {
+                        heightMap = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Flatlands HeightMap") as Texture2D;
+                        mapTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Flatlands Texture") as Texture2D;
+                        mapParallax = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Flatlands Parallax") as Texture2D;
+                        mapTerrain = m_game.PrefabManager.GetPrefab("Radient Flatlands Terrain") as Terrain;
+
+                        factoryBaseModel = m_game.ResourceManager.GetAsset(typeof(Model), "Radient Flatlands FactoryBase") as Model;
+                    }
+                    else 
                     {
                         GameConsts.Loading.Map_RadientFlatlands = LoadingStatus.CurrentlyLoading;
 
-                        heightMap = Content.Load<Texture2D>("Radient Flatlands HeightMap");
-                        mapTexture = Content.Load<Texture2D>("Radient Flatlands Texture");
+                        heightMap = m_game.ResourceManager.LoadAsset(Content, typeof(Texture2D), "Radient Flatlands HeightMap") as Texture2D;
+                        mapTexture = m_game.ResourceManager.LoadAsset(Content, typeof(Texture2D), "Radient Flatlands Texture") as Texture2D;
+                        mapParallax = Color.Black.CreateTextureFromSolidColor(graphics, 1, 1); m_game.ResourceManager.AddAsset(mapParallax, "Radient Flatlands Parallax");
+                        
                         mapTerrain = new Terrain(graphics, heightMap, mapTexture);
-                        m_map = new Map(MapName.RadientFlatlands, null, mapTerrain);
+                        m_game.PrefabManager.AddPrefab(mapTerrain, "Radient Flatlands Terrain");
+
+                        factoryBaseModel = m_game.ResourceManager.LoadAsset(Content, typeof(Model), "Factory Base", "Radient Flatlands FactoryBase") as Model;
 
                         GameConsts.Loading.Map_RadientFlatlands = LoadingStatus.Loaded;
                     }
+                    
+                    m_map = new Map(MapName.RadientFlatlands, mapParallax, mapTerrain);
+                    m_map.AddAvailableUnitType(UnitType.Soldier, UnitType.Vehicle, UnitType.Ship, UnitType.Air, UnitType.Space);
                     break;
                 case MapName.Kalia:
-                    if (GameConsts.Loading.Map_Kalia != LoadingStatus.Loaded)
+                    if (GameConsts.Loading.Map_Kalia == LoadingStatus.Loaded)
+                    {
+                        heightMap = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Kalia HeightMap") as Texture2D;
+                        mapTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Kalia Texture") as Texture2D;
+                        mapParallax = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Kalia Parallax") as Texture2D;
+
+                        mapTerrain = mapTerrain = m_game.PrefabManager.GetPrefab("Kalia Terrain") as Terrain;
+
+                        factoryBaseModel = m_game.ResourceManager.GetAsset(typeof(Model), "Kalia FactoryBase") as Model;
+                    }
+                    else
                     {
                         GameConsts.Loading.Map_Kalia = LoadingStatus.CurrentlyLoading;
 
-                        heightMap = Content.Load<Texture2D>("Radient Flatlands HeightMap");
-                        mapTexture = Content.Load<Texture2D>("Radient Flatlands Texture");
-                        mapTerrain = new Terrain(graphics, heightMap, mapTexture);
-                        m_map = new Map(MapName.RadientFlatlands, null, mapTerrain);
+                        mapTexture = Color.Black.CreateTextureFromSolidColor(graphics, 1, 1);  m_game.ResourceManager.AddAsset(mapParallax, "Kalia Texture");
+                        mapParallax = Color.Black.CreateTextureFromSolidColor(graphics, 1, 1); m_game.ResourceManager.AddAsset(mapParallax, "Kalia Parallax");
+                        
+                        mapTerrain = Terrain.CreateFlatTerrain(graphics, 256, 256, mapTexture);
+                        heightMap = mapTerrain.HeightData.HeightMap; m_game.ResourceManager.AddAsset(mapParallax, "Kalia HeightMap");
+
+                        m_game.PrefabManager.AddPrefab(mapTerrain, "Kalia Terrain");
+
+                        factoryBaseModel = m_game.ResourceManager.LoadAsset(Content, typeof(Model), "Kalia Factory Base", "Kalia FactoryBase") as Model;
 
                         GameConsts.Loading.Map_Kalia = LoadingStatus.Loaded;
                     }
+
+                    m_map = new Map(MapName.Kalia, mapParallax, mapTerrain);
+                    m_map.AddAvailableUnitType(UnitType.Space);
                     break;
             }
             #endregion
@@ -188,9 +298,9 @@ namespace EmpiresOfTheIV.Game.Menus
             #region Create all the Units in the pool
             for (int i = 0; i < totalUnitsInPool; i++)
             {
-                var unit = new Unit(unitIDManager.GetNewID());
-                unit.Model3D = tPoseAnimModel;
-                unit.Transform.Scale = new Vector3(0.007f);
+                var unit = new Unit(unitIDManager.GetNewID(), UnitType.None);
+                unit.Model3D = unanianGroundSoldierTPose;
+                unit.Transform.Scale = new Vector3(0.015f);
                 unit.Transform.Position = new Vector3((float)Consts.random.NextDouble(), -(float)Consts.random.NextDouble(), -5.50f + (float)Consts.random.NextDouble());
                 unit.CullDraw = false;
                 unit.RenderBounds = false;
@@ -198,7 +308,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 unit.Active = true;
                 unit.Health.Alive = true;
 
-                AnimationPlayer animPlayer = unit.PlayClip(walkAnimClip);
+                AnimationPlayer animPlayer = unit.PlayClip(unanianGroundSoldierWalkAnimClip);
                 animPlayer.Looping = true;
                 
                 m_inactiveUnits.Add(unit);
@@ -210,14 +320,20 @@ namespace EmpiresOfTheIV.Game.Menus
             #region Subscribe to input Events
             // Subscribe to our Events
             // Pointer
-            //m_game.InputManager.PointerDown += InputManager_PointerDown;
-            //m_game.InputManager.PointerPressed += InputManager_PointerClicked;
-            //m_game.InputManager.PointerMoved += InputManager_PointerMoved;
+            m_game.InputManager.PointerDown += InputManager_PointerDown;
+            m_game.InputManager.PointerPressed += InputManager_PointerClicked;
+            m_game.InputManager.PointerMoved += InputManager_PointerMoved;
 
             // Keyboard
             m_game.InputManager.Keyboard.KeyboardDown += Keyboard_KeyboardDown;
             m_game.InputManager.Keyboard.KeyboardPressed += Keyboard_KeyboardPressed;
             #endregion
+
+            if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer)
+                m_pausedState = GamePausedState.Unpaused;
+
+            if (progress != null) progress.Report(99);
+            await Task.Delay(TimeSpan.FromSeconds(0.5));
 
             // Send the final report and return loaded
             if (progress != null) progress.Report(100);
@@ -245,6 +361,53 @@ namespace EmpiresOfTheIV.Game.Menus
         #endregion
 
         #region Input
+        #region Pointer
+        void InputManager_PointerDown(object sender, Anarian.Events.PointerPressedEventArgs e)
+        {
+            //Debug.WriteLine("{0}, Pressed", e.ToString());
+        }
+
+        public Ray? currentRay;
+        public Vector3? rayPosOnTerrain;
+        void InputManager_PointerClicked(object sender, Anarian.Events.PointerPressedEventArgs e)
+        {
+            //Debug.WriteLine("{0}, Pressed", e.ToString());
+
+            if (e.Pointer == PointerPress.LeftMouseButton ||
+                e.Pointer == PointerPress.Touch)
+            {
+                UniversalCamera camera = m_gameCamera;
+                Ray ray = camera.GetMouseRay(
+                    e.Position,
+                    m_game.Graphics.GraphicsDevice.Viewport
+                    );
+
+                bool intersects = m_inactiveUnits[0].CheckRayIntersection(ray);
+                Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
+
+                currentRay = ray;
+
+                // Get the point on the terrain
+                rayPosOnTerrain = m_map.Terrain.Intersects(ray);
+            }
+            if (e.Pointer == PointerPress.MiddleMouseButton)
+            {
+                Debug.WriteLine("Middle Mouse Pressed");
+            }
+            if (e.Pointer == PointerPress.RightMouseButton)
+            {
+                m_inactiveUnits[0].AnimationState.AnimationPlayer.Paused = !m_inactiveUnits[0].AnimationState.AnimationPlayer.Paused;
+            }
+        }
+
+        void InputManager_PointerMoved(object sender, Anarian.Events.PointerMovedEventArgs e)
+        {
+            //Debug.WriteLine("{0}, Pressed", e.ToString());
+
+        }
+        #endregion
+
+        #region Keyboard
         void Keyboard_KeyboardDown(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
             //Debug.WriteLine("Keyboard: {0}, Held Down", e.KeyClicked.ToString());
@@ -290,19 +453,17 @@ namespace EmpiresOfTheIV.Game.Menus
             }
         }
         #endregion
-
-        #region Interface Implimentations
-        void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics); }
         #endregion
 
+        #region Update
+        void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         public override void Update(GameTime gameTime)
         {
             if (m_currentLoadingPercentage < 100) { base.Update(gameTime); return; }
             // Since we passed the check, that means that the game is fully loaded
 
             // Update the Camera
-            m_gameCamera.Update(gameTime);
+            m_gameCamera.Update(null);
 
             m_map.Update(gameTime);
             foreach (var i in m_inactiveUnits)
@@ -313,40 +474,43 @@ namespace EmpiresOfTheIV.Game.Menus
             // Update everything else
             switch (m_pausedState)
             {
-                case GamePausedState.Paused:
-                    break;
                 case GamePausedState.Unpaused:
                     break;
-                case GamePausedState.WaitingForData:
-                    break;
-                default:
-                    break;
+                case GamePausedState.Paused:            m_overlay.ApplyEffect(gameTime); break;
+                case GamePausedState.WaitingForData:    m_overlay.ApplyEffect(gameTime); break;
             }
 
-            //// Regular Updates
-            //if (m_game.GameInputManager.rayPosOnTerrain.HasValue)
-            //{
-            //    m_game.SceneManager.CurrentScene.SceneNode.GetChild(2).MoveToPosition(gameTime, m_game.GameInputManager.rayPosOnTerrain.Value);
-            //}
-            //
-            //float height = ((Terrain)m_game.SceneManager.CurrentScene.SceneNode.GetChild(1).GameObject).GetHeightAtPoint(m_game.SceneManager.CurrentScene.SceneNode.GetChild(2).Position);
-            //if (height != float.MaxValue)
-            //{
-            //    Vector3 pos = m_game.SceneManager.CurrentScene.SceneNode.GetChild(2).Position;
-            //    pos.Y = height;
-            //    m_game.SceneManager.CurrentScene.SceneNode.GetChild(2).Position = pos;
-            //}
-            //
-            //((UniversalCamera)m_game.SceneManager.CurrentScene.Camera).WorldPositionToChase = m_game.SceneManager.CurrentScene.SceneNode.GetChild(2).WorldMatrix;
+            // Regular Updates
+            if (rayPosOnTerrain.HasValue)
+            {
+                m_inactiveUnits[0].Transform.MoveToPosition(gameTime, rayPosOnTerrain.Value);
+            }
+
+            float height = m_map.Terrain.GetHeightAtPoint(m_inactiveUnits[0].Transform.Position);
+            if (height != float.MaxValue)
+            {
+                Vector3 pos = m_inactiveUnits[0].Transform.Position;
+                pos.Y = height;
+                m_inactiveUnits[0].Transform.Position = pos;
+            }
+            
+            m_gameCamera.WorldPositionToChase = m_inactiveUnits[0].Transform.WorldMatrix;
 
             //-- Update the Menu
             base.Update(gameTime);
         }
+        #endregion
 
+        #region Draw
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics); }
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
-            if (m_currentLoadingPercentage < 100) { DrawLoadingMenu(gameTime, spriteBatch, graphics); base.Draw(gameTime, spriteBatch, graphics); return; }
+            if (m_currentLoadingPercentage < 100) { 
+                DrawLoadingMenu(gameTime, spriteBatch, graphics);
+                base.Draw(gameTime, spriteBatch, graphics); return;
+            }
 
+            // Draw The Map
             m_map.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
             foreach (var i in m_inactiveUnits)
             {
@@ -355,14 +519,10 @@ namespace EmpiresOfTheIV.Game.Menus
 
             switch (m_pausedState)
             {
-                case GamePausedState.Paused:
-                    break;
                 case GamePausedState.Unpaused:
                     break;
-                case GamePausedState.WaitingForData:
-                    break;
-                default:
-                    break;
+                case GamePausedState.Paused:            DrawPaused(gameTime, spriteBatch, graphics);           break;                             
+                case GamePausedState.WaitingForData:    DrawWaitingForData(gameTime, spriteBatch, graphics);   break;
             }
 
             base.Draw(gameTime, spriteBatch, graphics);
@@ -370,7 +530,48 @@ namespace EmpiresOfTheIV.Game.Menus
 
         public void DrawLoadingMenu(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
-            graphics.Clear(Color.Red);
+            //graphics.Clear(Color.Black);
+            var screenRect = AnarianConsts.ScreenRectangle;
+            var centerOfScreen = new Vector2(screenRect.Width / 2.0f, screenRect.Height / 2.0f);
+            
+            spriteBatch.Begin();
+            //spriteBatch.Draw(m_mapPreview, AnarianConsts.ScreenRectangle, Color.White);
+            spriteBatch.End();
+
+            // Loading Outline
+            var outlineRect = new Rectangle(0,
+                                      (int)(screenRect.Height * 0.75),
+                                            screenRect.Width,
+                                      (int)(screenRect.Height * 0.10)); 
+            PrimitiveHelper2D.DrawRect(spriteBatch, Color.Wheat, outlineRect);
+
+            // Loading Bar
+            int distanceFromTopBottom = 5;
+            int distanceFromLeftRight = 0;
+            var loadingBar = new Rectangle(0                  + distanceFromLeftRight,
+                                           outlineRect.Y      + distanceFromTopBottom,
+                                           m_currentLoadingPercentage * ((outlineRect.Width - (distanceFromLeftRight * 2)) / 100) ,
+                                           outlineRect.Height - (distanceFromTopBottom * 2));
+            PrimitiveHelper2D.DrawRect(spriteBatch, Color.ForestGreen, loadingBar);
+
+            // Text
+            var spriteFont = m_game.ResourceManager.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont") as SpriteFont;
+            
+            spriteBatch.Begin();
+            spriteBatch.DrawString(spriteFont, "Loading", new Vector2(centerOfScreen.X - 50, screenRect.Height * 0.15f), Color.Wheat);
+            spriteBatch.DrawString(spriteFont, m_currentLoadingPercentage + "%", new Vector2(outlineRect.Width - 100, outlineRect.Y - 50), Color.Wheat);
+            spriteBatch.End();
         }
+
+        public void DrawPaused(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
+        {
+            m_overlay.Draw(gameTime, spriteBatch);
+        }
+
+        public void DrawWaitingForData(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
+        {
+            m_overlay.Draw(gameTime, spriteBatch);
+        }
+        #endregion
     }
 }

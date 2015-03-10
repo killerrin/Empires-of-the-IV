@@ -9,6 +9,11 @@ namespace EmpiresOfTheIV.Game.Enumerators
         None,
         Singleplayer,
         BluetoothMultiplayer,
-        LANMultiplayer
+        LANMultiplayer,
+
+        BluetoothHost,
+        BluetoothClient,
+        LANHost,
+        LANClient
     }
 }

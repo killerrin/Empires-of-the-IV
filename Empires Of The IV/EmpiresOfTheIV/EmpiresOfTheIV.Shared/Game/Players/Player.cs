@@ -1,6 +1,7 @@
 ﻿using Anarian.DataStructures;
 using Anarian.Interfaces;
 using EmpiresOfTheIV.Game.Enumerators;
+using KillerrinStudiosToolkit.Enumerators;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -14,6 +15,8 @@ namespace EmpiresOfTheIV.Game.Players
         public uint ID { get; set; }
         public string Name { get; set; }
         public PlayerType PlayerType { get; set; }
+
+        public ClientOSType OperatingSystem { get; set; }
 
         public EmpireType EmpireType { get; set; }
 

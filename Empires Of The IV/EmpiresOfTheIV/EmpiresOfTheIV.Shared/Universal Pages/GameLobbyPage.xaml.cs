@@ -37,7 +37,7 @@ namespace EmpiresOfTheIV
     /// </summary>
     public sealed partial class GameLobbyPage : Page
     {
-        string pageparam = "";
+        GameConnectionType pageparam;
 
         ChatManager chatManager;
 
@@ -73,7 +73,8 @@ namespace EmpiresOfTheIV
             Consts.Game.StateManager.OnBackButtonPressed += StateManager_OnBackButtonPressed;
             Consts.Game.StateManager.HandleBackButtonPressed = false;
 
-            pageparam = e.Parameter as string;
+            GameConnectionType? connType = e.Parameter as GameConnectionType?;
+            pageparam = connType.Value;
 
             base.OnNavigatedTo(e);
         }
@@ -145,9 +146,9 @@ namespace EmpiresOfTheIV
         {
             switch (pageparam)
             {
-                case "Singleplayer":    SetHostAbilities();     break;
-                case "HostLan":         SetHostAbilities();     break;
-                case "ClientLan":       SetClientAbilities();   break;
+                case GameConnectionType.Singleplayer:    SetHostAbilities();     break;
+                case GameConnectionType.LANHost:         SetHostAbilities();     break;
+                case GameConnectionType.LANClient: SetClientAbilities(); break;
                 default:
                     break;
             }
@@ -264,13 +265,19 @@ namespace EmpiresOfTheIV
                     // Create and Send the Teams
                     CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                         {
+                            int ostype = Convert.ToInt32(splitCommands[0]);
+                            ClientOSType opponentOSType = (ClientOSType)ostype;
+                            uint playerID = playerIDManager.GetNewID();
+
                             if (team1.PlayerCount > team2.PlayerCount) {
                                 Debug.WriteLine("Player added to Team2");
-                                team2.AddToTeam(PlayerType.Human, playerIDManager.GetNewID(), splitCommands[1]);
+                                team2.AddToTeam(PlayerType.Human, playerID, splitCommands[1]);
+                                team2.GetPlayer(playerID).OperatingSystem = opponentOSType; 
                             }
                             else { //if (team1.PlayerCount == team2.PlayerCount) 
                                 Debug.WriteLine("Player added to Team1");
-                                team1.AddToTeam(PlayerType.Human, playerIDManager.GetNewID(), splitCommands[1]);
+                                team1.AddToTeam(PlayerType.Human, playerID, splitCommands[1]);
+                                team1.GetPlayer(playerID).OperatingSystem = opponentOSType; 
                             }
 
                             team1ListBox.ItemsSource = null;
@@ -567,6 +574,8 @@ namespace EmpiresOfTheIV
                     {
                         InGamePageParameter pageParameter = new InGamePageParameter();
 
+                        pageParameter.GameConnectionType = pageparam;
+
                         switch (gameModeSelector.SelectedIndex)
                         {
                             case 0:
@@ -609,7 +618,7 @@ namespace EmpiresOfTheIV
             if (team1.Exists(playerID)) return;
 
             if (Consts.Game.NetworkManager.HostSettings == HostType.Client &&
-                pageparam != "Singleplayer")
+                pageparam != GameConnectionType.Singleplayer)
             {
                 SendJoinTeam1();
             }
@@ -639,7 +648,7 @@ namespace EmpiresOfTheIV
             if (team2.Exists(playerID)) return;
             
             if (Consts.Game.NetworkManager.HostSettings == HostType.Client && 
-                pageparam != "Singleplayer")
+                pageparam != GameConnectionType.Singleplayer)
             {
                 SendJoinTeam2();
             }
@@ -660,8 +669,6 @@ namespace EmpiresOfTheIV
                     SendTeamsChanged();
                 }
             }
-
-
         }
         
 
@@ -725,7 +732,7 @@ namespace EmpiresOfTheIV
             gameModeSelector.IsEnabled = false;
             gameStarting = true;
 
-            if (pageparam == "Singleplayer")
+            if (pageparam == GameConnectionType.Singleplayer)
             {
                 StartGame();
                 return;
