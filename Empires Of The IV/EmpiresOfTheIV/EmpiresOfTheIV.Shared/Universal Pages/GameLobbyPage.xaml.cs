@@ -152,6 +152,23 @@ namespace EmpiresOfTheIV
                 default:
                     break;
             }
+
+            // Get off of the starting value of "random"
+            try
+            {
+                if (gameModeSelector.SelectedIndex == 0)
+                {
+                    gameModeSelector.SelectedItem = null;
+                    gameModeSelector.SelectedIndex = 1;
+                }
+
+                if (mapSelector.SelectedIndex == 0)
+                {
+                    mapSelector.SelectedItem = null;
+                    mapSelector.SelectedIndex = 1;
+                }
+            }
+            catch (Exception) { }
         }
 
         private void SetHostAbilities()
@@ -720,10 +737,7 @@ namespace EmpiresOfTheIV
                 returnEarly = true;
             }
 
-            if (returnEarly)
-            {
-                return;
-            }
+            if (returnEarly) { return; }
 
             // Set the controls
             gameStartButton.Content = "Cancel";
