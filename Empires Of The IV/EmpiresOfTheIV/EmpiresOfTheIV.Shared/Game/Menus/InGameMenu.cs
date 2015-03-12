@@ -273,17 +273,34 @@ namespace EmpiresOfTheIV.Game.Menus
 
                     #region Create Factories
                     factoryBases = new FactoryBase[2];
+
+                    // Factory 1
                     factoryBases[0] = new FactoryBase(factoryBaseIDManager.GetNewID());
                     factoryBases[0].Base = new StaticGameObject();
-                    factoryBases[0].Base.Model3D = factoryBaseModel;
+                    factoryBases[0].Base.Transform.Position = new Vector3(-70.0f, 0.0f, -10.0f);
                     factoryBases[0].Base.Transform.Scale = new Vector3(0.05f);
+                    factoryBases[0].Base.Transform.Rotation = Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(-90.0f), 0.0f, 0.0f);
+                    factoryBases[0].Base.Transform.CreateAllMatrices();
+
+                    factoryBases[0].Base.Model3D = factoryBaseModel;
+
                     factoryBases[0].Base.Active = true;
                     factoryBases[0].Base.CullDraw = false;
-                    factoryBases[0].Base.RenderBounds = false;
+                    factoryBases[0].Base.RenderBounds = true;
 
+                    // Factory 2
                     factoryBases[1] = new FactoryBase(factoryBaseIDManager.GetNewID());
-                    //factoryBases[1].Base
+                    factoryBases[1].Base = new StaticGameObject();
+                    factoryBases[1].Base.Transform.Position = new Vector3(70.0f, 0.0f, 10.0f);
+                    factoryBases[1].Base.Transform.Scale = new Vector3(0.05f);
+                    factoryBases[1].Base.Transform.Rotation = Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(90.0f), 0.0f, 0.0f);
+                    factoryBases[1].Base.Transform.CreateAllMatrices();
 
+                    factoryBases[1].Base.Model3D = factoryBaseModel;
+
+                    factoryBases[1].Base.Active = true;
+                    factoryBases[1].Base.CullDraw = false;
+                    factoryBases[1].Base.RenderBounds = false;
                     #endregion
 
                     // Make the map
@@ -343,11 +360,14 @@ namespace EmpiresOfTheIV.Game.Menus
             for (int i = 0; i < totalUnitsInPool; i++)
             {
                 var unit = new Unit(unitIDManager.GetNewID(), UnitType.None);
-                unit.Model3D = unanianGroundSoldierTPose;
                 unit.Transform.Scale = new Vector3(0.015f);
                 unit.Transform.Position = new Vector3((float)Consts.random.NextDouble(), -(float)Consts.random.NextDouble(), -5.50f + (float)Consts.random.NextDouble());
+                unit.Transform.CreateAllMatrices();
+
+                unit.Model3D = unanianGroundSoldierTPose;
+
                 unit.CullDraw = false;
-                unit.RenderBounds = false;
+                unit.RenderBounds = true;
 
                 unit.Active = true;
                 unit.Health.Alive = true;
@@ -438,7 +458,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     m_game.Graphics.GraphicsDevice.Viewport
                     );
 
-                bool intersects = m_inactiveUnits[0].CheckRayIntersection(ray);
+                bool intersects = m_inactiveUnits[unitIndex].CheckRayIntersection(ray);
                 Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
 
                 currentRay = ray;
@@ -452,7 +472,7 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             if (e.Pointer == PointerPress.RightMouseButton)
             {
-                m_inactiveUnits[0].AnimationState.AnimationPlayer.Paused = !m_inactiveUnits[0].AnimationState.AnimationPlayer.Paused;
+                m_inactiveUnits[0].AnimationState.AnimationPlayer.Paused = !m_inactiveUnits[unitIndex].AnimationState.AnimationPlayer.Paused;
             }
         }
 
@@ -506,8 +526,23 @@ namespace EmpiresOfTheIV.Game.Menus
                 case Keys.Space:
                     uniCam.SwitchCameraMode();
                     break;
+                case Keys.Add: 
+                    unitIndex++; 
+                    currentRay = null;
+                    rayPosOnTerrain = null;
+                    break;
+                case Keys.Subtract:
+                    unitIndex--; 
+                    currentRay = null;
+                    rayPosOnTerrain = null;
+                    break;
             }
+
+            if (unitIndex >= m_inactiveUnits.Count) unitIndex = 0;
+            if (unitIndex <= -1) unitIndex = m_inactiveUnits.Count - 1;
         }
+
+        public int unitIndex = 0;
         #endregion
         #endregion
 
@@ -539,18 +574,18 @@ namespace EmpiresOfTheIV.Game.Menus
             // Regular Updates
             if (rayPosOnTerrain.HasValue)
             {
-                m_inactiveUnits[0].Transform.MoveToPosition(gameTime, rayPosOnTerrain.Value);
+                m_inactiveUnits[unitIndex].Transform.MoveToPosition(gameTime, rayPosOnTerrain.Value);
             }
 
-            float height = m_map.Terrain.GetHeightAtPoint(m_inactiveUnits[0].Transform.Position);
+            float height = m_map.Terrain.GetHeightAtPoint(m_inactiveUnits[unitIndex].Transform.Position);
             if (height != float.MaxValue)
             {
-                Vector3 pos = m_inactiveUnits[0].Transform.Position;
+                Vector3 pos = m_inactiveUnits[unitIndex].Transform.Position;
                 pos.Y = height;
-                m_inactiveUnits[0].Transform.Position = pos;
+                m_inactiveUnits[unitIndex].Transform.Position = pos;
             }
-            
-            m_gameCamera.WorldPositionToChase = m_inactiveUnits[0].Transform.WorldMatrix;
+
+            m_gameCamera.WorldPositionToChase = m_inactiveUnits[unitIndex].Transform.WorldMatrix;
 
             //-- Update the Menu
             base.Update(gameTime);

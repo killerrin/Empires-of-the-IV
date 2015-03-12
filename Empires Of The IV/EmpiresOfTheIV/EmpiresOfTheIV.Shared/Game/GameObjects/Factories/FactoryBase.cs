@@ -29,18 +29,27 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
 
         public FactoryBaseRayIntersection CheckRayIntersection(Ray ray)
         {
+            
             bool factoryIntersection = false;
             bool factoryBaseIntersection = false;
 
             // Check the collision off of the Factory
             if (Factory != null)
+            {
                 factoryIntersection = Factory.CheckRayIntersection(ray);
-            if (factoryIntersection) return FactoryBaseRayIntersection.Factory;
-            
+                factoryBaseIntersection = Base.CheckRayIntersection(ray);
+
+                if (factoryIntersection || factoryBaseIntersection) return FactoryBaseRayIntersection.Factory;
+                return FactoryBaseRayIntersection.None;
+            }
+                
+            // There is no factory on the base
             // Check the collison off of the Factory Base
             if (Base != null)
+            {
                 factoryBaseIntersection = Base.CheckRayIntersection(ray);
-            if (factoryBaseIntersection) return FactoryBaseRayIntersection.FactoryBase;
+                if (factoryBaseIntersection) return FactoryBaseRayIntersection.FactoryBase;
+            }
 
             // No collision detected
             return FactoryBaseRayIntersection.None; 
