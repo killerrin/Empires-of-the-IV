@@ -274,6 +274,15 @@ namespace EmpiresOfTheIV.Game.Menus
                     #region Create Factories
                     factoryBases = new FactoryBase[2];
 
+                    // Because the Meshes Bounding Sphere is messed up, we fix it here
+                    foreach (ModelMesh mesh in factoryBaseModel.Meshes)
+                    {
+                        var bs = mesh.BoundingSphere;
+                        bs.Radius = 230.0f;
+                        mesh.BoundingSphere = bs;
+                    }
+
+
                     // Factory 1
                     factoryBases[0] = new FactoryBase(factoryBaseIDManager.GetNewID());
                     factoryBases[0].Base = new StaticGameObject();
@@ -300,7 +309,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
                     factoryBases[1].Base.Active = true;
                     factoryBases[1].Base.CullDraw = false;
-                    factoryBases[1].Base.RenderBounds = false;
+                    factoryBases[1].Base.RenderBounds = true;
                     #endregion
 
                     // Make the map
