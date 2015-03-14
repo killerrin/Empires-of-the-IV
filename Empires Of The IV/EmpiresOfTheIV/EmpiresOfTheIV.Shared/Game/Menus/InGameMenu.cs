@@ -12,6 +12,7 @@ using Anarian.Interfaces;
 using EmpiresOfTheIV.Game.Enumerators;
 using EmpiresOfTheIV.Game.GameObjects;
 using EmpiresOfTheIV.Game.GameObjects.Factories;
+using EmpiresOfTheIV.Game.Loading;
 using EmpiresOfTheIV.Game.Menus.PageParameters;
 using EmpiresOfTheIV.Game.Players;
 using KillerrinStudiosToolkit.Events;
@@ -38,8 +39,8 @@ namespace EmpiresOfTheIV.Game.Menus
         Overlay m_overlay;
 
         #region Loading
-        private int m_currentLoadingPercentage;
-        Progress<int> m_loadingProgress;
+        LoadingProgress m_currentLoadingProgress;
+        Progress<LoadingProgress> m_loadingProgress;
         Task<LoadingStatus> m_loadingContentTask;
         #endregion
 
@@ -65,8 +66,8 @@ namespace EmpiresOfTheIV.Game.Menus
             m_networkManager = m_game.NetworkManager;
             m_pausedState = GamePausedState.WaitingForData;
 
-            m_currentLoadingPercentage = 0;
-            m_loadingProgress = new Progress<int>();
+            m_currentLoadingProgress = new LoadingProgress(0, "");
+            m_loadingProgress = new Progress<LoadingProgress>();
             m_loadingProgress.ProgressChanged += m_loadingProgress_ProgressChanged;
 
             m_overlay = new Overlay(m_game.GraphicsDevice, Color.Black);
@@ -134,9 +135,9 @@ namespace EmpiresOfTheIV.Game.Menus
         }
 
         #region Loading
-        private async Task<LoadingStatus> LoadContent(IProgress<int> progress, ContentManager Content, GraphicsDevice graphics)
+        private async Task<LoadingStatus> LoadContent(IProgress<LoadingProgress> progress, ContentManager Content, GraphicsDevice graphics)
         {
-            if (progress != null) progress.Report(0);
+            if (progress != null) progress.Report(new LoadingProgress(0, "Setting up Map"));
 
             #region Setup Variables
             m_gameCamera = new UniversalCamera();
@@ -151,7 +152,7 @@ namespace EmpiresOfTheIV.Game.Menus
             IDManager factoryBaseIDManager = new IDManager();
             #endregion
 
-            if (progress != null) progress.Report(20);
+            if (progress != null) progress.Report(new LoadingProgress(20, "Loading Empires"));
 
             #region Load Empires
             #region Unanian Empire
@@ -227,7 +228,7 @@ namespace EmpiresOfTheIV.Game.Menus
             #endregion
             #endregion
 
-            if (progress != null) progress.Report(40);
+            if (progress != null) progress.Report(new LoadingProgress(40, "Loading Map"));
 
             #region Load the Map
             Texture2D heightMap = null;
@@ -256,8 +257,8 @@ namespace EmpiresOfTheIV.Game.Menus
                     {
                         GameConsts.Loading.Map_RadientFlatlands = LoadingStatus.CurrentlyLoading;
 
-                        heightMap = m_game.ResourceManager.LoadAsset(Content, typeof(Texture2D), "Radient Flatlands HeightMap") as Texture2D;
-                        mapTexture = m_game.ResourceManager.LoadAsset(Content, typeof(Texture2D), "Radient Flatlands Texture") as Texture2D;
+                        heightMap = m_game.ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Maps/Radient Flatlands HeightMap") as Texture2D;
+                        mapTexture = m_game.ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Maps/Radient Flatlands Texture") as Texture2D;
                         mapParallax = Color.Black.CreateTextureFromSolidColor(graphics, 1, 1); m_game.ResourceManager.AddAsset(mapParallax, "Radient Flatlands Parallax");
                         
                         mapTerrain = new Terrain(graphics, heightMap, mapTexture);
@@ -269,7 +270,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     }
                     #endregion
 
-                    if (progress != null) progress.Report(50);
+                    if (progress != null) progress.Report(new LoadingProgress(50, "Creating Factories"));
 
                     #region Create Factories
                     factoryBases = new FactoryBase[2];
@@ -349,7 +350,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     }
 #endregion
 
-                    if (progress != null) progress.Report(50);
+                    if (progress != null) progress.Report(new LoadingProgress(50, "Creating Factories"));
 
                     #region Create Factories
                     factoryBases = new FactoryBase[2];
@@ -363,7 +364,7 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             #endregion
 
-            if (progress != null) progress.Report(60);
+            if (progress != null) progress.Report(new LoadingProgress(60, "Setting up Units"));
 
             #region Create all the Units in the pool
             for (int i = 0; i < totalUnitsInPool; i++)
@@ -388,7 +389,7 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             #endregion
 
-            if (progress != null) progress.Report(80);
+            if (progress != null) progress.Report(new LoadingProgress(80, "Preforming Technical Magic"));
 
             #region Subscribe to input Events
             // Subscribe to our Events
@@ -405,7 +406,7 @@ namespace EmpiresOfTheIV.Game.Menus
             if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer)
                 m_pausedState = GamePausedState.Unpaused;
 
-            if (progress != null) progress.Report(99);
+            if (progress != null) progress.Report(new LoadingProgress(99, "Taking out Ninjas"));
 
             #region Set Default Player Values
             foreach (var player in m_team1.Players)
@@ -421,13 +422,13 @@ namespace EmpiresOfTheIV.Game.Menus
             await Task.Delay(TimeSpan.FromSeconds(0.5));
 
             // Send the final report and return loaded
-            if (progress != null) progress.Report(100);
+            if (progress != null) progress.Report(new LoadingProgress(100, "Ready to Play!"));
             return LoadingStatus.Loaded;
         }
-        void m_loadingProgress_ProgressChanged(object sender, int e)
+        void m_loadingProgress_ProgressChanged(object sender, LoadingProgress e)
         {
-            Debug.WriteLine("m_loadingProgress_ProgressChanged: " + e);
-            m_currentLoadingPercentage = e;
+            Debug.WriteLine("m_loadingProgress_ProgressChanged: " + e.ToString());
+            m_currentLoadingProgress = e;
         }
         #endregion
 
@@ -559,7 +560,7 @@ namespace EmpiresOfTheIV.Game.Menus
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         public override void Update(GameTime gameTime)
         {
-            if (m_currentLoadingPercentage < 100) { base.Update(gameTime); return; }
+            if (m_currentLoadingProgress.Progress < 100) { base.Update(gameTime); return; }
             // Since we passed the check, that means that the game is fully loaded
 
             // Update the Camera
@@ -605,7 +606,7 @@ namespace EmpiresOfTheIV.Game.Menus
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics); }
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
-            if (m_currentLoadingPercentage < 100) { 
+            if (m_currentLoadingProgress.Progress < 100) { 
                 DrawLoadingMenu(gameTime, spriteBatch, graphics);
                 base.Draw(gameTime, spriteBatch, graphics); return;
             }
@@ -650,16 +651,18 @@ namespace EmpiresOfTheIV.Game.Menus
             int distanceFromLeftRight = 0;
             var loadingBar = new Rectangle(0                  + distanceFromLeftRight,
                                            outlineRect.Y      + distanceFromTopBottom,
-                                           m_currentLoadingPercentage * ((outlineRect.Width - (distanceFromLeftRight * 2)) / 100) ,
+                                           m_currentLoadingProgress.Progress * ((outlineRect.Width - (distanceFromLeftRight * 2)) / 100) ,
                                            outlineRect.Height - (distanceFromTopBottom * 2));
             PrimitiveHelper2D.DrawRect(spriteBatch, Color.ForestGreen, loadingBar);
 
             // Text
             var spriteFont = m_game.ResourceManager.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont") as SpriteFont;
-            
+
             spriteBatch.Begin();
             spriteBatch.DrawString(spriteFont, "Loading", new Vector2(centerOfScreen.X - 50, screenRect.Height * 0.15f), Color.Wheat);
-            spriteBatch.DrawString(spriteFont, m_currentLoadingPercentage + "%", new Vector2(outlineRect.Width - 100, outlineRect.Y - 50), Color.Wheat);
+
+            spriteBatch.DrawString(spriteFont, m_currentLoadingProgress.Status, new Vector2(25, outlineRect.Y - 50), Color.Wheat);
+            spriteBatch.DrawString(spriteFont, m_currentLoadingProgress.Progress + "%", new Vector2(outlineRect.Width - 100, outlineRect.Y - 50), Color.Wheat);
             spriteBatch.End();
         }
 

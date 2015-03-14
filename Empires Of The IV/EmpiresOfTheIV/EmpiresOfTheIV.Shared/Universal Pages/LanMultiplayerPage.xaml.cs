@@ -76,9 +76,10 @@ namespace EmpiresOfTheIV
         private async void HostButton_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Disable any controls here
+            XamlControlHelper.ChangeProgressIndicator(progressRing, false);
             hostButton.IsEnabled = false;
-            //connectButton.IsEnabled = false;
-            //opponentsIPTextBox.IsEnabled = false;
+            connectButton.IsEnabled = false;
+            opponentsIPTextBox.IsEnabled = false;
 
             // Start Listening
             Consts.Game.NetworkManager.StartListening(NetworkType.LAN);

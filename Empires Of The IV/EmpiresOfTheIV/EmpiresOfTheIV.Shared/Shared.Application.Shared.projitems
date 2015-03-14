@@ -34,6 +34,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Map.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Planet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GameMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Loading\LoadingProgress.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\BluetoothMultiplayerMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\GameLobbyMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\GameOverMenu.cs" />
@@ -130,6 +131,30 @@
     <Content Include="$(MSBuildThisFileDirectory)Assets\Space and Astronomy.ttf" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\stop.png" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\UnlockWhite.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\KillerrinStudiosLogo.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Maps\heightmap.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Maps\Radient Flatlands HeightMap.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Maps\Radient Flatlands Texture.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Planet\Hope Texture.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Planet\Lura Texture.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Planet\Tyril Texture.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Planet\Yol Texture.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)Styles\ChatStyles.xaml">
@@ -205,21 +230,6 @@
     <Content Include="$(MSBuildThisFileDirectory)Content\Factory Base.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="$(MSBuildThisFileDirectory)Content\Radient Flatlands Texture.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(MSBuildThisFileDirectory)Content\heightmap.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(MSBuildThisFileDirectory)Content\Hope Texture.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(MSBuildThisFileDirectory)Content\KillerrinStudiosLogo.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(MSBuildThisFileDirectory)Content\Lura Texture.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="$(MSBuildThisFileDirectory)Content\Soldier_Body_diffuse_0.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -247,13 +257,7 @@
     <Content Include="$(MSBuildThisFileDirectory)Content\t-pose_3.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="$(MSBuildThisFileDirectory)Content\Tyril Texture.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="$(MSBuildThisFileDirectory)Content\walk.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(MSBuildThisFileDirectory)Content\Yol Texture.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -263,11 +267,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)Content\Radient Flatlands HeightMap.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Content\Models\" />
     <Folder Include="$(MSBuildThisFileDirectory)Content\Sound Effects\" />
     <Folder Include="$(MSBuildThisFileDirectory)Content\Songs\" />
   </ItemGroup>

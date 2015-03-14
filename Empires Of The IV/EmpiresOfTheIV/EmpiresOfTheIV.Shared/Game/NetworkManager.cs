@@ -56,12 +56,15 @@ namespace EmpiresOfTheIV.Game
             OnMessageRecieved += NetworkManager_OnMessageRecieved;
 
             // Setup the Helpers
+            // LAN
             LanHelper = new LANHelper(UniqueNetworkGUID);
             LanHelper.OnTCPConnected += LanHelper_OnTCPConnected;
             LanHelper.OnTCPDisconnected += LanHelper_OnTCPDisconnected;
+
             LanHelper.TCPMessageRecieved += LanHelper_TCPMessageRecieved;
             LanHelper.UDPMessageRecieved += LanHelper_UDPMessageRecieved;
 
+            // Bluetooth
             //BluetoothConnectionHelper = new BluetoothConnectionHelper(UniqueNetworkGUID.ToString());
             //BluetoothConnectionHelper.ConnectCrossPlatform = true;
             //BluetoothConnectionHelper.ConnectionStatusChanged += BluetoothConnectionHelper_ConnectionStatusChanged;
@@ -166,7 +169,7 @@ namespace EmpiresOfTheIV.Game
             }
         }
 
-        public void Disconnect()
+        public void Disconnect(bool callDisconnectedEvent = true)
         {
             if (NetworkType == NetworkType.LAN)
             {
@@ -183,7 +186,8 @@ namespace EmpiresOfTheIV.Game
             CurrentNetworkStage = NetworkStage.None;
             IsConnected = false;
 
-            LanHelper_OnTCPDisconnected(this, null);
+            if (callDisconnectedEvent)
+                LanHelper_OnTCPDisconnected(this, null);
         }
 
         void LanHelper_OnTCPConnected(object sender, OnConnectedEventArgs e)
@@ -196,7 +200,7 @@ namespace EmpiresOfTheIV.Game
 
         void LanHelper_OnTCPDisconnected(object sender, EventArgs e)
         {
-            IsConnected = false;
+            Disconnect(false);
 
             if (OnDisconnected != null)
                 OnDisconnected(this, null);
@@ -219,62 +223,9 @@ namespace EmpiresOfTheIV.Game
         }
         #endregion
 
-        /// Used to get the initial handshake
         void NetworkManager_OnMessageRecieved(object sender, ReceivedMessageEventArgs e)
         {
-            //Debug.WriteLine("Message Recieved" + e.Message);
-            //if (IsConnected) return;
-            //Debug.WriteLine("Is Connected");
-            //
-            //if (HostSettings == HostType.Client)
-            //{
-            //    Debug.WriteLine("Client");
-            //
-            //    if (e.NetworkType == NetworkType.LAN)
-            //    {
-            //        Debug.WriteLine("LAN");
-            //
-            //        if (e.Message == StaticNetworkMessages.AttemptingToConnect)
-            //        {
-            //            Debug.WriteLine("Attempt to Connect Recieved: Sending Acknoledgement");
-            //            SendMessage(StaticNetworkMessages.Acknowledge);
-            //        }
-            //        else if (e.Message == StaticNetworkMessages.Acknowledge)
-            //        {
-            //            Debug.WriteLine("Connected To: " + e.NetworkConnectionEndpoint.Value.ToString());
-            //            IsConnected = true;
-            //        }
-            //    }
-            //
-            //    // Switch the Lobby
-            //    CurrentNetworkStage = NetworkStage.InLobby;
-            //}
-            //else if (HostSettings == HostType.Host)
-            //{
-            //    Debug.WriteLine("Host");
-            //
-            //    if (e.NetworkType == NetworkType.LAN)
-            //    {
-            //        Debug.WriteLine("LAN");
-            //
-            //        if (e.Message == StaticNetworkMessages.AttemptingToConnect)
-            //        {
-            //            Debug.WriteLine("Connection Request at: " + e.NetworkConnectionEndpoint.Value.ToString() + " - Attempting to Connect ... :");
-            //            Connect(NetworkType.LAN, e.NetworkConnectionEndpoint.Value.HostNameAsString, true);
-            //        }
-            //        else if (e.Message == StaticNetworkMessages.Acknowledge)
-            //        {
-            //            Debug.WriteLine("Connected to: " + e.NetworkConnectionEndpoint.Value.ToString());
-            //            SendMessage(StaticNetworkMessages.Acknowledge);
-            //            IsConnected = true;
-            //        }
-            //    }
-            //}
-            //else Debug.WriteLine("Else?");
-            //
-            //
-            //if (IsConnected && OnConnected != null)
-            //    OnConnected(this, new OnConnectedEventArgs(e.NetworkConnectionEndpoint, e.NetworkType));
+
         }
     }
 }

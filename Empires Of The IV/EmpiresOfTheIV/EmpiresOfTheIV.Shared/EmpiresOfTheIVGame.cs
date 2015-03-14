@@ -95,7 +95,7 @@ namespace EmpiresOfTheIV
             base.LoadContent(Color.Black);
 
             // Load Special Data Once
-            ResourceManager.LoadAsset(Content, typeof(Texture2D), "KillerrinStudiosLogo");
+            ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/KillerrinStudiosLogo");
             ResourceManager.LoadAsset(Content, typeof(SpriteFont), "Fonts/EmpiresOfTheIVFont");
 
             // Load the Content
@@ -108,22 +108,22 @@ namespace EmpiresOfTheIV
 
                 // Create Planets
                 Debug.WriteLine("Loading Tyril");
-                Texture2D tyrilTexture = Content.Load<Texture2D>("Tyril Texture");
+                Texture2D tyrilTexture = Content.Load<Texture2D>("Textures/Planet/Tyril Texture");
                 Planet tyril = new Planet(GraphicsDevice, tyrilTexture, MathHelper.ToRadians(-25.0f), Vector3.Zero, new Vector3(0.00020f, 0.0f, 0.0f), Vector3.Zero);
                 tyril.Transform.Scale = new Vector3(10.0f);
 
                 Debug.WriteLine("Loading Hope");
-                Texture2D hopeTexture = Content.Load<Texture2D>("Hope Texture");
+                Texture2D hopeTexture = Content.Load<Texture2D>("Textures/Planet/Hope Texture");
                 Planet hope = new Planet(GraphicsDevice, hopeTexture, MathHelper.ToRadians(-20.0f), new Vector3(20.0f, 2.0f, 0.0f), new Vector3(0.00050f, 0.0f, 0.0f), new Vector3(0.00040f, 0.0f, 0.0f));
                 hope.Transform.Scale = new Vector3(1.5f);
 
                 Debug.WriteLine("Loading Yol");
-                Texture2D yolTexture = Content.Load<Texture2D>("Yol Texture");
+                Texture2D yolTexture = Content.Load<Texture2D>("Textures/Planet/Yol Texture");
                 Planet yol = new Planet(GraphicsDevice, yolTexture, MathHelper.ToRadians(-15.0f), new Vector3(2.0f, 20.0f, 0.0f), new Vector3(0.00040f, 0.0f, 0.0f), new Vector3(0.0f, 0.00040f, 0.0f));
                 yol.Transform.Scale = new Vector3(1.2f);
 
                 Debug.WriteLine("Loading Lura");
-                //Texture2D luraTexture = m_game.Content.Load<Texture2D>("Lura Texture");
+                //Texture2D luraTexture = m_game.Content.Load<Texture2D>("Textures/Planet/Lura Texture");
                 //Planet lura = new Planet(graphics, luraTexture, MathHelper.ToRadians(30.0f), new Vector3(-30.0f, 30.0f, 2.0f), new Vector3(0.00020f, 0.0f, 0.0f), new Vector3(0.00020f, 0.00020f, 0.0f));
                 //lura.Transform.Scale = new Vector3(2.0f);
 

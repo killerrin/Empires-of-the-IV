@@ -148,7 +148,7 @@ namespace EmpiresOfTheIV
             {
                 case GameConnectionType.Singleplayer:    SetHostAbilities();     break;
                 case GameConnectionType.LANHost:         SetHostAbilities();     break;
-                case GameConnectionType.LANClient: SetClientAbilities(); break;
+                case GameConnectionType.LANClient:       SetClientAbilities(); break;
                 default:
                     break;
             }
@@ -173,13 +173,19 @@ namespace EmpiresOfTheIV
 
         private void SetHostAbilities()
         {
+            Debug.WriteLine("Setting Host Abilities");
             gameModeSelector.IsEnabled = true;
             mapSelector.IsEnabled = true;
             gameStartButton.IsEnabled = true;
 
-            // Add the Host to its team
-            team1.AddToTeam(PlayerType.Human, playerIDManager.GetNewID(), username);
-            playerID = team1[0].ID;
+            // If GameStarting is set, then we can determine that the host abilities have already been set and we
+            // are getting to this call from a request to cancel the game start
+            if (!gameStarting)
+            {
+                // Add the Host to its team
+                team1.AddToTeam(PlayerType.Human, playerIDManager.GetNewID(), username);
+                playerID = team1[0].ID;
+            }
 
             team1ListBox.ItemsSource = team1.Players;
             team2ListBox.ItemsSource = team2.Players;
@@ -187,18 +193,24 @@ namespace EmpiresOfTheIV
 
         private void SetClientAbilities()
         {
+            Debug.WriteLine("Setting Client Abilities");
+
             gameModeSelector.IsEnabled = false;
             mapSelector.IsEnabled = false;
             gameStartButton.IsEnabled = false;
             maxUnitSlider.IsEnabled = false;
 
-            // Now request startup data
-            string sendData = (int)KillerrinApplicationData.OSType + "|" +
-                              username;
+            // If Game Starting is set, then we have already loaded and we dont need to run this code again
+            if (!gameStarting)
+            {
+                // Now request startup data
+                string sendData = (int)KillerrinApplicationData.OSType + "|" +
+                                  username;
 
-            SystemPacket packet = new SystemPacket(true, SystemPacketID.RequestSetupData, sendData);
-            string packetSerialized = packet.ThisToJson();
-            Consts.Game.NetworkManager.SendMessage(packetSerialized);
+                SystemPacket packet = new SystemPacket(true, SystemPacketID.RequestSetupData, sendData);
+                string packetSerialized = packet.ThisToJson();
+                Consts.Game.NetworkManager.SendMessage(packetSerialized);
+            }
         }
 
         #region Networking
@@ -211,9 +223,20 @@ namespace EmpiresOfTheIV
         }
         void NetworkManager_OnDisconnected(object sender, EventArgs e)
         {
-        
-        }
+            if (pageparam == GameConnectionType.LANHost)
+            {
+                Consts.Game.NetworkManager.StartListening(NetworkType.LAN);
+            }
 
+            // Create our Teams
+            team1 = new Team(TeamID.TeamOne);
+            team2 = new Team(TeamID.TeamTwo);
+
+            playerIDManager = new IDManager();
+
+            gameStarting = false;
+            SetAbilities();
+        }
         void NetworkManager_OnMessageRecieved(object sender, KillerrinStudiosToolkit.Events.ReceivedMessageEventArgs e)
         {
             if (e.Message == Consts.Game.NetworkManager.LanHelper.ConnectionCloseMessage)
@@ -221,10 +244,17 @@ namespace EmpiresOfTheIV
                 return;
             }
 
+
             // Get the regular object
-            JObject jObject = JObject.Parse(e.Message);
-            EotIVPacket regularPacket = JsonConvert.DeserializeObject<EotIVPacket>(jObject.ToString());
-            Debug.WriteLine("Deserialized Packet");
+            JObject jObject = null;
+            EotIVPacket regularPacket = null;
+            try
+            {
+                jObject = JObject.Parse(e.Message);
+                regularPacket = JsonConvert.DeserializeObject<EotIVPacket>(jObject.ToString());
+                Debug.WriteLine("Deserialized Packet");
+            }
+            catch (Exception) { return; }
 
             // Now parse the object to get the right derived class
             if (regularPacket.PacketType == PacketType.Chat)
@@ -234,8 +264,12 @@ namespace EmpiresOfTheIV
 
                 CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
-                        chatManager.AddMessage(chatPacket.Message);
-                        chatLog.ItemsSource = chatManager.ChatMessages;
+                        try
+                        {
+                            chatManager.AddMessage(chatPacket.Message);
+                            chatLog.ItemsSource = chatManager.ChatMessages;
+                        }
+                        catch (Exception) { }
                     }
                 );
             }
@@ -470,7 +504,6 @@ namespace EmpiresOfTheIV
                 }
             );
         }
-
         private void SendMaxUnitsChanged()
         {
             Debug.WriteLine("Sending Unit Max Changed");
@@ -502,7 +535,6 @@ namespace EmpiresOfTheIV
                 }
             );
         }
-
         private void SendJoinTeam2()
         {
             Debug.WriteLine("Sending Join Team 2");
@@ -518,7 +550,6 @@ namespace EmpiresOfTheIV
                 }
             );
         }
-
         private void SendTeamsChanged()
         {
             Debug.WriteLine("Sending Teams Changed");
@@ -556,7 +587,6 @@ namespace EmpiresOfTheIV
                 }
             );
         }
-
         private void SendCancelStartGame()
         {
             Debug.WriteLine("Sending Game Start");
@@ -621,6 +651,11 @@ namespace EmpiresOfTheIV
 
                         pageParameter.chatManager = chatManager;
                         
+                        // Disable the ChatBox
+                        chatTextBox.IsEnabled = false;
+                        chatSendButton.IsEnabled = false;
+
+                        // And off we go!
                         PlatformMenuAdapter.GameLobbyMenu_StartGame_Click(pageParameter);
                     }
                 );
