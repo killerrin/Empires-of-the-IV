@@ -264,7 +264,7 @@ namespace EmpiresOfTheIV.Game.Menus
                         mapTerrain = new Terrain(graphics, heightMap, mapTexture);
                         m_game.PrefabManager.AddPrefab(mapTerrain, "Radient Flatlands Terrain");
 
-                        factoryBaseModel = m_game.ResourceManager.LoadAsset(Content, typeof(Model), "Factory Base", "Radient Flatlands FactoryBase") as Model;
+                        factoryBaseModel = m_game.ResourceManager.LoadAsset(Content, typeof(Model), "Models/Factories/Factory Base", "Radient Flatlands FactoryBase") as Model;
 
                         GameConsts.Loading.Map_RadientFlatlands = LoadingStatus.Loaded;
                     }
