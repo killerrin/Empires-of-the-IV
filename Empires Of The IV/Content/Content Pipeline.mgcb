@@ -104,28 +104,6 @@
 /processorParam:TextureFormat=Color
 /build:Textures/Maps/heightmap.bmp
 
-#begin Textures/Maps/Radient Flatlands HeightMap.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:TextureFormat=Color
-/build:Textures/Maps/Radient Flatlands HeightMap.png
-
-#begin Textures/Maps/Radient Flatlands MiniMap.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:TextureFormat=Color
-/build:Textures/Maps/Radient Flatlands MiniMap.png
-
 #begin Models/Factories/Factory Base.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
@@ -144,17 +122,6 @@
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=DxtCompressed
 /build:Models/Factories/Factory Base.fbx
-
-#begin Textures/Maps/Radient Flatlands Texture.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:TextureFormat=Color
-/build:Textures/Maps/Radient Flatlands Texture.png
 
 #begin Models/Factories/Unanian Empire/Unanian Factory Plot.fbx
 /importer:FbxImporter
@@ -193,4 +160,37 @@
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=DxtCompressed
 /build:Models/Factories/Unanian Empire/Unanian Factory.fbx
+
+#begin Textures/Maps/Radient Valley HeightMap.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:TextureFormat=Color
+/build:Textures/Maps/Radient Valley HeightMap.png
+
+#begin Textures/Maps/Radient Valley MiniMap.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:TextureFormat=Color
+/build:Textures/Maps/Radient Valley MiniMap.png
+
+#begin Textures/Maps/Radient Valley Texture.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:TextureFormat=Color
+/build:Textures/Maps/Radient Valley Texture.png
 

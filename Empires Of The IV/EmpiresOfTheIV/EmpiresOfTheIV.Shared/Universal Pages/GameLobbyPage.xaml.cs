@@ -627,14 +627,14 @@ namespace EmpiresOfTheIV
                         {
                             case 0:
                             case 1:
-                            default: pageParameter.GameType = GameMode.OneVSOne;           break;
+                            default: pageParameter.GameType = GameMode.OneVSOne;    break;
                         }
 
                         switch (mapSelector.SelectedIndex)
                         {
                             case 0:
                             case 1:
-                            default: pageParameter.MapName = MapName.RadientFlatlands;     break;
+                            default: pageParameter.MapName = MapName.RadientValley; break;
                         }
 
                         pageParameter.maxUnitsPerPlayer = maxUnitSlider.Value;
@@ -842,10 +842,10 @@ namespace EmpiresOfTheIV
                     mapSelector.SelectedIndex = index;
                     return;
                 case 1: //<sys:String>Flatlands</sys:String>
-                    mapImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/Map Images/Radient Flatlands MiniMap.png", UriKind.Absolute));
-                    mapSize.Text = "512x512";
+                    mapImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/Map Images/Radient Valley MiniMap.png", UriKind.Absolute));
+                    mapSize.Text = "200x200";
                     mapLimit.Text = "2 Players";
-                    mapDescription.Text = "Located on the planet of Radient Garden stands a stretch of land surrounded by mountains known only as the Flatlands";
+                    mapDescription.Text = "Located on the planet of Radient Garden stands a stretch of valley known only as the Radient Valley";
                     break;
                 default:
                     break;

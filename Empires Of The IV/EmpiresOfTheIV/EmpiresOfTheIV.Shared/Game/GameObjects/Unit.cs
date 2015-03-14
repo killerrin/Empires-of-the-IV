@@ -22,6 +22,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
         public Health Health { get { return GetComponent(typeof(Health)) as Health; } }
         public Mana Mana { get { return GetComponent(typeof(Mana)) as Mana; } }
+        
+        public float HeightAboveTerrain;
         #endregion
 
         public Unit(uint unitID, UnitType unitType)
@@ -37,6 +39,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
             // Add Unit Specific Components
             AddComponent(typeof(Health));
             AddComponent(typeof(Mana));
+
+            // Other Variables
+            HeightAboveTerrain = 0.0f;
         }
 
         #region Interface Implimentations

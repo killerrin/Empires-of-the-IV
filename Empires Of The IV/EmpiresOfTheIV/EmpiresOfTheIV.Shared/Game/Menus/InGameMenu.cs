@@ -55,6 +55,7 @@ namespace EmpiresOfTheIV.Game.Menus
         #endregion
 
         UniversalCamera m_gameCamera;
+
         List<Unit> m_activeUnits;
         List<Unit> m_inactiveUnits;
         Map m_map;
@@ -93,14 +94,14 @@ namespace EmpiresOfTheIV.Game.Menus
             #region Load the Minimap
             switch (m_pageParameter.MapName)
             {
-                case MapName.RadientFlatlands:
+                case MapName.RadientValley:
                     if (GameConsts.Loading.Map_RadientFlatlands == LoadingStatus.Loaded)
                     {
-                        m_loadingMiniMap = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Flatlands MiniMap") as Texture2D;
+                        m_loadingMiniMap = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Valley MiniMap") as Texture2D;
                     }
                     else
                     {
-                        m_loadingMiniMap = m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Texture2D), "Textures/Maps/Radient Flatlands MiniMap") as Texture2D;
+                        m_loadingMiniMap = m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Texture2D), "Textures/Maps/Radient Valley MiniMap") as Texture2D;
                     }
                     break;
                 case MapName.Kalia:
@@ -170,8 +171,18 @@ namespace EmpiresOfTheIV.Game.Menus
 
             #region Setup Variables
             m_gameCamera = new UniversalCamera();
-            m_gameCamera.Position = m_gameCamera.Position + new Vector3(0.0f, 15.0f, 0.0f);
             m_gameCamera.AspectRatio = m_game.SceneManager.CurrentScene.Camera.AspectRatio;
+
+            //Camera Position: {X:4.199995 Y:55.02913 Z:15.78831}, 
+            m_gameCamera.DefaultCameraPosition = new Vector3(4.20f, 50.03f, 15.79f);
+
+            //Camera Rotation: {M11:1 M12:0 M13:0 M14:0} {M21:0 M22:0.2419228 M23:-0.9702981 M24:0} {M31:0 M32:0.9702981 M33:0.2419228 M34:0} {M41:0 M42:0 M43:0 M44:1}
+            m_gameCamera.DefaultCameraRotation = new Matrix(1, 0, 0, 0,
+                                                 0, 0.242f, -0.97f, 0,
+                                                 0, 0.97f, 0.24f, 0,
+                                                 0, 0, 0, 1);
+
+            m_gameCamera.ResetViewToDefaults();
 
             int totalUnitsInPool = (int)(m_pageParameter.maxUnitsPerPlayer * (m_team1.PlayerCount + m_team2.PlayerCount));
             m_activeUnits = new List<Unit>(totalUnitsInPool);
@@ -271,29 +282,30 @@ namespace EmpiresOfTheIV.Game.Menus
             switch (m_pageParameter.MapName)
             {
                 #region Radient Flatlands
-                case MapName.RadientFlatlands:
+                case MapName.RadientValley:
                     #region Load/Get the Data
                     if (GameConsts.Loading.Map_RadientFlatlands == LoadingStatus.Loaded)
                     {
-                        heightMap = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Flatlands HeightMap") as Texture2D;
-                        mapTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Flatlands Texture") as Texture2D;
-                        mapParallax = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Flatlands Parallax") as Texture2D;
-                        mapTerrain = m_game.PrefabManager.GetPrefab("Radient Flatlands Terrain") as Terrain;
+                        heightMap = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Valley HeightMap") as Texture2D;
+                        mapTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Valley Texture") as Texture2D;
+                        mapParallax = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Valley Parallax") as Texture2D;
 
-                        factoryBaseModel = m_game.ResourceManager.GetAsset(typeof(Model), "Radient Flatlands FactoryBase") as Model;
+                        mapTerrain = m_game.PrefabManager.GetPrefab("Radient Valley Terrain") as Terrain;
+
+                        factoryBaseModel = m_game.ResourceManager.GetAsset(typeof(Model), "Radient Valley FactoryBase") as Model;
                     }
                     else 
                     {
                         GameConsts.Loading.Map_RadientFlatlands = LoadingStatus.CurrentlyLoading;
 
-                        heightMap = m_game.ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Maps/Radient Flatlands HeightMap") as Texture2D;
-                        mapTexture = m_game.ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Maps/Radient Flatlands Texture") as Texture2D;
-                        mapParallax = Color.Black.CreateTextureFromSolidColor(graphics, 1, 1); m_game.ResourceManager.AddAsset(mapParallax, "Radient Flatlands Parallax");
+                        heightMap = m_game.ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Maps/Radient Valley HeightMap") as Texture2D;
+                        mapTexture = m_game.ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Maps/Radient Valley Texture") as Texture2D;
+                        mapParallax = Color.Black.CreateTextureFromSolidColor(graphics, 1, 1); m_game.ResourceManager.AddAsset(mapParallax, "Radient Valley Parallax");
                         
                         mapTerrain = new Terrain(graphics, heightMap, mapTexture);
-                        m_game.PrefabManager.AddPrefab(mapTerrain, "Radient Flatlands Terrain");
+                        m_game.PrefabManager.AddPrefab(mapTerrain, "Radient Valley Terrain");
 
-                        factoryBaseModel = m_game.ResourceManager.LoadAsset(Content, typeof(Model), "Models/Factories/Factory Base", "Radient Flatlands FactoryBase") as Model;
+                        factoryBaseModel = m_game.ResourceManager.LoadAsset(Content, typeof(Model), "Models/Factories/Factory Base", "Radient Valley FactoryBase") as Model;
 
                         GameConsts.Loading.Map_RadientFlatlands = LoadingStatus.Loaded;
                     }
@@ -343,7 +355,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     #endregion
 
                     // Make the map
-                    m_map = new Map(MapName.RadientFlatlands, mapParallax, mapTerrain, factoryBases);
+                    m_map = new Map(MapName.RadientValley, mapParallax, mapTerrain, factoryBases);
                     m_map.AddAvailableUnitType(UnitType.Soldier, UnitType.Vehicle, UnitType.Ship, UnitType.Air, UnitType.Space);
                     break;
                 #endregion
@@ -414,7 +426,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 AnimationPlayer animPlayer = unit.PlayClip(unanianGroundSoldierWalkAnimClip);
                 animPlayer.Looping = true;
                 
-                m_inactiveUnits.Add(unit);
+                m_activeUnits.Add(unit);
             }
             #endregion
 
@@ -497,7 +509,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     m_game.Graphics.GraphicsDevice.Viewport
                     );
 
-                bool intersects = m_inactiveUnits[unitIndex].CheckRayIntersection(ray);
+                bool intersects = m_activeUnits[unitIndex].CheckRayIntersection(ray);
                 Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
 
                 currentRay = ray;
@@ -511,7 +523,7 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             if (e.Pointer == PointerPress.RightMouseButton)
             {
-                m_inactiveUnits[0].AnimationState.AnimationPlayer.Paused = !m_inactiveUnits[unitIndex].AnimationState.AnimationPlayer.Paused;
+                m_activeUnits[0].AnimationState.AnimationPlayer.Paused = !m_activeUnits[unitIndex].AnimationState.AnimationPlayer.Paused;
             }
         }
 
@@ -553,6 +565,8 @@ namespace EmpiresOfTheIV.Game.Menus
 
                 case Keys.D0: case Keys.NumPad0: uniCam.ResetCamera(); break;
                 case Keys.D5: case Keys.NumPad5: uniCam.ResetRotations(); break;
+
+                case Keys.LeftControl: Debug.WriteLine("Camera Position: {0}, \n Camera Rotation: {1}", uniCam.Position, uniCam.CameraRotation); break;
             }
         }
         void Keyboard_KeyboardPressed(object sender, Anarian.Events.KeyboardPressedEventArgs e)
@@ -577,8 +591,8 @@ namespace EmpiresOfTheIV.Game.Menus
                     break;
             }
 
-            if (unitIndex >= m_inactiveUnits.Count) unitIndex = 0;
-            if (unitIndex <= -1) unitIndex = m_inactiveUnits.Count - 1;
+            if (unitIndex >= m_activeUnits.Count) unitIndex = 0;
+            if (unitIndex <= -1) unitIndex = m_activeUnits.Count - 1;
         }
 
         public int unitIndex = 0;
@@ -589,42 +603,51 @@ namespace EmpiresOfTheIV.Game.Menus
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         public override void Update(GameTime gameTime)
         {
+            // Check if the game is fully loaded
             if (m_currentLoadingProgress.Progress < 100) { base.Update(gameTime); return; }
-            // Since we passed the check, that means that the game is fully loaded
 
-            // Update the Camera
+            // First thing we do is Update the Camera
             m_gameCamera.Update(null);
 
+            // Then the Map
             m_map.Update(gameTime);
-            foreach (var i in m_inactiveUnits)
+
+            // Check if the game is paused
+            switch (m_pausedState)
+            {
+                case GamePausedState.Paused:            m_overlay.ApplyEffect(gameTime);    return;
+                case GamePausedState.WaitingForData:    m_overlay.ApplyEffect(gameTime);    return;
+            }
+
+            // If it is not, we can proceed to update the game
+            
+            
+            // Move the Unit
+            if (rayPosOnTerrain.HasValue)
+            {
+                m_activeUnits[unitIndex].Transform.MoveToPosition(gameTime, rayPosOnTerrain.Value);
+            }
+
+            // Set all the active units to be on the terrain
+            for (int i = 0; i < m_activeUnits.Count; i++)
+            {
+                float height = m_map.Terrain.GetHeightAtPoint(m_activeUnits[i].Transform.Position);
+                if (height != float.MaxValue)
+                {
+                    Vector3 pos = m_activeUnits[i].Transform.Position;
+                    pos.Y = height + m_activeUnits[i].HeightAboveTerrain;
+                    m_activeUnits[i].Transform.Position = pos;
+                }
+            }
+
+            // Update the Units
+            foreach (var i in m_activeUnits)
             {
                 i.Update(gameTime);
             }
 
-            // Update everything else
-            switch (m_pausedState)
-            {
-                case GamePausedState.Unpaused:
-                    break;
-                case GamePausedState.Paused:            m_overlay.ApplyEffect(gameTime); break;
-                case GamePausedState.WaitingForData:    m_overlay.ApplyEffect(gameTime); break;
-            }
-
-            // Regular Updates
-            if (rayPosOnTerrain.HasValue)
-            {
-                m_inactiveUnits[unitIndex].Transform.MoveToPosition(gameTime, rayPosOnTerrain.Value);
-            }
-
-            float height = m_map.Terrain.GetHeightAtPoint(m_inactiveUnits[unitIndex].Transform.Position);
-            if (height != float.MaxValue)
-            {
-                Vector3 pos = m_inactiveUnits[unitIndex].Transform.Position;
-                pos.Y = height;
-                m_inactiveUnits[unitIndex].Transform.Position = pos;
-            }
-
-            m_gameCamera.WorldPositionToChase = m_inactiveUnits[unitIndex].Transform.WorldMatrix;
+            // Set the camera to chase the first unit if we want to
+            m_gameCamera.WorldPositionToChase = m_activeUnits[unitIndex].Transform.WorldMatrix;
 
             //-- Update the Menu
             base.Update(gameTime);
@@ -642,7 +665,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
             // Draw The Map
             m_map.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
-            foreach (var i in m_inactiveUnits)
+            foreach (var i in m_activeUnits)
             {
                 i.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
             }

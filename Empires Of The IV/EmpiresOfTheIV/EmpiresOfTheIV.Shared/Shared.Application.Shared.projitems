@@ -121,7 +121,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Building.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Unit.cs" />
     <Content Include="$(MSBuildThisFileDirectory)Assets\ListeningEarcon.wav" />
-    <Content Include="$(MSBuildThisFileDirectory)Assets\Map Images\Radient Flatlands MiniMap.png">
+    <Content Include="$(MSBuildThisFileDirectory)Assets\Map Images\Radient Valley MiniMap.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="$(MSBuildThisFileDirectory)Assets\microphone.png" />
@@ -135,12 +135,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Maps\heightmap.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Maps\Radient Flatlands HeightMap.xnb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Maps\Radient Flatlands Texture.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Planet\Hope Texture.xnb">
@@ -276,7 +270,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Maps\Radient Flatlands MiniMap.xnb">
+    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Maps\Radient Valley HeightMap.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Maps\Radient Valley MiniMap.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Maps\Radient Valley Texture.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

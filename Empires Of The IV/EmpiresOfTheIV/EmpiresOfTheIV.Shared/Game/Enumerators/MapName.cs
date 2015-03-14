@@ -6,7 +6,7 @@ namespace EmpiresOfTheIV.Game.Enumerators
 {
     public enum MapName
     {
-        RadientFlatlands,
+        RadientValley,
         Kalia
     }
 }
