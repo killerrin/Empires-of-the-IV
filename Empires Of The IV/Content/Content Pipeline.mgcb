@@ -145,3 +145,14 @@
 /processorParam:TextureFormat=DxtCompressed
 /build:Models/Factories/Factory Base.fbx
 
+#begin Textures/Maps/Radient Flatlands Texture.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:TextureFormat=Color
+/build:Textures/Maps/Radient Flatlands Texture.png
+
