@@ -42,6 +42,7 @@ namespace EmpiresOfTheIV.Game.Menus
         LoadingProgress m_currentLoadingProgress;
         Progress<LoadingProgress> m_loadingProgress;
         Task<LoadingStatus> m_loadingContentTask;
+        Texture2D m_loadingMiniMap;
         #endregion
 
         #region Page Parameters
@@ -88,6 +89,34 @@ namespace EmpiresOfTheIV.Game.Menus
             m_team2 = m_pageParameter.team2;     Debug.WriteLine(m_team2.ToString());
 
             m_chatManager = m_pageParameter.chatManager;
+
+            #region Load the Minimap
+            switch (m_pageParameter.MapName)
+            {
+                case MapName.RadientFlatlands:
+                    if (GameConsts.Loading.Map_RadientFlatlands == LoadingStatus.Loaded)
+                    {
+                        m_loadingMiniMap = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Flatlands MiniMap") as Texture2D;
+                    }
+                    else
+                    {
+                        m_loadingMiniMap = m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Texture2D), "Textures/Maps/Radient Flatlands MiniMap") as Texture2D;
+                    }
+                    break;
+                case MapName.Kalia:
+                    if (GameConsts.Loading.Map_Kalia == LoadingStatus.Loaded)
+                    {
+                        m_loadingMiniMap = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Kalia MiniMap") as Texture2D;
+                    }
+                    else
+                    {
+                        m_loadingMiniMap = m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Texture2D), "Textures/Maps/Kalia MiniMap") as Texture2D;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            #endregion
 
             // Begin the Asynchronous Loading
             m_loadingContentTask = Task.Run(() => LoadContent(m_loadingProgress, m_game.Content, m_game.GraphicsDevice));
@@ -636,7 +665,9 @@ namespace EmpiresOfTheIV.Game.Menus
             var centerOfScreen = new Vector2(screenRect.Width / 2.0f, screenRect.Height / 2.0f);
             
             spriteBatch.Begin();
-            //spriteBatch.Draw(m_mapPreview, AnarianConsts.ScreenRectangle, Color.White);
+            spriteBatch.Draw(m_loadingMiniMap,
+                            new Rectangle(0, 0, AnarianConsts.ScreenRectangle.Width, (int)(AnarianConsts.ScreenRectangle.Height * 0.80)),
+                            Color.White);
             spriteBatch.End();
 
             // Loading Outline
