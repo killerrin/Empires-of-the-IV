@@ -1,4 +1,5 @@
-﻿using Anarian.DataStructures;
+﻿using Anarian;
+using Anarian.DataStructures;
 using Anarian.DataStructures.Components;
 using Anarian.Interfaces;
 using EmpiresOfTheIV.Game.Enumerators;
@@ -22,7 +23,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
         public Health Health { get { return GetComponent(typeof(Health)) as Health; } }
         public Mana Mana { get { return GetComponent(typeof(Mana)) as Mana; } }
-        
+
+        private Texture2D blankTexture;
         public float HeightAboveTerrain;
         #endregion
 
@@ -35,6 +37,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
             // Setup base Selection rules
             Selectable = true;
             Selected = false;
+
+            // Get the Blank Texture
+            blankTexture = ResourceManager.Instance.GetAsset(typeof(Texture2D), ResourceManager.EngineReservedAssetNames.blankTextureName) as Texture2D;
 
             // Add Unit Specific Components
             AddComponent(typeof(Health));
@@ -69,6 +74,24 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
             base.Draw(gameTime, spriteBatch, graphics, camera);
+
+            #region Draw the Health
+            Vector3 screenPos3D = graphics.Viewport.Project(m_transform.WorldPosition, camera.Projection, camera.View, camera.World);
+            Rectangle healthRectOutline = new Rectangle((int)(screenPos3D.X - graphics.Viewport.X) - 75,
+                                                        (int)(screenPos3D.Y - graphics.Viewport.Y) + 25,
+                                                        102,
+                                                        5);
+            Rectangle healthRect = new Rectangle(healthRectOutline.X + 1,
+                                                 healthRectOutline.Y + 1,
+                                                 (int)(MathHelper.Clamp(Health.CurrentHealth, 0, healthRectOutline.Width - 2)),
+                                                 healthRectOutline.Height - 2);
+
+            // Draw the selection rectangle
+            spriteBatch.Begin();
+            spriteBatch.Draw(blankTexture, healthRectOutline, Color.Black);
+            spriteBatch.Draw(blankTexture, healthRect, Color.Red);
+            spriteBatch.End();
+            #endregion
         }
 
         protected override void SetupEffects(Effect effect, GraphicsDevice graphics, ICamera camera, GameTime gameTime)

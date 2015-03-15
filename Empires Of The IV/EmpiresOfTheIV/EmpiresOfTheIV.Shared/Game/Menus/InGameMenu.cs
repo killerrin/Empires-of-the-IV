@@ -550,8 +550,8 @@ namespace EmpiresOfTheIV.Game.Menus
         PointerMovedEventArgs m_lastPointerMovedEventArgs = new PointerMovedEventArgs(new GameTime());
         void InputManager_PointerMoved(object sender, Anarian.Events.PointerMovedEventArgs e)
         {
-            m_lastPointerMovedEventArgs = e;
             Debug.WriteLine("{0}, Moved", e.ToString());
+            m_lastPointerMovedEventArgs = e;
 
             if (e.InputType == InputType.Touch)
             {
