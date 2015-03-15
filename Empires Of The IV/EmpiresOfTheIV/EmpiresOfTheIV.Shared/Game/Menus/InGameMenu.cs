@@ -550,7 +550,7 @@ namespace EmpiresOfTheIV.Game.Menus
         PointerMovedEventArgs m_lastPointerMovedEventArgs = new PointerMovedEventArgs(new GameTime());
         void InputManager_PointerMoved(object sender, Anarian.Events.PointerMovedEventArgs e)
         {
-            Debug.WriteLine("{0}, Moved", e.ToString());
+            //Debug.WriteLine("{0}, Moved", e.ToString());
             m_lastPointerMovedEventArgs = e;
 
             if (e.InputType == InputType.Touch)
@@ -562,31 +562,28 @@ namespace EmpiresOfTheIV.Game.Menus
         #region Keyboard
         void Keyboard_KeyboardDown(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
-            //Debug.WriteLine("Keyboard: {0}, Held Down", e.KeyClicked.ToString());
-            ICamera cam =            m_gameCamera; //m_game.SceneManager.CurrentScene.Camera;
-            IMoveable camMoveable =  m_gameCamera; //m_game.SceneManager.CurrentScene.Camera as IMoveable;
             UniversalCamera uniCam = m_gameCamera; //m_game.SceneManager.CurrentScene.Camera as UniversalCamera;
 
             switch (e.KeyClicked)
             {
-                case Keys.W: camMoveable.Move(e.GameTime, uniCam.CameraRotation.Forward); break;
-                case Keys.S: camMoveable.Move(e.GameTime, -uniCam.CameraRotation.Forward); break;
-                case Keys.A: camMoveable.Move(e.GameTime, -uniCam.CameraRotation.Right); break;
-                case Keys.D: camMoveable.Move(e.GameTime, uniCam.CameraRotation.Right); break;
-                case Keys.Q: camMoveable.Move(e.GameTime, -uniCam.CameraRotation.Up); break;
-                case Keys.E: camMoveable.Move(e.GameTime, uniCam.CameraRotation.Up); break;
+                case Keys.W: uniCam.Move(e.GameTime, uniCam.CameraRotation.Forward); break;
+                case Keys.S: uniCam.Move(e.GameTime, -uniCam.CameraRotation.Forward); break;
+                case Keys.A: uniCam.Move(e.GameTime, -uniCam.CameraRotation.Right); break;
+                case Keys.D: uniCam.Move(e.GameTime, uniCam.CameraRotation.Right); break;
+                case Keys.Q: uniCam.Move(e.GameTime, -uniCam.CameraRotation.Up); break;
+                case Keys.E: uniCam.Move(e.GameTime, uniCam.CameraRotation.Up); break;
 
-                case Keys.Up:   case Keys.NumPad8: cam.Pitch = uniCam.Pitch + MathHelper.ToRadians(2); break;
-                case Keys.Down: case Keys.NumPad2: cam.Pitch = uniCam.Pitch + MathHelper.ToRadians(-2); break;
+                case Keys.Up:   case Keys.NumPad8: uniCam.Pitch = uniCam.Pitch + MathHelper.ToRadians(2); break;
+                case Keys.Down: case Keys.NumPad2: uniCam.Pitch = uniCam.Pitch + MathHelper.ToRadians(-2); break;
 
-                case Keys.Left:  case Keys.NumPad4: cam.Yaw = uniCam.Yaw + MathHelper.ToRadians(2); break;
-                case Keys.Right: case Keys.NumPad6: cam.Yaw = uniCam.Yaw + MathHelper.ToRadians(-2); break;
+                case Keys.Left:  case Keys.NumPad4: uniCam.Yaw = uniCam.Yaw + MathHelper.ToRadians(2); break;
+                case Keys.Right: case Keys.NumPad6: uniCam.Yaw = uniCam.Yaw + MathHelper.ToRadians(-2); break;
 
                 case Keys.P: case Keys.NumPad1:
-                case Keys.NumPad7: cam.Roll = uniCam.Roll + MathHelper.ToRadians(2); break;
+                case Keys.NumPad7: uniCam.Roll = uniCam.Roll + MathHelper.ToRadians(2); break;
 
                 case Keys.O: case Keys.NumPad3:
-                case Keys.NumPad9: cam.Roll = uniCam.Roll + MathHelper.ToRadians(-2); break;
+                case Keys.NumPad9: uniCam.Roll = uniCam.Roll + MathHelper.ToRadians(-2); break;
 
                 case Keys.D0: case Keys.NumPad0: uniCam.ResetCamera(); break;
                 case Keys.D5: case Keys.NumPad5: uniCam.ResetRotations(); break;
@@ -596,7 +593,6 @@ namespace EmpiresOfTheIV.Game.Menus
         }
         void Keyboard_KeyboardPressed(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
-            Debug.WriteLine("{0}, Pressed", e.KeyClicked.ToString());
             UniversalCamera uniCam = m_gameCamera;//m_game.SceneManager.CurrentScene.Camera as UniversalCamera;
 
             switch (e.KeyClicked)
@@ -634,7 +630,6 @@ namespace EmpiresOfTheIV.Game.Menus
             #region First thing we do is Update the GameCamera
             if (m_lastPointerMovedEventArgs.InputType == InputType.Mouse)
             {
-                Debug.WriteLine("Mouse");
                 var screenRect = AnarianConsts.ScreenRectangle;
                 var deltaPos = m_lastPointerMovedEventArgs.DeltaPosition;
 

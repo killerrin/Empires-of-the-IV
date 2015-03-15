@@ -25,6 +25,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public Mana Mana { get { return GetComponent(typeof(Mana)) as Mana; } }
 
         private Texture2D blankTexture;
+        private Texture2D selectionBox;
         public float HeightAboveTerrain;
         #endregion
 
@@ -38,8 +39,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
             Selectable = true;
             Selected = false;
 
-            // Get the Blank Texture
+            // Cash the refrences to textures
             blankTexture = ResourceManager.Instance.GetAsset(typeof(Texture2D), ResourceManager.EngineReservedAssetNames.blankTextureName) as Texture2D;
+            selectionBox = ResourceManager.Instance.GetAsset(typeof(Texture2D), "SelectionBox") as Texture2D;
 
             // Add Unit Specific Components
             AddComponent(typeof(Health));
@@ -77,8 +79,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
             #region Draw the Health
             Vector3 screenPos3D = graphics.Viewport.Project(m_transform.WorldPosition, camera.Projection, camera.View, camera.World);
-            Rectangle healthRectOutline = new Rectangle((int)(screenPos3D.X - graphics.Viewport.X) - 75,
-                                                        (int)(screenPos3D.Y - graphics.Viewport.Y) + 25,
+            Vector2 screenPos2D = new Vector2(screenPos3D.X, screenPos3D.Y);
+            Rectangle healthRectOutline = new Rectangle((int)(screenPos2D.X - graphics.Viewport.X) - 75,
+                                                        (int)(screenPos2D.Y - graphics.Viewport.Y) + 25,
                                                         102,
                                                         5);
             Rectangle healthRect = new Rectangle(healthRectOutline.X + 1,
@@ -91,6 +94,17 @@ namespace EmpiresOfTheIV.Game.GameObjects
             spriteBatch.Draw(blankTexture, healthRectOutline, Color.Black);
             spriteBatch.Draw(blankTexture, healthRect, Color.Red);
             spriteBatch.End();
+
+            if (Selected)
+            {
+                float selectionBoxScale = 1.5f;
+                spriteBatch.Begin();
+                spriteBatch.Draw(selectionBox,
+                                 screenPos2D - new Vector2(15,25) - new Vector2((selectionBox.Width * selectionBoxScale) / 2f, (selectionBox.Height * selectionBoxScale) / 2f),
+                                 null, Color.Purple, 0, Vector2.Zero,
+                                 selectionBoxScale, SpriteEffects.None, 1.0f);
+                spriteBatch.End();
+            }
             #endregion
         }
 
