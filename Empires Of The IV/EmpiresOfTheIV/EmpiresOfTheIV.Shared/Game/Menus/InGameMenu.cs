@@ -356,7 +356,31 @@ namespace EmpiresOfTheIV.Game.Menus
                     m_map = new Map(MapName.RadientValley, mapParallax, mapTerrain, factoryBases);
                     m_map.AddAvailableUnitType(UnitType.Soldier, UnitType.Vehicle, UnitType.Ship, UnitType.Air, UnitType.Space);
 
-                    // Set GameCamera Limits
+                    // Set GameCamera Starting Positions and Limits
+                    var gameCameraPos = m_gameCamera.Position; 
+                    if (m_team1.Exists(m_pageParameter.me.ID)) {
+                        // Set Factory Owners
+                        if (m_team2.PlayerCount > 0)
+                            factoryBases[1].Owner = m_team2.Players[0].ID;
+                        factoryBases[0].Owner = m_pageParameter.me.ID;
+
+                        // Set the Game Cameras Position
+                        gameCameraPos.X = factoryBases[0].Base.Transform.Position.X;
+                        gameCameraPos.Z = factoryBases[0].Base.Transform.Position.Z + 10;
+                    }
+                    else if (m_team2.Exists(m_pageParameter.me.ID)) {
+                        // Set Factory Owners
+                        if (m_team1.PlayerCount > 0)
+                            factoryBases[0].Owner = m_team1.Players[0].ID;
+                        factoryBases[1].Owner = m_pageParameter.me.ID;
+
+                        // Set the Game Cameras Position
+                        gameCameraPos.X = factoryBases[1].Base.Transform.Position.X;
+                        gameCameraPos.Z = factoryBases[1].Base.Transform.Position.Z + 10;                        
+                    }
+                    m_gameCamera.Position = gameCameraPos;
+                    m_gameCamera.DefaultCameraPosition = m_gameCamera.Position;
+
                     // MathHelper.Clamp(gameCameraPosition.Y, 30.0f, 56.0f);
                     m_gameCamera.MinClamp = new Vector3(-92.60f, m_gameCamera.DefaultCameraPosition.Y, -18.35f);
                     m_gameCamera.MaxClamp = new Vector3(85.80f, m_gameCamera.DefaultCameraPosition.Y,  36.74f);

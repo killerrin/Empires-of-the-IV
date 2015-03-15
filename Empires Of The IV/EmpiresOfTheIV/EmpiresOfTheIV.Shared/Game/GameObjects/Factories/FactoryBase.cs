@@ -13,6 +13,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
     {
         
         public uint FactoryBaseID { get; private set; }
+        public uint Owner;
 
         public StaticGameObject Base;
         public Factory Factory;
@@ -25,6 +26,13 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
             :base()
         {
             FactoryBaseID = id;
+            Owner = uint.MaxValue;
+        }
+
+        public bool HasOwner()
+        {
+            if (Owner == uint.MaxValue) return false;
+            return true;
         }
 
         public FactoryBaseRayIntersection CheckRayIntersection(Ray ray)
