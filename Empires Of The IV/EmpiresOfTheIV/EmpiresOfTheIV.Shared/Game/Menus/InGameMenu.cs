@@ -5,6 +5,7 @@ using Anarian.DataStructures.Animation.Aux;
 using Anarian.DataStructures.Rendering;
 using Anarian.DataStructures.ScreenEffects;
 using Anarian.Enumerators;
+using Anarian.Events;
 using Anarian.GUI;
 using Anarian.Helpers;
 using Anarian.IDManagers;
@@ -55,6 +56,7 @@ namespace EmpiresOfTheIV.Game.Menus
         #endregion
 
         UniversalCamera m_gameCamera;
+        int m_cameraMovementScreenBuffer = 25;
 
         List<Unit> m_activeUnits;
         List<Unit> m_inactiveUnits;
@@ -95,27 +97,22 @@ namespace EmpiresOfTheIV.Game.Menus
             switch (m_pageParameter.MapName)
             {
                 case MapName.RadientValley:
-                    if (GameConsts.Loading.Map_RadientFlatlands == LoadingStatus.Loaded)
-                    {
+                    if (GameConsts.Loading.Map_RadientFlatlands == LoadingStatus.Loaded) {
                         m_loadingMiniMap = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Valley MiniMap") as Texture2D;
                     }
-                    else
-                    {
+                    else {
                         m_loadingMiniMap = m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Texture2D), "Textures/Maps/Radient Valley MiniMap") as Texture2D;
                     }
                     break;
                 case MapName.Kalia:
-                    if (GameConsts.Loading.Map_Kalia == LoadingStatus.Loaded)
-                    {
+                    if (GameConsts.Loading.Map_Kalia == LoadingStatus.Loaded) {
                         m_loadingMiniMap = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Kalia MiniMap") as Texture2D;
                     }
-                    else
-                    {
+                    else {
                         m_loadingMiniMap = m_game.ResourceManager.LoadAsset(m_game.Content, typeof(Texture2D), "Textures/Maps/Kalia MiniMap") as Texture2D;
                     }
                     break;
-                default:
-                    break;
+                default: m_loadingMiniMap = null; break;
             }
             #endregion
 
@@ -172,6 +169,7 @@ namespace EmpiresOfTheIV.Game.Menus
             #region Setup Variables
             m_gameCamera = new UniversalCamera();
             m_gameCamera.AspectRatio = m_game.SceneManager.CurrentScene.Camera.AspectRatio;
+            m_gameCamera.Speed = 0.8f;
 
             //Camera Position: {X:4.199995 Y:55.02913 Z:15.78831}, 
             m_gameCamera.DefaultCameraPosition = new Vector3(4.20f, 50.03f, 15.79f);
@@ -357,6 +355,12 @@ namespace EmpiresOfTheIV.Game.Menus
                     // Make the map
                     m_map = new Map(MapName.RadientValley, mapParallax, mapTerrain, factoryBases);
                     m_map.AddAvailableUnitType(UnitType.Soldier, UnitType.Vehicle, UnitType.Ship, UnitType.Air, UnitType.Space);
+
+                    // Set GameCamera Limits
+                    // MathHelper.Clamp(gameCameraPosition.Y, 30.0f, 56.0f);
+                    m_gameCamera.MinClamp = new Vector3(-92.60f, m_gameCamera.DefaultCameraPosition.Y, -18.35f);
+                    m_gameCamera.MaxClamp = new Vector3(85.80f, m_gameCamera.DefaultCameraPosition.Y,  36.74f);
+
                     break;
                 #endregion
 
@@ -491,7 +495,26 @@ namespace EmpiresOfTheIV.Game.Menus
         #region Pointer
         void InputManager_PointerDown(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
-            //Debug.WriteLine("{0}, Pressed", e.ToString());
+            Debug.WriteLine("{0}, Pressed", e.ToString());
+            if (e.Pointer == PointerPress.MiddleMouseButton)
+            {
+                var delta = e.DeltaPosition;
+                float deltaBuffer = 1.0f;
+
+                if (delta.X < 0 - deltaBuffer) {
+                    m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Right);
+                }
+                else if (delta.X > 0 + deltaBuffer) {
+                    m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Right);
+                }
+
+                if (delta.Y < 0 - deltaBuffer) {
+                    m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Up);
+                }
+                else if (delta.Y > 0 + deltaBuffer) {
+                    m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Up);
+                }
+            }
         }
 
         public Ray? currentRay;
@@ -517,20 +540,22 @@ namespace EmpiresOfTheIV.Game.Menus
                 // Get the point on the terrain
                 rayPosOnTerrain = m_map.Terrain.Intersects(ray);
             }
-            if (e.Pointer == PointerPress.MiddleMouseButton)
-            {
-                Debug.WriteLine("Middle Mouse Pressed");
-            }
             if (e.Pointer == PointerPress.RightMouseButton)
             {
                 m_activeUnits[0].AnimationState.AnimationPlayer.Paused = !m_activeUnits[unitIndex].AnimationState.AnimationPlayer.Paused;
             }
         }
 
+
+        PointerMovedEventArgs m_lastPointerMovedEventArgs = new PointerMovedEventArgs(new GameTime());
         void InputManager_PointerMoved(object sender, Anarian.Events.PointerMovedEventArgs e)
         {
-            //Debug.WriteLine("{0}, Pressed", e.ToString());
+            m_lastPointerMovedEventArgs = e;
+            Debug.WriteLine("{0}, Moved", e.ToString());
 
+            if (e.InputType == InputType.Touch)
+            {
+            }
         }
         #endregion
 
@@ -606,8 +631,34 @@ namespace EmpiresOfTheIV.Game.Menus
             // Check if the game is fully loaded
             if (m_currentLoadingProgress.Progress < 100) { base.Update(gameTime); return; }
 
-            // First thing we do is Update the Camera
-            m_gameCamera.Update(null);
+            #region First thing we do is Update the GameCamera
+            if (m_lastPointerMovedEventArgs.InputType == InputType.Mouse)
+            {
+                Debug.WriteLine("Mouse");
+                var screenRect = AnarianConsts.ScreenRectangle;
+                var deltaPos = m_lastPointerMovedEventArgs.DeltaPosition;
+
+                if (m_lastPointerMovedEventArgs.Position.X <= (screenRect.X + m_cameraMovementScreenBuffer)) {
+                    m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Right);
+                }
+                else if (m_lastPointerMovedEventArgs.Position.X >= (screenRect.Width - m_cameraMovementScreenBuffer)) {
+                    m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Right);
+                }
+                
+                if (m_lastPointerMovedEventArgs.Position.Y <= (screenRect.Y + m_cameraMovementScreenBuffer)) {
+                    m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Up);
+                }
+                else if (m_lastPointerMovedEventArgs.Position.Y >= (screenRect.Height - m_cameraMovementScreenBuffer)) {
+                    m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Up);
+                }
+            }
+            else if (m_lastPointerMovedEventArgs.InputType == InputType.Touch)
+            {
+
+            }
+
+            m_gameCamera.Update(gameTime);
+            #endregion
 
             // Then the Map
             m_map.Update(gameTime);
@@ -686,12 +737,15 @@ namespace EmpiresOfTheIV.Game.Menus
             //graphics.Clear(Color.Black);
             var screenRect = AnarianConsts.ScreenRectangle;
             var centerOfScreen = new Vector2(screenRect.Width / 2.0f, screenRect.Height / 2.0f);
-            
-            spriteBatch.Begin();
-            spriteBatch.Draw(m_loadingMiniMap,
-                            new Rectangle(0, 0, AnarianConsts.ScreenRectangle.Width, (int)(AnarianConsts.ScreenRectangle.Height * 0.80)),
-                            Color.White);
-            spriteBatch.End();
+
+            if (m_loadingMiniMap != null)
+            {
+                spriteBatch.Begin();
+                spriteBatch.Draw(m_loadingMiniMap,
+                                new Rectangle(0, 0, AnarianConsts.ScreenRectangle.Width, (int)(AnarianConsts.ScreenRectangle.Height * 0.80)),
+                                Color.White);
+                spriteBatch.End();
+            }
 
             // Loading Outline
             var outlineRect = new Rectangle(0,
