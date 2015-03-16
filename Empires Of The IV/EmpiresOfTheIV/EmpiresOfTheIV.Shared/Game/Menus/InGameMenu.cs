@@ -465,7 +465,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 unit.Active = true;
                 unit.Health.Alive = true;
 
-                GameFactory.CreateUnit(unit, UnitID.UnanianSpaceFighter, new Vector3((float)Consts.random.NextDouble(), -(float)Consts.random.NextDouble(), -5.50f + (float)Consts.random.NextDouble()));                
+                GameFactory.CreateUnit(unit, UnitID.UnanianSoldier, new Vector3((float)Consts.random.NextDouble(), -(float)Consts.random.NextDouble(), -5.50f + (float)Consts.random.NextDouble()));                
                 m_activeUnits.Add(unit);
             }
             #endregion
@@ -506,7 +506,7 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             #endregion
 
-            await Task.Delay(TimeSpan.FromSeconds(0.5));
+            //await Task.Delay(TimeSpan.FromSeconds(0.5));
 
             // Send the final report and return loaded
             if (progress != null) progress.Report(new LoadingProgress(100, "Ready to Play!"));
@@ -535,11 +535,14 @@ namespace EmpiresOfTheIV.Game.Menus
 
         #region Input
         #region Pointer
+        bool middleMouseDown = false;
         void InputManager_PointerDown(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
             //Debug.WriteLine("{0}, Pressed", e.ToString());
             if (e.Pointer == PointerPress.MiddleMouseButton)
             {
+                middleMouseDown = true;
+
                 var delta = e.DeltaPosition;
                 float deltaBuffer = 1.0f;
 
@@ -581,6 +584,10 @@ namespace EmpiresOfTheIV.Game.Menus
 
                 // Get the point on the terrain
                 rayPosOnTerrain = m_map.Terrain.Intersects(ray);
+            }
+            if (e.Pointer == PointerPress.MiddleMouseButton)
+            {
+                middleMouseDown = false;
             }
             if (e.Pointer == PointerPress.RightMouseButton)
             {
@@ -642,11 +649,13 @@ namespace EmpiresOfTheIV.Game.Menus
                 case Keys.Space:
                     uniCam.SwitchCameraMode();
                     break;
+                case Keys.OemCloseBrackets:
                 case Keys.Add: 
                     unitIndex++; 
                     currentRay = null;
                     rayPosOnTerrain = null;
                     break;
+                case Keys.OemOpenBrackets:
                 case Keys.Subtract:
                     unitIndex--; 
                     currentRay = null;
@@ -672,21 +681,28 @@ namespace EmpiresOfTheIV.Game.Menus
             #region First thing we do is Update the GameCamera
             if (m_lastPointerMovedEventArgs.InputType == InputType.Mouse)
             {
-                var screenRect = AnarianConsts.ScreenRectangle;
-                var deltaPos = m_lastPointerMovedEventArgs.DeltaPosition;
+                if (!middleMouseDown)
+                {
+                    var screenRect = AnarianConsts.ScreenRectangle;
+                    var deltaPos = m_lastPointerMovedEventArgs.DeltaPosition;
 
-                if (m_lastPointerMovedEventArgs.Position.X <= (screenRect.X + m_cameraMovementScreenBuffer)) {
-                    m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Right);
-                }
-                else if (m_lastPointerMovedEventArgs.Position.X >= (screenRect.Width - m_cameraMovementScreenBuffer)) {
-                    m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Right);
-                }
-                
-                if (m_lastPointerMovedEventArgs.Position.Y <= (screenRect.Y + m_cameraMovementScreenBuffer)) {
-                    m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Up);
-                }
-                else if (m_lastPointerMovedEventArgs.Position.Y >= (screenRect.Height - m_cameraMovementScreenBuffer)) {
-                    m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Up);
+                    if (m_lastPointerMovedEventArgs.Position.X <= (screenRect.X + m_cameraMovementScreenBuffer))
+                    {
+                        m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Right);
+                    }
+                    else if (m_lastPointerMovedEventArgs.Position.X >= (screenRect.Width - m_cameraMovementScreenBuffer))
+                    {
+                        m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Right);
+                    }
+
+                    if (m_lastPointerMovedEventArgs.Position.Y <= (screenRect.Y + m_cameraMovementScreenBuffer))
+                    {
+                        m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Up);
+                    }
+                    else if (m_lastPointerMovedEventArgs.Position.Y >= (screenRect.Height - m_cameraMovementScreenBuffer))
+                    {
+                        m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Up);
+                    }
                 }
             }
             else if (m_lastPointerMovedEventArgs.InputType == InputType.Touch)
