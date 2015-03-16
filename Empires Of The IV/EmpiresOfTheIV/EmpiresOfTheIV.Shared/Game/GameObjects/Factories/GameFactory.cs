@@ -48,6 +48,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
                     unitPoolUnit.HeightAboveTerrain = 0.0f;
                     unitPoolUnit.Health.MaxHealth = 100.0f;
 
+                    unitPoolUnit.Transform.MovementSpeed = 0.004f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.015f);
                     unitPoolUnit.Transform.Position = spawnPosition;
                     unitPoolUnit.Transform.CreateAllMatrices();
@@ -67,6 +68,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
                     unitPoolUnit.Health.MaxHealth = 100.0f;
                     unitPoolUnit.HeightAboveTerrain = 10.0f;
 
+                    unitPoolUnit.Transform.MovementSpeed = 0.006f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.005f);
                     unitPoolUnit.Transform.Position = spawnPosition;
                     unitPoolUnit.Transform.CreateAllMatrices();

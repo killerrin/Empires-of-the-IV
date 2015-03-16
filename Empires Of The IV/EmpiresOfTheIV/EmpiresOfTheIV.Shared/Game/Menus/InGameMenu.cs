@@ -713,7 +713,7 @@ namespace EmpiresOfTheIV.Game.Menus
             // Move the Unit
             if (rayPosOnTerrain.HasValue)
             {
-                m_activeUnits[unitIndex].Transform.MoveToPosition(gameTime, rayPosOnTerrain.Value);
+                m_activeUnits[unitIndex].Transform.MoveToPosition(gameTime, (rayPosOnTerrain.Value + new Vector3(0.0f, m_activeUnits[unitIndex].HeightAboveTerrain, 0.0f)));
             }
 
             // Set all the active units to be on the terrain
