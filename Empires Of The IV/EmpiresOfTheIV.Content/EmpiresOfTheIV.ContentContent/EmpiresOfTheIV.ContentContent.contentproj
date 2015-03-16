@@ -51,24 +51,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="t-pose_3_t.fbx">
-      <Name>t-pose_3_t</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>AnimationProcessor</Processor>
-    </Compile>
-    <Compile Include="walk_t.FBX">
-      <Name>walk_t</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>AnimationProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="t-pose_3.fbx">
+    <Compile Include="Models\Units\Unanian Empire\t-pose_3.fbx">
       <Name>t-pose_3</Name>
       <Importer>FbxImporter</Importer>
       <Processor>AnimationProcessor</Processor>
     </Compile>
-    <Compile Include="walk.FBX">
+    <Compile Include="Models\Units\Unanian Empire\walk.FBX">
       <Name>walk</Name>
       <Importer>FbxImporter</Importer>
       <Processor>AnimationProcessor</Processor>
