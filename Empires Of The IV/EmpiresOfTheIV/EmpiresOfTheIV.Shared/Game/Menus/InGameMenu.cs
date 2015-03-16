@@ -198,6 +198,7 @@ namespace EmpiresOfTheIV.Game.Menus
             AnimatedModel unanianGroundSoldierAnimation = null;
             AnimationClip unanianGroundSoldierWalkAnimClip = null;
 
+            Model         unanianFactory = null;
             AnimatedModel unanianSpaceshipFighter = null;
 
             if (m_team1.IsPlayerEmpire(EmpireType.UnanianEmpire) || m_team2.IsPlayerEmpire(EmpireType.UnanianEmpire))
@@ -206,6 +207,8 @@ namespace EmpiresOfTheIV.Game.Menus
                 {
                     unanianGroundSoldierTPose = m_game.ResourceManager.GetAsset(typeof(AnimatedModel), UnitID.UnanianSoldier.ToString() + "|" + ModelType.AnimatedModel.ToString()) as AnimatedModel;
                     unanianGroundSoldierAnimation = m_game.ResourceManager.GetAsset(typeof(AnimatedModel), UnitID.UnanianSoldier.ToString() + "|" + ModelType.Animation.ToString()) as AnimatedModel;
+
+                    unanianFactory = m_game.ResourceManager.GetAsset(typeof(Model), "Unanian Factory") as Model;
                 }
                 else
                 {
@@ -214,6 +217,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     unanianGroundSoldierTPose = m_game.ResourceManager.LoadAsset(Content, typeof(AnimatedModel), "t-pose_3", UnitID.UnanianSoldier.ToString() + "|" + ModelType.AnimatedModel.ToString()) as AnimatedModel;
                     unanianGroundSoldierAnimation = m_game.ResourceManager.LoadAsset(Content, typeof(AnimatedModel), "walk", UnitID.UnanianSoldier.ToString() + "|" + ModelType.Animation.ToString()) as AnimatedModel;
 
+                    unanianFactory = m_game.ResourceManager.LoadAsset(Content, typeof(Model), "Models/Factories/Unanian Empire/Unanian Factory") as Model;
                     GameConsts.Loading.Empire_UnanianEmpireLoaded = LoadingStatus.Loaded;
                 }
 
@@ -226,6 +230,7 @@ namespace EmpiresOfTheIV.Game.Menus
             AnimatedModel crescanianGroundSoldierAnimation = null;
             AnimationClip crescanianGroundSoldierWalkAnimClip = null;
 
+            Model         crescanianFactory = null;
             AnimatedModel crescanianSpaceshipFighter = null;
 
             if (m_team1.IsPlayerEmpire(EmpireType.CrescanianConfederation) || m_team2.IsPlayerEmpire(EmpireType.CrescanianConfederation))
@@ -248,6 +253,7 @@ namespace EmpiresOfTheIV.Game.Menus
             AnimatedModel kingdomOfEdolasGroundSoldierAnimation = null;
             AnimationClip kingdomOfEdolasGroundSoldierWalkAnimClip = null;
 
+            Model         kingdomOfEdolasFactory= null;
             AnimatedModel kingdomOfEdolasSpaceshipFighter = null;
 
             if (m_team1.IsPlayerEmpire(EmpireType.TheKingdomOfEdolas) || m_team2.IsPlayerEmpire(EmpireType.TheKingdomOfEdolas))
@@ -330,13 +336,11 @@ namespace EmpiresOfTheIV.Game.Menus
                     factoryBases[0].Base.Transform.Scale = new Vector3(0.05f);
                     factoryBases[0].Base.Transform.Rotation = Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(-90.0f), 0.0f, 0.0f);
                     factoryBases[0].Base.Transform.CreateAllMatrices();
-
                     factoryBases[0].Base.Model3D = factoryBaseModel;
-
                     factoryBases[0].Base.Active = true;
                     factoryBases[0].Base.CullDraw = false;
                     factoryBases[0].Base.RenderBounds = true;
-
+                
                     // Factory 2
                     factoryBases[1] = new FactoryBase(factoryBaseIDManager.GetNewID());
                     factoryBases[1].Base = new StaticGameObject();
@@ -344,9 +348,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     factoryBases[1].Base.Transform.Scale = new Vector3(0.05f);
                     factoryBases[1].Base.Transform.Rotation = Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(90.0f), 0.0f, 0.0f);
                     factoryBases[1].Base.Transform.CreateAllMatrices();
-
                     factoryBases[1].Base.Model3D = factoryBaseModel;
-
                     factoryBases[1].Base.Active = true;
                     factoryBases[1].Base.CullDraw = false;
                     factoryBases[1].Base.RenderBounds = true;
@@ -361,8 +363,15 @@ namespace EmpiresOfTheIV.Game.Menus
                     if (m_team1.Exists(m_pageParameter.me.ID)) {
                         // Set Factory Owners
                         if (m_team2.PlayerCount > 0)
-                            factoryBases[1].Owner = m_team2.Players[0].ID;
-                        factoryBases[0].Owner = m_pageParameter.me.ID;
+                            GameFactory.CreateFactoryOnFactoryBase(factoryBases[1], m_team2.Players[0]);
+                        GameFactory.CreateFactoryOnFactoryBase(factoryBases[0], m_pageParameter.me);
+
+                        switch (m_pageParameter.me.EmpireType)
+                        {
+                            case EmpireType.UnanianEmpire:                                break;
+                            case EmpireType.CrescanianConfederation:                      break;
+                            case EmpireType.TheKingdomOfEdolas:                           break;
+                        }
 
                         // Set the Game Cameras Position
                         gameCameraPos.X = factoryBases[0].Base.Transform.Position.X;
@@ -371,8 +380,15 @@ namespace EmpiresOfTheIV.Game.Menus
                     else if (m_team2.Exists(m_pageParameter.me.ID)) {
                         // Set Factory Owners
                         if (m_team1.PlayerCount > 0)
-                            factoryBases[0].Owner = m_team1.Players[0].ID;
-                        factoryBases[1].Owner = m_pageParameter.me.ID;
+                            GameFactory.CreateFactoryOnFactoryBase(factoryBases[0], m_team1.Players[0]);
+                        GameFactory.CreateFactoryOnFactoryBase(factoryBases[1], m_pageParameter.me);
+
+                        switch (m_pageParameter.me.EmpireType)
+                        {
+                            case EmpireType.UnanianEmpire: break;
+                            case EmpireType.CrescanianConfederation: break;
+                            case EmpireType.TheKingdomOfEdolas: break;
+                        }
 
                         // Set the Game Cameras Position
                         gameCameraPos.X = factoryBases[1].Base.Transform.Position.X;
@@ -439,21 +455,13 @@ namespace EmpiresOfTheIV.Game.Menus
             for (int i = 0; i < totalUnitsInPool; i++)
             {
                 var unit = new Unit(unitIDManager.GetNewID(), UnitType.None);
-                unit.Transform.Scale = new Vector3(0.015f);
-                unit.Transform.Position = new Vector3((float)Consts.random.NextDouble(), -(float)Consts.random.NextDouble(), -5.50f + (float)Consts.random.NextDouble());
-                unit.Transform.CreateAllMatrices();
-
-                unit.Model3D = unanianGroundSoldierTPose;
 
                 unit.CullDraw = false;
                 unit.RenderBounds = true;
-
                 unit.Active = true;
                 unit.Health.Alive = true;
 
-                AnimationPlayer animPlayer = unit.PlayClip(unanianGroundSoldierWalkAnimClip);
-                animPlayer.Looping = true;
-                
+                GameFactory.CreateUnit(unit, UnitID.UnanianSoldier, new Vector3((float)Consts.random.NextDouble(), -(float)Consts.random.NextDouble(), -5.50f + (float)Consts.random.NextDouble()));                
                 m_activeUnits.Add(unit);
             }
             #endregion
@@ -465,7 +473,13 @@ namespace EmpiresOfTheIV.Game.Menus
             // Pointer
             m_game.InputManager.PointerDown += InputManager_PointerDown;
             m_game.InputManager.PointerPressed += InputManager_PointerClicked;
-            m_game.InputManager.PointerMoved += InputManager_PointerMoved;
+
+            // Because Phone will have different input interactions, we will not subscribe to PointerMoved to save processing
+            if (KillerrinStudiosToolkit.KillerrinApplicationData.OSType == KillerrinStudiosToolkit.Enumerators.ClientOSType.WindowsPhone81) { }
+            else
+            {
+                m_game.InputManager.PointerMoved += InputManager_PointerMoved;
+            }
 
             // Keyboard
             m_game.InputManager.Keyboard.KeyboardDown += Keyboard_KeyboardDown;

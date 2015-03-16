@@ -31,6 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\GameModel1v1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Factories\Factory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Factories\FactoryBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Factories\GameFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Map.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Planet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GameMenu.cs" />
@@ -282,6 +283,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Other\SelectionBox.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Models\Factories\Unanian Empire\Unanian Factory Texture_0.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Models\Factories\Unanian Empire\Unanian Factory.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

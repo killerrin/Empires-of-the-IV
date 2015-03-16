@@ -1,5 +1,6 @@
 ﻿using Anarian;
 using Anarian.DataStructures;
+using Anarian.DataStructures.Animation.Aux;
 using Anarian.DataStructures.Components;
 using Anarian.Interfaces;
 using EmpiresOfTheIV.Game.Enumerators;
@@ -26,6 +27,11 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
         private Texture2D blankTexture;
         private Texture2D selectionBox;
+
+        public AnimationClip MovementClip;
+        public AnimationClip IdleClip;
+        public AnimationClip AttackClip;
+
         public float HeightAboveTerrain;
         #endregion
 
@@ -48,7 +54,28 @@ namespace EmpiresOfTheIV.Game.GameObjects
             AddComponent(typeof(Mana));
 
             // Other Variables
+            MovementClip = null;
+            IdleClip = null;
+            AttackClip = null;
+
             HeightAboveTerrain = 0.0f;
+        }
+
+        public override void Reset()
+        {
+            UnitType = UnitType = Enumerators.UnitType.None;
+            
+            Selectable = true;
+            Selected = false;
+
+            MovementClip = null;
+            IdleClip = null;
+            AttackClip = null;
+
+            HeightAboveTerrain = 0.0f;
+
+            Health.Reset();
+            Mana.Reset();
         }
 
         #region Interface Implimentations
@@ -82,7 +109,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
             Vector2 screenPos2D = new Vector2(screenPos3D.X, screenPos3D.Y);
             Rectangle healthRectOutline = new Rectangle((int)(screenPos2D.X - graphics.Viewport.X) - 75,
                                                         (int)(screenPos2D.Y - graphics.Viewport.Y) + 25,
-                                                        102,
+                                                        (int)Health.MaxHealth + 2,
                                                         5);
             Rectangle healthRect = new Rectangle(healthRectOutline.X + 1,
                                                  healthRectOutline.Y + 1,
