@@ -26,7 +26,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Windows8' ">
     <MonoGamePlatform>Windows8</MonoGamePlatform>
-    <OutputPath>..\..\EmpiresOfTheIV\EmpiresOfTheIV.Shared\</OutputPath>
+    <OutputPath>.\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Android' ">
     <MonoGamePlatform>Android</MonoGamePlatform>

@@ -186,3 +186,8 @@
 /processorParam:TextureFormat=Color
 /build:Textures/Other/SelectionBox.png
 
+#begin Models/Units/Spaceship/Unanian Fighter.FBX
+/importer:
+/processor:
+/build:Models/Units/Spaceship/Unanian Fighter.FBX
+

@@ -51,11 +51,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="KillerrinStudiosLogo.png">
-      <Name>KillerrinStudiosLogo</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="t-pose_3_t.fbx">
       <Name>t-pose_3_t</Name>
       <Importer>FbxImporter</Importer>
@@ -68,27 +63,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Planet Logo_Text.png">
-      <Name>Planet Logo_Text</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="heightmap.bmp">
-      <Name>heightmap</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="grassTexture.jpg">
-      <Name>grassTexture</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="t-pose_3.fbx">
       <Name>t-pose_3</Name>
       <Importer>FbxImporter</Importer>
@@ -96,6 +70,14 @@
     </Compile>
     <Compile Include="walk.FBX">
       <Name>walk</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>AnimationProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Compile Include="Models\Units\Unanian Empire\Unanian Fighter.FBX">
+      <Name>Unanian Fighter</Name>
       <Importer>FbxImporter</Importer>
       <Processor>AnimationProcessor</Processor>
     </Compile>
