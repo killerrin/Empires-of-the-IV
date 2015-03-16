@@ -338,6 +338,9 @@ namespace EmpiresOfTheIV.Game
                     }
                     catch (Exception) { }
 
+                    // Notify the Menu that we exited
+                    m_gameStates.Peek().MenuExited();
+
                     // Remove the Menu so that the Update/Draw will handle the correct Menu
                     m_gameStates.Pop();
                 }
