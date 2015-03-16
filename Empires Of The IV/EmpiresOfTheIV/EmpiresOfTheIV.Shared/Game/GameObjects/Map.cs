@@ -108,9 +108,13 @@ namespace EmpiresOfTheIV.Game.GameObjects
         {
             if (BackgroundImage != null)
             {
-                spriteBatch.Begin();
-                spriteBatch.Draw(BackgroundImage, AnarianConsts.ScreenRectangle, Color.White);
-                spriteBatch.End();
+                try
+                {
+                    spriteBatch.Begin();
+                    spriteBatch.Draw(BackgroundImage, AnarianConsts.ScreenRectangle, Color.White);
+                    spriteBatch.End();
+                }
+                catch (Exception) { }
             }
 
             Terrain.Draw(gameTime, spriteBatch, graphics, camera);

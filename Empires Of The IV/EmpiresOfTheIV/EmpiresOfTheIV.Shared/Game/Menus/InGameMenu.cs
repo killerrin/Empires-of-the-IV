@@ -38,6 +38,7 @@ namespace EmpiresOfTheIV.Game.Menus
         GamePausedState m_pausedState;
 
         Overlay m_overlay;
+        SpriteFont m_empiresOfTheIVFont;
 
         #region Loading
         LoadingProgress m_currentLoadingProgress;
@@ -76,6 +77,8 @@ namespace EmpiresOfTheIV.Game.Menus
 
             m_overlay = new Overlay(m_game.GraphicsDevice, Color.Black);
             m_overlay.FadePercentage = 0.75f;
+
+            m_empiresOfTheIVFont = m_game.ResourceManager.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont") as SpriteFont;
 
             // Subscribe to Events
             m_networkManager.OnConnected += NetworkManager_OnConnected;
@@ -490,9 +493,6 @@ namespace EmpiresOfTheIV.Game.Menus
             m_game.InputManager.Keyboard.KeyboardPressed += Keyboard_KeyboardPressed;
             #endregion
 
-            if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer)
-                m_pausedState = GamePausedState.Unpaused;
-
             if (progress != null) progress.Report(new LoadingProgress(99, "Taking out Ninjas"));
 
             #region Set Default Player Values
@@ -507,6 +507,8 @@ namespace EmpiresOfTheIV.Game.Menus
             #endregion
 
             //await Task.Delay(TimeSpan.FromSeconds(0.5));
+            if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer)
+                m_pausedState = GamePausedState.Unpaused;
 
             // Send the final report and return loaded
             if (progress != null) progress.Report(new LoadingProgress(100, "Ready to Play!"));
@@ -538,7 +540,9 @@ namespace EmpiresOfTheIV.Game.Menus
         bool middleMouseDown = false;
         void InputManager_PointerDown(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
+            if (m_pausedState != GamePausedState.Unpaused) return;
             //Debug.WriteLine("{0}, Pressed", e.ToString());
+
             if (e.Pointer == PointerPress.MiddleMouseButton)
             {
                 middleMouseDown = true;
@@ -566,6 +570,7 @@ namespace EmpiresOfTheIV.Game.Menus
         public Vector3? rayPosOnTerrain;
         void InputManager_PointerClicked(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
+            if (m_pausedState != GamePausedState.Unpaused) return;
             Debug.WriteLine("{0}, Pressed", e.ToString());
 
             if (e.Pointer == PointerPress.LeftMouseButton ||
@@ -599,7 +604,9 @@ namespace EmpiresOfTheIV.Game.Menus
         PointerMovedEventArgs m_lastPointerMovedEventArgs = new PointerMovedEventArgs(new GameTime());
         void InputManager_PointerMoved(object sender, Anarian.Events.PointerMovedEventArgs e)
         {
+            if (m_pausedState != GamePausedState.Unpaused) return;
             //Debug.WriteLine("{0}, Moved", e.ToString());
+
             m_lastPointerMovedEventArgs = e;
 
             if (e.InputType == InputType.Touch)
@@ -817,13 +824,11 @@ namespace EmpiresOfTheIV.Game.Menus
             PrimitiveHelper2D.DrawRect(spriteBatch, Color.ForestGreen, loadingBar);
 
             // Text
-            var spriteFont = m_game.ResourceManager.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont") as SpriteFont;
-
             spriteBatch.Begin();
-            spriteBatch.DrawString(spriteFont, "Loading", new Vector2(centerOfScreen.X - 50, screenRect.Height * 0.15f), Color.Wheat);
+            spriteBatch.DrawString(m_empiresOfTheIVFont, "Loading", new Vector2(centerOfScreen.X - 50, screenRect.Height * 0.15f), Color.Wheat);
 
-            spriteBatch.DrawString(spriteFont, m_currentLoadingProgress.Status, new Vector2(25, outlineRect.Y - 50), Color.Wheat);
-            spriteBatch.DrawString(spriteFont, m_currentLoadingProgress.Progress + "%", new Vector2(outlineRect.Width - 100, outlineRect.Y - 50), Color.Wheat);
+            spriteBatch.DrawString(m_empiresOfTheIVFont, m_currentLoadingProgress.Status, new Vector2(25, outlineRect.Y - 50), Color.Wheat);
+            spriteBatch.DrawString(m_empiresOfTheIVFont, m_currentLoadingProgress.Progress + "%", new Vector2(outlineRect.Width - 100, outlineRect.Y - 50), Color.Wheat);
             spriteBatch.End();
         }
 

@@ -103,6 +103,8 @@ namespace EmpiresOfTheIV
             // Load the Content
             m_stateManager.LoadStateManager(Color.Black);
 
+            PrimitiveHelper2D.SetDefaultTexture();
+
             #region Unified Menu
             if (GameConsts.Loading.Menu_UnifiedLoaded != LoadingStatus.Loaded)
             {
