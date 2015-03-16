@@ -537,7 +537,7 @@ namespace EmpiresOfTheIV.Game.Menus
         #region Pointer
         void InputManager_PointerDown(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
-            Debug.WriteLine("{0}, Pressed", e.ToString());
+            //Debug.WriteLine("{0}, Pressed", e.ToString());
             if (e.Pointer == PointerPress.MiddleMouseButton)
             {
                 var delta = e.DeltaPosition;
@@ -563,7 +563,7 @@ namespace EmpiresOfTheIV.Game.Menus
         public Vector3? rayPosOnTerrain;
         void InputManager_PointerClicked(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
-            //Debug.WriteLine("{0}, Pressed", e.ToString());
+            Debug.WriteLine("{0}, Pressed", e.ToString());
 
             if (e.Pointer == PointerPress.LeftMouseButton ||
                 e.Pointer == PointerPress.Touch)
@@ -575,7 +575,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     );
 
                 bool intersects = m_activeUnits[unitIndex].CheckRayIntersection(ray);
-                Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
+                //Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
 
                 currentRay = ray;
 
