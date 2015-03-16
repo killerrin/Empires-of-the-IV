@@ -32,30 +32,29 @@ namespace EmpiresOfTheIV.Game.Players
 
         public bool CanAfford(Cost cost)
         {
-            return (Currency.CurrentAmount  >= cost.CurrencyCost)   &&
-                   (Metal.CurrentAmount     >= cost.MetalCost)      &&
-                   (Energy.CurrentAmount    >= cost.EnergyCost)     &&
-                   (UnitCap.CurrentAmount   >= cost.UnitCost);
+            return (Currency.CanAfford(cost.CurrencyCost)   &&
+                   Metal.CanAfford(cost.MetalCost)      &&
+                   Energy.CanAfford(cost.EnergyCost)     &&
+                   UnitCap.CanAfford(cost.UnitCost)
+                   );
         }
 
         public void AddCost(Cost cost)
         {
-            if (!CanAfford(cost)) return;
-
-            Currency.CurrentAmount  += cost.CurrencyCost;
-            Metal.CurrentAmount     += cost.MetalCost;
-            Energy.CurrentAmount    += cost.EnergyCost;
-            UnitCap.CurrentAmount   += cost.UnitCost;
+            Currency.AddAmount(cost.CurrencyCost);
+            Metal.AddAmount(cost.MetalCost);
+            Energy.AddAmount(cost.EnergyCost);
+            UnitCap.AddAmount(cost.UnitCost);
         }
 
         public bool SubtractCost(Cost cost)
         {
             if (!CanAfford(cost)) return false;
 
-            Currency.CurrentAmount  -= cost.CurrencyCost;
-            Metal.CurrentAmount     -= cost.MetalCost;
-            Energy.CurrentAmount    -= cost.EnergyCost;
-            UnitCap.CurrentAmount   -= cost.UnitCost;
+            Currency.SubtractAmount(cost.CurrencyCost);
+            Metal.SubtractAmount(cost.MetalCost);
+            Energy.SubtractAmount(cost.EnergyCost);
+            UnitCap.SubtractAmount(cost.UnitCost);
             return true;
         }
 

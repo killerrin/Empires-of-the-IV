@@ -639,6 +639,18 @@ namespace EmpiresOfTheIV
 
                         pageParameter.maxUnitsPerPlayer = maxUnitSlider.Value;
 
+                        for (int i = 0; i < team1.PlayerCount; i++)
+                        {
+                            team1[i].Economy.UnitCap.MaxAmount = maxUnitSlider.Value;
+                            team1[i].Economy.UnitCap.CurrentAmount = team1[i].Economy.UnitCap.MaxAmount;
+                        }
+                        for (int i = 0; i < team2.PlayerCount; i++)
+                        {
+                            team2[i].Economy.UnitCap.MaxAmount = maxUnitSlider.Value;
+                            team2[i].Economy.UnitCap.CurrentAmount = team2[i].Economy.UnitCap.MaxAmount;
+                        }
+
+
                         Player me = null;
                         if (team1.Exists(username))
                             me = team1.GetPlayer(username);
