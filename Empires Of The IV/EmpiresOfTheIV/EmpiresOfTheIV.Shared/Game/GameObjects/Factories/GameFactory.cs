@@ -65,7 +65,13 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
                     unitPoolUnit.UnitType = UnitType.Space;
 
                     unitPoolUnit.Health.MaxHealth = 100.0f;
-                    unitPoolUnit.HeightAboveTerrain = 20.0f;
+                    unitPoolUnit.HeightAboveTerrain = 10.0f;
+
+                    unitPoolUnit.Transform.Scale = new Vector3(0.005f);
+                    unitPoolUnit.Transform.Position = spawnPosition;
+                    unitPoolUnit.Transform.CreateAllMatrices();
+
+                    unitPoolUnit.Model3D = ResourceManager.Instance.GetAsset(typeof(AnimatedModel), UnitID.UnanianSpaceFighter.ToString() + "|" + ModelType.AnimatedModel.ToString()) as AnimatedModel;
                     break;
             }
 
