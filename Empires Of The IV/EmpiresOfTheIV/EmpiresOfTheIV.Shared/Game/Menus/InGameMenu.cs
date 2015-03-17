@@ -597,7 +597,6 @@ namespace EmpiresOfTheIV.Game.Menus
                 return;
             }
 
-
             // Get the regular object
             JObject jObject = null;
             EotIVPacket regularPacket = null;
@@ -698,10 +697,10 @@ namespace EmpiresOfTheIV.Game.Menus
                 bool intersects = m_activeUnits[unitIndex].CheckRayIntersection(ray);
                 //Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
 
-                currentRay = ray;
+                //currentRay = ray;
 
                 // Get the point on the terrain
-                rayPosOnTerrain = m_map.Terrain.Intersects(ray);
+                //rayPosOnTerrain = m_map.Terrain.Intersects(ray);
             }
 
             if (e.Pointer == PointerPress.MiddleMouseButton)
@@ -955,7 +954,8 @@ namespace EmpiresOfTheIV.Game.Menus
         {
             if (m_currentLoadingProgress.Progress < 100) { 
                 DrawLoadingMenu(gameTime, spriteBatch, graphics);
-                base.Draw(gameTime, spriteBatch, graphics); return;
+                base.Draw(gameTime, spriteBatch, graphics); 
+                return;
             }
 
             // Draw The Map
@@ -989,8 +989,6 @@ namespace EmpiresOfTheIV.Game.Menus
 
             switch (m_pausedState)
             {
-                case GamePausedState.Unpaused:
-                    break;
                 case GamePausedState.Paused:            DrawPaused(gameTime, spriteBatch, graphics);           break;                             
                 case GamePausedState.WaitingForData:    DrawWaitingForData(gameTime, spriteBatch, graphics);   break;
             }
@@ -1030,8 +1028,10 @@ namespace EmpiresOfTheIV.Game.Menus
                 PrimitiveHelper2D.DrawRect(spriteBatch, Color.ForestGreen, loadingBar);
 
                 // Text
+                Vector2 loadingSize = m_empiresOfTheIVFont.MeasureString("Loading");
+
                 spriteBatch.Begin();
-                spriteBatch.DrawString(m_empiresOfTheIVFont, "Loading", new Vector2(centerOfScreen.X - 50, screenRect.Height * 0.15f), Color.Wheat);
+                spriteBatch.DrawString(m_empiresOfTheIVFont, "Loading", new Vector2(centerOfScreen.X - (loadingSize.X * 0.3f), screenRect.Height * 0.15f), Color.Wheat);
 
                 spriteBatch.DrawString(m_empiresOfTheIVFont, m_currentLoadingProgress.Status, new Vector2(25, outlineRect.Y - 50), Color.Wheat);
                 spriteBatch.DrawString(m_empiresOfTheIVFont, m_currentLoadingProgress.Progress + "%", new Vector2(outlineRect.Width - 100, outlineRect.Y - 50), Color.Wheat);
@@ -1047,6 +1047,12 @@ namespace EmpiresOfTheIV.Game.Menus
         public void DrawWaitingForData(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             m_overlay.Draw(gameTime, spriteBatch);
+
+            Vector2 waitingTextSize = m_empiresOfTheIVFont.MeasureString("Waiting for Data");
+
+            spriteBatch.Begin();
+            spriteBatch.DrawString(m_empiresOfTheIVFont, "Waiting for Data", new Vector2(centerOfScreen.X - (waitingTextSize.X * 0.3f), screenRect.Height * 0.15f), Color.Wheat);
+            spriteBatch.End();
         }
         #endregion
     }
