@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 
 
-namespace EmpiresOfTheIV.Game.Enumerators
+namespace EmpiresOfTheIV.Game.Commands
 {
     public enum CommandType
     {
+        None,
         Select,
 
         ///--------------------
