@@ -875,7 +875,7 @@ namespace EmpiresOfTheIV.Game.Menus
             if (activeTouchPointers.Count == 2)
             {
                 var movementBuffer = 0.2f;
-                var deltaTouch = activeTouchPointers[0].DeltaPosition;
+                var deltaTouch = activeTouchPointers[1].DeltaPosition;
                 deltaTouch.Normalize();
 
                 if (deltaTouch.X < 0 - movementBuffer)
