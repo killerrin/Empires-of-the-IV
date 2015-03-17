@@ -39,7 +39,7 @@ namespace EmpiresOfTheIV.Game.Players
         }
         public static Player AIPlayer(uint playerID, string playerName)
         {
-            return new Player(playerID, "AI" + playerName + playerID, PlayerType.AI);
+            return new Player(playerID, "AI_" + playerName + playerID, PlayerType.AI);
         }
 
         #region Interface Implimentation

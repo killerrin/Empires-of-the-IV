@@ -658,6 +658,17 @@ namespace EmpiresOfTheIV
                             me = team2.GetPlayer(username);
                         pageParameter.me = me;
                         
+                        // If a team has 0 players, add an AI to that team
+                        if (team1.PlayerCount == 0) {
+                            uint aiID = playerIDManager.GetNewID();
+                            team1.AddToTeam(PlayerType.AI, aiID, "AI_" + aiID);
+                        }
+                        else if (team2.PlayerCount == 0)
+                        {
+                            uint aiID = playerIDManager.GetNewID();
+                            team2.AddToTeam(PlayerType.AI, aiID, "AI_" + aiID);
+                        }
+                        
                         pageParameter.team1 = team1;
                         pageParameter.team2 = team2;
 
