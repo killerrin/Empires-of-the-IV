@@ -29,7 +29,10 @@ namespace EmpiresOfTheIV.Game.Commands
         /// </summary>
         public uint ID2 { get; set; }
 
-        public Vector3 MoveTo { get; set; }
+        /// <summary>
+        /// A Position used for movements or selection
+        /// </summary>
+        public Vector3 Position { get; set; }
 
         /// <summary>
         /// Used in the building of units
@@ -48,7 +51,7 @@ namespace EmpiresOfTheIV.Game.Commands
             TargetType = Commands.TargetType.None;
             ID1 = uint.MaxValue;
             ID2 = uint.MaxValue;
-            MoveTo = new Vector3();
+            Position = new Vector3();
             UnitType = Enumerators.UnitType.None;
             Damage = double.MaxValue;
         }
@@ -61,7 +64,7 @@ namespace EmpiresOfTheIV.Game.Commands
             command.CommandType = CommandType.Move;
             command.TargetType = TargetType.Unit;
             command.ID1 = unitID;
-            command.MoveTo = moveTo;
+            command.Position = moveTo;
             return command;
         }
         public static Command CancelCommand(uint id, TargetType target)
@@ -96,7 +99,7 @@ namespace EmpiresOfTheIV.Game.Commands
             command.CommandType = CommandType.SetFactoryRallyPoint;
             command.TargetType = TargetType.Factory;
             command.ID1 = factoryID;
-            command.MoveTo = positionMoveTo;
+            command.Position = positionMoveTo;
             return command;
         }
         #endregion
@@ -130,6 +133,5 @@ namespace EmpiresOfTheIV.Game.Commands
         }
         #endregion
         #endregion
-
     }
 }
