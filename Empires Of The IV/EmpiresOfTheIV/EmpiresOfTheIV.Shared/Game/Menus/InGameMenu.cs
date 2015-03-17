@@ -507,7 +507,11 @@ namespace EmpiresOfTheIV.Game.Menus
             for (int i = 0; i < totalUnitsInPool; i++)
             {
                 var unit = new Unit(unitIDManager.GetNewID(), UnitType.None);
-                GameFactory.CreateUnit(unit, UnitID.UnanianSpaceFighter, new Vector3((float)Consts.random.NextDouble(), -(float)Consts.random.NextDouble(), -5.50f + (float)Consts.random.NextDouble()));                
+                GameFactory.CreateUnit(unit, UnitID.UnanianSpaceFighter,
+                    new Vector3((float)Consts.random.NextDouble() * 15.0f,
+                                (float)0.0f,
+                                (float)Consts.random.NextDouble())
+                );                
                 m_activeUnits.Add(unit);
             }
             #endregion
@@ -701,6 +705,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
 
         bool selectionReleased = false;
+        public Vector3? rayPosOnTerrain;
         void InputManager_PointerClicked(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
             //if (m_pausedState != GamePausedState.Unpaused) return;
@@ -715,6 +720,20 @@ namespace EmpiresOfTheIV.Game.Menus
             if (e.Pointer == PointerPress.MiddleMouseButton)
             {
                 middleMouseDown = false;
+            }
+
+            if (e.Pointer == PointerPress.RightMouseButton)
+            {
+                Ray ray = m_gameCamera.GetMouseRay(
+                	e.Position,
+                	m_game.Graphics.GraphicsDevice.Viewport
+                );
+                
+                //bool intersects = m_activeUnits[unitIndex].CheckRayIntersection(ray);
+                //Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
+                
+                // Get the point on the terrain
+                rayPosOnTerrain = m_map.Terrain.Intersects(ray);
             }
         }
 
@@ -811,7 +830,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 case GamePausedState.WaitingForData: UpdateWaitingForData(gameTime); base.Update(gameTime); return;
             }
 
-            #region First thing we do is Update the GameCamera
+            #region First thing we do is Update the Input
             var screenRect = AnarianConsts.ScreenRectangle;
             var previousCamY = m_gameCamera.Position.Y;
 
@@ -900,6 +919,17 @@ namespace EmpiresOfTheIV.Game.Menus
                 }
             }
 
+            if (activeTouchPointers.Count == 3)
+            {
+                Ray ray = m_gameCamera.GetMouseRay(
+                    activeTouchPointers[1].Position,
+                    m_game.Graphics.GraphicsDevice.Viewport
+                );
+
+                // Get the point on the terrain
+                rayPosOnTerrain = m_map.Terrain.Intersects(ray);
+            }
+
             #endregion
 
             if (activeTouchPointers.Count == 1 ||
@@ -926,7 +956,8 @@ namespace EmpiresOfTheIV.Game.Menus
 
             // If it is not, we can proceed to update the game
             m_pageParameter.me.Update(gameTime);
-            
+
+            #region Check Selection
             if (selectionReleased)
             {
                 if (m_selectionBox != Rectangle.Empty)
@@ -950,12 +981,22 @@ namespace EmpiresOfTheIV.Game.Menus
                 selectionReleased = false;
                 m_selectionBox = Rectangle.Empty;
             }
-            // Move the Unit
-            //if (rayPosOnTerrain.HasValue)
-            //{
-            //    m_activeUnits[unitIndex].Transform.MoveToPosition(gameTime, (rayPosOnTerrain.Value + new Vector3(0.0f, m_activeUnits[unitIndex].HeightAboveTerrain, 0.0f)));
-            //}
-            //
+            #endregion
+
+            #region Do Commands
+            for (int i = 0; i < m_activeUnits.Count; i++)
+            {
+                if (m_activeUnits[i].Selected)
+                {
+                    // Move Units
+                    if (rayPosOnTerrain.HasValue)
+                    {
+                        m_activeUnits[i].Transform.MoveToPosition(gameTime, (rayPosOnTerrain.Value + new Vector3(0.0f, m_activeUnits[i].HeightAboveTerrain, 0.0f)));
+                    }
+                }
+            }
+            #endregion
+
             // Set all the active units to be on the terrain
             for (int i = 0; i < m_activeUnits.Count; i++)
             {
