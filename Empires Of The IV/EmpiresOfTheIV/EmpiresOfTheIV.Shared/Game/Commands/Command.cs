@@ -37,7 +37,7 @@ namespace EmpiresOfTheIV.Game.Commands
         /// <summary>
         /// Used in the building of units
         /// </summary>
-        public UnitType UnitType { get; set; }
+        public UnitID UnitID { get; set; }
 
         /// <summary>
         /// Used for storing Damage Given to an Object
@@ -52,27 +52,27 @@ namespace EmpiresOfTheIV.Game.Commands
             ID1 = uint.MaxValue;
             ID2 = uint.MaxValue;
             Position = new Vector3();
-            UnitType = Enumerators.UnitType.None;
+            UnitID = Enumerators.UnitID.None;
             Damage = double.MaxValue;
         }
 
         #region Specific Commands
         #region Universal Commands
-        public static Command MoveCommand(uint unitID, Vector3 moveTo)
+        public static Command MoveCommand(uint unitpoolID, Vector3 moveTo)
         {
             Command command = new Command();
             command.CommandType = CommandType.Move;
             command.TargetType = TargetType.Unit;
-            command.ID1 = unitID;
+            command.ID1 = unitpoolID;
             command.Position = moveTo;
             return command;
         }
-        public static Command CancelCommand(uint id, TargetType target)
+        public static Command CancelCommand(uint targetID, TargetType target)
         {
             Command command = new Command();
             command.CommandType = CommandType.Cancel;
             command.TargetType = target;
-            command.ID1 = id;
+            command.ID1 = targetID;
             return command;
         }
         public static Command BuildFactoryCommand(uint factoryID)
@@ -83,13 +83,13 @@ namespace EmpiresOfTheIV.Game.Commands
             command.ID1 = factoryID;
             return command;
         }
-        public static Command BuildUnitCommand(uint unitId, UnitType unitType, uint factoryID)
+        public static Command BuildUnitCommand(uint unitpoolID, UnitID unitID, uint factoryID)
         {
             Command command = new Command();
             command.CommandType = CommandType.BuildUnit;
             command.TargetType = TargetType.Unit;
-            command.ID1 = unitId;
-            command.UnitType = unitType;
+            command.ID1 = unitpoolID;
+            command.UnitID = unitID;
             command.ID2 = factoryID;
             return command;
         }
@@ -105,12 +105,12 @@ namespace EmpiresOfTheIV.Game.Commands
         #endregion
 
         #region Host Only Commands
-        public static Command AttackCommand(uint unitID, uint targetID, TargetType target)
+        public static Command AttackCommand(uint unitpoolID, uint targetID, TargetType target)
         {
             Command command = new Command();
             command.CommandType = CommandType.Attack;
             command.TargetType = target;
-            command.ID1 = unitID;
+            command.ID1 = unitpoolID;
             command.ID2 = targetID;
             return command;
         }
