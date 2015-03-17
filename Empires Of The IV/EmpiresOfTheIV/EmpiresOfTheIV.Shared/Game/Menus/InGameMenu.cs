@@ -642,14 +642,19 @@ namespace EmpiresOfTheIV.Game.Menus
         #region Input
         #region Pointer
         public List<PointerPressedEventArgs> activeTouchPointers = new List<PointerPressedEventArgs>();
+        public List<int> ignoreTouchIDs = new List<int>();
         bool middleMouseDown = false;
         void InputManager_PointerDown(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
             if (m_pausedState != GamePausedState.Unpaused) return;
-            //Debug.WriteLine("{0}, Pressed", e.ToString());
+            Debug.WriteLine("{0}, Pressed", e.ToString());
 
             if (e.Pointer == PointerPress.Touch)
             {
+                foreach (var i in ignoreTouchIDs)
+                    if (i == e.ID)
+                        return;
+
                 activeTouchPointers.Add(e);
             }
             else if (e.Pointer == PointerPress.MiddleMouseButton)
@@ -851,6 +856,22 @@ namespace EmpiresOfTheIV.Game.Menus
             #endregion
 
             #region Touch Controls
+            // Cull out old stuck pointers
+            if (activeTouchPointers.Count == 3)
+            {
+                // If the first ID + 5 is less than the second pointer, we can assume the touch is stuck and we can safely ignore it
+                if ((activeTouchPointers[0].ID + 5) < activeTouchPointers[1].ID)
+                {
+                    // Ignore 0 as thats mouse and we can't stop it
+                    if (activeTouchPointers[0].ID != 0)
+                        ignoreTouchIDs.Add(activeTouchPointers[0].ID);
+
+                    // If its not the mouse though, parse out the old ID
+                    activeTouchPointers.RemoveAt(0);
+                }
+            }
+
+            // Now do Touch Controls
             if (activeTouchPointers.Count == 2)
             {
                 var movementBuffer = 0.2f;
