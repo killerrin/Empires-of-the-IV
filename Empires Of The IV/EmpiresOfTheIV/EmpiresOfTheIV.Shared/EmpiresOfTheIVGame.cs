@@ -96,9 +96,16 @@ namespace EmpiresOfTheIV
 
             // Load Special Data Once
             ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/KillerrinStudiosLogo");
+            ResourceManager.LoadAsset(Content, typeof(SpriteFont), "Fonts/EmpiresOfTheIVFont");
+            ResourceManager.LoadAsset(Content, typeof(SpriteFont), "Fonts/EmpiresOfTheIVFont Small");
+            
+            // Load Special Game Data Once
             ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Other/SelectionBox");
 
-            ResourceManager.LoadAsset(Content, typeof(SpriteFont), "Fonts/EmpiresOfTheIVFont");
+            ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Economy/Currency");
+            ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Economy/Metal");
+            ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Economy/Energy");
+            ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Economy/Unit Cap");
 
             // Load the Content
             m_stateManager.LoadStateManager(Color.Black);

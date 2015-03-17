@@ -104,6 +104,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
         {
             base.Draw(gameTime, spriteBatch, graphics, camera);
 
+            if (m_model == null) return;
+
             #region Draw the Health
             Vector3 screenPos3D = graphics.Viewport.Project(m_transform.WorldPosition, camera.Projection, camera.View, camera.World);
             Vector2 screenPos2D = new Vector2(screenPos3D.X, screenPos3D.Y);

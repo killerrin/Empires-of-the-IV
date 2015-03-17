@@ -7,6 +7,8 @@ namespace EmpiresOfTheIV.Game.Networking
     public enum SystemPacketID
     {
         None,                       // Nothing
+        Ack,
+        ConnectionTick,
 
         // Client Only
         RequestSetupData,           // Sent by the players once they have loaded the game lobby to get the current game information

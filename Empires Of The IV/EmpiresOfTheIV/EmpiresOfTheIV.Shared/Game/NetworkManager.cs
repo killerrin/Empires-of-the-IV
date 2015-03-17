@@ -26,6 +26,8 @@ namespace EmpiresOfTheIV.Game
         public EmpiresOfTheIVGame Game { get { return m_game; } protected set { m_game = value; } }
 
         #region Fields/Properties
+        public TimeSpan ConnectionPreventTimeoutTick;
+
         public readonly Guid UniqueNetworkGUID = new Guid("20BB9225-AC4B-4ACD-9B12-126D8EBCF2D6");
         public readonly string NetworkPort = "27135";
 
@@ -45,6 +47,7 @@ namespace EmpiresOfTheIV.Game
         public NetworkManager(EmpiresOfTheIVGame game)
         {
             m_game = game;
+            ConnectionPreventTimeoutTick = TimeSpan.FromSeconds(30.0);
 
             // Initialize us to None for later parsing
             HostSettings = HostType.Client;

@@ -338,11 +338,14 @@ namespace EmpiresOfTheIV.Game
                     }
                     catch (Exception) { }
 
-                    // Notify the Menu that we exited
-                    m_gameStates.Peek().MenuExited();
+                    if (m_gameStates.Count > 1)
+                    {
+                        // Notify the Menu that we exited
+                        m_gameStates.Peek().MenuExited();
 
-                    // Remove the Menu so that the Update/Draw will handle the correct Menu
-                    m_gameStates.Pop();
+                        // Remove the Menu so that the Update/Draw will handle the correct Menu
+                        m_gameStates.Pop();
+                    }
                 }
                 else {
                     switch (m_goingToMenu.State) {
@@ -365,6 +368,12 @@ namespace EmpiresOfTheIV.Game
                         case GameState.None:                        MainPage.PageFrame.Navigate(typeof(BlankPage), m_pageParameterFlag); break;
                     }
 
+                    // Notify the Menu that we exited
+                    if (m_gameStates.Count > 1) {
+                        m_gameStates.Peek().MenuExited();
+                    }
+
+                    // Now go back
                     if (m_removePreviousOnCompleted) {
                         m_gameStates.Pop();
                     }

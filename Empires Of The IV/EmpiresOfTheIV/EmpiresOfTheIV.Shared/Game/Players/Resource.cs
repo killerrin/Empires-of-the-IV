@@ -1,4 +1,5 @@
 ﻿using Anarian.Interfaces;
+using KillerrinStudiosToolkit.Converters;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ namespace EmpiresOfTheIV.Game.Players
         public double CurrentAmount { get; set; }
         public double MaxAmount { get; set; }
 
+        public string CurrentAmountAsString { get { return ShorthandCurrencyConverter.ConvertToShorthand(CurrentAmount); } }
+
         public Resource(ResourceType resourceType)
         {
             ResourceType = resourceType;
@@ -26,7 +29,7 @@ namespace EmpiresOfTheIV.Game.Players
             AccumilationModifier = 1.0;
             CurrentAmount = 0.0;
 
-            MaxAmount = double.MaxValue - 10.0;
+            MaxAmount = double.MaxValue - 100.0;
         }
 
         public bool CanAfford(double amount)

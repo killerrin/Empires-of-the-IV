@@ -15,12 +15,15 @@ using EmpiresOfTheIV.Game.GameObjects;
 using EmpiresOfTheIV.Game.GameObjects.Factories;
 using EmpiresOfTheIV.Game.Loading;
 using EmpiresOfTheIV.Game.Menus.PageParameters;
+using EmpiresOfTheIV.Game.Networking;
 using EmpiresOfTheIV.Game.Players;
 using KillerrinStudiosToolkit.Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -39,12 +42,30 @@ namespace EmpiresOfTheIV.Game.Menus
 
         Overlay m_overlay;
         SpriteFont m_empiresOfTheIVFont;
+        SpriteFont m_empiresOfTheIVFontSmall;
+
+        Texture2D m_currencyTexture; 
+        Texture2D m_metalTexture;
+        Texture2D m_energyTexture;
+        Texture2D m_unitCapTexture;
+
+        Rectangle screenRect = AnarianConsts.ScreenRectangle;
+        Vector2 centerOfScreen;
 
         #region Loading
+        private object loadinglockObject = new object();
+
         LoadingProgress m_currentLoadingProgress;
         Progress<LoadingProgress> m_loadingProgress;
         Task<LoadingStatus> m_loadingContentTask;
         Texture2D m_loadingMiniMap;
+        #endregion
+
+        #region Networking
+        private object opponentloadedLockObject = new object();
+        bool opponentFullyLoaded = false;
+
+        Timer m_networkTimer;
         #endregion
 
         #region Page Parameters
@@ -57,7 +78,7 @@ namespace EmpiresOfTheIV.Game.Menus
         #endregion
 
         UniversalCamera m_gameCamera;
-        int m_cameraMovementScreenBuffer = 25;
+        int m_cameraMovementScreenBuffer = 30;
 
         List<Unit> m_activeUnits;
         List<Unit> m_inactiveUnits;
@@ -69,6 +90,10 @@ namespace EmpiresOfTheIV.Game.Menus
             :base(game, parameter, GameState.InGame)
         {
             m_networkManager = m_game.NetworkManager;
+            m_networkTimer = new Timer(m_networkManager.ConnectionPreventTimeoutTick);
+            m_networkTimer.Completed += m_networkTimer_Completed;
+
+
             m_pausedState = GamePausedState.WaitingForData;
 
             m_currentLoadingProgress = new LoadingProgress(0, "");
@@ -78,7 +103,11 @@ namespace EmpiresOfTheIV.Game.Menus
             m_overlay = new Overlay(m_game.GraphicsDevice, Color.Black);
             m_overlay.FadePercentage = 0.75f;
 
+            centerOfScreen = new Vector2(screenRect.Width / 2.0f, screenRect.Height / 2.0f);
+
+            // Get basic Assets
             m_empiresOfTheIVFont = m_game.ResourceManager.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont") as SpriteFont;
+            m_empiresOfTheIVFontSmall = m_game.ResourceManager.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont Small") as SpriteFont;
 
             // Subscribe to Events
             m_networkManager.OnConnected += NetworkManager_OnConnected;
@@ -143,31 +172,39 @@ namespace EmpiresOfTheIV.Game.Menus
         public override void MenuExited()
         {
             base.MenuExited();
+
+            // De-Subscribe to our Events
+            // Pointer
+            m_game.InputManager.PointerDown -= InputManager_PointerDown;
+            m_game.InputManager.PointerPressed -= InputManager_PointerClicked;
+            m_game.InputManager.PointerMoved -= InputManager_PointerMoved;
+
+            // Keyboard
+            m_game.InputManager.Keyboard.KeyboardDown -= Keyboard_KeyboardDown;
+            m_game.InputManager.Keyboard.KeyboardPressed -= Keyboard_KeyboardPressed;
         }
 
         public override void SendMessage(object message)
         {
             base.SendMessage(message);
         }
-        #endregion
 
         private void StateManager_OnBackButtonPressed(object sender, EventArgs e)
         {
-            // De-Subscribe to our Events
-            // Pointer
-            m_game.InputManager.PointerDown -= InputManager_PointerDown;
-            m_game.InputManager.PointerPressed -= InputManager_PointerClicked;
-            m_game.InputManager.PointerMoved -= InputManager_PointerMoved;
-            
-            // Keyboard
-            m_game.InputManager.Keyboard.KeyboardDown -= Keyboard_KeyboardDown;
-            m_game.InputManager.Keyboard.KeyboardPressed -= Keyboard_KeyboardPressed;
+            if (m_currentLoadingProgress.Progress < 100) { return; }
+            return;
         }
+        #endregion
 
         #region Loading
         private async Task<LoadingStatus> LoadContent(IProgress<LoadingProgress> progress, ContentManager Content, GraphicsDevice graphics)
         {
-            if (progress != null) progress.Report(new LoadingProgress(0, "Setting up Map"));
+            if (progress != null) progress.Report(new LoadingProgress(0, "Initial Setup"));
+
+            m_currencyTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Currency") as Texture2D;
+            m_metalTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Metal") as Texture2D;
+            m_energyTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Energy") as Texture2D;
+            m_unitCapTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Unit Cap") as Texture2D;
 
             #region Setup Variables
             m_gameCamera = new UniversalCamera();
@@ -405,8 +442,8 @@ namespace EmpiresOfTheIV.Game.Menus
                     m_gameCamera.DefaultCameraPosition = m_gameCamera.Position;
 
                     // MathHelper.Clamp(gameCameraPosition.Y, 30.0f, 56.0f);
-                    m_gameCamera.MinClamp = new Vector3(-92.60f, m_gameCamera.DefaultCameraPosition.Y, -18.35f);
-                    m_gameCamera.MaxClamp = new Vector3(85.80f, m_gameCamera.DefaultCameraPosition.Y,  36.74f);
+                    m_gameCamera.MinClamp = new Vector3(-92.60f, m_gameCamera.DefaultCameraPosition.Y - 10, -18.35f);
+                    m_gameCamera.MaxClamp = new Vector3(85.80f, m_gameCamera.DefaultCameraPosition.Y + 10,  36.74f);
 
                     break;
                 #endregion
@@ -462,13 +499,7 @@ namespace EmpiresOfTheIV.Game.Menus
             for (int i = 0; i < totalUnitsInPool; i++)
             {
                 var unit = new Unit(unitIDManager.GetNewID(), UnitType.None);
-
-                unit.CullDraw = false;
-                unit.RenderBounds = true;
-                unit.Active = true;
-                unit.Health.Alive = true;
-
-                GameFactory.CreateUnit(unit, UnitID.UnanianSoldier, new Vector3((float)Consts.random.NextDouble(), -(float)Consts.random.NextDouble(), -5.50f + (float)Consts.random.NextDouble()));                
+                GameFactory.CreateUnit(unit, UnitID.UnanianSpaceFighter, new Vector3((float)Consts.random.NextDouble(), -(float)Consts.random.NextDouble(), -5.50f + (float)Consts.random.NextDouble()));                
                 m_activeUnits.Add(unit);
             }
             #endregion
@@ -509,6 +540,15 @@ namespace EmpiresOfTheIV.Game.Menus
             //await Task.Delay(TimeSpan.FromSeconds(0.5));
             if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer)
                 m_pausedState = GamePausedState.Unpaused;
+            else
+            {
+                m_pausedState = GamePausedState.WaitingForData;
+                if (m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Client)
+                {
+                    SystemPacket sp = new SystemPacket(true, SystemPacketID.GameLoaded, "");
+                    m_networkManager.SendMessage(sp.ThisToJson());
+                }
+            }
 
             // Send the final report and return loaded
             if (progress != null) progress.Report(new LoadingProgress(100, "Ready to Play!"));
@@ -517,11 +557,31 @@ namespace EmpiresOfTheIV.Game.Menus
         void m_loadingProgress_ProgressChanged(object sender, LoadingProgress e)
         {
             Debug.WriteLine("m_loadingProgress_ProgressChanged: " + e.ToString());
-            m_currentLoadingProgress = e;
+            lock (loadinglockObject)
+            {
+                m_currentLoadingProgress = e;
+            }
         }
         #endregion
 
         #region Networking
+        void m_networkTimer_Completed(object sender, EventArgs e)
+        {
+            if (m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
+            {
+                Debug.WriteLine("Sending Connection Tick");
+
+                // Send an ACK to keep the connection opened
+                SystemPacket sp = new SystemPacket(true, SystemPacketID.ConnectionTick, "");
+                m_networkManager.SendMessage(sp.ThisToJson());
+
+            }
+
+            // Reset the timer
+            m_networkTimer.Reset();
+        }
+
+
         private void NetworkManager_OnConnected(object sender, OnConnectedEventArgs e)
         {
         }
@@ -532,11 +592,58 @@ namespace EmpiresOfTheIV.Game.Menus
 
         private void NetworkManager_OnMessageRecieved(object sender, ReceivedMessageEventArgs e)
         {
+            if (e.Message == Consts.Game.NetworkManager.LanHelper.ConnectionCloseMessage)
+            {
+                return;
+            }
+
+
+            // Get the regular object
+            JObject jObject = null;
+            EotIVPacket regularPacket = null;
+            try
+            {
+                jObject = JObject.Parse(e.Message);
+                regularPacket = JsonConvert.DeserializeObject<EotIVPacket>(jObject.ToString());
+                Debug.WriteLine("Deserialized Packet");
+            }
+            catch (Exception) { return; }
+
+            // Now parse the object to get the right derived class
+            if (regularPacket.PacketType == PacketType.Chat)
+            {
+                Debug.WriteLine("Chat Packet Recieved");
+                ChatPacket chatPacket = JsonConvert.DeserializeObject<ChatPacket>(jObject.ToString());
+
+                try
+                {
+                    m_chatManager.AddMessage(chatPacket.Message);
+                }
+                catch (Exception) { }
+            }
+            else if (regularPacket.PacketType == PacketType.System)
+            {
+                Debug.WriteLine("System Packet Recieved");
+                SystemPacket systemPacket = JsonConvert.DeserializeObject<SystemPacket>(jObject.ToString());
+
+                if (systemPacket.ID == SystemPacketID.GameLoaded)
+                {
+                    lock(opponentloadedLockObject)
+                    {
+                        opponentFullyLoaded = true;
+                    }
+                }
+                else if (systemPacket.ID == SystemPacketID.GameBegin)
+                {
+                    m_pausedState = GamePausedState.Unpaused;
+                }
+            }
         }
         #endregion
 
         #region Input
         #region Pointer
+        public List<PointerPressedEventArgs> activeTouchPointers = new List<PointerPressedEventArgs>();
         bool middleMouseDown = false;
         void InputManager_PointerDown(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
@@ -548,7 +655,10 @@ namespace EmpiresOfTheIV.Game.Menus
                 middleMouseDown = true;
 
                 var delta = e.DeltaPosition;
-                float deltaBuffer = 1.0f;
+                delta.Normalize();
+
+                float deltaBuffer = 0.20f;
+
 
                 if (delta.X < 0 - deltaBuffer) {
                     m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Right);
@@ -564,6 +674,10 @@ namespace EmpiresOfTheIV.Game.Menus
                     m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Up);
                 }
             }
+            else if (e.Pointer == PointerPress.Touch)
+            {
+                activeTouchPointers.Add(e);
+            }
         }
 
         public Ray? currentRay;
@@ -576,8 +690,7 @@ namespace EmpiresOfTheIV.Game.Menus
             if (e.Pointer == PointerPress.LeftMouseButton ||
                 e.Pointer == PointerPress.Touch)
             {
-                UniversalCamera camera = m_gameCamera;
-                Ray ray = camera.GetMouseRay(
+                Ray ray = m_gameCamera.GetMouseRay(
                     e.Position,
                     m_game.Graphics.GraphicsDevice.Viewport
                     );
@@ -590,13 +703,10 @@ namespace EmpiresOfTheIV.Game.Menus
                 // Get the point on the terrain
                 rayPosOnTerrain = m_map.Terrain.Intersects(ray);
             }
+
             if (e.Pointer == PointerPress.MiddleMouseButton)
             {
                 middleMouseDown = false;
-            }
-            if (e.Pointer == PointerPress.RightMouseButton)
-            {
-                m_activeUnits[0].AnimationState.AnimationPlayer.Paused = !m_activeUnits[unitIndex].AnimationState.AnimationPlayer.Paused;
             }
         }
 
@@ -618,44 +728,47 @@ namespace EmpiresOfTheIV.Game.Menus
         #region Keyboard
         void Keyboard_KeyboardDown(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
-            UniversalCamera uniCam = m_gameCamera; //m_game.SceneManager.CurrentScene.Camera as UniversalCamera;
+            if (m_pausedState != GamePausedState.Unpaused) return;
 
             switch (e.KeyClicked)
             {
-                case Keys.W: uniCam.Move(e.GameTime, uniCam.CameraRotation.Forward); break;
-                case Keys.S: uniCam.Move(e.GameTime, -uniCam.CameraRotation.Forward); break;
-                case Keys.A: uniCam.Move(e.GameTime, -uniCam.CameraRotation.Right); break;
-                case Keys.D: uniCam.Move(e.GameTime, uniCam.CameraRotation.Right); break;
-                case Keys.Q: uniCam.Move(e.GameTime, -uniCam.CameraRotation.Up); break;
-                case Keys.E: uniCam.Move(e.GameTime, uniCam.CameraRotation.Up); break;
+                    // Vertical
+                case Keys.W: m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Up); break;
+                case Keys.S: m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Up); break;
 
-                case Keys.Up:   case Keys.NumPad8: uniCam.Pitch = uniCam.Pitch + MathHelper.ToRadians(2); break;
-                case Keys.Down: case Keys.NumPad2: uniCam.Pitch = uniCam.Pitch + MathHelper.ToRadians(-2); break;
+                    // Horizontal
+                case Keys.A: m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Right); break;
+                case Keys.D: m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Right); break;
 
-                case Keys.Left:  case Keys.NumPad4: uniCam.Yaw = uniCam.Yaw + MathHelper.ToRadians(2); break;
-                case Keys.Right: case Keys.NumPad6: uniCam.Yaw = uniCam.Yaw + MathHelper.ToRadians(-2); break;
+                    // Zoom
+                case Keys.Q: m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Forward); break;
+                case Keys.E: m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Forward); break;
 
-                case Keys.P: case Keys.NumPad1:
-                case Keys.NumPad7: uniCam.Roll = uniCam.Roll + MathHelper.ToRadians(2); break;
+                //case Keys.Up:   case Keys.NumPad8: m_gameCamera.Pitch = m_gameCamera.Pitch + MathHelper.ToRadians(2); break;
+                //case Keys.Down: case Keys.NumPad2: m_gameCamera.Pitch = m_gameCamera.Pitch + MathHelper.ToRadians(-2); break;
+                //
+                //case Keys.Left:  case Keys.NumPad4: m_gameCamera.Yaw = m_gameCamera.Yaw + MathHelper.ToRadians(2); break;
+                //case Keys.Right: case Keys.NumPad6: m_gameCamera.Yaw = m_gameCamera.Yaw + MathHelper.ToRadians(-2); break;
+                //
+                //case Keys.P: case Keys.NumPad1:
+                //case Keys.NumPad7: m_gameCamera.Roll = m_gameCamera.Roll + MathHelper.ToRadians(2); break;
+                //
+                //case Keys.O: case Keys.NumPad3:
+                //case Keys.NumPad9: m_gameCamera.Roll = m_gameCamera.Roll + MathHelper.ToRadians(-2); break;
 
-                case Keys.O: case Keys.NumPad3:
-                case Keys.NumPad9: uniCam.Roll = uniCam.Roll + MathHelper.ToRadians(-2); break;
+                //case Keys.D0: case Keys.NumPad0: m_gameCamera.ResetCamera(); break;
+                //case Keys.D5: case Keys.NumPad5: m_gameCamera.ResetRotations(); break;
 
-                case Keys.D0: case Keys.NumPad0: uniCam.ResetCamera(); break;
-                case Keys.D5: case Keys.NumPad5: uniCam.ResetRotations(); break;
-
-                case Keys.LeftControl: Debug.WriteLine("Camera Position: {0}, \n Camera Rotation: {1}", uniCam.Position, uniCam.CameraRotation); break;
+                case Keys.LeftControl: Debug.WriteLine("Camera Position: {0}, \n Camera Rotation: {1}", m_gameCamera.Position, m_gameCamera.CameraRotation); break;
             }
         }
         void Keyboard_KeyboardPressed(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
-            UniversalCamera uniCam = m_gameCamera;//m_game.SceneManager.CurrentScene.Camera as UniversalCamera;
+            if (m_pausedState != GamePausedState.Unpaused) return;
 
             switch (e.KeyClicked)
             {
-                case Keys.Space:
-                    uniCam.SwitchCameraMode();
-                    break;
+                case Keys.Space: m_gameCamera.SwitchCameraMode(); break;
                 case Keys.OemCloseBrackets:
                 case Keys.Add: 
                     unitIndex++; 
@@ -682,15 +795,27 @@ namespace EmpiresOfTheIV.Game.Menus
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         public override void Update(GameTime gameTime)
         {
+            m_networkTimer.Update(gameTime);
+
             // Check if the game is fully loaded
             if (m_currentLoadingProgress.Progress < 100) { base.Update(gameTime); return; }
 
+            // Check if the game is paused
+            switch (m_pausedState)
+            {
+                case GamePausedState.Paused: UpdatePaused(gameTime); base.Update(gameTime); return;
+                case GamePausedState.WaitingForData: UpdateWaitingForData(gameTime); base.Update(gameTime); return;
+            }
+
             #region First thing we do is Update the GameCamera
+            var screenRect = AnarianConsts.ScreenRectangle;
+            var previousCamY = m_gameCamera.Position.Y;
+
+            #region Mouse Controls
             if (m_lastPointerMovedEventArgs.InputType == InputType.Mouse)
             {
                 if (!middleMouseDown)
                 {
-                    var screenRect = AnarianConsts.ScreenRectangle;
                     var deltaPos = m_lastPointerMovedEventArgs.DeltaPosition;
 
                     if (m_lastPointerMovedEventArgs.Position.X <= (screenRect.X + m_cameraMovementScreenBuffer))
@@ -710,12 +835,54 @@ namespace EmpiresOfTheIV.Game.Menus
                     {
                         m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Up);
                     }
+
+                    var camPos = m_gameCamera.Position;
+                    camPos.Y = previousCamY;
+                    m_gameCamera.Position = camPos;
+
+                    var mouseWheelDelta = m_game.InputManager.Mouse.GetMouseWheelDelta();
+
+                    if (mouseWheelDelta > 0)
+                    {
+                        m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Forward * 2.0f);
+                    }
+                    else if (mouseWheelDelta < 0)
+                    {
+                        m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Forward * 2.0f);
+                    }
                 }
             }
-            else if (m_lastPointerMovedEventArgs.InputType == InputType.Touch)
-            {
+            #endregion
 
+            #region Touch Controls
+            if (activeTouchPointers.Count == 2)
+            {
+                var movementBuffer = 0.2f;
+                var deltaTouch = activeTouchPointers[0].DeltaPosition;
+                deltaTouch.Normalize();
+
+                if (deltaTouch.X < 0 - movementBuffer)
+                {
+                    m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Right);
+                }
+                else if (deltaTouch.X > 0 + movementBuffer)
+                {
+                    m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Right);
+                }
+
+                if (deltaTouch.Y < 0 - movementBuffer)
+                {
+                    m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Up);
+                }
+                else if (deltaTouch.Y > 0 + movementBuffer)
+                {
+                    m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Up);
+                }
             }
+
+            // Since we are done with the touch input, we can clear the pointers
+            activeTouchPointers.Clear();
+            #endregion
 
             m_gameCamera.Update(gameTime);
             #endregion
@@ -723,15 +890,8 @@ namespace EmpiresOfTheIV.Game.Menus
             // Then the Map
             m_map.Update(gameTime);
 
-            // Check if the game is paused
-            switch (m_pausedState)
-            {
-                case GamePausedState.Paused:            m_overlay.ApplyEffect(gameTime);    return;
-                case GamePausedState.WaitingForData:    m_overlay.ApplyEffect(gameTime);    return;
-            }
-
             // If it is not, we can proceed to update the game
-            
+            m_pageParameter.me.Update(gameTime);
             
             // Move the Unit
             if (rayPosOnTerrain.HasValue)
@@ -758,10 +918,34 @@ namespace EmpiresOfTheIV.Game.Menus
             }
 
             // Set the camera to chase the first unit if we want to
-            m_gameCamera.WorldPositionToChase = m_activeUnits[unitIndex].Transform.WorldMatrix;
+            m_gameCamera.WorldPositionToChase = m_activeUnits[unitIndex].Transform.WorldMatrix;// *Matrix.CreateTranslation(0, 2, 0);
 
             //-- Update the Menu
             base.Update(gameTime);
+        }
+
+        private void UpdatePaused(GameTime gameTime)
+        {
+            m_overlay.ApplyEffect(gameTime);
+        }
+
+        private void UpdateWaitingForData(GameTime gameTime)
+        {
+            m_overlay.ApplyEffect(gameTime);
+
+            if (m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
+            {
+                lock (opponentloadedLockObject)
+                {
+                    // Send Ready to begin
+                    if (opponentFullyLoaded)
+                    {
+                        SystemPacket sp = new SystemPacket(true, SystemPacketID.GameBegin, "");
+                        m_networkManager.SendMessage(sp.ThisToJson());
+                        m_pausedState = GamePausedState.Unpaused;
+                    }
+                }
+            }
         }
         #endregion
 
@@ -781,6 +965,28 @@ namespace EmpiresOfTheIV.Game.Menus
                 i.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
             }
 
+            // Draw Player Economy
+            int distanceBetweenElements = 160;
+            int xOffset = (screenRect.Width) - distanceBetweenElements;
+            int yOffset = 25;
+
+            spriteBatch.Begin();
+            spriteBatch.Draw(m_unitCapTexture, new Rectangle(xOffset, yOffset, 50, 50), Color.White);
+            spriteBatch.DrawString(m_empiresOfTheIVFontSmall, m_pageParameter.me.Economy.UnitCap.CurrentAmountAsString, new Vector2(xOffset + 50, yOffset), Color.White);
+            xOffset -= distanceBetweenElements;
+
+            spriteBatch.Draw(m_energyTexture, new Rectangle(xOffset, yOffset, 50, 50), Color.White);
+            spriteBatch.DrawString(m_empiresOfTheIVFontSmall, m_pageParameter.me.Economy.Energy.CurrentAmountAsString, new Vector2(xOffset + 50, yOffset), Color.White);
+            xOffset -= distanceBetweenElements;
+
+            spriteBatch.Draw(m_metalTexture, new Rectangle(xOffset, yOffset, 50, 50), Color.White);
+            spriteBatch.DrawString(m_empiresOfTheIVFontSmall, m_pageParameter.me.Economy.Metal.CurrentAmountAsString, new Vector2(xOffset + 50, yOffset), Color.White);
+            xOffset -= distanceBetweenElements;
+
+            spriteBatch.Draw(m_currencyTexture, new Rectangle(xOffset, yOffset, 50, 50), Color.White);
+            spriteBatch.DrawString(m_empiresOfTheIVFontSmall, m_pageParameter.me.Economy.Currency.CurrentAmountAsString, new Vector2(xOffset + 50, yOffset), Color.White);
+            spriteBatch.End();
+
             switch (m_pausedState)
             {
                 case GamePausedState.Unpaused:
@@ -795,9 +1001,7 @@ namespace EmpiresOfTheIV.Game.Menus
         public void DrawLoadingMenu(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             //graphics.Clear(Color.Black);
-            var screenRect = AnarianConsts.ScreenRectangle;
-            var centerOfScreen = new Vector2(screenRect.Width / 2.0f, screenRect.Height / 2.0f);
-
+            
             if (m_loadingMiniMap != null)
             {
                 spriteBatch.Begin();
@@ -815,21 +1019,24 @@ namespace EmpiresOfTheIV.Game.Menus
             PrimitiveHelper2D.DrawRect(spriteBatch, Color.Wheat, outlineRect);
 
             // Loading Bar
-            int distanceFromTopBottom = 5;
-            int distanceFromLeftRight = 0;
-            var loadingBar = new Rectangle(0                  + distanceFromLeftRight,
-                                           outlineRect.Y      + distanceFromTopBottom,
-                                           m_currentLoadingProgress.Progress * ((outlineRect.Width - (distanceFromLeftRight * 2)) / 100) ,
-                                           outlineRect.Height - (distanceFromTopBottom * 2));
-            PrimitiveHelper2D.DrawRect(spriteBatch, Color.ForestGreen, loadingBar);
+            lock (loadinglockObject)
+            {
+                int distanceFromTopBottom = 5;
+                int distanceFromLeftRight = 0;
+                var loadingBar = new Rectangle(0 + distanceFromLeftRight,
+                                               outlineRect.Y + distanceFromTopBottom,
+                                               m_currentLoadingProgress.Progress * ((outlineRect.Width - (distanceFromLeftRight * 2)) / 100),
+                                               outlineRect.Height - (distanceFromTopBottom * 2));
+                PrimitiveHelper2D.DrawRect(spriteBatch, Color.ForestGreen, loadingBar);
 
-            // Text
-            spriteBatch.Begin();
-            spriteBatch.DrawString(m_empiresOfTheIVFont, "Loading", new Vector2(centerOfScreen.X - 50, screenRect.Height * 0.15f), Color.Wheat);
+                // Text
+                spriteBatch.Begin();
+                spriteBatch.DrawString(m_empiresOfTheIVFont, "Loading", new Vector2(centerOfScreen.X - 50, screenRect.Height * 0.15f), Color.Wheat);
 
-            spriteBatch.DrawString(m_empiresOfTheIVFont, m_currentLoadingProgress.Status, new Vector2(25, outlineRect.Y - 50), Color.Wheat);
-            spriteBatch.DrawString(m_empiresOfTheIVFont, m_currentLoadingProgress.Progress + "%", new Vector2(outlineRect.Width - 100, outlineRect.Y - 50), Color.Wheat);
-            spriteBatch.End();
+                spriteBatch.DrawString(m_empiresOfTheIVFont, m_currentLoadingProgress.Status, new Vector2(25, outlineRect.Y - 50), Color.Wheat);
+                spriteBatch.DrawString(m_empiresOfTheIVFont, m_currentLoadingProgress.Progress + "%", new Vector2(outlineRect.Width - 100, outlineRect.Y - 50), Color.Wheat);
+                spriteBatch.End();
+            }
         }
 
         public void DrawPaused(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)

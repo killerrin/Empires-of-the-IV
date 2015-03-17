@@ -40,6 +40,11 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
         {
             unitPoolUnit.Reset();
 
+            unitPoolUnit.CullDraw = false;
+            unitPoolUnit.RenderBounds = true;
+            unitPoolUnit.Active = true;
+            unitPoolUnit.Health.Alive = true;
+
             switch (unitID)
             {
                 case UnitID.UnanianSoldier:
