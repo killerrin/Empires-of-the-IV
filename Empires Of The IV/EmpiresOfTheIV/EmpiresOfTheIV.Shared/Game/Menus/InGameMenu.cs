@@ -93,7 +93,6 @@ namespace EmpiresOfTheIV.Game.Menus
             m_networkTimer = new Timer(m_networkManager.ConnectionPreventTimeoutTick);
             m_networkTimer.Completed += m_networkTimer_Completed;
 
-
             m_pausedState = GamePausedState.WaitingForData;
 
             m_currentLoadingProgress = new LoadingProgress(0, "");
@@ -649,15 +648,17 @@ namespace EmpiresOfTheIV.Game.Menus
             if (m_pausedState != GamePausedState.Unpaused) return;
             //Debug.WriteLine("{0}, Pressed", e.ToString());
 
-            if (e.Pointer == PointerPress.MiddleMouseButton)
+            if (e.Pointer == PointerPress.Touch)
+            {
+                activeTouchPointers.Add(e);
+            }
+            else if (e.Pointer == PointerPress.MiddleMouseButton)
             {
                 middleMouseDown = true;
 
                 var delta = e.DeltaPosition;
                 delta.Normalize();
-
                 float deltaBuffer = 0.20f;
-
 
                 if (delta.X < 0 - deltaBuffer) {
                     m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Right);
@@ -672,10 +673,6 @@ namespace EmpiresOfTheIV.Game.Menus
                 else if (delta.Y > 0 + deltaBuffer) {
                     m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Up);
                 }
-            }
-            else if (e.Pointer == PointerPress.Touch)
-            {
-                activeTouchPointers.Add(e);
             }
         }
 
