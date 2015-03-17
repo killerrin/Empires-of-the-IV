@@ -44,6 +44,7 @@ namespace EmpiresOfTheIV.Game.Menus
         SpriteFont m_empiresOfTheIVFont;
         SpriteFont m_empiresOfTheIVFontSmall;
 
+        Texture2D m_selectionTexture;
         Texture2D m_currencyTexture; 
         Texture2D m_metalTexture;
         Texture2D m_energyTexture;
@@ -79,6 +80,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
         UniversalCamera m_gameCamera;
         int m_cameraMovementScreenBuffer = 30;
+        Rectangle m_selectionBox;
 
         List<Unit> m_activeUnits;
         List<Unit> m_inactiveUnits;
@@ -200,6 +202,7 @@ namespace EmpiresOfTheIV.Game.Menus
         {
             if (progress != null) progress.Report(new LoadingProgress(0, "Initial Setup"));
 
+            m_selectionTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "SelectionBox") as Texture2D;
             m_currencyTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Currency") as Texture2D;
             m_metalTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Metal") as Texture2D;
             m_energyTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Energy") as Texture2D;
@@ -231,6 +234,8 @@ namespace EmpiresOfTheIV.Game.Menus
 
             IDManager unitIDManager = new IDManager();
             IDManager factoryBaseIDManager = new IDManager();
+
+            m_selectionBox = Rectangle.Empty;
             #endregion
 
             if (progress != null) progress.Report(new LoadingProgress(20, "Loading Empires"));
@@ -647,6 +652,9 @@ namespace EmpiresOfTheIV.Game.Menus
         #region Pointer
         public List<PointerPressedEventArgs> activeTouchPointers = new List<PointerPressedEventArgs>();
         public List<int> ignoreTouchIDs = new List<int>();
+
+        PointerPressedEventArgs m_selectionEventArgs = new PointerPressedEventArgs(new GameTime());
+
         bool middleMouseDown = false;
         void InputManager_PointerDown(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
@@ -683,30 +691,25 @@ namespace EmpiresOfTheIV.Game.Menus
                     m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Up);
                 }
             }
+
+            // Selection Box
+            if (e.Pointer == PointerPress.LeftMouseButton)
+            {
+                m_selectionEventArgs = e;
+            }
         }
 
-        public Ray? currentRay;
-        public Vector3? rayPosOnTerrain;
+
+        bool selectionReleased = false;
         void InputManager_PointerClicked(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
-            if (m_pausedState != GamePausedState.Unpaused) return;
+            //if (m_pausedState != GamePausedState.Unpaused) return;
             Debug.WriteLine("{0}, Pressed", e.ToString());
 
             if (e.Pointer == PointerPress.LeftMouseButton ||
                 e.Pointer == PointerPress.Touch)
             {
-                Ray ray = m_gameCamera.GetMouseRay(
-                    e.Position,
-                    m_game.Graphics.GraphicsDevice.Viewport
-                    );
-
-                bool intersects = m_activeUnits[unitIndex].CheckRayIntersection(ray);
-                //Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
-
-                //currentRay = ray;
-
-                // Get the point on the terrain
-                //rayPosOnTerrain = m_map.Terrain.Intersects(ray);
+                selectionReleased = true;
             }
 
             if (e.Pointer == PointerPress.MiddleMouseButton)
@@ -777,14 +780,10 @@ namespace EmpiresOfTheIV.Game.Menus
                 case Keys.OemCloseBrackets:
                 case Keys.Add: 
                     unitIndex++; 
-                    currentRay = null;
-                    rayPosOnTerrain = null;
                     break;
                 case Keys.OemOpenBrackets:
                 case Keys.Subtract:
                     unitIndex--; 
-                    currentRay = null;
-                    rayPosOnTerrain = null;
                     break;
             }
 
@@ -901,10 +900,24 @@ namespace EmpiresOfTheIV.Game.Menus
                 }
             }
 
-            // Since we are done with the touch input, we can clear the pointers
-            activeTouchPointers.Clear();
             #endregion
 
+            if (activeTouchPointers.Count == 1 ||
+                m_selectionEventArgs.Pointer == PointerPress.LeftMouseButton)
+            {
+                if (activeTouchPointers.Count == 1) m_selectionEventArgs = activeTouchPointers[0];
+
+                if (m_selectionBox.IsEmpty)
+                {
+                    m_selectionBox = new Rectangle((int)m_selectionEventArgs.Position.X, (int)m_selectionEventArgs.Position.Y, 0, 0);
+                }
+
+                m_selectionBox.Width = (int)(m_selectionEventArgs.Position.X - m_selectionBox.X);
+                m_selectionBox.Height = (int)(m_selectionEventArgs.Position.Y - m_selectionBox.Y);
+            }
+
+            // Since we are done with the touch input, we can clear the pointers
+            activeTouchPointers.Clear();
             m_gameCamera.Update(gameTime);
             #endregion
 
@@ -914,12 +927,35 @@ namespace EmpiresOfTheIV.Game.Menus
             // If it is not, we can proceed to update the game
             m_pageParameter.me.Update(gameTime);
             
-            // Move the Unit
-            if (rayPosOnTerrain.HasValue)
+            if (selectionReleased)
             {
-                m_activeUnits[unitIndex].Transform.MoveToPosition(gameTime, (rayPosOnTerrain.Value + new Vector3(0.0f, m_activeUnits[unitIndex].HeightAboveTerrain, 0.0f)));
-            }
+                if (m_selectionBox != Rectangle.Empty)
+                {
+                    foreach (var item in m_activeUnits)
+                    {
+                        item.Selected = false;
+                    }
 
+                    BoundingFrustum frustrum = m_gameCamera.UnprojectRectangle(m_selectionBox, m_game.GraphicsDevice.Viewport);
+                    foreach (var item in m_activeUnits)
+                    {
+                        if (item.CheckFrustumIntersection(frustrum))
+                        {
+                            item.Selected = true;
+                        }
+                    }
+                }
+
+                m_selectionEventArgs = new PointerPressedEventArgs(gameTime);
+                selectionReleased = false;
+                m_selectionBox = Rectangle.Empty;
+            }
+            // Move the Unit
+            //if (rayPosOnTerrain.HasValue)
+            //{
+            //    m_activeUnits[unitIndex].Transform.MoveToPosition(gameTime, (rayPosOnTerrain.Value + new Vector3(0.0f, m_activeUnits[unitIndex].HeightAboveTerrain, 0.0f)));
+            //}
+            //
             // Set all the active units to be on the terrain
             for (int i = 0; i < m_activeUnits.Count; i++)
             {
@@ -986,6 +1022,11 @@ namespace EmpiresOfTheIV.Game.Menus
             {
                 i.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
             }
+
+            // Draw SelectionBox
+            spriteBatch.Begin();
+            spriteBatch.Draw(m_selectionTexture, m_selectionBox, Color.Black);
+            spriteBatch.End();
 
             // Draw Player Economy
             int distanceBetweenElements = 160;
