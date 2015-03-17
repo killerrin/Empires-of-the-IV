@@ -861,7 +861,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
             #region Touch Controls
             // Cull out old stuck pointers
-            if (activeTouchPointers.Count == 3)
+            if (activeTouchPointers.Count >= 2)
             {
                 // If the first ID + 5 is less than the second pointer, we can assume the touch is stuck and we can safely ignore it
                 if ((activeTouchPointers[0].ID + 5) < activeTouchPointers[1].ID)
