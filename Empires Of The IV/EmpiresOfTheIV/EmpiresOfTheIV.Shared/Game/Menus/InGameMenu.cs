@@ -210,6 +210,10 @@ namespace EmpiresOfTheIV.Game.Menus
             m_gameCamera.AspectRatio = m_game.SceneManager.CurrentScene.Camera.AspectRatio;
             m_gameCamera.Speed = 0.8f;
 
+            // Since Phone has a smaller screen and a lower TouchScreen input frequency, we double the speed
+            if (KillerrinStudiosToolkit.KillerrinApplicationData.OSType == KillerrinStudiosToolkit.Enumerators.ClientOSType.WindowsPhone81)
+                m_gameCamera.Speed *= 2;
+
             //Camera Position: {X:4.199995 Y:55.02913 Z:15.78831}, 
             m_gameCamera.DefaultCameraPosition = new Vector3(4.20f, 50.03f, 15.79f);
 
