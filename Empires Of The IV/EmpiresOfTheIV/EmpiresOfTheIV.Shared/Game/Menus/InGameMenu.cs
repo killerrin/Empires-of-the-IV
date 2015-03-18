@@ -10,6 +10,7 @@ using Anarian.GUI;
 using Anarian.Helpers;
 using Anarian.IDManagers;
 using Anarian.Interfaces;
+using EmpiresOfTheIV.Data_Models;
 using EmpiresOfTheIV.Game.Enumerators;
 using EmpiresOfTheIV.Game.GameObjects;
 using EmpiresOfTheIV.Game.GameObjects.Factories;
@@ -65,6 +66,7 @@ namespace EmpiresOfTheIV.Game.Menus
         #region Networking
         private object opponentloadedLockObject = new object();
         bool opponentFullyLoaded = false;
+        WaitingForDataState waitingForDataState = WaitingForDataState.WaitingForLoading;
 
         Timer m_networkTimer;
         #endregion
@@ -114,6 +116,8 @@ namespace EmpiresOfTheIV.Game.Menus
             m_networkManager.OnConnected += NetworkManager_OnConnected;
             m_networkManager.OnDisconnected += NetworkManager_OnDisconnected;
             m_networkManager.OnMessageRecieved += NetworkManager_OnMessageRecieved;
+            m_networkManager.OnSystemPacketRecieved += NetworkManager_OnSystemPacketRecieved;
+            m_networkManager.OnGamePacketRecieved += NetworkManager_OnGamePacketRecieved;
 
             Consts.Game.StateManager.OnBackButtonPressed += StateManager_OnBackButtonPressed;
             Consts.Game.StateManager.HandleBackButtonPressed = false;
@@ -602,60 +606,51 @@ namespace EmpiresOfTheIV.Game.Menus
         {
         }
 
-        private void NetworkManager_OnMessageRecieved(object sender, ReceivedMessageEventArgs e)
+        void NetworkManager_OnSystemPacketRecieved(object sender, EotIVPacketRecievedEventArgs e)
         {
-            if (e.Message == Consts.Game.NetworkManager.LanHelper.ConnectionCloseMessage)
-            {
-                return;
-            }
+            Debug.WriteLine("System Packet Recieved");
+            SystemPacket systemPacket = e.Packet as SystemPacket;
 
-            // Get the regular object
-            JObject jObject = null;
-            EotIVPacket regularPacket = null;
-            try
-            {
-                jObject = JObject.Parse(e.Message);
-                regularPacket = JsonConvert.DeserializeObject<EotIVPacket>(jObject.ToString());
-                Debug.WriteLine("Deserialized Packet");
-            }
-            catch (Exception) { return; }
-
-            // Now parse the object to get the right derived class
-            if (regularPacket.PacketType == PacketType.Chat)
+            if (systemPacket.ID == SystemPacketID.Chat)
             {
                 Debug.WriteLine("Chat Packet Recieved");
-                ChatPacket chatPacket = JsonConvert.DeserializeObject<ChatPacket>(jObject.ToString());
+                JObject jObject = JObject.Parse(systemPacket.Command);
+                ChatMessage chatMessage = JsonConvert.DeserializeObject<ChatMessage>(jObject.ToString());
 
                 try
                 {
-                    m_chatManager.AddMessage(chatPacket.Message);
+                    m_chatManager.AddMessage(chatMessage);
                 }
                 catch (Exception) { }
             }
-            else if (regularPacket.PacketType == PacketType.System)
+            else if (systemPacket.ID == SystemPacketID.GameLoaded)
             {
-                Debug.WriteLine("System Packet Recieved");
-                SystemPacket systemPacket = JsonConvert.DeserializeObject<SystemPacket>(jObject.ToString());
-
-                if (systemPacket.ID == SystemPacketID.GameLoaded)
+                lock (opponentloadedLockObject)
                 {
-                    lock(opponentloadedLockObject)
-                    {
-                        opponentFullyLoaded = true;
-                    }
-                }
-                else if (systemPacket.ID == SystemPacketID.GameBegin)
-                {
-                    m_pausedState = GamePausedState.Unpaused;
+                    opponentFullyLoaded = true;
                 }
             }
+            else if (systemPacket.ID == SystemPacketID.GameBegin)
+            {
+                m_pausedState = GamePausedState.Unpaused;
+                waitingForDataState = WaitingForDataState.InGame;
+            }
+        }
+        void NetworkManager_OnGamePacketRecieved(object sender, EotIVPacketRecievedEventArgs e)
+        {
+            Debug.WriteLine("System Packet Recieved");
+            GamePacket gamePacket = e.Packet as GamePacket;
+        }
+
+        private void NetworkManager_OnMessageRecieved(object sender, ReceivedMessageEventArgs e)
+        {
         }
         #endregion
 
         #region Input
         #region Pointer
-        public List<PointerPressedEventArgs> activeTouchPointers = new List<PointerPressedEventArgs>();
-        public List<int> ignoreTouchIDs = new List<int>();
+        public List<PointerPressedEventArgs> m_activePointerEventsThisFrame = new List<PointerPressedEventArgs>();
+        public List<int> ignorePointerIDs = new List<int>();
 
         PointerPressedEventArgs m_selectionEventArgs = new PointerPressedEventArgs(new GameTime());
 
@@ -667,11 +662,11 @@ namespace EmpiresOfTheIV.Game.Menus
 
             if (e.Pointer == PointerPress.Touch)
             {
-                foreach (var i in ignoreTouchIDs)
+                foreach (var i in ignorePointerIDs)
                     if (i == e.ID)
                         return;
 
-                activeTouchPointers.Add(e);
+                m_activePointerEventsThisFrame.Add(e);
             }
             else if (e.Pointer == PointerPress.MiddleMouseButton)
             {
@@ -760,15 +755,18 @@ namespace EmpiresOfTheIV.Game.Menus
             switch (e.KeyClicked)
             {
                     // Vertical
-                case Keys.W: m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Up); break;
-                case Keys.S: m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Up); break;
+                case Keys.Up: case Keys.W: m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Up); break;
+                case Keys.Down: case Keys.S: m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Up); break;
 
                     // Horizontal
-                case Keys.A: m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Right); break;
-                case Keys.D: m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Right); break;
+                case Keys.Left: case Keys.A: m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Right); break;
+                case Keys.Right: case Keys.D: m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Right); break;
 
                     // Zoom
+                case Keys.PageUp:
                 case Keys.Q: m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Forward); break;
+                
+                case Keys.PageDown:
                 case Keys.E: m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Forward); break;
 
                 //case Keys.Up:   case Keys.NumPad8: m_gameCamera.Pitch = m_gameCamera.Pitch + MathHelper.ToRadians(2); break;
@@ -792,26 +790,13 @@ namespace EmpiresOfTheIV.Game.Menus
         void Keyboard_KeyboardPressed(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
             if (m_pausedState != GamePausedState.Unpaused) return;
-
-            switch (e.KeyClicked)
-            {
-                case Keys.Space: m_gameCamera.SwitchCameraMode(); break;
-                case Keys.OemCloseBrackets:
-                case Keys.Add: 
-                    unitIndex++; 
-                    break;
-                case Keys.OemOpenBrackets:
-                case Keys.Subtract:
-                    unitIndex--; 
-                    break;
-            }
-
-            if (unitIndex >= m_activeUnits.Count) unitIndex = 0;
-            if (unitIndex <= -1) unitIndex = m_activeUnits.Count - 1;
         }
-
-        public int unitIndex = 0;
         #endregion
+
+        public void HandleInput()
+        {
+
+        }
         #endregion
 
         #region Update
@@ -879,25 +864,25 @@ namespace EmpiresOfTheIV.Game.Menus
 
             #region Touch Controls
             // Cull out old stuck pointers
-            if (activeTouchPointers.Count >= 2)
+            if (m_activePointerEventsThisFrame.Count >= 2)
             {
                 // If the first ID + 5 is less than the second pointer, we can assume the touch is stuck and we can safely ignore it
-                if ((activeTouchPointers[0].ID + 5) < activeTouchPointers[1].ID)
+                if ((m_activePointerEventsThisFrame[0].ID + 5) < m_activePointerEventsThisFrame[1].ID)
                 {
                     // Ignore 0 as thats mouse and we can't stop it
-                    if (activeTouchPointers[0].ID != 0)
-                        ignoreTouchIDs.Add(activeTouchPointers[0].ID);
+                    if (m_activePointerEventsThisFrame[0].ID != 0)
+                        ignorePointerIDs.Add(m_activePointerEventsThisFrame[0].ID);
 
                     // If its not the mouse though, parse out the old ID
-                    activeTouchPointers.RemoveAt(0);
+                    m_activePointerEventsThisFrame.RemoveAt(0);
                 }
             }
 
             // Now do Touch Controls
-            if (activeTouchPointers.Count == 2)
+            if (m_activePointerEventsThisFrame.Count == 2)
             {
                 var movementBuffer = 0.2f;
-                var deltaTouch = activeTouchPointers[1].DeltaPosition;
+                var deltaTouch = m_activePointerEventsThisFrame[1].DeltaPosition;
                 deltaTouch.Normalize();
 
                 if (deltaTouch.X < 0 - movementBuffer)
@@ -919,10 +904,10 @@ namespace EmpiresOfTheIV.Game.Menus
                 }
             }
 
-            if (activeTouchPointers.Count == 3)
+            if (m_activePointerEventsThisFrame.Count == 3)
             {
                 Ray ray = m_gameCamera.GetMouseRay(
-                    activeTouchPointers[1].Position,
+                    m_activePointerEventsThisFrame[1].Position,
                     m_game.Graphics.GraphicsDevice.Viewport
                 );
 
@@ -932,10 +917,10 @@ namespace EmpiresOfTheIV.Game.Menus
 
             #endregion
 
-            if (activeTouchPointers.Count == 1 ||
+            if (m_activePointerEventsThisFrame.Count == 1 ||
                 m_selectionEventArgs.Pointer == PointerPress.LeftMouseButton)
             {
-                if (activeTouchPointers.Count == 1) m_selectionEventArgs = activeTouchPointers[0];
+                if (m_activePointerEventsThisFrame.Count == 1) m_selectionEventArgs = m_activePointerEventsThisFrame[0];
 
                 if (m_selectionBox.IsEmpty)
                 {
@@ -947,7 +932,7 @@ namespace EmpiresOfTheIV.Game.Menus
             }
 
             // Since we are done with the touch input, we can clear the pointers
-            activeTouchPointers.Clear();
+            m_activePointerEventsThisFrame.Clear();
             m_gameCamera.Update(gameTime);
             #endregion
 
@@ -1016,7 +1001,7 @@ namespace EmpiresOfTheIV.Game.Menus
             }
 
             // Set the camera to chase the first unit if we want to
-            m_gameCamera.WorldPositionToChase = m_activeUnits[unitIndex].Transform.WorldMatrix;// *Matrix.CreateTranslation(0, 2, 0);
+            m_gameCamera.WorldPositionToChase = m_activeUnits[0].Transform.WorldMatrix;// *Matrix.CreateTranslation(0, 2, 0);
 
             //-- Update the Menu
             base.Update(gameTime);
@@ -1033,14 +1018,18 @@ namespace EmpiresOfTheIV.Game.Menus
 
             if (m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
             {
-                lock (opponentloadedLockObject)
+                if (waitingForDataState == WaitingForDataState.WaitingForLoading)
                 {
-                    // Send Ready to begin
-                    if (opponentFullyLoaded)
+                    lock (opponentloadedLockObject)
                     {
-                        SystemPacket sp = new SystemPacket(true, SystemPacketID.GameBegin, "");
-                        m_networkManager.SendMessage(sp.ThisToJson());
-                        m_pausedState = GamePausedState.Unpaused;
+                        // Send Ready to begin
+                        if (opponentFullyLoaded)
+                        {
+                            SystemPacket sp = new SystemPacket(true, SystemPacketID.GameBegin, "");
+                            m_networkManager.SendMessage(sp.ThisToJson());
+                            m_pausedState = GamePausedState.Unpaused;
+                            waitingForDataState = WaitingForDataState.InGame;
+                        }
                     }
                 }
             }

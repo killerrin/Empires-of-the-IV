@@ -32,6 +32,7 @@ namespace EmpiresOfTheIV.Game.Networking
         GameSync,                   // Sent by the Host to notify everyone of a GameSync
         
         // Anyone
+        Chat,
         WaitingForData,             // A General Waiting for Data state
         Quit                        // Sent by anyone to notify the Host of a Quit 
     }

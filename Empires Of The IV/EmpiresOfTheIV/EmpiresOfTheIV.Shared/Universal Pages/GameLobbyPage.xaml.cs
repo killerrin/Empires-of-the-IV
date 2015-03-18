@@ -69,6 +69,7 @@ namespace EmpiresOfTheIV
             Consts.Game.NetworkManager.OnConnected += NetworkManager_OnConnected;
             Consts.Game.NetworkManager.OnDisconnected += NetworkManager_OnDisconnected;
             Consts.Game.NetworkManager.OnMessageRecieved += NetworkManager_OnMessageRecieved;
+            Consts.Game.NetworkManager.OnSystemPacketRecieved += NetworkManager_OnSystemPacketRecieved;
 
             Consts.Game.StateManager.OnBackButtonPressed += StateManager_OnBackButtonPressed;
             Consts.Game.StateManager.HandleBackButtonPressed = false;
@@ -81,14 +82,19 @@ namespace EmpiresOfTheIV
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
+            DescribeFromAllEvents();
+            base.OnNavigatedFrom(e);
+        }
+
+        void DescribeFromAllEvents()
+        {
             Debug.WriteLine("Unsubscribed from GameLobbyPage");
+            Consts.Game.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
+
             Consts.Game.NetworkManager.OnConnected -= NetworkManager_OnConnected;
             Consts.Game.NetworkManager.OnDisconnected -= NetworkManager_OnDisconnected;
             Consts.Game.NetworkManager.OnMessageRecieved -= NetworkManager_OnMessageRecieved;
-
-            Consts.Game.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
-
-            base.OnNavigatedFrom(e);
+            Consts.Game.NetworkManager.OnSystemPacketRecieved -= NetworkManager_OnSystemPacketRecieved;
         }
 
         private void StateManager_OnBackButtonPressed(object sender, EventArgs e)
@@ -239,240 +245,226 @@ namespace EmpiresOfTheIV
         }
         void NetworkManager_OnMessageRecieved(object sender, KillerrinStudiosToolkit.Events.ReceivedMessageEventArgs e)
         {
-            if (e.Message == Consts.Game.NetworkManager.LanHelper.ConnectionCloseMessage)
-            {
-                return;
-            }
 
+        }
+        void NetworkManager_OnSystemPacketRecieved(object sender, EotIVPacketRecievedEventArgs e)
+        {
+            Debug.WriteLine("System Packet Recieved");
+            SystemPacket systemPacket = e.Packet as SystemPacket;
 
-            // Get the regular object
-            JObject jObject = null;
-            EotIVPacket regularPacket = null;
-            try
-            {
-                jObject = JObject.Parse(e.Message);
-                regularPacket = JsonConvert.DeserializeObject<EotIVPacket>(jObject.ToString());
-                Debug.WriteLine("Deserialized Packet");
-            }
-            catch (Exception) { return; }
-
-            // Now parse the object to get the right derived class
-            if (regularPacket.PacketType == PacketType.Chat)
+            if (systemPacket.ID == SystemPacketID.Chat)
             {
                 Debug.WriteLine("Chat Packet Recieved");
-                ChatPacket chatPacket = JsonConvert.DeserializeObject<ChatPacket>(jObject.ToString());
+                JObject jObject = JObject.Parse(systemPacket.Command);
+                ChatMessage chatMessage = JsonConvert.DeserializeObject<ChatMessage>(jObject.ToString());
 
                 CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
                         try
                         {
-                            chatManager.AddMessage(chatPacket.Message);
+                            chatManager.AddMessage(chatMessage);
                             chatLog.ItemsSource = chatManager.ChatMessages;
                         }
                         catch (Exception) { }
                     }
                 );
             }
-            else if (regularPacket.PacketType == PacketType.System)
+            else if (systemPacket.ID == SystemPacketID.RequestSetupData)
             {
-                Debug.WriteLine("System Packet Recieved");
-                SystemPacket systemPacket = JsonConvert.DeserializeObject<SystemPacket>(jObject.ToString());
+                Debug.WriteLine("Client Requesting Startup Data: " + systemPacket.Command);
 
-                if (systemPacket.ID == SystemPacketID.RequestSetupData) {
-                    Debug.WriteLine("Client Requesting Startup Data: " + systemPacket.Command);
+                string[] splitCommands = systemPacket.Command.Split('|');
 
-                    string[] splitCommands = systemPacket.Command.Split('|');
+                // Send the GameMode and Map
+                SendGameModeChanged();
+                SendMapChanged();
 
-                    // Send the GameMode and Map
-                    SendGameModeChanged();
-                    SendMapChanged();
-
-                    // Send the Max Units
-                    CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                        {
-                            // If the host is a Windows Phone, we dont really need to do the check as our maximum will always be the Windows Phone Maximum
-                            if (KillerrinApplicationData.OSType == ClientOSType.WindowsPhone81)
-                            {
-                                maxUnitSlider.Maximum = GameConsts.MaxUnitsOnWindowsPhonePerPlayer;
-                            }
-                            else // We set our maximum based off of what our opponent is capable of
-                            {
-                                int ostype = Convert.ToInt32(splitCommands[0]);
-                                ClientOSType opponentOSType = (ClientOSType)ostype;
-                                Debug.WriteLine("Opponent Device Type: " + opponentOSType.ToString());
-                                switch (opponentOSType)
-                                {
-                                    case ClientOSType.Windows81: maxUnitSlider.Maximum = GameConsts.MaxUnitsOnWindowsPerPlayer; break;
-                                    case ClientOSType.WindowsPhone81: maxUnitSlider.Maximum = GameConsts.MaxUnitsOnWindowsPhonePerPlayer; break;
-                                    case ClientOSType.Windows10: break;
-                                    case ClientOSType.Other: break;
-                                    default: break;
-                                }
-                            }
-                            SendMaxUnitsChanged();
-                        }
-                    );
-
-                    // Create and Send the Teams
-                    CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                        {
-                            int ostype = Convert.ToInt32(splitCommands[0]);
-                            ClientOSType opponentOSType = (ClientOSType)ostype;
-                            uint playerID = playerIDManager.GetNewID();
-
-                            if (team1.PlayerCount > team2.PlayerCount) {
-                                Debug.WriteLine("Player added to Team2");
-                                team2.AddToTeam(PlayerType.Human, playerID, splitCommands[1]);
-                                team2.GetPlayer(playerID).OperatingSystem = opponentOSType; 
-                            }
-                            else { //if (team1.PlayerCount == team2.PlayerCount) 
-                                Debug.WriteLine("Player added to Team1");
-                                team1.AddToTeam(PlayerType.Human, playerID, splitCommands[1]);
-                                team1.GetPlayer(playerID).OperatingSystem = opponentOSType; 
-                            }
-
-                            team1ListBox.ItemsSource = null;
-                            team1ListBox.ItemsSource = team1.Players;
-
-                            team2ListBox.ItemsSource = null;
-                            team2ListBox.ItemsSource = team2.Players;
-
-
-                            SendTeamsChanged();
-                        }
-                    );
-                }
-
-                else if (systemPacket.ID == SystemPacketID.GameModeChanged)
+                // Send the Max Units
+                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
-                    Debug.WriteLine("Host Changed the Game Mode: " + systemPacket.Command);
-                    CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                        {
-                            gameModeSelector.SelectedIndex = Convert.ToInt32(systemPacket.Command);
-                        }
-                    );
-                }
-                else if (systemPacket.ID == SystemPacketID.UnitMaxChanged)
-                {
-                    Debug.WriteLine("Host Changed the Unit Max: " + systemPacket.Command);
-
-                    CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                        {
-                            string[] splitCommands = systemPacket.Command.Split('|');
-                            maxUnitSlider.Value = Convert.ToDouble(splitCommands[0]);
-                            maxUnitSlider.Maximum = Convert.ToDouble(splitCommands[1]);
-                        }
-                    );
-                }
-                else if (systemPacket.ID == SystemPacketID.MapChanged)
-                {
-                    Debug.WriteLine("Host Changed the Map: " + systemPacket.Command);
-                    CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                        {
-                            mapSelector.SelectedIndex = Convert.ToInt32(systemPacket.Command);
-                        }
-                    );
-                }
-                else if (systemPacket.ID == SystemPacketID.TeamsChanged)
-                {
-                    Debug.WriteLine("Host Changed the Teams: " + systemPacket.Command);
-                    string[] splitCommands = systemPacket.Command.Split('|');
-
-                    string team1string = splitCommands[0];//.Substring(1, splitCommands[0].Length - 2);
-                    string team2string = splitCommands[1];//.Substring(1, splitCommands[1].Length - 2);
-                    Debug.WriteLine(team1string);
-                    Debug.WriteLine(team2string);
-
-                    JObject team1JObject = JObject.Parse(team1string);
-                    JObject team2JObject = JObject.Parse(team2string);
-                    //Debug.WriteLine("Teams JObject Parsed");
-
-                    team1 = JsonConvert.DeserializeObject<Team>(team1JObject.ToString());   Debug.WriteLine("Team 1 Deserialized");
-                    team2 = JsonConvert.DeserializeObject<Team>(team2JObject.ToString());   Debug.WriteLine("Team 2 Deserialized");
-
-                    if (team1.Exists(username)) { playerID = team1.GetPlayer(username).ID; }
-                    if (team2.Exists(username)) { playerID = team2.GetPlayer(username).ID; }
-
-                    CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                        {
-                            team1ListBox.ItemsSource = null;
-                            team1ListBox.ItemsSource = team1.Players;
-
-                            team2ListBox.ItemsSource = null;
-                            team2ListBox.ItemsSource = team2.Players;
-                        }
-                    );
-                }
-                else if (systemPacket.ID == SystemPacketID.JoinTeam1)
-                {
-                    Debug.WriteLine("A Player Joined Team 1");
-
-                    string[] splitCommands = systemPacket.Command.Split('|');
-                    string opponentUsername = splitCommands[0];
-                    uint opponentPlayerID = Convert.ToUInt32(splitCommands[1]);
-
-                    Player me = team2.GetPlayer(opponentPlayerID);
-                    team2.RemovePlayer(opponentPlayerID);
-                    team1.AddToTeam(me);
-
-                    team1ListBox.ItemsSource = null;
-                    team1ListBox.ItemsSource = team1.Players;
-
-                    team2ListBox.ItemsSource = null;
-                    team2ListBox.ItemsSource = team2.Players;
-                    
-                    SendTeamsChanged();
-                }
-                else if (systemPacket.ID == SystemPacketID.JoinTeam2)
-                {
-                    Debug.WriteLine("A Player Joined Team 2");
-
-                    string[] splitCommands = systemPacket.Command.Split('|');
-                    string opponentUsername = splitCommands[0];
-                    uint opponentPlayerID = Convert.ToUInt32(splitCommands[1]);
-
-                    Player me = team1.GetPlayer(opponentPlayerID);
-                    team1.RemovePlayer(opponentPlayerID);
-                    team2.AddToTeam(me);
-
-                    team1ListBox.ItemsSource = null;
-                    team1ListBox.ItemsSource = team1.Players;
-
-                    team2ListBox.ItemsSource = null;
-                    team2ListBox.ItemsSource = team2.Players;
-
-                    SendTeamsChanged();
-                }
-                else if (systemPacket.ID == SystemPacketID.GameStart)
-                {
-                    if (Consts.Game.NetworkManager.HostSettings == HostType.Host)
+                    // If the host is a Windows Phone, we dont really need to do the check as our maximum will always be the Windows Phone Maximum
+                    if (KillerrinApplicationData.OSType == ClientOSType.WindowsPhone81)
                     {
-                        Debug.WriteLine("Clients Responded to GameStart. Starting Game");
-                        SendTransitionAndGameLoad();
-                        StartGame();
+                        maxUnitSlider.Maximum = GameConsts.MaxUnitsOnWindowsPhonePerPlayer;
+                    }
+                    else // We set our maximum based off of what our opponent is capable of
+                    {
+                        int ostype = Convert.ToInt32(splitCommands[0]);
+                        ClientOSType opponentOSType = (ClientOSType)ostype;
+                        Debug.WriteLine("Opponent Device Type: " + opponentOSType.ToString());
+                        switch (opponentOSType)
+                        {
+                            case ClientOSType.Windows81: maxUnitSlider.Maximum = GameConsts.MaxUnitsOnWindowsPerPlayer; break;
+                            case ClientOSType.WindowsPhone81: maxUnitSlider.Maximum = GameConsts.MaxUnitsOnWindowsPhonePerPlayer; break;
+                            case ClientOSType.Windows10: break;
+                            case ClientOSType.Other: break;
+                            default: break;
+                        }
+                    }
+                    SendMaxUnitsChanged();
+                }
+                );
+
+                // Create and Send the Teams
+                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    int ostype = Convert.ToInt32(splitCommands[0]);
+                    ClientOSType opponentOSType = (ClientOSType)ostype;
+                    uint playerID = playerIDManager.GetNewID();
+
+                    if (team1.PlayerCount > team2.PlayerCount)
+                    {
+                        Debug.WriteLine("Player added to Team2");
+                        team2.AddToTeam(PlayerType.Human, playerID, splitCommands[1]);
+                        team2.GetPlayer(playerID).OperatingSystem = opponentOSType;
                     }
                     else
-                    {
-                        if (systemPacket.Command == true.ToString())
-                        {
-                            Debug.WriteLine("Host Started the Game");
-                            gameStartButton.Content = "Cancel";
-                            gameStarting = true;
-
-                            SendStartGame();
-                        }
-                        else if (systemPacket.Command == false.ToString())
-                        {
-                            Debug.WriteLine("The Host Cancelled the Game Start");
-                            gameStartButton.Content = "Start";
-                            gameStarting = false;
-                        }
+                    { //if (team1.PlayerCount == team2.PlayerCount) 
+                        Debug.WriteLine("Player added to Team1");
+                        team1.AddToTeam(PlayerType.Human, playerID, splitCommands[1]);
+                        team1.GetPlayer(playerID).OperatingSystem = opponentOSType;
                     }
+
+                    team1ListBox.ItemsSource = null;
+                    team1ListBox.ItemsSource = team1.Players;
+
+                    team2ListBox.ItemsSource = null;
+                    team2ListBox.ItemsSource = team2.Players;
+
+
+                    SendTeamsChanged();
                 }
-                else if (systemPacket.ID == SystemPacketID.TransitionAndGameLoad)
+                );
+            }
+            else if (systemPacket.ID == SystemPacketID.GameModeChanged)
+            {
+                Debug.WriteLine("Host Changed the Game Mode: " + systemPacket.Command);
+                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                 {
+                    gameModeSelector.SelectedIndex = Convert.ToInt32(systemPacket.Command);
+                }
+                );
+            }
+            else if (systemPacket.ID == SystemPacketID.UnitMaxChanged)
+            {
+                Debug.WriteLine("Host Changed the Unit Max: " + systemPacket.Command);
+
+                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    string[] splitCommands = systemPacket.Command.Split('|');
+                    maxUnitSlider.Value = Convert.ToDouble(splitCommands[0]);
+                    maxUnitSlider.Maximum = Convert.ToDouble(splitCommands[1]);
+                }
+                );
+            }
+            else if (systemPacket.ID == SystemPacketID.MapChanged)
+            {
+                Debug.WriteLine("Host Changed the Map: " + systemPacket.Command);
+                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    mapSelector.SelectedIndex = Convert.ToInt32(systemPacket.Command);
+                }
+                );
+            }
+            else if (systemPacket.ID == SystemPacketID.TeamsChanged)
+            {
+                Debug.WriteLine("Host Changed the Teams: " + systemPacket.Command);
+                string[] splitCommands = systemPacket.Command.Split('|');
+
+                string team1string = splitCommands[0];//.Substring(1, splitCommands[0].Length - 2);
+                string team2string = splitCommands[1];//.Substring(1, splitCommands[1].Length - 2);
+                Debug.WriteLine(team1string);
+                Debug.WriteLine(team2string);
+
+                JObject team1JObject = JObject.Parse(team1string);
+                JObject team2JObject = JObject.Parse(team2string);
+                //Debug.WriteLine("Teams JObject Parsed");
+
+                team1 = JsonConvert.DeserializeObject<Team>(team1JObject.ToString()); Debug.WriteLine("Team 1 Deserialized");
+                team2 = JsonConvert.DeserializeObject<Team>(team2JObject.ToString()); Debug.WriteLine("Team 2 Deserialized");
+
+                if (team1.Exists(username)) { playerID = team1.GetPlayer(username).ID; }
+                if (team2.Exists(username)) { playerID = team2.GetPlayer(username).ID; }
+
+                CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    team1ListBox.ItemsSource = null;
+                    team1ListBox.ItemsSource = team1.Players;
+
+                    team2ListBox.ItemsSource = null;
+                    team2ListBox.ItemsSource = team2.Players;
+                }
+                );
+            }
+            else if (systemPacket.ID == SystemPacketID.JoinTeam1)
+            {
+                Debug.WriteLine("A Player Joined Team 1");
+
+                string[] splitCommands = systemPacket.Command.Split('|');
+                string opponentUsername = splitCommands[0];
+                uint opponentPlayerID = Convert.ToUInt32(splitCommands[1]);
+
+                Player me = team2.GetPlayer(opponentPlayerID);
+                team2.RemovePlayer(opponentPlayerID);
+                team1.AddToTeam(me);
+
+                team1ListBox.ItemsSource = null;
+                team1ListBox.ItemsSource = team1.Players;
+
+                team2ListBox.ItemsSource = null;
+                team2ListBox.ItemsSource = team2.Players;
+
+                SendTeamsChanged();
+            }
+            else if (systemPacket.ID == SystemPacketID.JoinTeam2)
+            {
+                Debug.WriteLine("A Player Joined Team 2");
+
+                string[] splitCommands = systemPacket.Command.Split('|');
+                string opponentUsername = splitCommands[0];
+                uint opponentPlayerID = Convert.ToUInt32(splitCommands[1]);
+
+                Player me = team1.GetPlayer(opponentPlayerID);
+                team1.RemovePlayer(opponentPlayerID);
+                team2.AddToTeam(me);
+
+                team1ListBox.ItemsSource = null;
+                team1ListBox.ItemsSource = team1.Players;
+
+                team2ListBox.ItemsSource = null;
+                team2ListBox.ItemsSource = team2.Players;
+
+                SendTeamsChanged();
+            }
+            else if (systemPacket.ID == SystemPacketID.GameStart)
+            {
+                if (Consts.Game.NetworkManager.HostSettings == HostType.Host)
+                {
+                    Debug.WriteLine("Clients Responded to GameStart. Starting Game");
+                    SendTransitionAndGameLoad();
                     StartGame();
                 }
+                else
+                {
+                    if (systemPacket.Command == true.ToString())
+                    {
+                        Debug.WriteLine("Host Started the Game");
+                        gameStartButton.Content = "Cancel";
+                        gameStarting = true;
+
+                        SendStartGame();
+                    }
+                    else if (systemPacket.Command == false.ToString())
+                    {
+                        Debug.WriteLine("The Host Cancelled the Game Start");
+                        gameStartButton.Content = "Start";
+                        gameStarting = false;
+                    }
+                }
+            }
+            else if (systemPacket.ID == SystemPacketID.TransitionAndGameLoad)
+            {
+                StartGame();
             }
         }
 
@@ -650,7 +642,6 @@ namespace EmpiresOfTheIV
                             team2[i].Economy.UnitCap.CurrentAmount = team2[i].Economy.UnitCap.MaxAmount;
                         }
 
-
                         Player me = null;
                         if (team1.Exists(username))
                             me = team1.GetPlayer(username);
@@ -679,6 +670,7 @@ namespace EmpiresOfTheIV
                         chatSendButton.IsEnabled = false;
 
                         // And off we go!
+                        DescribeFromAllEvents();
                         PlatformMenuAdapter.GameLobbyMenu_StartGame_Click(pageParameter);
                     }
                 );
@@ -959,7 +951,7 @@ namespace EmpiresOfTheIV
 
             // Send the Message
             ChatMessage chatMessage = chatManager.AddMessage(username, msg);
-            ChatPacket packet = new ChatPacket(true, chatMessage);
+            SystemPacket packet = new SystemPacket(true, SystemPacketID.Chat, chatMessage.ThisToJson());
             string packetSerialized = packet.ThisToJson();
 
             try

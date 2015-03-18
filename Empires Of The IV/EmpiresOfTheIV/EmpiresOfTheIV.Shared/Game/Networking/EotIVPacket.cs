@@ -11,6 +11,7 @@ namespace EmpiresOfTheIV.Game.Networking
     {
         public PacketType PacketType { get; set; }
 
+        //public EotIVPacket() { }
         public EotIVPacket(bool requiresAck, PacketType packetType)
             :base(requiresAck)
         {

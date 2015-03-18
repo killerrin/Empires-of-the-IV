@@ -10,18 +10,21 @@ namespace EmpiresOfTheIV.Game.Networking
 {
     public class GamePacket : EotIVPacket
     {
+        public GamePacketID ID { get; set; }
         public Command Command { get; set; }
 
 
-        public GamePacket(bool requiresAck, Command command)
+        public GamePacket(bool requiresAck, Command command, GamePacketID id)
             : base(requiresAck, PacketType.GameData)
         {
+            ID = id;
             Command = command;
         }
 
         public void SetFromOtherPacket(GamePacket o)
         {
             base.SetFromOtherPacket(o);
+            ID = o.ID;
             Command = o.Command;
         }
 

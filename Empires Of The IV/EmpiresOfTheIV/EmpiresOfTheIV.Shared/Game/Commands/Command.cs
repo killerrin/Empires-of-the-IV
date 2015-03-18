@@ -1,5 +1,7 @@
 ﻿using EmpiresOfTheIV.Game.Enumerators;
 using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -132,6 +134,32 @@ namespace EmpiresOfTheIV.Game.Commands
             return command;
         }
         #endregion
+        #endregion
+
+        #region Serialization
+        public void SetFromOtherCommand(Command o)
+        {
+            CommandType =   o.CommandType;
+            TargetType  =    o.TargetType;
+            ID1         =           o.ID1;
+            ID2         =           o.ID2;
+            Position    =      o.Position;
+            UnitID      =        o.UnitID;
+            Damage      =        o.Damage;
+        }
+
+        public string ThisToJson()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+
+        public void JsonToThis(string json)
+        {
+            JObject jObject = JObject.Parse(json);
+            Command command = JsonConvert.DeserializeObject<Command>(jObject.ToString());
+
+            SetFromOtherCommand(command);
+        }
         #endregion
     }
 }

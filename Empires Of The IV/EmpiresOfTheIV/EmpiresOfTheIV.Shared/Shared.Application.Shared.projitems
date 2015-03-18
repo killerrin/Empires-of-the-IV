@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameConnectionType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\InputMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\MapName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\NetworkStage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GamePausedState.cs" />
@@ -51,11 +52,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\MainMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\SplashScreenMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\GamePacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\EotIVPacketRecievedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\GamePacketID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\SystemPacket.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\ChatPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\EotIVPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\PacketType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\SystemPacketID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Networking\WaitingForDataState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\NetworkManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Cost.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Players\Economy.cs" />

@@ -1,8 +1,11 @@
 ﻿using EmpiresOfTheIV.Game.Enumerators;
+using EmpiresOfTheIV.Game.Networking;
 using KillerrinStudiosToolkit;
 using KillerrinStudiosToolkit.Datastructures;
 using KillerrinStudiosToolkit.Enumerators;
 using KillerrinStudiosToolkit.Events;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,6 +27,10 @@ namespace EmpiresOfTheIV.Game
 
         protected EmpiresOfTheIVGame m_game;
         public EmpiresOfTheIVGame Game { get { return m_game; } protected set { m_game = value; } }
+
+        public event EotIVPacketRecievedEventHandler OnSystemPacketRecieved;
+        public event EotIVPacketRecievedEventHandler OnGamePacketRecieved;
+        public event EotIVPacketRecievedEventHandler OnEotIVPacketRecieved;
 
         #region Fields/Properties
         public TimeSpan ConnectionPreventTimeoutTick;
@@ -55,7 +62,7 @@ namespace EmpiresOfTheIV.Game
 
             IsConnected = false;
 
-            // Subscribe to myself to handle specific setup code
+            // Subscribe to myself to enable parsing of packets
             OnMessageRecieved += NetworkManager_OnMessageRecieved;
 
             // Setup the Helpers
@@ -228,7 +235,50 @@ namespace EmpiresOfTheIV.Game
 
         void NetworkManager_OnMessageRecieved(object sender, ReceivedMessageEventArgs e)
         {
+            if (e.Message == Consts.Game.NetworkManager.LanHelper.ConnectionCloseMessage)
+            {
+                return;
+            }
 
+            if (OnEotIVPacketRecieved == null &&
+                OnGamePacketRecieved == null  &&
+                OnSystemPacketRecieved == null)
+            {
+                return;
+            }
+
+            // Get the regular object
+            JObject jObject = null;
+            EotIVPacket regularPacket = null;
+            try
+            {
+                jObject = JObject.Parse(e.Message);
+                regularPacket = JsonConvert.DeserializeObject<EotIVPacket>(jObject.ToString());
+                Debug.WriteLine("Deserialized Packet");
+            }
+            catch (Exception) { return; }
+
+            if (regularPacket.PacketType == PacketType.GameData)
+            {
+                if (OnGamePacketRecieved != null)
+                {
+                    GamePacket gamePacket = JsonConvert.DeserializeObject<GamePacket>(jObject.ToString());
+                    OnGamePacketRecieved(this, new EotIVPacketRecievedEventArgs(gamePacket));
+                }
+            }
+            if (regularPacket.PacketType == PacketType.System)
+            {
+                if (OnSystemPacketRecieved != null)
+                {
+                    SystemPacket systemPacket = JsonConvert.DeserializeObject<SystemPacket>(jObject.ToString());
+                    OnSystemPacketRecieved(this, new EotIVPacketRecievedEventArgs(systemPacket));
+                }
+            }
+            else
+            {
+                if (OnEotIVPacketRecieved != null)
+                    OnEotIVPacketRecieved(this, new EotIVPacketRecievedEventArgs(regularPacket));
+            }
         }
     }
 }
