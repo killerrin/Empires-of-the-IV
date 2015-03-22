@@ -161,5 +161,20 @@ namespace EmpiresOfTheIV.Game.Commands
             SetFromOtherCommand(command);
         }
         #endregion
+
+        public override bool Equals(object obj)
+        {
+            return Equals((Command)obj);
+        }
+        public bool Equals(Command o)
+        {
+            return  ((CommandType == o.CommandType) &&
+                    (TargetType == o.TargetType) &&
+                    (ID1 == o.ID1) &&
+                    (ID2 == o.ID2) &&
+                    (Position == o.Position) &&
+                    (UnitID == o.UnitID) &&
+                    (Damage == o.Damage));
+        }
     }
 }

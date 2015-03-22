@@ -11,6 +11,7 @@ using Anarian.Helpers;
 using Anarian.IDManagers;
 using Anarian.Interfaces;
 using EmpiresOfTheIV.Data_Models;
+using EmpiresOfTheIV.Game.Commands;
 using EmpiresOfTheIV.Game.Enumerators;
 using EmpiresOfTheIV.Game.GameObjects;
 using EmpiresOfTheIV.Game.GameObjects.Factories;
@@ -36,7 +37,6 @@ namespace EmpiresOfTheIV.Game.Menus
     public class InGameMenu : GameMenu,
                               IUpdatable, IRenderable
     {
-        private static bool m_loadedOnceAlready = false;
         #region Fields/Properties
         NetworkManager m_networkManager;
         GamePausedState m_pausedState;
@@ -86,6 +86,9 @@ namespace EmpiresOfTheIV.Game.Menus
 
         List<Unit> m_activeUnits;
         List<Unit> m_inactiveUnits;
+
+        CommandRelay m_commandRelay;
+        
         Map m_map;
         #endregion
 
@@ -153,18 +156,13 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             #endregion
 
-            // Begin the Asynchronous Loading
-            m_loadingContentTask = Task.Run(() => LoadContent(m_loadingProgress, m_game.Content, m_game.GraphicsDevice));
+            //// Begin the Asynchronous Loading
+            //m_loadingContentTask = Task.Run(() => LoadContent(m_loadingProgress, m_game.Content, m_game.GraphicsDevice));
         }
 
         public override void MenuLoaded()
         {
             base.MenuLoaded();
-
-            if (!m_loadedOnceAlready)
-            {
-                m_loadedOnceAlready = true;
-            }
 
             // Turn off the Unified Menu
             m_game.SceneManager.Active = false;
@@ -172,6 +170,9 @@ namespace EmpiresOfTheIV.Game.Menus
             //if (NavigationSaveState == Anarian.Enumerators.NavigationSaveState.KeepSate)
             //{
             //}
+
+            // Begin the Asynchronous Loading
+            m_loadingContentTask = Task.Run(() => LoadContent(m_loadingProgress, m_game.Content, m_game.GraphicsDevice));
         }
 
         public override void MenuExited()
@@ -235,6 +236,7 @@ namespace EmpiresOfTheIV.Game.Menus
             int totalUnitsInPool = (int)(m_pageParameter.maxUnitsPerPlayer * (m_team1.PlayerCount + m_team2.PlayerCount));
             m_activeUnits = new List<Unit>(totalUnitsInPool);
             m_inactiveUnits = new List<Unit>(totalUnitsInPool);
+            m_commandRelay = new CommandRelay();
 
             IDManager unitIDManager = new IDManager();
             IDManager factoryBaseIDManager = new IDManager();
@@ -652,84 +654,40 @@ namespace EmpiresOfTheIV.Game.Menus
         public List<PointerPressedEventArgs> m_activePointerEventsThisFrame = new List<PointerPressedEventArgs>();
         public List<int> ignorePointerIDs = new List<int>();
 
-        PointerPressedEventArgs m_selectionEventArgs = new PointerPressedEventArgs(new GameTime());
-
+        bool touchDown = false;
+        bool leftMouseDown = false;
         bool middleMouseDown = false;
+        bool rightMouseDown = false;
         void InputManager_PointerDown(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
             if (m_pausedState != GamePausedState.Unpaused) return;
             Debug.WriteLine("{0}, Pressed", e.ToString());
 
-            if (e.Pointer == PointerPress.Touch)
-            {
-                foreach (var i in ignorePointerIDs)
-                    if (i == e.ID)
-                        return;
+            foreach (var i in ignorePointerIDs)
+                if (i == e.ID)
+                    return;
 
-                m_activePointerEventsThisFrame.Add(e);
-            }
-            else if (e.Pointer == PointerPress.MiddleMouseButton)
-            {
-                middleMouseDown = true;
+            m_activePointerEventsThisFrame.Add(e);
 
-                var delta = e.DeltaPosition;
-                delta.Normalize();
-                float deltaBuffer = 0.20f;
-
-                if (delta.X < 0 - deltaBuffer) {
-                    m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Right);
-                }
-                else if (delta.X > 0 + deltaBuffer) {
-                    m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Right);
-                }
-
-                if (delta.Y < 0 - deltaBuffer) {
-                    m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Up);
-                }
-                else if (delta.Y > 0 + deltaBuffer) {
-                    m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Up);
-                }
-            }
-
-            // Selection Box
-            if (e.Pointer == PointerPress.LeftMouseButton)
-            {
-                m_selectionEventArgs = e;
-            }
+            if (e.Pointer == PointerPress.Touch) { touchDown = true; }
+            else if (e.Pointer == PointerPress.LeftMouseButton) { leftMouseDown = true; }
+            else if (e.Pointer == PointerPress.MiddleMouseButton) { middleMouseDown = true; }
+            else if (e.Pointer == PointerPress.RightMouseButton) { rightMouseDown = true; }
         }
 
-
         bool selectionReleased = false;
-        public Vector3? rayPosOnTerrain;
         void InputManager_PointerClicked(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
             //if (m_pausedState != GamePausedState.Unpaused) return;
             Debug.WriteLine("{0}, Pressed", e.ToString());
 
-            if (e.Pointer == PointerPress.LeftMouseButton ||
-                e.Pointer == PointerPress.Touch)
-            {
+            if (e.Pointer == PointerPress.Touch) { touchDown = false; }
+            else if (e.Pointer == PointerPress.LeftMouseButton) { leftMouseDown = false; }
+            else if (e.Pointer == PointerPress.MiddleMouseButton) { middleMouseDown = false; }
+            else if (e.Pointer == PointerPress.RightMouseButton) { rightMouseDown = false; }
+
+            if (e.Pointer == PointerPress.LeftMouseButton || e.Pointer == PointerPress.Touch)
                 selectionReleased = true;
-            }
-
-            if (e.Pointer == PointerPress.MiddleMouseButton)
-            {
-                middleMouseDown = false;
-            }
-
-            if (e.Pointer == PointerPress.RightMouseButton)
-            {
-                Ray ray = m_gameCamera.GetMouseRay(
-                	e.Position,
-                	m_game.Graphics.GraphicsDevice.Viewport
-                );
-                
-                //bool intersects = m_activeUnits[unitIndex].CheckRayIntersection(ray);
-                //Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
-                
-                // Get the point on the terrain
-                rayPosOnTerrain = m_map.Terrain.Intersects(ray);
-            }
         }
 
 
@@ -740,10 +698,6 @@ namespace EmpiresOfTheIV.Game.Menus
             //Debug.WriteLine("{0}, Moved", e.ToString());
 
             m_lastPointerMovedEventArgs = e;
-
-            if (e.InputType == InputType.Touch)
-            {
-            }
         }
         #endregion
 
@@ -793,33 +747,12 @@ namespace EmpiresOfTheIV.Game.Menus
         }
         #endregion
 
-        public void HandleInput()
+
+        public Vector3? rayPosOnTerrain;
+        public void HandleInput(GameTime gameTime)
         {
-
-        }
-        #endregion
-
-        #region Update
-        void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
-        public override void Update(GameTime gameTime)
-        {
-            m_networkTimer.Update(gameTime);
-
-            // Check if the game is fully loaded
-            if (m_currentLoadingProgress.Progress < 100) { base.Update(gameTime); return; }
-
-            // Check if the game is paused
-            switch (m_pausedState)
-            {
-                case GamePausedState.Paused: UpdatePaused(gameTime); base.Update(gameTime); return;
-                case GamePausedState.WaitingForData: UpdateWaitingForData(gameTime); base.Update(gameTime); return;
-            }
-
-            #region First thing we do is Update the Input
-            var screenRect = AnarianConsts.ScreenRectangle;
+            #region Mouse Movement Camera Controls
             var previousCamY = m_gameCamera.Position.Y;
-
-            #region Mouse Controls
             if (m_lastPointerMovedEventArgs.InputType == InputType.Mouse)
             {
                 if (!middleMouseDown)
@@ -862,79 +795,123 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             #endregion
 
-            #region Touch Controls
-            // Cull out old stuck pointers
-            if (m_activePointerEventsThisFrame.Count >= 2)
+            if (m_activePointerEventsThisFrame.Count > 0)
             {
-                // If the first ID + 5 is less than the second pointer, we can assume the touch is stuck and we can safely ignore it
-                if ((m_activePointerEventsThisFrame[0].ID + 5) < m_activePointerEventsThisFrame[1].ID)
+                #region First thing we do is cull out old stuck pointers
+                if (m_activePointerEventsThisFrame.Count >= 2)
                 {
-                    // Ignore 0 as thats mouse and we can't stop it
-                    if (m_activePointerEventsThisFrame[0].ID != 0)
-                        ignorePointerIDs.Add(m_activePointerEventsThisFrame[0].ID);
+                    // If the first ID + 5 is less than the second pointer, we can assume the touch is stuck and we can safely ignore it
+                    if ((m_activePointerEventsThisFrame[0].ID + 5) < m_activePointerEventsThisFrame[1].ID)
+                    {
+                        // Ignore 0 as thats mouse and we can't stop it
+                        if (m_activePointerEventsThisFrame[0].ID != 0)
+                            ignorePointerIDs.Add(m_activePointerEventsThisFrame[0].ID);
 
-                    // If its not the mouse though, parse out the old ID
-                    m_activePointerEventsThisFrame.RemoveAt(0);
+                        // If its not the mouse though, parse out the old ID
+                        m_activePointerEventsThisFrame.RemoveAt(0);
+                    }
                 }
-            }
+                #endregion
 
-            // Now do Touch Controls
-            if (m_activePointerEventsThisFrame.Count == 2)
-            {
-                var movementBuffer = 0.2f;
-                var deltaTouch = m_activePointerEventsThisFrame[1].DeltaPosition;
-                deltaTouch.Normalize();
-
-                if (deltaTouch.X < 0 - movementBuffer)
+                #region Issue Command
+                if (m_activePointerEventsThisFrame.Count == 3 ||
+                    m_activePointerEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
                 {
-                    m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Right);
+                    PointerPressedEventArgs e;
+                    if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
+                        e = m_activePointerEventsThisFrame[0];
+                    else e = m_activePointerEventsThisFrame[1];
+
+                    Ray ray = m_gameCamera.GetMouseRay(
+                        e.Position,
+                        m_game.Graphics.GraphicsDevice.Viewport
+                    );
+
+                    //bool intersects = m_activeUnits[unitIndex].CheckRayIntersection(ray);
+                    //Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
+
+                    // Get the point on the terrain
+                    rayPosOnTerrain = m_map.Terrain.Intersects(ray);
                 }
-                else if (deltaTouch.X > 0 + movementBuffer)
+                #endregion
+
+                #region Pointer Down Camera Movement
+                if (m_activePointerEventsThisFrame.Count == 2 ||
+                    m_activePointerEventsThisFrame[0].Pointer == PointerPress.MiddleMouseButton)
                 {
-                    m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Right);
-                }
+                    PointerPressedEventArgs e;
+                    if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.MiddleMouseButton)
+                        e = m_activePointerEventsThisFrame[0];
+                    else e = m_activePointerEventsThisFrame[1];
 
-                if (deltaTouch.Y < 0 - movementBuffer)
+                    var delta = e.DeltaPosition;
+                    delta.Normalize();
+                    float deltaBuffer = 0.20f;
+
+                    if (delta.X < 0 - deltaBuffer)
+                    {
+                        m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Right);
+                    }
+                    else if (delta.X > 0 + deltaBuffer)
+                    {
+                        m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Right);
+                    }
+
+                    if (delta.Y < 0 - deltaBuffer)
+                    {
+                        m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Up);
+                    }
+                    else if (delta.Y > 0 + deltaBuffer)
+                    {
+                        m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Up);
+                    }
+                }
+                #endregion
+
+                #region Unit Selection
+                if ((m_activePointerEventsThisFrame.Count == 1 && m_activePointerEventsThisFrame[0].Pointer == PointerPress.Touch) ||
+                    m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
                 {
-                    m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Up);
+                    PointerPressedEventArgs e;
+                    if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
+                        e = m_activePointerEventsThisFrame[0];
+                    else e = m_activePointerEventsThisFrame[0];
+
+                    if (m_selectionBox.IsEmpty)
+                    {
+                        m_selectionBox = new Rectangle((int)e.Position.X, (int)e.Position.Y, 0, 0);
+                    }
+
+                    m_selectionBox.Width = (int)(e.Position.X - m_selectionBox.X);
+                    m_selectionBox.Height = (int)(e.Position.Y - m_selectionBox.Y);
                 }
-                else if (deltaTouch.Y > 0 + movementBuffer)
-                {
-                    m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Up);
-                }
-            }
-
-            if (m_activePointerEventsThisFrame.Count == 3)
-            {
-                Ray ray = m_gameCamera.GetMouseRay(
-                    m_activePointerEventsThisFrame[1].Position,
-                    m_game.Graphics.GraphicsDevice.Viewport
-                );
-
-                // Get the point on the terrain
-                rayPosOnTerrain = m_map.Terrain.Intersects(ray);
-            }
-
-            #endregion
-
-            if (m_activePointerEventsThisFrame.Count == 1 ||
-                m_selectionEventArgs.Pointer == PointerPress.LeftMouseButton)
-            {
-                if (m_activePointerEventsThisFrame.Count == 1) m_selectionEventArgs = m_activePointerEventsThisFrame[0];
-
-                if (m_selectionBox.IsEmpty)
-                {
-                    m_selectionBox = new Rectangle((int)m_selectionEventArgs.Position.X, (int)m_selectionEventArgs.Position.Y, 0, 0);
-                }
-
-                m_selectionBox.Width = (int)(m_selectionEventArgs.Position.X - m_selectionBox.X);
-                m_selectionBox.Height = (int)(m_selectionEventArgs.Position.Y - m_selectionBox.Y);
+                #endregion
             }
 
             // Since we are done with the touch input, we can clear the pointers
             m_activePointerEventsThisFrame.Clear();
             m_gameCamera.Update(gameTime);
-            #endregion
+        }
+        #endregion
+
+        #region Update
+        void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
+        public override void Update(GameTime gameTime)
+        {
+            m_networkTimer.Update(gameTime);
+
+            // Check if the game is fully loaded
+            if (m_currentLoadingProgress.Progress < 100) { base.Update(gameTime); return; }
+
+            // Check if the game is paused
+            switch (m_pausedState)
+            {
+                case GamePausedState.Paused: UpdatePaused(gameTime); base.Update(gameTime); return;
+                case GamePausedState.WaitingForData: UpdateWaitingForData(gameTime); base.Update(gameTime); return;
+            }
+
+            // Update our Input
+            HandleInput(gameTime);
 
             // Then the Map
             m_map.Update(gameTime);
@@ -962,7 +939,6 @@ namespace EmpiresOfTheIV.Game.Menus
                     }
                 }
 
-                m_selectionEventArgs = new PointerPressedEventArgs(gameTime);
                 selectionReleased = false;
                 m_selectionBox = Rectangle.Empty;
             }
@@ -982,7 +958,7 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             #endregion
 
-            // Set all the active units to be on the terrain
+            // Set all the active units to be on the terrain then Update Them
             for (int i = 0; i < m_activeUnits.Count; i++)
             {
                 float height = m_map.Terrain.GetHeightAtPoint(m_activeUnits[i].Transform.Position);
@@ -992,12 +968,8 @@ namespace EmpiresOfTheIV.Game.Menus
                     pos.Y = height + m_activeUnits[i].HeightAboveTerrain;
                     m_activeUnits[i].Transform.Position = pos;
                 }
-            }
 
-            // Update the Units
-            foreach (var i in m_activeUnits)
-            {
-                i.Update(gameTime);
+                m_activeUnits[i].Update(gameTime);
             }
 
             // Set the camera to chase the first unit if we want to
@@ -1135,6 +1107,12 @@ namespace EmpiresOfTheIV.Game.Menus
         public void DrawPaused(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             m_overlay.Draw(gameTime, spriteBatch);
+
+            Vector2 pausedTextSize = m_empiresOfTheIVFont.MeasureString("Paused");
+
+            spriteBatch.Begin();
+            spriteBatch.DrawString(m_empiresOfTheIVFont, "Paused", new Vector2(centerOfScreen.X - (pausedTextSize.X * 0.3f), screenRect.Height * 0.15f), Color.Wheat);
+            spriteBatch.End();
         }
 
         public void DrawWaitingForData(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)

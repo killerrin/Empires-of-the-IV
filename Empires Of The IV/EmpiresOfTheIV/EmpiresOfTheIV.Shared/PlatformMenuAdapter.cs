@@ -49,7 +49,6 @@ namespace EmpiresOfTheIV
 
         public static event EventHandler OnBackButtonPressed;
 
-
         #region Hardware Buttons
         public static void BackButtonPressed()
         {
