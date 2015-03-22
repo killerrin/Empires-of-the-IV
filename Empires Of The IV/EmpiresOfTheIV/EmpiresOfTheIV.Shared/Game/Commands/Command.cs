@@ -10,6 +10,11 @@ namespace EmpiresOfTheIV.Game.Commands
 {
     public class Command
     {
+        /// <summary>
+        /// Used as a flag so that the Game knows when to delete the command
+        /// </summary>
+        public bool Completed { get; set; }
+
         #region Fields/Properties
         /// <summary>
         /// The Command Type to provide context
@@ -56,6 +61,8 @@ namespace EmpiresOfTheIV.Game.Commands
             Position = new Vector3();
             UnitID = Enumerators.UnitID.None;
             Damage = double.MaxValue;
+
+            Completed = false;
         }
 
         #region Specific Commands
@@ -146,6 +153,7 @@ namespace EmpiresOfTheIV.Game.Commands
             Position    =      o.Position;
             UnitID      =        o.UnitID;
             Damage      =        o.Damage;
+            Completed   =     o.Completed;
         }
 
         public string ThisToJson()
@@ -174,7 +182,20 @@ namespace EmpiresOfTheIV.Game.Commands
                     (ID2 == o.ID2) &&
                     (Position == o.Position) &&
                     (UnitID == o.UnitID) &&
-                    (Damage == o.Damage));
+                    (Damage == o.Damage) &&
+                    (Completed == o.Completed));
+        }
+
+        public override string ToString()
+        {
+            return "Command Type: " + CommandType.ToString() + " | " +
+                   "Completed: " + Completed.ToString() + " | " +
+                   "Target Type: " + TargetType.ToString() + " | " + 
+                   "ID1: " + ID1.ToString() + " | " +
+                   "ID2: " + ID2.ToString() + " | " + 
+                   "Position: " + Position.ToString() + " | " + 
+                   "Unit ID: " + UnitID.ToString() + " | " + 
+                   "Damage: " + Damage.ToString();
         }
     }
 }

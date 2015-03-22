@@ -17,6 +17,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
     {
         #region Fields/Properties
         public uint UnitID { get; protected set; }
+        public uint PlayerID;
         public UnitType UnitType;
 
         public bool Selectable { get; set; }

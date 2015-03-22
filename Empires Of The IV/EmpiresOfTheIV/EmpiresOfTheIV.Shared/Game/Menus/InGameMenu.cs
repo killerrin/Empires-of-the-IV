@@ -668,18 +668,24 @@ namespace EmpiresOfTheIV.Game.Menus
                     return;
 
             m_activePointerEventsThisFrame.Add(e);
-
+            
             if (e.Pointer == PointerPress.Touch) { touchDown = true; }
             else if (e.Pointer == PointerPress.LeftMouseButton) { leftMouseDown = true; }
             else if (e.Pointer == PointerPress.MiddleMouseButton) { middleMouseDown = true; }
             else if (e.Pointer == PointerPress.RightMouseButton) { rightMouseDown = true; }
         }
 
+        public List<PointerPressedEventArgs> m_activePointerClickedEventsThisFrame = new List<PointerPressedEventArgs>();
         bool selectionReleased = false;
         void InputManager_PointerClicked(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
             //if (m_pausedState != GamePausedState.Unpaused) return;
             Debug.WriteLine("{0}, Pressed", e.ToString());
+
+            foreach (var i in ignorePointerIDs)
+                if (i == e.ID)
+                    return;
+            m_activePointerClickedEventsThisFrame.Add(e);
 
             if (e.Pointer == PointerPress.Touch) { touchDown = false; }
             else if (e.Pointer == PointerPress.LeftMouseButton) { leftMouseDown = false; }
@@ -747,8 +753,6 @@ namespace EmpiresOfTheIV.Game.Menus
         }
         #endregion
 
-
-        public Vector3? rayPosOnTerrain;
         public void HandleInput(GameTime gameTime)
         {
             #region Mouse Movement Camera Controls
@@ -795,6 +799,99 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             #endregion
 
+            // Do Input Which only operates when the active pointers are clicked
+            if (m_activePointerClickedEventsThisFrame.Count > 0)
+            {
+                #region First thing we do is cull out old stuck pointers
+                if (m_activePointerClickedEventsThisFrame.Count >= 2)
+                {
+                    // If the first ID + 5 is less than the second pointer, we can assume the touch is stuck and we can safely ignore it
+                    if ((m_activePointerClickedEventsThisFrame[0].ID + 5) < m_activePointerClickedEventsThisFrame[1].ID)
+                    {
+                        // Ignore 0 as thats mouse and we can't stop it
+                        if (m_activePointerClickedEventsThisFrame[0].ID != 0)
+                            ignorePointerIDs.Add(m_activePointerClickedEventsThisFrame[0].ID);
+
+                        // If its not the mouse though, parse out the old ID
+                        m_activePointerClickedEventsThisFrame.RemoveAt(0);
+                    }
+                }
+                #endregion
+
+                #region Issue Command
+                if (m_activePointerClickedEventsThisFrame.Count == 3 ||
+                    m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
+                {
+                    PointerPressedEventArgs e;
+                    if (m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
+                        e = m_activePointerClickedEventsThisFrame[0];
+                    else e = m_activePointerClickedEventsThisFrame[1];
+
+                    Ray ray = m_gameCamera.GetMouseRay(
+                        e.Position,
+                        m_game.Graphics.GraphicsDevice.Viewport
+                    );
+
+                    bool rayIntersects = false;
+
+                    // First we check if our ray intersects with a Unit
+                    for (int i = 0; i < m_activeUnits.Count; i++)
+                    {
+                        if (m_activeUnits[i].CheckRayIntersection(ray))
+                        {
+                            // Check if it is an Enemy Unit, and if so set the rayIntersects and
+                            // issue the attack command
+                            //rayIntersects = true;
+                        }
+                    }
+
+                    // If a unit isn't intersected, then we check to see if we collided with a factoryBase
+                    if (!rayIntersects)
+                    {
+                        FactoryBase intersectedFactoryBase = null;
+                        var result = m_map.IntersectFactoryBase(ray, out intersectedFactoryBase);
+
+                        if (result == FactoryBaseRayIntersection.None)
+                        {
+
+                        }
+                        else if (result == FactoryBaseRayIntersection.FactoryBase)
+                        {
+                            // Since it is an empty Factory Base, pop up the UI to build a Factory
+                            rayIntersects = true;
+                        }
+                        else if (result == FactoryBaseRayIntersection.Factory)
+                        {
+                            // Since it is a Factory, check if it is ours, and then pop up the UI to build Units
+                            // or issue an attack command
+                            //rayIntersects = true;
+                        }
+                    }
+
+                    // If we still haven't intersected, then we go off of the map terrain
+                    if (!rayIntersects)
+                    {
+                        var result = m_map.IntersectTerrain(ray);
+
+                        // Since we clicked on empty terrain, simply issue the Move Command for all selected units
+                        if (result.HasValue)
+                        {
+                            for (int i = 0; i < m_activeUnits.Count; i++)
+                            {
+                                if (m_activeUnits[i].Selected)
+                                {
+                                    m_commandRelay.m_commands.Add(Command.MoveCommand(m_activeUnits[i].ID, result.Value));
+                                }
+                            }
+
+                            rayIntersects = true;
+                        }
+                    }
+                }
+                #endregion
+            }
+
+            // Do Input which operates when the active pointers are currently down
             if (m_activePointerEventsThisFrame.Count > 0)
             {
                 #region First thing we do is cull out old stuck pointers
@@ -813,57 +910,53 @@ namespace EmpiresOfTheIV.Game.Menus
                 }
                 #endregion
 
-                #region Issue Command
-                if (m_activePointerEventsThisFrame.Count == 3 ||
-                    m_activePointerEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
-                {
-                    PointerPressedEventArgs e;
-                    if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
-                        e = m_activePointerEventsThisFrame[0];
-                    else e = m_activePointerEventsThisFrame[1];
-
-                    Ray ray = m_gameCamera.GetMouseRay(
-                        e.Position,
-                        m_game.Graphics.GraphicsDevice.Viewport
-                    );
-
-                    //bool intersects = m_activeUnits[unitIndex].CheckRayIntersection(ray);
-                    //Debug.WriteLine("Hit: {0}, Ray: {1}", intersects, ray.ToString());
-
-                    // Get the point on the terrain
-                    rayPosOnTerrain = m_map.Terrain.Intersects(ray);
-                }
-                #endregion
-
                 #region Pointer Down Camera Movement
                 if (m_activePointerEventsThisFrame.Count == 2 ||
                     m_activePointerEventsThisFrame[0].Pointer == PointerPress.MiddleMouseButton)
                 {
+                    bool inverseX = true;
+                    bool inverseY = true;
+
                     PointerPressedEventArgs e;
                     if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.MiddleMouseButton)
+                    {
                         e = m_activePointerEventsThisFrame[0];
-                    else e = m_activePointerEventsThisFrame[1];
+                    }
+                    else
+                    {
+                        e = m_activePointerEventsThisFrame[1];
+                    }
 
                     var delta = e.DeltaPosition;
                     delta.Normalize();
-                    float deltaBuffer = 0.20f;
+                    Vector2 deltaBuffer = new Vector2(0.2f, 0.2f);
 
-                    if (delta.X < 0 - deltaBuffer)
+                    Vector3 xAccel;
+                    if (delta.X < 0 - deltaBuffer.X)
                     {
-                        m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Right);
+                        if (inverseX) xAccel = m_gameCamera.CameraRotation.Right;
+                        else xAccel = -m_gameCamera.CameraRotation.Right;
+                        m_gameCamera.Move(gameTime, xAccel);
                     }
-                    else if (delta.X > 0 + deltaBuffer)
+                    else if (delta.X > 0 + deltaBuffer.X)
                     {
-                        m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Right);
+                        if (inverseX) xAccel = -m_gameCamera.CameraRotation.Right;
+                        else xAccel = m_gameCamera.CameraRotation.Right;
+                        m_gameCamera.Move(gameTime, xAccel);
                     }
 
-                    if (delta.Y < 0 - deltaBuffer)
+                    Vector3 yAccel;
+                    if (delta.Y < 0 - deltaBuffer.Y)
                     {
-                        m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Up);
+                        if (inverseY) yAccel = -m_gameCamera.CameraRotation.Up;
+                        else yAccel = m_gameCamera.CameraRotation.Up;
+                        m_gameCamera.Move(gameTime, yAccel);
                     }
-                    else if (delta.Y > 0 + deltaBuffer)
+                    else if (delta.Y > 0 + deltaBuffer.Y)
                     {
-                        m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Up);
+                        if (inverseY) yAccel = m_gameCamera.CameraRotation.Up;
+                        else yAccel = -m_gameCamera.CameraRotation.Up;
+                        m_gameCamera.Move(gameTime, yAccel);
                     }
                 }
                 #endregion
@@ -890,6 +983,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
             // Since we are done with the touch input, we can clear the pointers
             m_activePointerEventsThisFrame.Clear();
+            m_activePointerClickedEventsThisFrame.Clear();
             m_gameCamera.Update(gameTime);
         }
         #endregion
@@ -945,17 +1039,46 @@ namespace EmpiresOfTheIV.Game.Menus
             #endregion
 
             #region Do Commands
-            for (int i = 0; i < m_activeUnits.Count; i++)
+            foreach (var command in m_commandRelay.m_commands)
             {
-                if (m_activeUnits[i].Selected)
+                //Debug.WriteLine(command.ToString());
+                switch (command.CommandType)
                 {
-                    // Move Units
-                    if (rayPosOnTerrain.HasValue)
-                    {
-                        m_activeUnits[i].Transform.MoveToPosition(gameTime, (rayPosOnTerrain.Value + new Vector3(0.0f, m_activeUnits[i].HeightAboveTerrain, 0.0f)));
-                    }
+                    case CommandType.Select:
+                        break;
+                    case CommandType.Move:
+                        for (int i = 0; i < m_activeUnits.Count; i++)
+                        {
+                            if (m_activeUnits[i].ID == command.ID1)
+                            {
+                                var newPos = (command.Position + new Vector3(0.0f, m_activeUnits[i].HeightAboveTerrain, 0.0f));
+
+                                var result = m_activeUnits[i].Transform.MoveToPosition(gameTime, newPos, 1.2f);
+                                if (result) command.Completed = true;
+                                break;
+                            }
+                        }
+                        break;
+                    case CommandType.BuildFactory:
+                        break;
+                    case CommandType.BuildUnit:
+                        break;
+                    case CommandType.SetFactoryRallyPoint:
+                        break;
+                    case CommandType.Cancel:
+                        break;
+                    case CommandType.Attack:
+                        break;
+                    case CommandType.Damage:
+                        break;
+                    case CommandType.Kill:
+                        break;
+                    default:
+                        break;
                 }
             }
+
+            m_commandRelay.RemoveAllCompleted();
             #endregion
 
             // Set all the active units to be on the terrain then Update Them

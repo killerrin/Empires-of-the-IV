@@ -16,5 +16,15 @@ namespace EmpiresOfTheIV.Game.Commands
 		{
 			m_commands = new ThreadSafeList<Command>();
 		}
+
+		public void RemoveAllCompleted()
+		{
+			List<Command> commandsClone = m_commands.Clone();
+			foreach (var command in commandsClone)
+			{
+				if (command.Completed)
+					m_commands.Remove(command);
+			}
+		}
 	}
 }

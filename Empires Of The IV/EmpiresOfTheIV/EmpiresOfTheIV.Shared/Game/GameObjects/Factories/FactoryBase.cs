@@ -37,7 +37,6 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
 
         public FactoryBaseRayIntersection CheckRayIntersection(Ray ray)
         {
-            
             bool factoryIntersection = false;
             bool factoryBaseIntersection = false;
 
