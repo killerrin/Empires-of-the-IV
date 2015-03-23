@@ -517,7 +517,17 @@ namespace EmpiresOfTheIV.Game.Menus
                     new Vector3((float)Consts.random.NextDouble() * 15.0f,
                                 (float)0.0f,
                                 (float)Consts.random.NextDouble())
-                );                
+                );
+
+                // Set it on the terrain
+                float height = m_map.Terrain.GetHeightAtPoint(unit.Transform.Position);
+                if (height != float.MaxValue)
+                {
+                    Vector3 pos = unit.Transform.Position;
+                    pos.Y = height + unit.HeightAboveTerrain;
+                    unit.Transform.Position = pos;
+                }
+
                 m_activeUnits.Add(unit);
             }
             #endregion
@@ -642,6 +652,9 @@ namespace EmpiresOfTheIV.Game.Menus
         {
             Debug.WriteLine("System Packet Recieved");
             GamePacket gamePacket = e.Packet as GamePacket;
+
+            if (gamePacket.Command != null)
+                m_commandRelay.m_commands.Add(gamePacket.Command);
         }
 
         private void NetworkManager_OnMessageRecieved(object sender, ReceivedMessageEventArgs e)
@@ -883,7 +896,7 @@ namespace EmpiresOfTheIV.Game.Menus
                             {
                                 if (m_activeUnits[i].Selected)
                                 {
-                                    m_commandRelay.m_commands.Add(Command.MoveCommand(m_activeUnits[i].ID, result.Value));
+                                    m_commandRelay.AddCommand(Command.MoveCommand(m_activeUnits[i].ID, result.Value), true);
                                 }
                             }
 

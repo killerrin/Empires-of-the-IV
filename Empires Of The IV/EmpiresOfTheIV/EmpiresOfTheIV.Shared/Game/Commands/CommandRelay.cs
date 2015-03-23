@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections;
 using System.Linq;
 using Anarian.Collections;
+using EmpiresOfTheIV.Game.Networking;
 
 namespace EmpiresOfTheIV.Game.Commands
 {
@@ -24,7 +25,11 @@ namespace EmpiresOfTheIV.Game.Commands
 			// Propogate Commands accross Network
             if (sendOverNetwork)
             {
-
+                if (Consts.Game.NetworkManager.IsConnected)
+                {
+                    GamePacket gp = new GamePacket(true, c, GamePacketID.Command);
+                    Consts.Game.NetworkManager.SendMessage(gp.ThisToJson());
+                }
             }
 		}
 		public void RemoveAllCompleted()
