@@ -17,6 +17,16 @@ namespace EmpiresOfTheIV.Game.Commands
 			m_commands = new ThreadSafeList<Command>();
 		}
 
+		public void AddCommand(Command c, bool sendOverNetwork)
+		{
+			m_commands.Add(c);
+			
+			// Propogate Commands accross Network
+            if (sendOverNetwork)
+            {
+
+            }
+		}
 		public void RemoveAllCompleted()
 		{
 			List<Command> commandsClone = m_commands.Clone();

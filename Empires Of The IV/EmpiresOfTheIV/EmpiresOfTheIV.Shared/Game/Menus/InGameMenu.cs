@@ -679,12 +679,13 @@ namespace EmpiresOfTheIV.Game.Menus
         bool selectionReleased = false;
         void InputManager_PointerClicked(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
-            //if (m_pausedState != GamePausedState.Unpaused) return;
+            if (m_pausedState != GamePausedState.Unpaused) return;
             Debug.WriteLine("{0}, Pressed", e.ToString());
 
             foreach (var i in ignorePointerIDs)
                 if (i == e.ID)
                     return;
+
             m_activePointerClickedEventsThisFrame.Add(e);
 
             if (e.Pointer == PointerPress.Touch) { touchDown = false; }
@@ -756,6 +757,7 @@ namespace EmpiresOfTheIV.Game.Menus
         public void HandleInput(GameTime gameTime)
         {
             #region Mouse Movement Camera Controls
+#if WINDOWS_APP
             var previousCamY = m_gameCamera.Position.Y;
             if (m_lastPointerMovedEventArgs.InputType == InputType.Mouse)
             {
@@ -797,6 +799,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     }
                 }
             }
+#endif
             #endregion
 
             // Do Input Which only operates when the active pointers are clicked
@@ -1018,17 +1021,16 @@ namespace EmpiresOfTheIV.Game.Menus
             {
                 if (m_selectionBox != Rectangle.Empty)
                 {
+                    BoundingFrustum selectionFrustrum = m_gameCamera.UnprojectRectangle(m_selectionBox, m_game.GraphicsDevice.Viewport);
                     foreach (var item in m_activeUnits)
                     {
-                        item.Selected = false;
-                    }
-
-                    BoundingFrustum frustrum = m_gameCamera.UnprojectRectangle(m_selectionBox, m_game.GraphicsDevice.Viewport);
-                    foreach (var item in m_activeUnits)
-                    {
-                        if (item.CheckFrustumIntersection(frustrum))
+                        if (item.CheckFrustumIntersection(selectionFrustrum))
                         {
                             item.Selected = true;
+                        }
+                        else
+                        {
+                            item.Selected = false;
                         }
                     }
                 }
@@ -1055,6 +1057,16 @@ namespace EmpiresOfTheIV.Game.Menus
 
                                 var result = m_activeUnits[i].Transform.MoveToPosition(gameTime, newPos, 1.2f);
                                 if (result) command.Completed = true;
+
+                                // Since this is the only spot where units will move
+                                // We will set the unit to be on top of the terrain
+                                float height = m_map.Terrain.GetHeightAtPoint(m_activeUnits[i].Transform.Position);
+                                if (height != float.MaxValue)
+                                {
+                                    Vector3 pos = m_activeUnits[i].Transform.Position;
+                                    pos.Y = height + m_activeUnits[i].HeightAboveTerrain;
+                                    m_activeUnits[i].Transform.Position = pos;
+                                }
                                 break;
                             }
                         }
@@ -1084,19 +1096,11 @@ namespace EmpiresOfTheIV.Game.Menus
             // Set all the active units to be on the terrain then Update Them
             for (int i = 0; i < m_activeUnits.Count; i++)
             {
-                float height = m_map.Terrain.GetHeightAtPoint(m_activeUnits[i].Transform.Position);
-                if (height != float.MaxValue)
-                {
-                    Vector3 pos = m_activeUnits[i].Transform.Position;
-                    pos.Y = height + m_activeUnits[i].HeightAboveTerrain;
-                    m_activeUnits[i].Transform.Position = pos;
-                }
-
                 m_activeUnits[i].Update(gameTime);
             }
 
             // Set the camera to chase the first unit if we want to
-            m_gameCamera.WorldPositionToChase = m_activeUnits[0].Transform.WorldMatrix;// *Matrix.CreateTranslation(0, 2, 0);
+            m_gameCamera.WorldPositionToChase = m_activeUnits[0].Transform.WorldMatrix;
 
             //-- Update the Menu
             base.Update(gameTime);
