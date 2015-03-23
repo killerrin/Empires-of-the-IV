@@ -12,25 +12,33 @@ namespace EmpiresOfTheIV.Game.Commands
 	public class CommandRelay
 	{
 		public ThreadSafeList<Command> m_commands;
+        Command m_previouslyAddedCommand;
 
 		public CommandRelay()
 		{
 			m_commands = new ThreadSafeList<Command>();
+            m_previouslyAddedCommand = null;
 		}
 
 		public void AddCommand(Command c, bool sendOverNetwork)
 		{
-			m_commands.Add(c);
+            if (c == m_previouslyAddedCommand)
+                return;
 			
 			// Propogate Commands accross Network
-            if (sendOverNetwork)
+            if (Consts.Game.NetworkManager.IsConnected)
             {
-                if (Consts.Game.NetworkManager.IsConnected)
+                if (sendOverNetwork)
                 {
                     GamePacket gp = new GamePacket(true, c, GamePacketID.Command);
                     Consts.Game.NetworkManager.SendMessage(gp.ThisToJson());
+
                 }
             }
+
+            // Finally, add the command
+            m_commands.Add(c);
+            m_previouslyAddedCommand = c;
 		}
 		public void RemoveAllCompleted()
 		{

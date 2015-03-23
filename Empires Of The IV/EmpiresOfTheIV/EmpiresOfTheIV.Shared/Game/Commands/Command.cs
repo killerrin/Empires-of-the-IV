@@ -172,12 +172,17 @@ namespace EmpiresOfTheIV.Game.Commands
 
         public override bool Equals(object obj)
         {
+            if (obj == null)
+                return false;
             if (obj is Command)
                 return Equals((Command)obj);
+
             return false;
         }
         public bool Equals(Command o)
         {
+            if (o == null) return false;
+
             return  ((CommandType == o.CommandType) &&
                     (TargetType == o.TargetType) &&
                     (ID1 == o.ID1) &&

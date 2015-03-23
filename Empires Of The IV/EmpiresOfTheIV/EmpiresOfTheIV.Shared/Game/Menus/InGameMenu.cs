@@ -653,8 +653,15 @@ namespace EmpiresOfTheIV.Game.Menus
             Debug.WriteLine("System Packet Recieved");
             GamePacket gamePacket = e.Packet as GamePacket;
 
-            if (gamePacket.Command != null)
-                m_commandRelay.m_commands.Add(gamePacket.Command);
+            if (gamePacket.ID == GamePacketID.Command)
+            {
+                if (gamePacket.Command != null)
+                    m_commandRelay.m_commands.Add(gamePacket.Command);
+            }
+            else if (gamePacket.ID == GamePacketID.GameSync)
+            {
+
+            }
         }
 
         private void NetworkManager_OnMessageRecieved(object sender, ReceivedMessageEventArgs e)
@@ -674,12 +681,11 @@ namespace EmpiresOfTheIV.Game.Menus
         void InputManager_PointerDown(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
             if (m_pausedState != GamePausedState.Unpaused) return;
-            Debug.WriteLine("{0}, Pressed", e.ToString());
-
             foreach (var i in ignorePointerIDs)
                 if (i == e.ID)
                     return;
 
+            Debug.WriteLine("{0}, Pressed", e.ToString());
             m_activePointerEventsThisFrame.Add(e);
             
             if (e.Pointer == PointerPress.Touch) { touchDown = true; }
@@ -693,12 +699,11 @@ namespace EmpiresOfTheIV.Game.Menus
         void InputManager_PointerClicked(object sender, Anarian.Events.PointerPressedEventArgs e)
         {
             if (m_pausedState != GamePausedState.Unpaused) return;
-            Debug.WriteLine("{0}, Pressed", e.ToString());
-
             foreach (var i in ignorePointerIDs)
                 if (i == e.ID)
                     return;
 
+            Debug.WriteLine("{0}, Clicked", e.ToString());
             m_activePointerClickedEventsThisFrame.Add(e);
 
             if (e.Pointer == PointerPress.Touch) { touchDown = false; }
@@ -720,7 +725,7 @@ namespace EmpiresOfTheIV.Game.Menus
             m_lastPointerMovedEventArgs = e;
         }
         #endregion
-
+        
         #region Keyboard
         void Keyboard_KeyboardDown(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
@@ -819,19 +824,19 @@ namespace EmpiresOfTheIV.Game.Menus
             if (m_activePointerClickedEventsThisFrame.Count > 0)
             {
                 #region First thing we do is cull out old stuck pointers
-                if (m_activePointerClickedEventsThisFrame.Count >= 2)
-                {
-                    // If the first ID + 5 is less than the second pointer, we can assume the touch is stuck and we can safely ignore it
-                    if ((m_activePointerClickedEventsThisFrame[0].ID + 5) < m_activePointerClickedEventsThisFrame[1].ID)
-                    {
-                        // Ignore 0 as thats mouse and we can't stop it
-                        if (m_activePointerClickedEventsThisFrame[0].ID != 0)
-                            ignorePointerIDs.Add(m_activePointerClickedEventsThisFrame[0].ID);
-
-                        // If its not the mouse though, parse out the old ID
-                        m_activePointerClickedEventsThisFrame.RemoveAt(0);
-                    }
-                }
+                //if (m_activePointerClickedEventsThisFrame.Count >= 2)
+                //{
+                //    // If the first ID + 5 is less than the second pointer, we can assume the touch is stuck and we can safely ignore it
+                //    if ((m_activePointerClickedEventsThisFrame[0].ID + 5) < m_activePointerClickedEventsThisFrame[1].ID)
+                //    {
+                //        // Ignore 0 as thats mouse and we can't stop it
+                //        if (m_activePointerClickedEventsThisFrame[0].ID != 0)
+                //            ignorePointerIDs.Add(m_activePointerClickedEventsThisFrame[0].ID);
+                //
+                //        // If its not the mouse though, parse out the old ID
+                //        m_activePointerClickedEventsThisFrame.RemoveAt(0);
+                //    }
+                //}
                 #endregion
 
                 #region Issue Command
