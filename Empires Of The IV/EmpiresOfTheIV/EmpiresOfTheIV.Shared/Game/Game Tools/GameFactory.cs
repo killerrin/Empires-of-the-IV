@@ -28,6 +28,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             factoryBase.Factory.Active = true;
             factoryBase.Factory.CullDraw = true;
             factoryBase.Factory.RenderBounds = true;
+            factoryBase.Factory.UpdateBoundsEveryFrame = false;
             factoryBase.Factory.Health.MaxHealth = 200.0f;
 
             switch (owner.EmpireType)

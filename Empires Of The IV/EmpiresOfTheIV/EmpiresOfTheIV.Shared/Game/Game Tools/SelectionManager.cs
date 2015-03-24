@@ -39,6 +39,12 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                 return Rectangle.Empty;
             }
 
+            // To stop from selecting all units in a single click
+            // We simply set the EndingPosition to not be the same
+            // as the StartingPosition
+            if (StartingPosition.Value == EndingPosition.Value)
+                EndingPosition = StartingPosition + new Vector2(1.0f, 1.0f);
+
             return new Rectangle((int)(StartingPosition.Value.X),
                                  (int)(StartingPosition.Value.Y),
                                  (int)(EndingPosition.Value.X - StartingPosition.Value.X),

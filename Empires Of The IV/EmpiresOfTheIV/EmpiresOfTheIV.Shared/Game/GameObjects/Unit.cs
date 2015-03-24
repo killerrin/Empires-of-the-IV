@@ -99,6 +99,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+
+            if (Selected) RenderBounds = true;
+            else RenderBounds = false;
         }
 
         public override bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
@@ -126,16 +129,16 @@ namespace EmpiresOfTheIV.Game.GameObjects
             spriteBatch.Draw(blankTexture, healthRect, Color.Red);
             spriteBatch.End();
 
-            if (Selected)
-            {
-                float selectionBoxScale = 1.5f;
-                spriteBatch.Begin();
-                spriteBatch.Draw(selectionBox,
-                                 screenPos2D - new Vector2(15,25) - new Vector2((selectionBox.Width * selectionBoxScale) / 2f, (selectionBox.Height * selectionBoxScale) / 2f),
-                                 null, Color.Purple, 0, Vector2.Zero,
-                                 selectionBoxScale, SpriteEffects.None, 1.0f);
-                spriteBatch.End();
-            }
+            //if (Selected)
+            //{
+            //    float selectionBoxScale = 1.5f;
+            //    spriteBatch.Begin();
+            //    spriteBatch.Draw(selectionBox,
+            //                     screenPos2D - new Vector2(15,25) - new Vector2((selectionBox.Width * selectionBoxScale) / 2f, (selectionBox.Height * selectionBoxScale) / 2f),
+            //                     null, Color.Purple, 0, Vector2.Zero,
+            //                     selectionBoxScale, SpriteEffects.None, 1.0f);
+            //    spriteBatch.End();
+            //}
             #endregion
 
             return true;
