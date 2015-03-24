@@ -215,6 +215,8 @@ namespace EmpiresOfTheIV.Game.Menus
             #region Setup Variables
             m_gameCamera = new UniversalCamera();
             m_gameCamera.AspectRatio = m_game.SceneManager.CurrentScene.Camera.AspectRatio;
+            m_gameCamera.Near = 0.2f;
+            m_gameCamera.Far = 1000.0f;
             m_gameCamera.Speed = 0.8f;
 
             // Since Phone has a smaller screen and a lower TouchScreen input frequency, we double the speed
@@ -226,14 +228,13 @@ namespace EmpiresOfTheIV.Game.Menus
 
             //Camera Rotation: {M11:1 M12:0 M13:0 M14:0} {M21:0 M22:0.2419228 M23:-0.9702981 M24:0} {M31:0 M32:0.9702981 M33:0.2419228 M34:0} {M41:0 M42:0 M43:0 M44:1}
             m_gameCamera.DefaultCameraRotation = new Matrix(1, 0, 0, 0,
-                                                 0, 0.242f, -0.97f, 0,
-                                                 0, 0.97f, 0.24f, 0,
-                                                 0, 0, 0, 1);
+                                                            0, 0.242f, -0.97f, 0,
+                                                            0, 0.97f, 0.24f, 0,
+                                                            0, 0, 0, 1);
 
             m_gameCamera.ResetViewToDefaults();
 
-            int totalUnitsInPool = (int)(m_pageParameter.maxUnitsPerPlayer * (m_team1.PlayerCount + m_team2.PlayerCount));
-            m_unitPool = new UnitPool(totalUnitsInPool);
+            m_unitPool = new UnitPool((int)(m_pageParameter.maxUnitsPerPlayer * (m_team1.PlayerCount + m_team2.PlayerCount)));
             m_commandRelay = new CommandRelay();
 
             IDManager unitIDManager = new IDManager();
@@ -283,49 +284,49 @@ namespace EmpiresOfTheIV.Game.Menus
             #endregion
 
             #region Crescanian Confederacy
-            AnimatedModel crescanianGroundSoldierTPose = null;
-            AnimatedModel crescanianGroundSoldierAnimation = null;
-            AnimationClip crescanianGroundSoldierWalkAnimClip = null;
-
-            Model         crescanianFactory = null;
-            AnimatedModel crescanianSpaceshipFighter = null;
-
-            if (m_team1.IsPlayerEmpire(EmpireType.CrescanianConfederation) || m_team2.IsPlayerEmpire(EmpireType.CrescanianConfederation))
-            {
-                if (GameConsts.Loading.Empire_CrescanianConfederationLoaded == LoadingStatus.Loaded)
-                {
-
-                }
-                else
-                {
-                    GameConsts.Loading.Empire_CrescanianConfederationLoaded = LoadingStatus.CurrentlyLoading;
-
-                    GameConsts.Loading.Empire_CrescanianConfederationLoaded = LoadingStatus.Loaded;
-                }
-            }
+            //AnimatedModel crescanianGroundSoldierTPose = null;
+            //AnimatedModel crescanianGroundSoldierAnimation = null;
+            //AnimationClip crescanianGroundSoldierWalkAnimClip = null;
+            //
+            //Model         crescanianFactory = null;
+            //AnimatedModel crescanianSpaceshipFighter = null;
+            //
+            //if (m_team1.IsPlayerEmpire(EmpireType.CrescanianConfederation) || m_team2.IsPlayerEmpire(EmpireType.CrescanianConfederation))
+            //{
+            //    if (GameConsts.Loading.Empire_CrescanianConfederationLoaded == LoadingStatus.Loaded)
+            //    {
+            //
+            //    }
+            //    else
+            //    {
+            //        GameConsts.Loading.Empire_CrescanianConfederationLoaded = LoadingStatus.CurrentlyLoading;
+            //
+            //        GameConsts.Loading.Empire_CrescanianConfederationLoaded = LoadingStatus.Loaded;
+            //    }
+            //}
             #endregion
 
             #region Kingdom of Edolas
-            AnimatedModel kingdomOfEdolasGroundSoldierTPose = null;
-            AnimatedModel kingdomOfEdolasGroundSoldierAnimation = null;
-            AnimationClip kingdomOfEdolasGroundSoldierWalkAnimClip = null;
-
-            Model         kingdomOfEdolasFactory= null;
-            AnimatedModel kingdomOfEdolasSpaceshipFighter = null;
-
-            if (m_team1.IsPlayerEmpire(EmpireType.TheKingdomOfEdolas) || m_team2.IsPlayerEmpire(EmpireType.TheKingdomOfEdolas))
-            {
-                if (GameConsts.Loading.Empire_KingdomOfEdolasLoaded == LoadingStatus.Loaded)
-                {
-
-                }
-                else
-                {
-                    GameConsts.Loading.Empire_KingdomOfEdolasLoaded = LoadingStatus.CurrentlyLoading;
-
-                    GameConsts.Loading.Empire_KingdomOfEdolasLoaded = LoadingStatus.Loaded;
-                }
-            }
+            //AnimatedModel kingdomOfEdolasGroundSoldierTPose = null;
+            //AnimatedModel kingdomOfEdolasGroundSoldierAnimation = null;
+            //AnimationClip kingdomOfEdolasGroundSoldierWalkAnimClip = null;
+            //
+            //Model         kingdomOfEdolasFactory= null;
+            //AnimatedModel kingdomOfEdolasSpaceshipFighter = null;
+            //
+            //if (m_team1.IsPlayerEmpire(EmpireType.TheKingdomOfEdolas) || m_team2.IsPlayerEmpire(EmpireType.TheKingdomOfEdolas))
+            //{
+            //    if (GameConsts.Loading.Empire_KingdomOfEdolasLoaded == LoadingStatus.Loaded)
+            //    {
+            //
+            //    }
+            //    else
+            //    {
+            //        GameConsts.Loading.Empire_KingdomOfEdolasLoaded = LoadingStatus.CurrentlyLoading;
+            //
+            //        GameConsts.Loading.Empire_KingdomOfEdolasLoaded = LoadingStatus.Loaded;
+            //    }
+            //}
             #endregion
             #endregion
 
@@ -1064,11 +1065,11 @@ namespace EmpiresOfTheIV.Game.Menus
                 {
                     case CommandType.StartSelection:
                         m_selectionManager.StartingPosition = new Vector2(command.Position.X, command.Position.Y);
-                        command.Complete();
+                        m_commandRelay.Complete(command); //command.Complete();
                         break;
                     case CommandType.EndSelection:
                         m_selectionManager.EndingPosition = new Vector2(command.Position.X, command.Position.Y);
-                        command.Complete();
+                        m_commandRelay.Complete(command); //command.Complete();
                         break;
                     case CommandType.Move:
                         Unit unit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
@@ -1077,7 +1078,7 @@ namespace EmpiresOfTheIV.Game.Menus
                             var newPos = (command.Position + new Vector3(0.0f, unit.HeightAboveTerrain, 0.0f));
 
                             var result = unit.Transform.MoveToPosition(gameTime, newPos, 1.2f);
-                            if (result) command.Complete();
+                            if (result) m_commandRelay.Complete(command); //command.Complete();
 
                             // Since this is the only spot where units will move
                             // We will set the unit to be on top of the terrain
@@ -1108,8 +1109,8 @@ namespace EmpiresOfTheIV.Game.Menus
                         break;
                 }
             }
-
-            m_commandRelay.RemoveAllCompleted();
+            
+            //m_commandRelay.RemoveAllCompleted();
             #endregion
 
             // Set all the active units to be on the terrain then Update Them
@@ -1170,7 +1171,7 @@ namespace EmpiresOfTheIV.Game.Menus
             // Draw SelectionBox
             m_selectionManager.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
 
-            // Draw Player Economy
+            #region Draw Player Economy
             int distanceBetweenElements = 160;
             int xOffset = (screenRect.Width) - distanceBetweenElements;
             int yOffset = 25;
@@ -1191,6 +1192,7 @@ namespace EmpiresOfTheIV.Game.Menus
             spriteBatch.Draw(m_currencyTexture, new Rectangle(xOffset, yOffset, 50, 50), Color.White);
             spriteBatch.DrawString(m_empiresOfTheIVFontSmall, m_pageParameter.me.Economy.Currency.CurrentAmountAsString, new Vector2(xOffset + 50, yOffset), Color.White);
             spriteBatch.End();
+            #endregion
 
             switch (m_pausedState)
             {

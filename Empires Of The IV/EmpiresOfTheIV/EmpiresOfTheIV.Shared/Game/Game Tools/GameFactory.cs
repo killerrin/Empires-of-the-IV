@@ -44,6 +44,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
             unitPoolUnit.CullDraw = true;
             unitPoolUnit.RenderBounds = true;
+            unitPoolUnit.UpdateBoundsEveryFrame = true;
             unitPoolUnit.Active = true;
             unitPoolUnit.Health.Alive = true;
 

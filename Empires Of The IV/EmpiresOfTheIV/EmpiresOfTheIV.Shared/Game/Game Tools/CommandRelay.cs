@@ -41,6 +41,13 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             m_commands.Add(c);
             m_previouslyAddedCommand = c;
 		}
+
+        public void Complete(Command c)
+        {
+            c.Completed = true;
+            m_commands.Remove(c);
+        }
+
 		public void RemoveAllCompleted()
 		{
 			List<Command> commandsClone = m_commands.Clone();
