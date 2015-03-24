@@ -122,21 +122,27 @@ namespace EmpiresOfTheIV
                 Texture2D tyrilTexture = Content.Load<Texture2D>("Textures/Planet/Tyril Texture");
                 Planet tyril = new Planet(GraphicsDevice, tyrilTexture, MathHelper.ToRadians(-25.0f), Vector3.Zero, new Vector3(0.00020f, 0.0f, 0.0f), Vector3.Zero);
                 tyril.Transform.Scale = new Vector3(10.0f);
+                tyril.Active = true;
+                tyril.Visible = true;
+                tyril.CullDraw = false;
 
                 Debug.WriteLine("Loading Hope");
                 Texture2D hopeTexture = Content.Load<Texture2D>("Textures/Planet/Hope Texture");
                 Planet hope = new Planet(GraphicsDevice, hopeTexture, MathHelper.ToRadians(-20.0f), new Vector3(20.0f, 2.0f, 0.0f), new Vector3(0.00050f, 0.0f, 0.0f), new Vector3(0.00040f, 0.0f, 0.0f));
                 hope.Transform.Scale = new Vector3(1.5f);
+                hope.CullDraw = false;
 
                 Debug.WriteLine("Loading Yol");
                 Texture2D yolTexture = Content.Load<Texture2D>("Textures/Planet/Yol Texture");
                 Planet yol = new Planet(GraphicsDevice, yolTexture, MathHelper.ToRadians(-15.0f), new Vector3(2.0f, 20.0f, 0.0f), new Vector3(0.00040f, 0.0f, 0.0f), new Vector3(0.0f, 0.00040f, 0.0f));
                 yol.Transform.Scale = new Vector3(1.2f);
+                yol.CullDraw = false;
 
                 Debug.WriteLine("Loading Lura");
                 //Texture2D luraTexture = m_game.Content.Load<Texture2D>("Textures/Planet/Lura Texture");
                 //Planet lura = new Planet(graphics, luraTexture, MathHelper.ToRadians(30.0f), new Vector3(-30.0f, 30.0f, 2.0f), new Vector3(0.00020f, 0.0f, 0.0f), new Vector3(0.00020f, 0.00020f, 0.0f));
                 //lura.Transform.Scale = new Vector3(2.0f);
+                //lura.CullDraw = false;
 
                 Debug.WriteLine("Adding Satellites");
                 tyril.AddSatellite(hope);

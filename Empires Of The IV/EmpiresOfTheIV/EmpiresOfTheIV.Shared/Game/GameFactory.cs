@@ -24,7 +24,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
             factoryBase.Factory.Transform.Rotation = factoryBase.Base.Transform.Rotation;
             factoryBase.Factory.Transform.CreateAllMatrices();
             factoryBase.Factory.Active = true;
-            factoryBase.Factory.CullDraw = false;
+            factoryBase.Factory.CullDraw = true;
             factoryBase.Factory.RenderBounds = true;
             factoryBase.Factory.Health.MaxHealth = 200.0f;
 
@@ -40,7 +40,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
         {
             unitPoolUnit.Reset();
 
-            unitPoolUnit.CullDraw = false;
+            unitPoolUnit.CullDraw = true;
             unitPoolUnit.RenderBounds = true;
             unitPoolUnit.Active = true;
             unitPoolUnit.Health.Alive = true;

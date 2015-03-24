@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 namespace EmpiresOfTheIV.Game.GameObjects
 {
@@ -90,15 +91,16 @@ namespace EmpiresOfTheIV.Game.GameObjects
             }
         }
 
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
+        public override bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
-            base.Draw(gameTime, spriteBatch, graphics, camera);
-
+            bool result = base.Draw(gameTime, spriteBatch, graphics, camera);
+            if (!result) return false;
 
             foreach (var sat in m_satellites)
             {
                 sat.Draw(gameTime, spriteBatch, graphics, camera);
             }
+            return true;
         }
 
         protected override void SetupEffects(Effect effect, GraphicsDevice graphics, ICamera camera, GameTime gameTime)

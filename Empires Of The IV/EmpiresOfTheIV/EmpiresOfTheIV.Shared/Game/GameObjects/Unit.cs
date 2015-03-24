@@ -101,11 +101,12 @@ namespace EmpiresOfTheIV.Game.GameObjects
             base.Update(gameTime);
         }
 
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
+        public override bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
-            base.Draw(gameTime, spriteBatch, graphics, camera);
+            bool result = base.Draw(gameTime, spriteBatch, graphics, camera);
 
-            if (m_model == null) return;
+            if (!result) return false;
+            if (m_model == null) return false;
 
             #region Draw the Health
             Vector3 screenPos3D = graphics.Viewport.Project(m_transform.WorldPosition, camera.Projection, camera.View, camera.World);
@@ -136,6 +137,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
                 spriteBatch.End();
             }
             #endregion
+
+            return true;
         }
 
         protected override void SetupEffects(Effect effect, GraphicsDevice graphics, ICamera camera, GameTime gameTime)

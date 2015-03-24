@@ -26,9 +26,9 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
         {
             base.Update(gameTime);
         }
-        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
+        public override bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
-            base.Draw(gameTime, spriteBatch, graphics, camera);
+            return base.Draw(gameTime, spriteBatch, graphics, camera);
         }
     }
 }
