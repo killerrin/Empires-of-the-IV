@@ -66,6 +66,22 @@ namespace EmpiresOfTheIV.Game.Commands
         }
 
         #region Specific Commands
+        public static Command StartSelectionCommand(Vector2 screenPosition)
+        {
+            Command command = new Command();
+            command.CommandType = CommandType.StartSelection;
+            command.Position = new Vector3(screenPosition, 0.0f);
+            return command;
+        }
+
+        public static Command EndSelectionCommand(Vector2 screenPosition)
+        {
+            Command command = new Command();
+            command.CommandType = CommandType.EndSelection;
+            command.Position = new Vector3(screenPosition, 0.0f);
+            return command;
+        }
+
         #region Universal Commands
         public static Command MoveCommand(uint unitpoolID, Vector3 moveTo)
         {
@@ -170,6 +186,12 @@ namespace EmpiresOfTheIV.Game.Commands
         }
         #endregion
 
+        public void Complete()
+        {
+            Completed = true;
+        }
+
+        #region Object Overrides
         public override bool Equals(object obj)
         {
             if (obj == null)
@@ -204,5 +226,6 @@ namespace EmpiresOfTheIV.Game.Commands
                    "Unit ID: " + UnitID.ToString() + " | " + 
                    "Damage: " + Damage.ToString();
         }
+        #endregion
     }
 }

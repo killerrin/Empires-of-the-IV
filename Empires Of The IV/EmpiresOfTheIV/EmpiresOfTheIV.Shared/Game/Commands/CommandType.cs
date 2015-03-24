@@ -8,7 +8,8 @@ namespace EmpiresOfTheIV.Game.Commands
     public enum CommandType
     {
         None,
-        Select,
+        StartSelection,
+        EndSelection,
 
         ///--------------------
         /// Networked Commands

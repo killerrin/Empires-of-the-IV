@@ -3,6 +3,8 @@ using Anarian.DataStructures;
 using Anarian.DataStructures.Animation;
 using Anarian.Enumerators;
 using EmpiresOfTheIV.Game.Enumerators;
+using EmpiresOfTheIV.Game.GameObjects;
+using EmpiresOfTheIV.Game.GameObjects.Factories;
 using EmpiresOfTheIV.Game.Players;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,7 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EmpiresOfTheIV.Game.GameObjects.Factories
+namespace EmpiresOfTheIV.Game.Game_Tools
 {
     public static class GameFactory
     {
@@ -83,6 +85,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
             }
 
             unitPoolUnit.Health.Reset();
+            unitPoolUnit.Mana.Reset();
         }
     }
 }

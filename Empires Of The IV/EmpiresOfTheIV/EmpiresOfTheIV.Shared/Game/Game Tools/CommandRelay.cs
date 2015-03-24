@@ -6,8 +6,9 @@ using System.Collections;
 using System.Linq;
 using Anarian.Collections;
 using EmpiresOfTheIV.Game.Networking;
+using EmpiresOfTheIV.Game.Commands;
 
-namespace EmpiresOfTheIV.Game.Commands
+namespace EmpiresOfTheIV.Game.Game_Tools
 {
 	public class CommandRelay
 	{

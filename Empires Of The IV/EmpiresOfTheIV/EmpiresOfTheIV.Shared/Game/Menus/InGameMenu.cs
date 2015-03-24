@@ -14,7 +14,7 @@ using EmpiresOfTheIV.Data_Models;
 using EmpiresOfTheIV.Game.Commands;
 using EmpiresOfTheIV.Game.Enumerators;
 using EmpiresOfTheIV.Game.GameObjects;
-using EmpiresOfTheIV.Game.GameObjects.Factories;
+using EmpiresOfTheIV.Game.Game_Tools;
 using EmpiresOfTheIV.Game.Loading;
 using EmpiresOfTheIV.Game.Menus.PageParameters;
 using EmpiresOfTheIV.Game.Networking;
@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using EmpiresOfTheIV.Game.GameObjects.Factories;
 
 namespace EmpiresOfTheIV.Game.Menus
 {
@@ -82,11 +83,9 @@ namespace EmpiresOfTheIV.Game.Menus
 
         UniversalCamera m_gameCamera;
         int m_cameraMovementScreenBuffer = 30;
-        Rectangle m_selectionBox;
 
-        List<Unit> m_activeUnits;
-        List<Unit> m_inactiveUnits;
-
+        SelectionManager m_selectionManager;
+        UnitPool m_unitPool;
         CommandRelay m_commandRelay;
         
         Map m_map;
@@ -234,14 +233,14 @@ namespace EmpiresOfTheIV.Game.Menus
             m_gameCamera.ResetViewToDefaults();
 
             int totalUnitsInPool = (int)(m_pageParameter.maxUnitsPerPlayer * (m_team1.PlayerCount + m_team2.PlayerCount));
-            m_activeUnits = new List<Unit>(totalUnitsInPool);
-            m_inactiveUnits = new List<Unit>(totalUnitsInPool);
+            m_unitPool = new UnitPool(totalUnitsInPool);
             m_commandRelay = new CommandRelay();
 
             IDManager unitIDManager = new IDManager();
             IDManager factoryBaseIDManager = new IDManager();
 
-            m_selectionBox = Rectangle.Empty;
+            m_selectionManager = new SelectionManager();
+            m_selectionManager.SelectionTexture = m_selectionTexture;
             #endregion
 
             if (progress != null) progress.Report(new LoadingProgress(20, "Loading Empires"));
@@ -510,7 +509,7 @@ namespace EmpiresOfTheIV.Game.Menus
             if (progress != null) progress.Report(new LoadingProgress(60, "Setting up Units"));
 
             #region Create all the Units in the pool
-            for (int i = 0; i < totalUnitsInPool; i++)
+            for (int i = 0; i < m_unitPool.TotalUnitsInPool; i++)
             {
                 var unit = new Unit(unitIDManager.GetNewID(), UnitType.None);
                 GameFactory.CreateUnit(unit, UnitID.UnanianSpaceFighter,
@@ -528,7 +527,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     unit.Transform.Position = pos;
                 }
 
-                m_activeUnits.Add(unit);
+                m_unitPool.m_activeUnits.Add(unit);
             }
             #endregion
 
@@ -856,9 +855,9 @@ namespace EmpiresOfTheIV.Game.Menus
                     bool rayIntersects = false;
 
                     // First we check if our ray intersects with a Unit
-                    for (int i = 0; i < m_activeUnits.Count; i++)
+                    for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
                     {
-                        if (m_activeUnits[i].CheckRayIntersection(ray))
+                        if (m_unitPool.m_activeUnits[i].CheckRayIntersection(ray))
                         {
                             // Check if it is an Enemy Unit, and if so set the rayIntersects and
                             // issue the attack command
@@ -897,11 +896,11 @@ namespace EmpiresOfTheIV.Game.Menus
                         // Since we clicked on empty terrain, simply issue the Move Command for all selected units
                         if (result.HasValue)
                         {
-                            for (int i = 0; i < m_activeUnits.Count; i++)
+                            for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
                             {
-                                if (m_activeUnits[i].Selected)
+                                if (m_unitPool.m_activeUnits[i].Selected)
                                 {
-                                    m_commandRelay.AddCommand(Command.MoveCommand(m_activeUnits[i].ID, result.Value), true);
+                                    m_commandRelay.AddCommand(Command.MoveCommand(m_unitPool.m_activeUnits[i].UnitID, result.Value), true);
                                 }
                             }
 
@@ -991,13 +990,12 @@ namespace EmpiresOfTheIV.Game.Menus
                         e = m_activePointerEventsThisFrame[0];
                     else e = m_activePointerEventsThisFrame[0];
 
-                    if (m_selectionBox.IsEmpty)
+                    if (!m_selectionManager.HasSelection)
                     {
-                        m_selectionBox = new Rectangle((int)e.Position.X, (int)e.Position.Y, 0, 0);
+                        m_selectionManager.StartingPosition = e.Position;
                     }
 
-                    m_selectionBox.Width = (int)(e.Position.X - m_selectionBox.X);
-                    m_selectionBox.Height = (int)(e.Position.Y - m_selectionBox.Y);
+                    m_selectionManager.EndingPosition = e.Position;
                 }
                 #endregion
             }
@@ -1037,10 +1035,10 @@ namespace EmpiresOfTheIV.Game.Menus
             #region Check Selection
             if (selectionReleased)
             {
-                if (m_selectionBox != Rectangle.Empty)
+                if (m_selectionManager.HasSelection)
                 {
-                    BoundingFrustum selectionFrustrum = m_gameCamera.UnprojectRectangle(m_selectionBox, m_game.GraphicsDevice.Viewport);
-                    foreach (var item in m_activeUnits)
+                    BoundingFrustum selectionFrustrum = m_gameCamera.UnprojectRectangle(m_selectionManager.GetSelection(), m_game.GraphicsDevice.Viewport);
+                    foreach (var item in m_unitPool.m_activeUnits)
                     {
                         if (item.CheckFrustumIntersection(selectionFrustrum))
                         {
@@ -1054,7 +1052,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 }
 
                 selectionReleased = false;
-                m_selectionBox = Rectangle.Empty;
+                m_selectionManager.Deselect();
             }
             #endregion
 
@@ -1064,28 +1062,31 @@ namespace EmpiresOfTheIV.Game.Menus
                 //Debug.WriteLine(command.ToString());
                 switch (command.CommandType)
                 {
-                    case CommandType.Select:
+                    case CommandType.StartSelection:
+                        m_selectionManager.StartingPosition = new Vector2(command.Position.X, command.Position.Y);
+                        command.Complete();
+                        break;
+                    case CommandType.EndSelection:
+                        m_selectionManager.EndingPosition = new Vector2(command.Position.X, command.Position.Y);
+                        command.Complete();
                         break;
                     case CommandType.Move:
-                        for (int i = 0; i < m_activeUnits.Count; i++)
+                        Unit unit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
+                        if (unit != null)
                         {
-                            if (m_activeUnits[i].ID == command.ID1)
+                            var newPos = (command.Position + new Vector3(0.0f, unit.HeightAboveTerrain, 0.0f));
+
+                            var result = unit.Transform.MoveToPosition(gameTime, newPos, 1.2f);
+                            if (result) command.Complete();
+
+                            // Since this is the only spot where units will move
+                            // We will set the unit to be on top of the terrain
+                            float height = m_map.Terrain.GetHeightAtPoint(unit.Transform.Position);
+                            if (height != float.MaxValue)
                             {
-                                var newPos = (command.Position + new Vector3(0.0f, m_activeUnits[i].HeightAboveTerrain, 0.0f));
-
-                                var result = m_activeUnits[i].Transform.MoveToPosition(gameTime, newPos, 1.2f);
-                                if (result) command.Completed = true;
-
-                                // Since this is the only spot where units will move
-                                // We will set the unit to be on top of the terrain
-                                float height = m_map.Terrain.GetHeightAtPoint(m_activeUnits[i].Transform.Position);
-                                if (height != float.MaxValue)
-                                {
-                                    Vector3 pos = m_activeUnits[i].Transform.Position;
-                                    pos.Y = height + m_activeUnits[i].HeightAboveTerrain;
-                                    m_activeUnits[i].Transform.Position = pos;
-                                }
-                                break;
+                                Vector3 pos = unit.Transform.Position;
+                                pos.Y = height + unit.HeightAboveTerrain;
+                                unit.Transform.Position = pos;
                             }
                         }
                         break;
@@ -1112,13 +1113,10 @@ namespace EmpiresOfTheIV.Game.Menus
             #endregion
 
             // Set all the active units to be on the terrain then Update Them
-            for (int i = 0; i < m_activeUnits.Count; i++)
-            {
-                m_activeUnits[i].Update(gameTime);
-            }
+            m_unitPool.Update(gameTime);
 
             // Set the camera to chase the first unit if we want to
-            m_gameCamera.WorldPositionToChase = m_activeUnits[0].Transform.WorldMatrix;
+            m_gameCamera.WorldPositionToChase = m_unitPool.m_activeUnits[0].Transform.WorldMatrix;
 
             //-- Update the Menu
             base.Update(gameTime);
@@ -1165,15 +1163,12 @@ namespace EmpiresOfTheIV.Game.Menus
 
             // Draw The Map
             m_map.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
-            foreach (var i in m_activeUnits)
-            {
-                i.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
-            }
+
+            // Draw the Units
+            m_unitPool.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
 
             // Draw SelectionBox
-            spriteBatch.Begin();
-            spriteBatch.Draw(m_selectionTexture, m_selectionBox, Color.Black);
-            spriteBatch.End();
+            m_selectionManager.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
 
             // Draw Player Economy
             int distanceBetweenElements = 160;

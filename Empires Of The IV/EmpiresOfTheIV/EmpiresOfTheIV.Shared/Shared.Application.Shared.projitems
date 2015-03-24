@@ -18,7 +18,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data Models\ChatMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\ChatManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Commands\Command.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\Commands\CommandRelay.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Commands\CommandType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Commands\TargetType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\FactoryBaseRayIntersection.cs" />
@@ -30,8 +29,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\NetworkStage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GamePausedState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\UnitID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\CommandRelay.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\SelectionManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\UnitPool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\PoolStatus.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameConsts.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Game\GameFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\GameFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\AGameModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameModels\GameModel1v1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Factories\Factory.cs" />
