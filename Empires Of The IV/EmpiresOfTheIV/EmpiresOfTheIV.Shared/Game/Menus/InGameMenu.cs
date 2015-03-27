@@ -656,7 +656,7 @@ namespace EmpiresOfTheIV.Game.Menus
             if (gamePacket.ID == GamePacketID.Command)
             {
                 if (gamePacket.Command != null)
-                    m_commandRelay.m_commands.Add(gamePacket.Command);
+                    m_commandRelay.AddCommand(gamePacket.Command, false);
             }
             else if (gamePacket.ID == GamePacketID.GameSync)
             {
