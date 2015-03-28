@@ -206,7 +206,7 @@ namespace EmpiresOfTheIV.Game.Menus
         {
             if (progress != null) progress.Report(new LoadingProgress(0, "Initial Setup"));
 
-            m_selectionTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "SelectionBox") as Texture2D;
+            m_selectionTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "SelectionBox Icon") as Texture2D;
             m_currencyTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Currency") as Texture2D;
             m_metalTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Metal") as Texture2D;
             m_energyTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Energy") as Texture2D;

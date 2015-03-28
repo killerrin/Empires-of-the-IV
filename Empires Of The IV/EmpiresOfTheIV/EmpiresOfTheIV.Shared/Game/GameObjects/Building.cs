@@ -31,7 +31,6 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public Health Health { get { return GetComponent(typeof(Health)) as Health; } }
 
         private Texture2D blankTexture;
-        private Texture2D selectionBox;
         #endregion
 
         public Building()
@@ -42,8 +41,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
             // Cash the refrences to textures
             blankTexture = ResourceManager.Instance.GetAsset(typeof(Texture2D), ResourceManager.EngineReservedAssetNames.blankTextureName) as Texture2D;
-            selectionBox = ResourceManager.Instance.GetAsset(typeof(Texture2D), "SelectionBox") as Texture2D;
-
+            
             // Add Building Specific Components
             AddComponent(typeof(Health));
         }
@@ -87,22 +85,11 @@ namespace EmpiresOfTheIV.Game.GameObjects
                                                  (int)(MathHelper.Clamp(Health.CurrentHealth * 2, 0, healthRectOutline.Width - 2)),
                                                  healthRectOutline.Height - 2);
 
-            // Draw the selection rectangle
+            // Draw the Health rectangle
             spriteBatch.Begin();
             spriteBatch.Draw(blankTexture, healthRectOutline, Color.Black);
             spriteBatch.Draw(blankTexture, healthRect, Color.Red);
             spriteBatch.End();
-
-            if (Selected)
-            {
-                float selectionBoxScale = 1.5f;
-                spriteBatch.Begin();
-                spriteBatch.Draw(selectionBox,
-                                 screenPos2D - new Vector2(15, 25) - new Vector2((selectionBox.Width * selectionBoxScale) / 2f, (selectionBox.Height * selectionBoxScale) / 2f),
-                                 null, Color.Purple, 0, Vector2.Zero,
-                                 selectionBoxScale, SpriteEffects.None, 1.0f);
-                spriteBatch.End();
-            }
             #endregion
 
             return true;
