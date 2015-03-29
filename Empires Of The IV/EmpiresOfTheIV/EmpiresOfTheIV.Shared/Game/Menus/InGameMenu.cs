@@ -49,6 +49,8 @@ namespace EmpiresOfTheIV.Game.Menus
         Texture2D m_blankTexture;
         Texture2D m_selectionTexture;
 
+        Color m_forbiddenZoneColor = Color.Blue * 0.5f;
+
         GUIButton m_guiGestureButton;
         GUIButton m_guiSelectionButton;
         GUIButton m_guiCameraPanButton;
@@ -219,7 +221,7 @@ namespace EmpiresOfTheIV.Game.Menus
             m_selectionTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "SelectionBox Icon") as Texture2D;
 
             #region Setup GUI
-            Rectangle position = new Rectangle(20, 20, 100, 100);
+            Rectangle position = new Rectangle(10, 20, 100, 100);
             int yDistanceBetweenItems = 20;
             Color guiColor = Color.White;
 
@@ -235,7 +237,7 @@ namespace EmpiresOfTheIV.Game.Menus
             m_guiIssueCommandButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Issue Command UI Icon") as Texture2D, position, guiColor);
 
             // Setup the side buffer
-            m_guiDistanceFromSide += position.Width + 1;
+            m_guiDistanceFromSide += position.Width + (position.X * 2);
             #endregion
 
             m_blankTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), ResourceManager.EngineReservedAssetNames.blankTextureName) as Texture2D;
@@ -1285,10 +1287,13 @@ namespace EmpiresOfTheIV.Game.Menus
             // Draw SelectionBox
             m_selectionManager.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
 
-            // Draw the GUI
-
-            // Draw currently selected GUI
+            #region Draw the GUI
             spriteBatch.Begin();
+
+            // Input Forbidden Zone Area
+            spriteBatch.Draw(m_blankTexture, new Rectangle(0, 0, m_guiDistanceFromSide, AnarianConsts.ScreenRectangle.Height), m_forbiddenZoneColor);
+
+            // Selected GUI Item
             switch (m_inputMode)
             {
                 case InputMode.Gesture: spriteBatch.Draw(m_blankTexture, m_guiGestureButton.Position, Color.Black * 0.5f); break;
@@ -1298,10 +1303,12 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             spriteBatch.End();
 
+            // Individual GUI Buttons
             m_guiGestureButton.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
             m_guiSelectionButton.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
             m_guiCameraPanButton.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
             m_guiIssueCommandButton.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
+            #endregion
 
             #region Draw Player Economy
             {
