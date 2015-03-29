@@ -46,11 +46,13 @@ namespace EmpiresOfTheIV.Game.Menus
         SpriteFont m_empiresOfTheIVFont;
         SpriteFont m_empiresOfTheIVFontSmall;
 
+        Texture2D m_blankTexture;
         Texture2D m_selectionTexture;
-        Texture2D m_uiIconGesture;
-        Texture2D m_uiIconSelection;
-        Texture2D m_uiIconCameraMovement;
-        Texture2D m_uiIconIssueCommand;
+
+        GUIButton m_guiGestureButton;
+        GUIButton m_guiSelectionButton;
+        GUIButton m_guiCameraPanButton;
+        GUIButton m_guiIssueCommandButton;
 
         Texture2D m_currencyTexture; 
         Texture2D m_metalTexture;
@@ -87,7 +89,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
         UniversalCamera m_gameCamera;
         int m_cameraMovementScreenBuffer = 30;
-        int m_uiDistanceFromSide = 80;
+        int m_guiDistanceFromSide = 0;
 
         InputMode m_inputMode;
 
@@ -215,11 +217,28 @@ namespace EmpiresOfTheIV.Game.Menus
             if (progress != null) progress.Report(new LoadingProgress(0, "Initial Setup"));
 
             m_selectionTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "SelectionBox Icon") as Texture2D;
-            m_uiIconGesture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Gesture UI Icon") as Texture2D; ;
-            m_uiIconSelection = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Selection UI Icon") as Texture2D; ;
-            m_uiIconCameraMovement = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Camera Movement UI Icon") as Texture2D; ;
-            m_uiIconIssueCommand = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Issue Command UI Icon") as Texture2D; ;
 
+            #region Setup GUI
+            Rectangle position = new Rectangle(20, 20, 100, 100);
+            int yDistanceBetweenItems = 20;
+            Color guiColor = Color.White;
+
+            m_guiGestureButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Gesture UI Icon") as Texture2D, position, guiColor);
+            position.Y += yDistanceBetweenItems + position.Height;
+
+            m_guiSelectionButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Selection UI Icon") as Texture2D, position, guiColor);
+            position.Y += yDistanceBetweenItems + position.Height;
+
+            m_guiCameraPanButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Camera Movement UI Icon") as Texture2D, position, guiColor);
+            position.Y += yDistanceBetweenItems + position.Height;
+
+            m_guiIssueCommandButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Issue Command UI Icon") as Texture2D, position, guiColor);
+
+            // Setup the side buffer
+            m_guiDistanceFromSide += position.Width + 1;
+            #endregion
+
+            m_blankTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), ResourceManager.EngineReservedAssetNames.blankTextureName) as Texture2D;
             m_currencyTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Currency") as Texture2D;
             m_metalTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Metal") as Texture2D;
             m_energyTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Energy") as Texture2D;
@@ -787,6 +806,37 @@ namespace EmpiresOfTheIV.Game.Menus
 
         public void HandleInput(GameTime gameTime)
         {
+            #region First thing we do is cull out old stuck pointers
+            if (m_activePointerClickedEventsThisFrame.Count >= 2)
+            {
+                // If the first ID + 5 is less than the second pointer, we can assume the touch is stuck and we can safely ignore it
+                if ((m_activePointerClickedEventsThisFrame[0].ID + 5) < m_activePointerClickedEventsThisFrame[1].ID)
+                {
+                    // Ignore 0 as thats mouse and we can't stop it
+                    if (m_activePointerClickedEventsThisFrame[0].ID != 0)
+                        ignorePointerIDs.Add(m_activePointerClickedEventsThisFrame[0].ID);
+
+                    // If its not the mouse though, parse out the old ID
+                    m_activePointerClickedEventsThisFrame.RemoveAt(0);
+                }
+            }
+
+            if (m_activePointerEventsThisFrame.Count >= 2)
+            {
+                // If the first ID + 5 is less than the second pointer, we can assume the touch is stuck and we can safely ignore it
+                if ((m_activePointerEventsThisFrame[0].ID + 5) < m_activePointerEventsThisFrame[1].ID)
+                {
+                    // Ignore 0 as thats mouse and we can't stop it
+                    if (m_activePointerEventsThisFrame[0].ID != 0)
+                        ignorePointerIDs.Add(m_activePointerEventsThisFrame[0].ID);
+
+                    // If its not the mouse though, parse out the old ID
+                    m_activePointerEventsThisFrame.RemoveAt(0);
+                }
+            }
+            #endregion
+
+            // Since Mouse Screen-Edge movement doesn't need a specific mode, we do it here
             #region Mouse Movement Camera Controls
 #if WINDOWS_APP
             var previousCamY = m_gameCamera.Position.Y;
@@ -833,191 +883,122 @@ namespace EmpiresOfTheIV.Game.Menus
 #endif
             #endregion
 
-            // Do Input Which only operates when the active pointers are clicked
+            bool skipInputCode = false;
+            #region Check If Input Mode Changed
             if (m_activePointerClickedEventsThisFrame.Count > 0)
             {
-                #region First thing we do is cull out old stuck pointers
-                if (m_activePointerClickedEventsThisFrame.Count >= 2)
+                var pointer = m_activePointerClickedEventsThisFrame[0];
+
+                if (m_guiGestureButton.Intersects(pointer.Position))
                 {
-                    // If the first ID + 5 is less than the second pointer, we can assume the touch is stuck and we can safely ignore it
-                    if ((m_activePointerClickedEventsThisFrame[0].ID + 5) < m_activePointerClickedEventsThisFrame[1].ID)
+                    if (m_inputMode != InputMode.Gesture)
                     {
-                        // Ignore 0 as thats mouse and we can't stop it
-                        if (m_activePointerClickedEventsThisFrame[0].ID != 0)
-                            ignorePointerIDs.Add(m_activePointerClickedEventsThisFrame[0].ID);
-                
-                        // If its not the mouse though, parse out the old ID
-                        m_activePointerClickedEventsThisFrame.RemoveAt(0);
+                        m_inputMode = InputMode.Gesture;
+                        skipInputCode = true;
                     }
                 }
-                #endregion
-
-                #region Issue Command
-                if (m_activePointerClickedEventsThisFrame.Count == 3 ||
-                    m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
+                else if (m_guiSelectionButton.Intersects(pointer.Position))
                 {
-                    PointerPressedEventArgs e;
-                    if (m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
-                        e = m_activePointerClickedEventsThisFrame[0];
-                    else e = m_activePointerClickedEventsThisFrame[1];
-
-                    if (e.Position.X > m_uiDistanceFromSide)
+                    if (m_inputMode != InputMode.Selection)
                     {
-                        Ray ray = m_gameCamera.GetMouseRay(
-                            e.Position,
-                            m_game.Graphics.GraphicsDevice.Viewport
-                        );
-
-                        bool rayIntersects = false;
-
-                        // First we check if our ray intersects with a Unit
-                        for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
-                        {
-                            if (m_unitPool.m_activeUnits[i].CheckRayIntersection(ray))
-                            {
-                                // Check if it is an Enemy Unit, and if so set the rayIntersects and
-                                // issue the attack command
-                                //rayIntersects = true;
-                            }
-                        }
-
-                        // If a unit isn't intersected, then we check to see if we collided with a factoryBase
-                        if (!rayIntersects)
-                        {
-                            FactoryBase intersectedFactoryBase = null;
-                            var result = m_map.IntersectFactoryBase(ray, out intersectedFactoryBase);
-
-                            if (result == FactoryBaseRayIntersection.None)
-                            {
-
-                            }
-                            else if (result == FactoryBaseRayIntersection.FactoryBase)
-                            {
-                                // Since it is an empty Factory Base, pop up the UI to build a Factory
-                                rayIntersects = true;
-                            }
-                            else if (result == FactoryBaseRayIntersection.Factory)
-                            {
-                                // Since it is a Factory, check if it is ours, and then pop up the UI to build Units
-                                // or issue an attack command
-                                //rayIntersects = true;
-                            }
-                        }
-
-                        // If we still haven't intersected, then we go off of the map terrain
-                        if (!rayIntersects)
-                        {
-                            var result = m_map.IntersectTerrain(ray);
-
-                            // Since we clicked on empty terrain, simply issue the Move Command for all selected units
-                            if (result.HasValue)
-                            {
-                                for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
-                                {
-                                    if (m_unitPool.m_activeUnits[i].Selected)
-                                    {
-                                        m_commandRelay.AddCommand(Command.MoveCommand(m_unitPool.m_activeUnits[i].UnitID, result.Value), true);
-                                    }
-                                }
-
-                                rayIntersects = true;
-                            }
-                        }
+                        m_inputMode = InputMode.Selection;
+                        skipInputCode = true;
                     }
                 }
-                #endregion
+                else if (m_guiCameraPanButton.Intersects(pointer.Position))
+                {
+                    if (m_inputMode != InputMode.CameraPan)
+                    {
+                        m_inputMode = InputMode.CameraPan;
+                        skipInputCode = true;
+                    }
+                }
+                else if (m_guiIssueCommandButton.Intersects(pointer.Position))
+                {
+                    if (m_inputMode != InputMode.IssueCommand)
+                    {
+                        m_inputMode = InputMode.IssueCommand;
+                        skipInputCode = true;
+                    }
+                }
             }
 
-            // Do Input which operates when the active pointers are currently down
             if (m_activePointerEventsThisFrame.Count > 0)
             {
-                #region First thing we do is cull out old stuck pointers
-                if (m_activePointerEventsThisFrame.Count >= 2)
+                if (m_activePointerEventsThisFrame[0].Position.X < m_guiDistanceFromSide)
                 {
-                    // If the first ID + 5 is less than the second pointer, we can assume the touch is stuck and we can safely ignore it
-                    if ((m_activePointerEventsThisFrame[0].ID + 5) < m_activePointerEventsThisFrame[1].ID)
-                    {
-                        // Ignore 0 as thats mouse and we can't stop it
-                        if (m_activePointerEventsThisFrame[0].ID != 0)
-                            ignorePointerIDs.Add(m_activePointerEventsThisFrame[0].ID);
+                    skipInputCode = true;
+                }
+            }
+            #endregion
 
-                        // If its not the mouse though, parse out the old ID
-                        m_activePointerEventsThisFrame.RemoveAt(0);
+            if (!skipInputCode)
+            {
+                #region Run the Specific Input Code
+                if (m_inputMode == InputMode.Gesture)
+                {
+                    // Do Input Which only operates when the active pointers are clicked
+                    if (m_activePointerClickedEventsThisFrame.Count > 0)
+                    {
+                        #region Issue Command
+                        if (m_activePointerClickedEventsThisFrame.Count == 3 ||
+                            m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
+                        {
+                            PointerPressedEventArgs e;
+                            if (m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
+                                e = m_activePointerClickedEventsThisFrame[0];
+                            else e = m_activePointerClickedEventsThisFrame[1];
+
+                            Input_IssueCommand(e);
+                        }
+                        #endregion
+                    }
+
+                    // Do Input which operates when the active pointers are currently down
+                    if (m_activePointerEventsThisFrame.Count > 0)
+                    {
+                        #region Pointer Down Camera Movement
+                        if (m_activePointerEventsThisFrame.Count == 2 ||
+                            m_activePointerEventsThisFrame[0].Pointer == PointerPress.MiddleMouseButton)
+                        {
+                            PointerPressedEventArgs e;
+                            if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.MiddleMouseButton)
+                                e = m_activePointerEventsThisFrame[0];
+                            else
+                                e = m_activePointerEventsThisFrame[1];
+
+                            Input_PanCamera(e);
+                        }
+                        #endregion
+
+                        #region Selection
+                        if ((m_activePointerEventsThisFrame.Count == 1 && m_activePointerEventsThisFrame[0].Pointer == PointerPress.Touch) ||
+                            m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
+                        {
+                            PointerPressedEventArgs e;
+                            if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
+                                e = m_activePointerEventsThisFrame[0];
+                            else e = m_activePointerEventsThisFrame[0];
+
+                            Input_Selection(e);
+                        }
+                        #endregion
                     }
                 }
-                #endregion
-
-                #region Then we cull out other pointers based on criteria
-                #endregion
-
-                #region Pointer Down Camera Movement
-                if (m_activePointerEventsThisFrame.Count == 2 ||
-                    m_activePointerEventsThisFrame[0].Pointer == PointerPress.MiddleMouseButton)
+                else if (m_inputMode == InputMode.Selection)
                 {
-                    bool inverseX = true;
-                    bool inverseY = true;
-
-                    PointerPressedEventArgs e;
-                    if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.MiddleMouseButton)
-                    {
-                        e = m_activePointerEventsThisFrame[0];
-                    }
-                    else
-                    {
-                        e = m_activePointerEventsThisFrame[1];
-                    }
-
-                    var delta = e.DeltaPosition;
-                    delta.Normalize();
-                    Vector2 deltaBuffer = new Vector2(0.2f, 0.2f);
-
-                    Vector3 xAccel;
-                    if (delta.X < 0 - deltaBuffer.X)
-                    {
-                        if (inverseX) xAccel = m_gameCamera.CameraRotation.Right;
-                        else xAccel = -m_gameCamera.CameraRotation.Right;
-                        m_gameCamera.Move(gameTime, xAccel);
-                    }
-                    else if (delta.X > 0 + deltaBuffer.X)
-                    {
-                        if (inverseX) xAccel = -m_gameCamera.CameraRotation.Right;
-                        else xAccel = m_gameCamera.CameraRotation.Right;
-                        m_gameCamera.Move(gameTime, xAccel);
-                    }
-
-                    Vector3 yAccel;
-                    if (delta.Y < 0 - deltaBuffer.Y)
-                    {
-                        if (inverseY) yAccel = -m_gameCamera.CameraRotation.Up;
-                        else yAccel = m_gameCamera.CameraRotation.Up;
-                        m_gameCamera.Move(gameTime, yAccel);
-                    }
-                    else if (delta.Y > 0 + deltaBuffer.Y)
-                    {
-                        if (inverseY) yAccel = m_gameCamera.CameraRotation.Up;
-                        else yAccel = -m_gameCamera.CameraRotation.Up;
-                        m_gameCamera.Move(gameTime, yAccel);
-                    }
+                    if (m_activePointerEventsThisFrame.Count > 0)
+                        Input_Selection(m_activePointerEventsThisFrame[0]);
                 }
-                #endregion
-
-                #region Unit Selection
-                if ((m_activePointerEventsThisFrame.Count == 1 && m_activePointerEventsThisFrame[0].Pointer == PointerPress.Touch) ||
-                    m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
+                else if (m_inputMode == InputMode.CameraPan)
                 {
-                    PointerPressedEventArgs e;
-                    if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
-                        e = m_activePointerEventsThisFrame[0];
-                    else e = m_activePointerEventsThisFrame[0];
-
-                    if (!m_selectionManager.HasSelection)
-                    {
-                        m_commandRelay.AddCommand(Command.StartSelectionCommand(e.Position), false);
-                        //m_selectionManager.StartingPosition = e.Position;
-                    }
-
-                    m_commandRelay.AddCommand(Command.EndSelectionCommand(e.Position), false);
-                    //m_selectionManager.EndingPosition = e.Position;
+                    if (m_activePointerEventsThisFrame.Count > 0)
+                        Input_PanCamera(m_activePointerEventsThisFrame[0]);
+                }
+                else if (m_inputMode == InputMode.IssueCommand)
+                {
+                    if (m_activePointerClickedEventsThisFrame.Count > 0)
+                        Input_IssueCommand(m_activePointerClickedEventsThisFrame[0]);
                 }
                 #endregion
             }
@@ -1027,6 +1008,120 @@ namespace EmpiresOfTheIV.Game.Menus
             m_activePointerClickedEventsThisFrame.Clear();
             m_gameCamera.Update(gameTime);
         }
+
+        #region Input Handlers
+        public void Input_Selection(PointerPressedEventArgs e)
+        {
+            if (!m_selectionManager.HasSelection)
+            {
+                m_commandRelay.AddCommand(Command.StartSelectionCommand(e.Position), false);
+                //m_selectionManager.StartingPosition = e.Position;
+            }
+
+            m_commandRelay.AddCommand(Command.EndSelectionCommand(e.Position), false);
+            //m_selectionManager.EndingPosition = e.Position;
+        }
+        public void Input_PanCamera(PointerPressedEventArgs e)
+        {
+            bool inverseX = true;
+            bool inverseY = true;
+
+            var delta = e.DeltaPosition;
+            delta.Normalize();
+            Vector2 deltaBuffer = new Vector2(0.2f, 0.2f);
+
+            Vector3 xAccel;
+            if (delta.X < 0 - deltaBuffer.X)
+            {
+                if (inverseX) xAccel = m_gameCamera.CameraRotation.Right;
+                else xAccel = -m_gameCamera.CameraRotation.Right;
+                m_gameCamera.Move(e.GameTime, xAccel);
+            }
+            else if (delta.X > 0 + deltaBuffer.X)
+            {
+                if (inverseX) xAccel = -m_gameCamera.CameraRotation.Right;
+                else xAccel = m_gameCamera.CameraRotation.Right;
+                m_gameCamera.Move(e.GameTime, xAccel);
+            }
+
+            Vector3 yAccel;
+            if (delta.Y < 0 - deltaBuffer.Y)
+            {
+                if (inverseY) yAccel = -m_gameCamera.CameraRotation.Up;
+                else yAccel = m_gameCamera.CameraRotation.Up;
+                m_gameCamera.Move(e.GameTime, yAccel);
+            }
+            else if (delta.Y > 0 + deltaBuffer.Y)
+            {
+                if (inverseY) yAccel = m_gameCamera.CameraRotation.Up;
+                else yAccel = -m_gameCamera.CameraRotation.Up;
+                m_gameCamera.Move(e.GameTime, yAccel);
+            }
+        }
+        public void Input_IssueCommand(PointerPressedEventArgs e)
+        {
+            Ray ray = m_gameCamera.GetMouseRay(
+                e.Position,
+                m_game.Graphics.GraphicsDevice.Viewport
+            );
+
+            bool rayIntersects = false;
+
+            // First we check if our ray intersects with a Unit
+            for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
+            {
+                if (m_unitPool.m_activeUnits[i].CheckRayIntersection(ray))
+                {
+                    // Check if it is an Enemy Unit, and if so set the rayIntersects and
+                    // issue the attack command
+                    //rayIntersects = true;
+                }
+            }
+
+            // If a unit isn't intersected, then we check to see if we collided with a factoryBase
+            if (!rayIntersects)
+            {
+                FactoryBase intersectedFactoryBase = null;
+                var result = m_map.IntersectFactoryBase(ray, out intersectedFactoryBase);
+
+                if (result == FactoryBaseRayIntersection.None)
+                {
+
+                }
+                else if (result == FactoryBaseRayIntersection.FactoryBase)
+                {
+                    // Since it is an empty Factory Base, pop up the UI to build a Factory
+                    rayIntersects = true;
+                }
+                else if (result == FactoryBaseRayIntersection.Factory)
+                {
+                    // Since it is a Factory, check if it is ours, and then pop up the UI to build Units
+                    // or issue an attack command
+                    //rayIntersects = true;
+                }
+            }
+
+            // If we still haven't intersected, then we go off of the map terrain
+            if (!rayIntersects)
+            {
+                var result = m_map.IntersectTerrain(ray);
+
+                // Since we clicked on empty terrain, simply issue the Move Command for all selected units
+                if (result.HasValue)
+                {
+                    for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
+                    {
+                        if (m_unitPool.m_activeUnits[i].Selected)
+                        {
+                            m_commandRelay.AddCommand(Command.MoveCommand(m_unitPool.m_activeUnits[i].UnitID, result.Value), true);
+                        }
+                    }
+
+                    rayIntersects = true;
+                }
+            }
+        }
+        #endregion
         #endregion
 
         #region Update
@@ -1054,30 +1149,6 @@ namespace EmpiresOfTheIV.Game.Menus
             // If it is not, we can proceed to update the game
             m_pageParameter.me.Update(gameTime);
 
-            #region Check Selection
-            if (selectionReleased)
-            {
-                if (m_selectionManager.HasSelection)
-                {
-                    BoundingFrustum selectionFrustrum = m_gameCamera.UnprojectRectangle(m_selectionManager.GetSelection(), m_game.GraphicsDevice.Viewport);
-                    foreach (var item in m_unitPool.m_activeUnits)
-                    {
-                        if (item.CheckFrustumIntersection(selectionFrustrum))
-                        {
-                            item.Selected = true;
-                        }
-                        else
-                        {
-                            item.Selected = false;
-                        }
-                    }
-                }
-
-                selectionReleased = false;
-                m_selectionManager.Deselect();
-            }
-            #endregion
-
             #region Do Commands
             foreach (var command in m_commandRelay.m_commands)
             {
@@ -1089,8 +1160,23 @@ namespace EmpiresOfTheIV.Game.Menus
                         m_commandRelay.Complete(command); //command.Complete();
                         break;
                     case CommandType.EndSelection:
+                        // First set the Ending Position
                         m_selectionManager.EndingPosition = new Vector2(command.Position.X, command.Position.Y);
                         m_commandRelay.Complete(command); //command.Complete();
+
+                        // Then select the Units
+                        BoundingFrustum selectionFrustrum = m_gameCamera.UnprojectRectangle(m_selectionManager.GetSelection(), m_game.GraphicsDevice.Viewport);
+                        foreach (var item in m_unitPool.m_activeUnits)
+                        {
+                            if (item.CheckFrustumIntersection(selectionFrustrum))
+                            {
+                                item.Selected = true;
+                            }
+                            else
+                            {
+                                item.Selected = false;
+                            }
+                        }
                         break;
                     case CommandType.Move:
                         Unit unit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
@@ -1133,6 +1219,13 @@ namespace EmpiresOfTheIV.Game.Menus
             
             //m_commandRelay.RemoveAllCompleted();
             #endregion
+
+            // If the Selection was Released, Select the units
+            if (selectionReleased)
+            {
+                selectionReleased = false;
+                m_selectionManager.Deselect();
+            }
 
             // Set all the active units to be on the terrain then Update Them
             m_unitPool.Update(gameTime);
@@ -1192,27 +1285,47 @@ namespace EmpiresOfTheIV.Game.Menus
             // Draw SelectionBox
             m_selectionManager.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
 
-            #region Draw Player Economy
-            int distanceBetweenElements = 160;
-            int xOffset = (AnarianConsts.ScreenRectangle.Width) - distanceBetweenElements;
-            int yOffset = 25;
+            // Draw the GUI
 
+            // Draw currently selected GUI
             spriteBatch.Begin();
-            spriteBatch.Draw(m_unitCapTexture, new Rectangle(xOffset, yOffset, 50, 50), Color.White);
-            spriteBatch.DrawString(m_empiresOfTheIVFontSmall, m_pageParameter.me.Economy.UnitCap.CurrentAmountAsString, new Vector2(xOffset + 50, yOffset), Color.White);
-            xOffset -= distanceBetweenElements;
-
-            spriteBatch.Draw(m_energyTexture, new Rectangle(xOffset, yOffset, 50, 50), Color.White);
-            spriteBatch.DrawString(m_empiresOfTheIVFontSmall, m_pageParameter.me.Economy.Energy.CurrentAmountAsString, new Vector2(xOffset + 50, yOffset), Color.White);
-            xOffset -= distanceBetweenElements;
-
-            spriteBatch.Draw(m_metalTexture, new Rectangle(xOffset, yOffset, 50, 50), Color.White);
-            spriteBatch.DrawString(m_empiresOfTheIVFontSmall, m_pageParameter.me.Economy.Metal.CurrentAmountAsString, new Vector2(xOffset + 50, yOffset), Color.White);
-            xOffset -= distanceBetweenElements;
-
-            spriteBatch.Draw(m_currencyTexture, new Rectangle(xOffset, yOffset, 50, 50), Color.White);
-            spriteBatch.DrawString(m_empiresOfTheIVFontSmall, m_pageParameter.me.Economy.Currency.CurrentAmountAsString, new Vector2(xOffset + 50, yOffset), Color.White);
+            switch (m_inputMode)
+            {
+                case InputMode.Gesture: spriteBatch.Draw(m_blankTexture, m_guiGestureButton.Position, Color.Black * 0.5f); break;
+                case InputMode.Selection: spriteBatch.Draw(m_blankTexture, m_guiSelectionButton.Position, Color.Black * 0.5f); break;
+                case InputMode.CameraPan: spriteBatch.Draw(m_blankTexture, m_guiCameraPanButton.Position, Color.Black * 0.5f); break;
+                case InputMode.IssueCommand: spriteBatch.Draw(m_blankTexture, m_guiIssueCommandButton.Position, Color.Black * 0.5f); break;
+            }
             spriteBatch.End();
+
+            m_guiGestureButton.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
+            m_guiSelectionButton.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
+            m_guiCameraPanButton.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
+            m_guiIssueCommandButton.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
+
+            #region Draw Player Economy
+            {
+                int distanceBetweenElements = 160;
+                int xOffset = (AnarianConsts.ScreenRectangle.Width) - distanceBetweenElements;
+                int yOffset = 25;
+
+                spriteBatch.Begin();
+                spriteBatch.Draw(m_unitCapTexture, new Rectangle(xOffset, yOffset, 50, 50), Color.White);
+                spriteBatch.DrawString(m_empiresOfTheIVFontSmall, m_pageParameter.me.Economy.UnitCap.CurrentAmountAsString, new Vector2(xOffset + 50, yOffset), Color.White);
+                xOffset -= distanceBetweenElements;
+
+                spriteBatch.Draw(m_energyTexture, new Rectangle(xOffset, yOffset, 50, 50), Color.White);
+                spriteBatch.DrawString(m_empiresOfTheIVFontSmall, m_pageParameter.me.Economy.Energy.CurrentAmountAsString, new Vector2(xOffset + 50, yOffset), Color.White);
+                xOffset -= distanceBetweenElements;
+
+                spriteBatch.Draw(m_metalTexture, new Rectangle(xOffset, yOffset, 50, 50), Color.White);
+                spriteBatch.DrawString(m_empiresOfTheIVFontSmall, m_pageParameter.me.Economy.Metal.CurrentAmountAsString, new Vector2(xOffset + 50, yOffset), Color.White);
+                xOffset -= distanceBetweenElements;
+
+                spriteBatch.Draw(m_currencyTexture, new Rectangle(xOffset, yOffset, 50, 50), Color.White);
+                spriteBatch.DrawString(m_empiresOfTheIVFontSmall, m_pageParameter.me.Economy.Currency.CurrentAmountAsString, new Vector2(xOffset + 50, yOffset), Color.White);
+                spriteBatch.End();
+            }
             #endregion
 
             switch (m_pausedState)

@@ -10,7 +10,7 @@ namespace EmpiresOfTheIV.Game.Enumerators
         Gesture,
         
         // Specific Inputs
-        UnitSelection,
+        Selection,
         CameraPan,
         IssueCommand
     }
