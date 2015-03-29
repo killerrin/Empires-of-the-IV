@@ -101,6 +101,10 @@ namespace EmpiresOfTheIV
             
             // Load Special Game Data Once
             ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/UI/SelectionBox Icon");
+            ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/UI/Gesture UI Icon");
+            ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/UI/Selection UI Icon");
+            ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/UI/Camera Movement UI Icon");
+            ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/UI/Issue Command UI Icon");
 
             ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Economy/Currency");
             ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Economy/Metal");

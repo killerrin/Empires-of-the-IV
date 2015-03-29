@@ -70,7 +70,7 @@ namespace EmpiresOfTheIV.Game.Commands
         {
             Command command = new Command();
             command.CommandType = CommandType.StartSelection;
-            command.Position = new Vector3(screenPosition, 0.0f);
+            command.Position = new Vector3(screenPosition.X, screenPosition.Y, 0.0f);
             return command;
         }
 
@@ -78,7 +78,7 @@ namespace EmpiresOfTheIV.Game.Commands
         {
             Command command = new Command();
             command.CommandType = CommandType.EndSelection;
-            command.Position = new Vector3(screenPosition, 0.0f);
+            command.Position = new Vector3(screenPosition.X, screenPosition.Y, 0.0f);
             return command;
         }
 

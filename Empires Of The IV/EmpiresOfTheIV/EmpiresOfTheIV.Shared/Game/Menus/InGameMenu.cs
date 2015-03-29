@@ -47,12 +47,16 @@ namespace EmpiresOfTheIV.Game.Menus
         SpriteFont m_empiresOfTheIVFontSmall;
 
         Texture2D m_selectionTexture;
+        Texture2D m_uiIconGesture;
+        Texture2D m_uiIconSelection;
+        Texture2D m_uiIconCameraMovement;
+        Texture2D m_uiIconIssueCommand;
+
         Texture2D m_currencyTexture; 
         Texture2D m_metalTexture;
         Texture2D m_energyTexture;
         Texture2D m_unitCapTexture;
 
-        Rectangle screenRect = AnarianConsts.ScreenRectangle;
         Vector2 centerOfScreen;
 
         #region Loading
@@ -83,6 +87,9 @@ namespace EmpiresOfTheIV.Game.Menus
 
         UniversalCamera m_gameCamera;
         int m_cameraMovementScreenBuffer = 30;
+        int m_uiDistanceFromSide = 80;
+
+        InputMode m_inputMode;
 
         SelectionManager m_selectionManager;
         UnitPool m_unitPool;
@@ -100,6 +107,7 @@ namespace EmpiresOfTheIV.Game.Menus
             m_networkTimer.Completed += m_networkTimer_Completed;
 
             m_pausedState = GamePausedState.WaitingForData;
+            m_inputMode = InputMode.Gesture;
 
             m_currentLoadingProgress = new LoadingProgress(0, "");
             m_loadingProgress = new Progress<LoadingProgress>();
@@ -108,7 +116,7 @@ namespace EmpiresOfTheIV.Game.Menus
             m_overlay = new Overlay(m_game.GraphicsDevice, Color.Black);
             m_overlay.FadePercentage = 0.75f;
 
-            centerOfScreen = new Vector2(screenRect.Width / 2.0f, screenRect.Height / 2.0f);
+            centerOfScreen = new Vector2(AnarianConsts.ScreenRectangle.Width / 2.0f, AnarianConsts.ScreenRectangle.Height / 2.0f);
 
             // Get basic Assets
             m_empiresOfTheIVFont = m_game.ResourceManager.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont") as SpriteFont;
@@ -207,6 +215,11 @@ namespace EmpiresOfTheIV.Game.Menus
             if (progress != null) progress.Report(new LoadingProgress(0, "Initial Setup"));
 
             m_selectionTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "SelectionBox Icon") as Texture2D;
+            m_uiIconGesture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Gesture UI Icon") as Texture2D; ;
+            m_uiIconSelection = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Selection UI Icon") as Texture2D; ;
+            m_uiIconCameraMovement = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Camera Movement UI Icon") as Texture2D; ;
+            m_uiIconIssueCommand = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Issue Command UI Icon") as Texture2D; ;
+
             m_currencyTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Currency") as Texture2D;
             m_metalTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Metal") as Texture2D;
             m_energyTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Energy") as Texture2D;
@@ -783,20 +796,20 @@ namespace EmpiresOfTheIV.Game.Menus
                 {
                     var deltaPos = m_lastPointerMovedEventArgs.DeltaPosition;
 
-                    if (m_lastPointerMovedEventArgs.Position.X <= (screenRect.X + m_cameraMovementScreenBuffer))
+                    if (m_lastPointerMovedEventArgs.Position.X <= (AnarianConsts.ScreenRectangle.X + m_cameraMovementScreenBuffer))
                     {
                         m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Right);
                     }
-                    else if (m_lastPointerMovedEventArgs.Position.X >= (screenRect.Width - m_cameraMovementScreenBuffer))
+                    else if (m_lastPointerMovedEventArgs.Position.X >= (AnarianConsts.ScreenRectangle.Width - m_cameraMovementScreenBuffer))
                     {
                         m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Right);
                     }
 
-                    if (m_lastPointerMovedEventArgs.Position.Y <= (screenRect.Y + m_cameraMovementScreenBuffer))
+                    if (m_lastPointerMovedEventArgs.Position.Y <= (AnarianConsts.ScreenRectangle.Y + m_cameraMovementScreenBuffer))
                     {
                         m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Up);
                     }
-                    else if (m_lastPointerMovedEventArgs.Position.Y >= (screenRect.Height - m_cameraMovementScreenBuffer))
+                    else if (m_lastPointerMovedEventArgs.Position.Y >= (AnarianConsts.ScreenRectangle.Height - m_cameraMovementScreenBuffer))
                     {
                         m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Up);
                     }
@@ -824,19 +837,19 @@ namespace EmpiresOfTheIV.Game.Menus
             if (m_activePointerClickedEventsThisFrame.Count > 0)
             {
                 #region First thing we do is cull out old stuck pointers
-                //if (m_activePointerClickedEventsThisFrame.Count >= 2)
-                //{
-                //    // If the first ID + 5 is less than the second pointer, we can assume the touch is stuck and we can safely ignore it
-                //    if ((m_activePointerClickedEventsThisFrame[0].ID + 5) < m_activePointerClickedEventsThisFrame[1].ID)
-                //    {
-                //        // Ignore 0 as thats mouse and we can't stop it
-                //        if (m_activePointerClickedEventsThisFrame[0].ID != 0)
-                //            ignorePointerIDs.Add(m_activePointerClickedEventsThisFrame[0].ID);
-                //
-                //        // If its not the mouse though, parse out the old ID
-                //        m_activePointerClickedEventsThisFrame.RemoveAt(0);
-                //    }
-                //}
+                if (m_activePointerClickedEventsThisFrame.Count >= 2)
+                {
+                    // If the first ID + 5 is less than the second pointer, we can assume the touch is stuck and we can safely ignore it
+                    if ((m_activePointerClickedEventsThisFrame[0].ID + 5) < m_activePointerClickedEventsThisFrame[1].ID)
+                    {
+                        // Ignore 0 as thats mouse and we can't stop it
+                        if (m_activePointerClickedEventsThisFrame[0].ID != 0)
+                            ignorePointerIDs.Add(m_activePointerClickedEventsThisFrame[0].ID);
+                
+                        // If its not the mouse though, parse out the old ID
+                        m_activePointerClickedEventsThisFrame.RemoveAt(0);
+                    }
+                }
                 #endregion
 
                 #region Issue Command
@@ -848,64 +861,67 @@ namespace EmpiresOfTheIV.Game.Menus
                         e = m_activePointerClickedEventsThisFrame[0];
                     else e = m_activePointerClickedEventsThisFrame[1];
 
-                    Ray ray = m_gameCamera.GetMouseRay(
-                        e.Position,
-                        m_game.Graphics.GraphicsDevice.Viewport
-                    );
-
-                    bool rayIntersects = false;
-
-                    // First we check if our ray intersects with a Unit
-                    for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
+                    if (e.Position.X > m_uiDistanceFromSide)
                     {
-                        if (m_unitPool.m_activeUnits[i].CheckRayIntersection(ray))
-                        {
-                            // Check if it is an Enemy Unit, and if so set the rayIntersects and
-                            // issue the attack command
-                            //rayIntersects = true;
-                        }
-                    }
+                        Ray ray = m_gameCamera.GetMouseRay(
+                            e.Position,
+                            m_game.Graphics.GraphicsDevice.Viewport
+                        );
 
-                    // If a unit isn't intersected, then we check to see if we collided with a factoryBase
-                    if (!rayIntersects)
-                    {
-                        FactoryBase intersectedFactoryBase = null;
-                        var result = m_map.IntersectFactoryBase(ray, out intersectedFactoryBase);
+                        bool rayIntersects = false;
 
-                        if (result == FactoryBaseRayIntersection.None)
+                        // First we check if our ray intersects with a Unit
+                        for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
                         {
-
-                        }
-                        else if (result == FactoryBaseRayIntersection.FactoryBase)
-                        {
-                            // Since it is an empty Factory Base, pop up the UI to build a Factory
-                            rayIntersects = true;
-                        }
-                        else if (result == FactoryBaseRayIntersection.Factory)
-                        {
-                            // Since it is a Factory, check if it is ours, and then pop up the UI to build Units
-                            // or issue an attack command
-                            //rayIntersects = true;
-                        }
-                    }
-
-                    // If we still haven't intersected, then we go off of the map terrain
-                    if (!rayIntersects)
-                    {
-                        var result = m_map.IntersectTerrain(ray);
-
-                        // Since we clicked on empty terrain, simply issue the Move Command for all selected units
-                        if (result.HasValue)
-                        {
-                            for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
+                            if (m_unitPool.m_activeUnits[i].CheckRayIntersection(ray))
                             {
-                                if (m_unitPool.m_activeUnits[i].Selected)
-                                {
-                                    m_commandRelay.AddCommand(Command.MoveCommand(m_unitPool.m_activeUnits[i].UnitID, result.Value), true);
-                                }
+                                // Check if it is an Enemy Unit, and if so set the rayIntersects and
+                                // issue the attack command
+                                //rayIntersects = true;
                             }
+                        }
 
-                            rayIntersects = true;
+                        // If a unit isn't intersected, then we check to see if we collided with a factoryBase
+                        if (!rayIntersects)
+                        {
+                            FactoryBase intersectedFactoryBase = null;
+                            var result = m_map.IntersectFactoryBase(ray, out intersectedFactoryBase);
+
+                            if (result == FactoryBaseRayIntersection.None)
+                            {
+
+                            }
+                            else if (result == FactoryBaseRayIntersection.FactoryBase)
+                            {
+                                // Since it is an empty Factory Base, pop up the UI to build a Factory
+                                rayIntersects = true;
+                            }
+                            else if (result == FactoryBaseRayIntersection.Factory)
+                            {
+                                // Since it is a Factory, check if it is ours, and then pop up the UI to build Units
+                                // or issue an attack command
+                                //rayIntersects = true;
+                            }
+                        }
+
+                        // If we still haven't intersected, then we go off of the map terrain
+                        if (!rayIntersects)
+                        {
+                            var result = m_map.IntersectTerrain(ray);
+
+                            // Since we clicked on empty terrain, simply issue the Move Command for all selected units
+                            if (result.HasValue)
+                            {
+                                for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
+                                {
+                                    if (m_unitPool.m_activeUnits[i].Selected)
+                                    {
+                                        m_commandRelay.AddCommand(Command.MoveCommand(m_unitPool.m_activeUnits[i].UnitID, result.Value), true);
+                                    }
+                                }
+
+                                rayIntersects = true;
+                            }
                         }
                     }
                 }
@@ -929,6 +945,9 @@ namespace EmpiresOfTheIV.Game.Menus
                         m_activePointerEventsThisFrame.RemoveAt(0);
                     }
                 }
+                #endregion
+
+                #region Then we cull out other pointers based on criteria
                 #endregion
 
                 #region Pointer Down Camera Movement
@@ -993,10 +1012,12 @@ namespace EmpiresOfTheIV.Game.Menus
 
                     if (!m_selectionManager.HasSelection)
                     {
-                        m_selectionManager.StartingPosition = e.Position;
+                        m_commandRelay.AddCommand(Command.StartSelectionCommand(e.Position), false);
+                        //m_selectionManager.StartingPosition = e.Position;
                     }
 
-                    m_selectionManager.EndingPosition = e.Position;
+                    m_commandRelay.AddCommand(Command.EndSelectionCommand(e.Position), false);
+                    //m_selectionManager.EndingPosition = e.Position;
                 }
                 #endregion
             }
@@ -1173,7 +1194,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
             #region Draw Player Economy
             int distanceBetweenElements = 160;
-            int xOffset = (screenRect.Width) - distanceBetweenElements;
+            int xOffset = (AnarianConsts.ScreenRectangle.Width) - distanceBetweenElements;
             int yOffset = 25;
 
             spriteBatch.Begin();
@@ -1218,9 +1239,9 @@ namespace EmpiresOfTheIV.Game.Menus
 
             // Loading Outline
             var outlineRect = new Rectangle(0,
-                                      (int)(screenRect.Height * 0.75),
-                                            screenRect.Width,
-                                      (int)(screenRect.Height * 0.10)); 
+                                      (int)(AnarianConsts.ScreenRectangle.Height * 0.75),
+                                            AnarianConsts.ScreenRectangle.Width,
+                                      (int)(AnarianConsts.ScreenRectangle.Height * 0.10)); 
             PrimitiveHelper2D.DrawRect(spriteBatch, Color.Wheat, outlineRect);
 
             // Loading Bar
@@ -1238,7 +1259,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 Vector2 loadingSize = m_empiresOfTheIVFont.MeasureString("Loading");
 
                 spriteBatch.Begin();
-                spriteBatch.DrawString(m_empiresOfTheIVFont, "Loading", new Vector2(centerOfScreen.X - (loadingSize.X * 0.3f), screenRect.Height * 0.15f), Color.Wheat);
+                spriteBatch.DrawString(m_empiresOfTheIVFont, "Loading", new Vector2(centerOfScreen.X - (loadingSize.X * 0.3f), AnarianConsts.ScreenRectangle.Height * 0.15f), Color.Wheat);
 
                 spriteBatch.DrawString(m_empiresOfTheIVFont, m_currentLoadingProgress.Status, new Vector2(25, outlineRect.Y - 50), Color.Wheat);
                 spriteBatch.DrawString(m_empiresOfTheIVFont, m_currentLoadingProgress.Progress + "%", new Vector2(outlineRect.Width - 100, outlineRect.Y - 50), Color.Wheat);
@@ -1253,7 +1274,7 @@ namespace EmpiresOfTheIV.Game.Menus
             Vector2 pausedTextSize = m_empiresOfTheIVFont.MeasureString("Paused");
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(m_empiresOfTheIVFont, "Paused", new Vector2(centerOfScreen.X - (pausedTextSize.X * 0.3f), screenRect.Height * 0.15f), Color.Wheat);
+            spriteBatch.DrawString(m_empiresOfTheIVFont, "Paused", new Vector2(centerOfScreen.X - (pausedTextSize.X * 0.3f), AnarianConsts.ScreenRectangle.Height * 0.15f), Color.Wheat);
             spriteBatch.End();
         }
 
@@ -1264,7 +1285,7 @@ namespace EmpiresOfTheIV.Game.Menus
             Vector2 waitingTextSize = m_empiresOfTheIVFont.MeasureString("Waiting for Data");
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(m_empiresOfTheIVFont, "Waiting for Data", new Vector2(centerOfScreen.X - (waitingTextSize.X * 0.3f), screenRect.Height * 0.15f), Color.Wheat);
+            spriteBatch.DrawString(m_empiresOfTheIVFont, "Waiting for Data", new Vector2(centerOfScreen.X - (waitingTextSize.X * 0.3f), AnarianConsts.ScreenRectangle.Height * 0.15f), Color.Wheat);
             spriteBatch.End();
         }
         #endregion
