@@ -43,6 +43,9 @@ namespace EmpiresOfTheIV.Game.Menus
         GamePausedState m_pausedState;
 
         Overlay m_overlay;
+        Vector2 centerOfScreen;
+        
+        #region Assets
         SpriteFont m_empiresOfTheIVFont;
         SpriteFont m_empiresOfTheIVFontSmall;
 
@@ -60,8 +63,7 @@ namespace EmpiresOfTheIV.Game.Menus
         Texture2D m_metalTexture;
         Texture2D m_energyTexture;
         Texture2D m_unitCapTexture;
-
-        Vector2 centerOfScreen;
+        #endregion
 
         #region Loading
         private object loadinglockObject = new object();
@@ -588,14 +590,34 @@ namespace EmpiresOfTheIV.Game.Menus
 
             if (progress != null) progress.Report(new LoadingProgress(99, "Taking out Ninjas"));
 
-            #region Set Default Player Values
+            #region Set Default Player Values and Assign Units to Players
             foreach (var player in m_team1.Players)
             {
-                //player
+                int minValue = (int)(player.ID * m_pageParameter.maxUnitsPerPlayer);
+                int maxValue = (int)(player.ID * m_pageParameter.maxUnitsPerPlayer + m_pageParameter.maxUnitsPerPlayer);
+
+                foreach (var unit in m_unitPool.m_activeUnits)
+                {
+                    if (unit.UnitID >= minValue &&
+                        unit.UnitID < maxValue)
+                    {
+                        unit.PlayerID = player.ID;
+                    }
+                }
             }
             foreach (var player in m_team2.Players)
             {
-                //player
+                int minValue = (int)(player.ID * m_pageParameter.maxUnitsPerPlayer);
+                int maxValue = (int)(player.ID * m_pageParameter.maxUnitsPerPlayer + m_pageParameter.maxUnitsPerPlayer);
+
+                foreach (var unit in m_unitPool.m_activeUnits)
+                {
+                    if (unit.UnitID >= minValue &&
+                        unit.UnitID < maxValue)
+                    {
+                        unit.PlayerID = player.ID;
+                    }
+                }
             }
             #endregion
 
@@ -767,18 +789,22 @@ namespace EmpiresOfTheIV.Game.Menus
 
             switch (e.KeyClicked)
             {
-                    // Vertical
-                case Keys.Up: case Keys.W: m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Up); break;
-                case Keys.Down: case Keys.S: m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Up); break;
+                // Vertical
+                case Keys.Up:
+                case Keys.W: m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Up); break;
+                case Keys.Down:
+                case Keys.S: m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Up); break;
 
-                    // Horizontal
-                case Keys.Left: case Keys.A: m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Right); break;
-                case Keys.Right: case Keys.D: m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Right); break;
+                // Horizontal
+                case Keys.Left:
+                case Keys.A: m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Right); break;
+                case Keys.Right:
+                case Keys.D: m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Right); break;
 
-                    // Zoom
+                // Zoom
                 case Keys.PageUp:
                 case Keys.Q: m_gameCamera.Move(e.GameTime, -m_gameCamera.CameraRotation.Forward); break;
-                
+
                 case Keys.PageDown:
                 case Keys.E: m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Forward); break;
 
@@ -796,13 +822,16 @@ namespace EmpiresOfTheIV.Game.Menus
 
                 //case Keys.D0: case Keys.NumPad0: m_gameCamera.ResetCamera(); break;
                 //case Keys.D5: case Keys.NumPad5: m_gameCamera.ResetRotations(); break;
-
-                case Keys.LeftControl: Debug.WriteLine("Camera Position: {0}, \n Camera Rotation: {1}", m_gameCamera.Position, m_gameCamera.CameraRotation); break;
             }
         }
         void Keyboard_KeyboardPressed(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
             if (m_pausedState != GamePausedState.Unpaused) return;
+
+            switch (e.KeyClicked)
+            {
+                case Keys.LeftControl: Debug.WriteLine("Camera Position: {0}, \n Camera Rotation: {1}", m_gameCamera.Position, m_gameCamera.CameraRotation); break;
+            }
         }
         #endregion
 
@@ -1170,7 +1199,8 @@ namespace EmpiresOfTheIV.Game.Menus
                         BoundingFrustum selectionFrustrum = m_gameCamera.UnprojectRectangle(m_selectionManager.GetSelection(), m_game.GraphicsDevice.Viewport);
                         foreach (var item in m_unitPool.m_activeUnits)
                         {
-                            if (item.CheckFrustumIntersection(selectionFrustrum))
+                            if (item.PlayerID == m_me.ID &&
+                                item.CheckFrustumIntersection(selectionFrustrum))
                             {
                                 item.Selected = true;
                             }

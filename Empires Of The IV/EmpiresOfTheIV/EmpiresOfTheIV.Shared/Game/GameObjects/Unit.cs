@@ -41,6 +41,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
             UnitID = unitID;
             UnitType = unitType;
 
+            // By default, the ID is set to the max value to get out of the way
+            PlayerID = uint.MaxValue;
+
             // Setup base Selection rules
             Selectable = true;
             Selected = false;
