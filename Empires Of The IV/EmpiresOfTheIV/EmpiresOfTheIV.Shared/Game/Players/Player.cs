@@ -14,11 +14,12 @@ namespace EmpiresOfTheIV.Game.Players
     {
         public uint ID { get; set; }
         public string Name { get; set; }
+
         public PlayerType PlayerType { get; set; }
-
         public ClientOSType OperatingSystem { get; set; }
-
         public EmpireType EmpireType { get; set; }
+
+        public bool Alive;
 
         public Economy Economy { get; protected set; }
 
@@ -29,6 +30,7 @@ namespace EmpiresOfTheIV.Game.Players
             PlayerType = playerType;
 
             EmpireType = EmpireType.UnanianEmpire;
+            Alive = true;
 
             Economy = new Economy(ID);
         }

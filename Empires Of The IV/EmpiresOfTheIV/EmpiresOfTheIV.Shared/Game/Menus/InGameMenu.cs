@@ -549,7 +549,7 @@ namespace EmpiresOfTheIV.Game.Menus
             for (int i = 0; i < m_unitPool.TotalUnitsInPool; i++)
             {
                 var unit = new Unit(unitIDManager.GetNewID(), UnitType.None);
-                GameFactory.CreateUnit(unit, UnitID.UnanianSpaceFighter,
+                GameFactory.CreateUnit(unit, UnitID.UnanianSoldier,
                     new Vector3((float)Consts.random.NextDouble() * 15.0f,
                                 (float)0.0f,
                                 (float)Consts.random.NextDouble())
@@ -586,7 +586,7 @@ namespace EmpiresOfTheIV.Game.Menus
             // Keyboard
             m_game.InputManager.Keyboard.KeyboardDown += Keyboard_KeyboardDown;
             m_game.InputManager.Keyboard.KeyboardPressed += Keyboard_KeyboardPressed;
-            #endregion
+            #endregion 
 
             if (progress != null) progress.Report(new LoadingProgress(99, "Taking out Ninjas"));
 
@@ -768,6 +768,11 @@ namespace EmpiresOfTheIV.Game.Menus
             else if (e.Pointer == PointerPress.RightMouseButton) { rightMouseDown = false; }
 
             if (e.Pointer == PointerPress.LeftMouseButton || e.Pointer == PointerPress.Touch)
+                selectionReleased = true;
+
+            // If we are in the Selection Input Mode, make sure we set the selection to be released
+            // so the system doesn't keep the indicators on screen
+            if (m_inputMode == InputMode.Selection)
                 selectionReleased = true;
         }
 
@@ -1043,14 +1048,12 @@ namespace EmpiresOfTheIV.Game.Menus
         #region Input Handlers
         public void Input_Selection(PointerPressedEventArgs e)
         {
-            if (!m_selectionManager.HasSelection)
-            {
-                m_commandRelay.AddCommand(Command.StartSelectionCommand(e.Position), false);
-                //m_selectionManager.StartingPosition = e.Position;
-            }
+            // If we're not in the game anymore, we can't issue any more commands
+            if (!m_me.Alive) return;
 
+            if (!m_selectionManager.HasSelection)
+                m_commandRelay.AddCommand(Command.StartSelectionCommand(e.Position), false);
             m_commandRelay.AddCommand(Command.EndSelectionCommand(e.Position), false);
-            //m_selectionManager.EndingPosition = e.Position;
         }
         public void Input_PanCamera(PointerPressedEventArgs e)
         {
@@ -1091,6 +1094,9 @@ namespace EmpiresOfTheIV.Game.Menus
         }
         public void Input_IssueCommand(PointerPressedEventArgs e)
         {
+            // If we're not in the game anymore, we can't issue any more commands
+            if (!m_me.Alive) return;
+
             Ray ray = m_gameCamera.GetMouseRay(
                 e.Position,
                 m_game.Graphics.GraphicsDevice.Viewport
@@ -1211,22 +1217,22 @@ namespace EmpiresOfTheIV.Game.Menus
                         }
                         break;
                     case CommandType.Move:
-                        Unit unit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
-                        if (unit != null)
+                        Unit moveUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
+                        if (moveUnit != null)
                         {
-                            var newPos = (command.Position + new Vector3(0.0f, unit.HeightAboveTerrain, 0.0f));
+                            var moveNewPos = (command.Position + new Vector3(0.0f, moveUnit.HeightAboveTerrain, 0.0f));
 
-                            var result = unit.Transform.MoveToPosition(gameTime, newPos, 1.2f);
-                            if (result) m_commandRelay.Complete(command); //command.Complete();
+                            var moveResult = moveUnit.Transform.MoveToPosition(gameTime, moveNewPos, 1.2f);
+                            if (moveResult) m_commandRelay.Complete(command); //command.Complete();
 
                             // Since this is the only spot where units will move
                             // We will set the unit to be on top of the terrain
-                            float height = m_map.Terrain.GetHeightAtPoint(unit.Transform.Position);
-                            if (height != float.MaxValue)
+                            float moveHeight = m_map.Terrain.GetHeightAtPoint(moveUnit.Transform.Position);
+                            if (moveHeight != float.MaxValue)
                             {
-                                Vector3 pos = unit.Transform.Position;
-                                pos.Y = height + unit.HeightAboveTerrain;
-                                unit.Transform.Position = pos;
+                                Vector3 movePos = moveUnit.Transform.Position;
+                                movePos.Y = moveHeight + moveUnit.HeightAboveTerrain;
+                                moveUnit.Transform.Position = movePos;
                             }
                         }
                         break;
@@ -1241,8 +1247,81 @@ namespace EmpiresOfTheIV.Game.Menus
                     case CommandType.Attack:
                         break;
                     case CommandType.Damage:
+                        if (command.TargetType == TargetType.Factory)
+                        {
+                            var damageFactoryBase = m_map.GetFactoryBase(command.ID1);
+                            if (damageFactoryBase != null)
+                            {
+                                if (damageFactoryBase.Factory != null)
+                                {
+                                    damageFactoryBase.Factory.Health.DecreaseHealth((float)command.Damage);
+                                }
+                            }
+                        }
+                        else if (command.TargetType == TargetType.Unit)
+                        {
+                            var damageUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
+                            if (damageUnit != null)
+                            {
+                                damageUnit.Health.DecreaseHealth((float)command.Damage);
+                            }
+                        }
+
+                        m_commandRelay.Complete(command);
                         break;
                     case CommandType.Kill:
+                        if (command.TargetType == TargetType.Factory)
+                        {
+                            var killFactoryBase = m_map.GetFactoryBase(command.ID1);
+                            if (killFactoryBase != null)
+                            {
+                                uint killPreviousOwner = killFactoryBase.Owner;
+
+                                killFactoryBase.Owner = uint.MaxValue;
+                                killFactoryBase.Factory = null;
+
+                                foreach (var factory in m_map.FactoryBases)
+                                {
+                                    if (factory.Owner == killPreviousOwner)
+                                    {
+                                        // The player still has a factory
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        // Uh-oh, that was the players last factory!
+                                        if (m_team1.Exists(killPreviousOwner))
+                                        {
+                                            var killPlayer = m_team1.GetPlayer(killPreviousOwner);
+                                            killPlayer.Alive = false;
+                                        }
+                                        else if (m_team2.Exists(killPreviousOwner))
+                                        {
+                                            var killPlayer = m_team2.GetPlayer(killPreviousOwner);
+                                            killPlayer.Alive = false;
+                                        }
+
+                                        break;
+                                    }
+                                }
+
+                            }
+                        }
+                        else if (command.TargetType == TargetType.Unit)
+                        {
+                            var killUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
+                            if (killUnit != null)
+                            {
+                                if (killUnit.PlayerID == m_me.ID)
+                                {
+                                    m_me.Economy.AddCost(killUnit.UnitCost);
+                                }
+
+                                m_unitPool.SwapPool(command.ID1);
+                            }
+                        }
+
+                        m_commandRelay.Complete(command);
                         break;
                     default:
                         break;

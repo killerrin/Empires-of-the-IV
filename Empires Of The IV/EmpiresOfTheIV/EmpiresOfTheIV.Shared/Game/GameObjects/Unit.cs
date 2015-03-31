@@ -3,12 +3,14 @@ using Anarian.DataStructures;
 using Anarian.DataStructures.Animation.Aux;
 using Anarian.DataStructures.Components;
 using Anarian.Interfaces;
+using Anarian.Helpers;
 using EmpiresOfTheIV.Game.Enumerators;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using EmpiresOfTheIV.Game.Players;
 
 namespace EmpiresOfTheIV.Game.GameObjects
 {
@@ -18,10 +20,24 @@ namespace EmpiresOfTheIV.Game.GameObjects
         #region Fields/Properties
         public uint UnitID { get; protected set; }
         public uint PlayerID;
+        
         public UnitType UnitType;
+        public UnitID UnitName;
+        public Cost UnitCost;
 
+        public BoundingSphere AttackRange;
+
+
+        bool m_selected;
         public bool Selectable { get; set; }
-        public bool Selected { get; set; }
+        public bool Selected
+        {
+            get { return m_selected; }
+            set {
+                m_selected = value;
+                RenderBounds = value;
+            }
+        }
 
         public Health Health { get { return GetComponent(typeof(Health)) as Health; } }
         public Mana Mana { get { return GetComponent(typeof(Mana)) as Mana; } }
@@ -40,6 +56,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
         {
             UnitID = unitID;
             UnitType = unitType;
+            UnitName = Enumerators.UnitID.None;
 
             // By default, the ID is set to the max value to get out of the way
             PlayerID = uint.MaxValue;
@@ -61,11 +78,15 @@ namespace EmpiresOfTheIV.Game.GameObjects
             AttackClip = null;
 
             HeightAboveTerrain = 0.0f;
+
+            AttackRange = new BoundingSphere();
+            UnitCost = Cost.FromUnitCost(0.0);
         }
 
         public override void Reset()
         {
-            UnitType = UnitType = Enumerators.UnitType.None;
+            UnitType = Enumerators.UnitType.None;
+            UnitName = Enumerators.UnitID.None;
             
             Selectable = true;
             Selected = false;
@@ -75,6 +96,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
             AttackClip = null;
 
             HeightAboveTerrain = 0.0f;
+
+            AttackRange = new BoundingSphere();
 
             Health.Reset();
             Mana.Reset();
@@ -101,8 +124,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
         {
             base.Update(gameTime);
 
-            if (Selected) RenderBounds = true;
-            else RenderBounds = false;
+            // Update the center of our attack radius with our position
+            AttackRange.Center = m_transform.WorldPosition;
         }
 
         public override bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
@@ -130,6 +153,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
             spriteBatch.Draw(blankTexture, healthRect, Color.Red);
             spriteBatch.End();
             #endregion
+
+            // Render the Attack Range
+            //AttackRange.RenderBoundingSphere(graphics, Matrix.Identity, camera.View, camera.Projection, Color.Red);
 
             return true;
         }
