@@ -15,9 +15,10 @@ namespace EmpiresOfTheIV.Game.Commands
         /// Networked Commands
         ///--------------------
         //-- Universal Commands
-        // Movement Commands
+        // Standard Commands
         Move,
-        // Management Commands
+        Attack,
+        // Empire Management Commands
         BuildFactory,
         BuildUnit,
         SetFactoryRallyPoint,
@@ -26,7 +27,6 @@ namespace EmpiresOfTheIV.Game.Commands
 
         //-- Host Commands
         // Attack Commands
-        Attack,
         Damage,
         Kill,
     }
