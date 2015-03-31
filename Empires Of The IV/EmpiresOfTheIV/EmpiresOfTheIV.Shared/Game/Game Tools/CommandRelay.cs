@@ -13,40 +13,59 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 	public class CommandRelay
 	{
 		public ThreadSafeList<Command> m_commands;
-        Command m_previouslyAddedCommand;
+		Command m_previouslyAddedCommand;
 
 		public CommandRelay()
 		{
 			m_commands = new ThreadSafeList<Command>();
-            m_previouslyAddedCommand = null;
+			m_previouslyAddedCommand = null;
 		}
 
 		public void AddCommand(Command c, bool sendOverNetwork)
 		{
-            if (c == m_previouslyAddedCommand)
-                return;
+			if (c == m_previouslyAddedCommand)
+				return;
 			
 			// Propogate Commands accross Network
-            if (Consts.Game.NetworkManager.IsConnected)
-            {
-                if (sendOverNetwork)
-                {
-                    GamePacket gp = new GamePacket(true, c, GamePacketID.Command);
-                    Consts.Game.NetworkManager.SendMessage(gp.ThisToJson());
+			if (Consts.Game.NetworkManager.IsConnected)
+			{
+				if (sendOverNetwork)
+				{
+					GamePacket gp = new GamePacket(true, c, GamePacketID.Command);
+					Consts.Game.NetworkManager.SendMessage(gp.ThisToJson());
 
-                }
-            }
+				}
+			}
 
-            // Finally, add the command
-            m_commands.Add(c);
-            m_previouslyAddedCommand = c;
+			// If the command is a move command, we check to see if our command relay
+			// has other movement commands for that unit. If it does, we remove them
+			if (c.CommandType == CommandType.Move)
+				RemoveAllOfRequirements(CommandType.Move, c.ID1);
+
+			// Finally, add the command
+			m_commands.Add(c);
+			m_previouslyAddedCommand = c;
 		}
 
-        public void Complete(Command c)
-        {
-            c.Completed = true;
-            m_commands.Remove(c);
-        }
+		public void Complete(Command c)
+		{
+			c.Completed = true;
+			m_commands.Remove(c);
+		}
+
+		#region Remove
+		public void RemoveAllOfRequirements(CommandType commandType, uint id)
+		{
+			List<Command> commandsClone = m_commands.Clone();
+			foreach (var command in commandsClone)
+			{
+				if (command.CommandType == commandType &&
+					command.ID1 == id)
+				{
+					Complete(command);
+				}
+			}
+		}
 
 		public void RemoveAllCompleted()
 		{
@@ -54,8 +73,23 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 			foreach (var command in commandsClone)
 			{
 				if (command.Completed)
-					m_commands.Remove(command);
+					Complete(command);
 			}
+		}
+		#endregion
+
+		public List<Command> GetAllCommandsOfType(CommandType commandType)
+		{
+			List<Command> temp = new List<Command>();
+
+			List<Command> commandsClone = m_commands.Clone();
+			foreach (var command in commandsClone)
+			{
+				if (command.CommandType == commandType)
+					temp.Add(command);
+			}
+
+			return temp;
 		}
 	}
 }

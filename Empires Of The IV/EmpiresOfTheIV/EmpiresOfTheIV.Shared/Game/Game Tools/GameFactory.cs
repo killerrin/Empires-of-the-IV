@@ -49,13 +49,14 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             unitPoolUnit.Reset();
 
             unitPoolUnit.UnitName = unitID;
+            unitPoolUnit.UnitCost = CreateUnitCost(unitID);
 
             unitPoolUnit.Active = true;
             unitPoolUnit.CullDraw = true;
             unitPoolUnit.UpdateBoundsEveryFrame = true;
-            //unitPoolUnit.RenderBounds = true;
-
             unitPoolUnit.Health.RegenerateHealth = false;
+
+            //unitPoolUnit.RenderBounds = true;
 
             switch (unitID)
             {
@@ -67,8 +68,6 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
                     unitPoolUnit.Transform.MovementSpeed = 0.004f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.015f);
-                    unitPoolUnit.Transform.Position = spawnPosition;
-                    unitPoolUnit.Transform.CreateAllMatrices();
                     
                     unitPoolUnit.Model3D = ResourceManager.Instance.GetAsset(typeof(AnimatedModel), UnitID.UnanianSoldier.ToString() + "|" + ModelType.AnimatedModel.ToString()) as AnimatedModel;
                     unitPoolUnit.MovementClip = (ResourceManager.Instance.GetAsset(typeof(AnimatedModel), UnitID.UnanianSoldier.ToString() + "|" + ModelType.Animation.ToString()) as AnimatedModel).Clips[0];
@@ -77,30 +76,50 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     usp.Looping = true;
 
                     unitPoolUnit.AttackRange.Radius = 8.0f;
-                    unitPoolUnit.UnitCost = Cost.FromUnitCost(1.0);
                     break;
                 case UnitID.UnanianMIDAF:
+                    unitPoolUnit.UnitType = UnitType.Soldier;
+
+                    unitPoolUnit.HeightAboveTerrain = 0.0f;
+                    unitPoolUnit.Health.MaxHealth = 100.0f;
+
+                    unitPoolUnit.Transform.MovementSpeed = 0.005f;
+                    unitPoolUnit.Transform.Scale = new Vector3(0.015f);
+
+                    unitPoolUnit.AttackRange.Radius = 10.0f;
                     break;
                 case UnitID.UnanianSpaceFighter:
                     unitPoolUnit.UnitType = UnitType.Space;
 
-                    unitPoolUnit.Health.MaxHealth = 100.0f;
                     unitPoolUnit.HeightAboveTerrain = 10.0f;
+                    unitPoolUnit.Health.MaxHealth = 100.0f;
 
                     unitPoolUnit.Transform.MovementSpeed = 0.006f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.005f);
-                    unitPoolUnit.Transform.Position = spawnPosition;
-                    unitPoolUnit.Transform.CreateAllMatrices();
 
                     unitPoolUnit.Model3D = ResourceManager.Instance.GetAsset(typeof(AnimatedModel), UnitID.UnanianSpaceFighter.ToString() + "|" + ModelType.AnimatedModel.ToString()) as AnimatedModel;
 
                     unitPoolUnit.AttackRange.Radius = 15.0f;
-                    unitPoolUnit.UnitCost = Cost.FromUnitCost(2.0);
                     break;
             }
 
+            unitPoolUnit.Transform.Position = spawnPosition;
+            unitPoolUnit.Transform.CreateAllMatrices();
+
             unitPoolUnit.Health.Reset();
             unitPoolUnit.Mana.Reset();
+        }
+
+        public static Cost CreateUnitCost(UnitID unitID)
+        {
+            switch (unitID)
+            {
+                case UnitID.UnanianSoldier:         return new Cost(1000.0, 1500.0, 500.0,  1.0);
+                case UnitID.UnanianMIDAF:           return new Cost(2000.0, 3500.0, 1500.0, 2.0);
+                case UnitID.UnanianSpaceFighter:    return new Cost(5000.0, 5000.0, 4500.0, 2.0);
+                case UnitID.None:
+                default: return new Cost(0.0, 0.0, 0.0, 0.0);
+            }
         }
     }
 }

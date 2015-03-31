@@ -1245,6 +1245,31 @@ namespace EmpiresOfTheIV.Game.Menus
                     case CommandType.Cancel:
                         break;
                     case CommandType.Attack:
+                        var attackingUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
+                        if (attackingUnit != null)
+                        {
+                            if (command.TargetType == TargetType.Unit)
+                            {
+                                var attackedUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID2);
+                                if (attackedUnit != null)
+                                {
+                                    attackingUnit.Transform.RotateToPoint(gameTime, attackedUnit.Transform.WorldPosition);
+                                }
+                            }
+                            else if (command.TargetType == TargetType.Factory)
+                            {
+                                var attackedBuilding = m_map.GetFactoryBase(command.ID2);
+                                if (attackedBuilding != null)
+                                {
+                                    if (attackedBuilding.Base != null)
+                                    {
+                                        attackingUnit.Transform.RotateToPoint(gameTime, attackedBuilding.Base.Transform.WorldPosition);
+                                    }
+                                }
+                            }
+                        }
+
+                        m_commandRelay.Complete(command);
                         break;
                     case CommandType.Damage:
                         if (command.TargetType == TargetType.Factory)
