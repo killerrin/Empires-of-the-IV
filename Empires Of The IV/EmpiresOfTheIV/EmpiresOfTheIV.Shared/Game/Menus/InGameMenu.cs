@@ -549,11 +549,29 @@ namespace EmpiresOfTheIV.Game.Menus
             for (int i = 0; i < m_unitPool.TotalUnitsInPool; i++)
             {
                 var unit = new Unit(unitIDManager.GetNewID(), UnitType.None);
-                GameFactory.CreateUnit(unit, UnitID.UnanianSoldier,
-                    new Vector3((float)Consts.random.NextDouble() * 15.0f,
+
+                if (i < 15)
+                {
+                    GameFactory.CreateUnit(unit, UnitID.UnanianSoldier,
+                    new Vector3((float)m_map.FactoryBases[0].Base.Transform.WorldPosition.X,
                                 (float)0.0f,
-                                (float)Consts.random.NextDouble())
-                );
+                                (float)m_map.FactoryBases[0].Base.Transform.WorldPosition.Z + (i * 2.5f))
+                    );
+                }
+                else if (i >= 15)
+                {
+                    GameFactory.CreateUnit(unit, UnitID.UnanianSpaceFighter,
+                    new Vector3((float)m_map.FactoryBases[1].Base.Transform.WorldPosition.X,
+                                (float)0.0f,
+                                (float)m_map.FactoryBases[1].Base.Transform.WorldPosition.Z - (i * 1.2f))
+                    );
+                }
+
+                //GameFactory.CreateUnit(unit, UnitID.UnanianSoldier,
+                //    new Vector3((float)Consts.random.NextDouble() * 15.0f,
+                //                (float)0.0f,
+                //                (float)Consts.random.NextDouble())
+                //);
 
                 // Set it on the terrain
                 float height = m_map.Terrain.GetHeightAtPoint(unit.Transform.Position);
@@ -602,6 +620,7 @@ namespace EmpiresOfTheIV.Game.Menus
                         unit.UnitID < maxValue)
                     {
                         unit.PlayerID = player.ID;
+
                     }
                 }
             }
@@ -1192,14 +1211,15 @@ namespace EmpiresOfTheIV.Game.Menus
                 //Debug.WriteLine(command.ToString());
                 switch (command.CommandType)
                 {
+                    #region Selection
                     case CommandType.StartSelection:
                         m_selectionManager.StartingPosition = new Vector2(command.Position.X, command.Position.Y);
-                        m_commandRelay.Complete(command); //command.Complete();
+                        m_commandRelay.Complete(command);
                         break;
                     case CommandType.EndSelection:
                         // First set the Ending Position
                         m_selectionManager.EndingPosition = new Vector2(command.Position.X, command.Position.Y);
-                        m_commandRelay.Complete(command); //command.Complete();
+                        m_commandRelay.Complete(command);
 
                         // Then select the Units
                         BoundingFrustum selectionFrustrum = m_gameCamera.UnprojectRectangle(m_selectionManager.GetSelection(), m_game.GraphicsDevice.Viewport);
@@ -1216,6 +1236,8 @@ namespace EmpiresOfTheIV.Game.Menus
                             }
                         }
                         break;
+                    #endregion
+
                     case CommandType.Move:
                         Unit moveUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
                         if (moveUnit != null)
@@ -1235,14 +1257,6 @@ namespace EmpiresOfTheIV.Game.Menus
                                 moveUnit.Transform.Position = movePos;
                             }
                         }
-                        break;
-                    case CommandType.BuildFactory:
-                        break;
-                    case CommandType.BuildUnit:
-                        break;
-                    case CommandType.SetFactoryRallyPoint:
-                        break;
-                    case CommandType.Cancel:
                         break;
                     case CommandType.Attack:
                         var attackingUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
@@ -1271,6 +1285,16 @@ namespace EmpiresOfTheIV.Game.Menus
 
                         m_commandRelay.Complete(command);
                         break;
+
+                    case CommandType.BuildFactory:
+                        break;
+                    case CommandType.BuildUnit:
+                        break;
+                    case CommandType.SetFactoryRallyPoint:
+                        break;
+                    case CommandType.Cancel:
+                        break;
+
                     case CommandType.Damage:
                         if (command.TargetType == TargetType.Factory)
                         {
@@ -1356,6 +1380,16 @@ namespace EmpiresOfTheIV.Game.Menus
             //m_commandRelay.RemoveAllCompleted();
             #endregion
 
+            #region Singleplayer and Host Only Processing
+            if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer)
+                UpdateGame(gameTime);
+            else
+            {
+                if (m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
+                    UpdateGame(gameTime);
+            }
+            #endregion
+
             // If the Selection was Released, Select the units
             if (selectionReleased)
             {
@@ -1371,6 +1405,42 @@ namespace EmpiresOfTheIV.Game.Menus
 
             //-- Update the Menu
             base.Update(gameTime);
+        }
+
+        private void UpdateGame(GameTime gameTime)
+        {
+            bool breakUnit1 = false;
+            foreach (var unit1 in m_unitPool.m_activeUnits)
+            {
+                bool breakUnit2 = false;
+                foreach(var unit2 in m_unitPool.m_activeUnits)
+                {
+                    if (unit1.UnitID == unit2.UnitID) continue;
+                    if (unit1.PlayerID == unit2.PlayerID) continue;
+
+                    foreach(var bsphere in unit2.BoundingSpheres)
+                    {
+                        if (unit1.AttackRange.Intersects(bsphere))
+                        {
+                            // Unit Is automatically attacking Unit
+                            //m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, unit2.UnitID, TargetType.Unit), true);
+                            m_commandRelay.AddCommand(Command.DamageCommand(unit2.UnitID, TargetType.Unit, 1.0f), true);
+                            breakUnit2 = true;
+                            break;
+                        }
+                    }
+
+                    if (breakUnit2) break;
+                }
+
+                if (breakUnit1) break;
+            }
+
+            foreach(var unit in m_unitPool.m_activeUnits)
+            {
+                if (unit.Health.CurrentHealth <= 0.0f)
+                    m_commandRelay.AddCommand(Command.KillCommand(unit.UnitID, TargetType.Unit), true);
+            }
         }
 
         private void UpdatePaused(GameTime gameTime)
@@ -1400,8 +1470,8 @@ namespace EmpiresOfTheIV.Game.Menus
                 }
             }
         }
-        #endregion
-
+   
+     #endregion
         #region Draw
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics); }
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)

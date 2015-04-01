@@ -33,7 +33,6 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 				{
 					GamePacket gp = new GamePacket(true, c, GamePacketID.Command);
 					Consts.Game.NetworkManager.SendMessage(gp.ThisToJson());
-
 				}
 			}
 
@@ -54,16 +53,42 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 		}
 
 		#region Remove
-		public void RemoveAllOfRequirements(CommandType commandType, uint id)
+        public void RemoveFirstInstanceOf(CommandType commandType, uint id, TargetType targetType = TargetType.None)
+        {
+            List<Command> commandsClone = m_commands.Clone();
+            foreach (var command in commandsClone)
+            {
+                if (command.CommandType == commandType &&
+                    command.ID1 == id)
+                {
+                    if (targetType == TargetType.None) { Complete(command); return; }
+                    else
+                    {
+                        if (command.TargetType == targetType)
+                        {
+                            Complete(command);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+         
+		public void RemoveAllOfRequirements(CommandType commandType, uint id, TargetType targetType = TargetType.None)
 		{
 			List<Command> commandsClone = m_commands.Clone();
 			foreach (var command in commandsClone)
 			{
-				if (command.CommandType == commandType &&
-					command.ID1 == id)
-				{
-					Complete(command);
-				}
+                if (command.CommandType == commandType &&
+                    command.ID1 == id)
+                {
+                    if (targetType == TargetType.None) { Complete(command); }
+                    else
+                    {
+                        if (command.TargetType == targetType)
+                            Complete(command);
+                    }
+                }
 			}
 		}
 
