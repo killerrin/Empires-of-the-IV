@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace EmpiresOfTheIV.Game.GameObjects.Factories
@@ -24,6 +25,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
         }
         public override void Update(GameTime gameTime)
         {
+            //Debug.WriteLine("Factory");
             base.Update(gameTime);
         }
         public override bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)

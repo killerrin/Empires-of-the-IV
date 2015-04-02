@@ -25,7 +25,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public UnitID UnitName;
         public Cost UnitCost;
 
-        public BoundingSphere AttackRange;
+        public BoundingSphere SightRange;
 
 
         bool m_selected;
@@ -49,6 +49,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public AnimationClip AttackClip;
 
         public float HeightAboveTerrain;
+        public float AttackDamage;
         #endregion
 
         public Unit(uint unitID, UnitType unitType)
@@ -78,8 +79,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
             AttackClip = null;
 
             HeightAboveTerrain = 0.0f;
+            AttackDamage = 1.0f;
 
-            AttackRange = new BoundingSphere();
+            SightRange = new BoundingSphere();
             UnitCost = Cost.FromUnitCost(0.0);
         }
 
@@ -97,7 +99,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
             HeightAboveTerrain = 0.0f;
 
-            AttackRange = new BoundingSphere();
+            SightRange = new BoundingSphere();
 
             Health.Reset();
             Mana.Reset();
@@ -125,7 +127,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
             base.Update(gameTime);
 
             // Update the center of our attack radius with our position
-            AttackRange.Center = m_transform.WorldPosition;
+            SightRange.Center = m_transform.WorldPosition;
         }
 
         public override bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
@@ -134,6 +136,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
             if (!result) return false;
             if (m_model == null) return false;
+
+            // Render the Attack Range
+            //SightRange.RenderBoundingSphere(graphics, Matrix.Identity, camera.View, camera.Projection, Color.Red);
 
             #region Draw the Health
             Vector3 screenPos3D = graphics.Viewport.Project(m_transform.WorldPosition, camera.Projection, camera.View, camera.World);
@@ -153,10 +158,6 @@ namespace EmpiresOfTheIV.Game.GameObjects
             spriteBatch.Draw(blankTexture, healthRect, Color.Red);
             spriteBatch.End();
             #endregion
-
-            // Render the Attack Range
-            //AttackRange.RenderBoundingSphere(graphics, Matrix.Identity, camera.View, camera.Projection, Color.Red);
-
             return true;
         }
 

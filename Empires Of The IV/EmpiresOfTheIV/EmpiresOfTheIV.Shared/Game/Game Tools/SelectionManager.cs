@@ -14,6 +14,8 @@ namespace EmpiresOfTheIV.Game.Game_Tools
         public Vector2? StartingPosition;
         public Vector2? EndingPosition;
 
+        public Rectangle PreviousSelection;
+
         public bool HasSelection
         {
             get { return (StartingPosition.HasValue && EndingPosition.HasValue); }
@@ -27,6 +29,8 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
         public void Deselect()
         {
+            PreviousSelection = GetSelection();
+
             StartingPosition = null;
             EndingPosition = null;
         }

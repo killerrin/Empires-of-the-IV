@@ -18,7 +18,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
     {
         public static void CreateFactoryOnFactoryBase(FactoryBase factoryBase, Player owner)
         {
-            factoryBase.Owner = owner.ID;
+            factoryBase.PlayerID = owner.ID;
 
             factoryBase.Factory = new Factory();
             factoryBase.Factory.Transform.Position = factoryBase.Base.Transform.Position;
@@ -27,14 +27,16 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             factoryBase.Factory.Transform.CreateAllMatrices();
 
             factoryBase.Factory.Active = true;
-            factoryBase.Factory.CullDraw = true;
+            factoryBase.Factory.CullDraw = false;
             factoryBase.Factory.UpdateBoundsEveryFrame = false;
-            //factoryBase.Factory.RenderBounds = true;
+            factoryBase.Factory.RenderBounds = false;
 
+            factoryBase.Factory.Health.Active = true;
             factoryBase.Factory.Health.Alive = true;
+            factoryBase.Factory.Health.Invincible = false;
             factoryBase.Factory.Health.RegenerateHealth = true;
-            factoryBase.Factory.Health.RegenerationRate = 0.5f;
-            factoryBase.Factory.Health.MaxHealth = 200.0f;
+            factoryBase.Factory.Health.RegenerationRate = 0.001f;
+            factoryBase.Factory.Health.MaxHealth = 300.0f;
 
             switch (owner.EmpireType)
             {
@@ -42,6 +44,8 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                 case EmpireType.CrescanianConfederation:    factoryBase.Factory.Model3D = ResourceManager.Instance.GetAsset(typeof(Model), "Crescanian Factory") as Model; break;
                 case EmpireType.TheKingdomOfEdolas:         factoryBase.Factory.Model3D = ResourceManager.Instance.GetAsset(typeof(Model), "Edolas Factory") as Model; break;
             }
+
+            factoryBase.Factory.Health.Reset();
         }
 
         public static void CreateUnit(Unit unitPoolUnit, UnitID unitID, Vector3 spawnPosition)
@@ -55,8 +59,9 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             unitPoolUnit.CullDraw = true;
             unitPoolUnit.UpdateBoundsEveryFrame = true;
             unitPoolUnit.Health.RegenerateHealth = false;
+            unitPoolUnit.Health.Invincible = false;
 
-            //unitPoolUnit.RenderBounds = true;
+            unitPoolUnit.RenderBounds = false;
 
             switch (unitID)
             {
@@ -64,6 +69,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     unitPoolUnit.UnitType = UnitType.Soldier;
 
                     unitPoolUnit.HeightAboveTerrain = 0.0f;
+                    unitPoolUnit.AttackDamage = 0.075f;
                     unitPoolUnit.Health.MaxHealth = 100.0f;
 
                     unitPoolUnit.Transform.MovementSpeed = 0.004f;
@@ -75,23 +81,25 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     var usp = unitPoolUnit.PlayClip(unitPoolUnit.MovementClip);
                     usp.Looping = true;
 
-                    unitPoolUnit.AttackRange.Radius = 8.0f;
+                    unitPoolUnit.SightRange.Radius = 8.0f;
                     break;
                 case UnitID.UnanianMIDAF:
                     unitPoolUnit.UnitType = UnitType.Soldier;
 
                     unitPoolUnit.HeightAboveTerrain = 0.0f;
+                    unitPoolUnit.AttackDamage = 0.15f;
                     unitPoolUnit.Health.MaxHealth = 100.0f;
 
                     unitPoolUnit.Transform.MovementSpeed = 0.005f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.015f);
 
-                    unitPoolUnit.AttackRange.Radius = 10.0f;
+                    unitPoolUnit.SightRange.Radius = 10.0f;
                     break;
                 case UnitID.UnanianSpaceFighter:
                     unitPoolUnit.UnitType = UnitType.Space;
 
                     unitPoolUnit.HeightAboveTerrain = 10.0f;
+                    unitPoolUnit.AttackDamage = 0.5f;
                     unitPoolUnit.Health.MaxHealth = 100.0f;
 
                     unitPoolUnit.Transform.MovementSpeed = 0.006f;
@@ -99,7 +107,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
                     unitPoolUnit.Model3D = ResourceManager.Instance.GetAsset(typeof(AnimatedModel), UnitID.UnanianSpaceFighter.ToString() + "|" + ModelType.AnimatedModel.ToString()) as AnimatedModel;
 
-                    unitPoolUnit.AttackRange.Radius = 15.0f;
+                    unitPoolUnit.SightRange.Radius = 15.0f;
                     break;
             }
 

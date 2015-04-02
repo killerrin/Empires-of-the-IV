@@ -52,12 +52,13 @@ namespace EmpiresOfTheIV.Game.Menus
         Texture2D m_blankTexture;
         Texture2D m_selectionTexture;
 
-        Color m_forbiddenZoneColor = Color.Blue * 0.5f;
+        Color m_guiZoneColor = Color.Blue * 0.5f;
 
         GUIButton m_guiGestureButton;
         GUIButton m_guiSelectionButton;
         GUIButton m_guiCameraPanButton;
         GUIButton m_guiIssueCommandButton;
+
 
         Texture2D m_currencyTexture; 
         Texture2D m_metalTexture;
@@ -316,6 +317,13 @@ namespace EmpiresOfTheIV.Game.Menus
                 }
 
                 unanianGroundSoldierWalkAnimClip = unanianGroundSoldierAnimation.Clips[0];
+
+                foreach (ModelMesh mesh in unanianFactory.Meshes)
+                {
+                    var bs = mesh.BoundingSphere;
+                    bs.Radius = 130.0f;
+                    mesh.BoundingSphere = bs;
+                }
             }
             #endregion
 
@@ -422,9 +430,10 @@ namespace EmpiresOfTheIV.Game.Menus
                         mesh.BoundingSphere = bs;
                     }
 
+                    BoundingSphere bound = new BoundingSphere(Vector3.Zero, 11.0f);
 
                     // Factory 1
-                    factoryBases[0] = new FactoryBase(factoryBaseIDManager.GetNewID());
+                    factoryBases[0] = new FactoryBase(factoryBaseIDManager.GetNewID(), bound);
                     factoryBases[0].Base = new StaticGameObject();
                     factoryBases[0].Base.Transform.Position = new Vector3(-70.0f, 0.0f, -10.0f);
                     factoryBases[0].Base.Transform.Scale = new Vector3(0.05f);
@@ -432,11 +441,12 @@ namespace EmpiresOfTheIV.Game.Menus
                     factoryBases[0].Base.Transform.CreateAllMatrices();
                     factoryBases[0].Base.Model3D = factoryBaseModel;
                     factoryBases[0].Base.Active = true;
-                    factoryBases[0].Base.CullDraw = false;
-                    factoryBases[0].Base.RenderBounds = true;
+                    factoryBases[0].Base.CullDraw = true;
+                    factoryBases[0].Base.UpdateBoundsEveryFrame = false;
+                    factoryBases[0].Base.RenderBounds = false;
                 
                     // Factory 2
-                    factoryBases[1] = new FactoryBase(factoryBaseIDManager.GetNewID());
+                    factoryBases[1] = new FactoryBase(factoryBaseIDManager.GetNewID(), bound);
                     factoryBases[1].Base = new StaticGameObject();
                     factoryBases[1].Base.Transform.Position = new Vector3(70.0f, 0.0f, 10.0f);
                     factoryBases[1].Base.Transform.Scale = new Vector3(0.05f);
@@ -444,10 +454,11 @@ namespace EmpiresOfTheIV.Game.Menus
                     factoryBases[1].Base.Transform.CreateAllMatrices();
                     factoryBases[1].Base.Model3D = factoryBaseModel;
                     factoryBases[1].Base.Active = true;
-                    factoryBases[1].Base.CullDraw = false;
-                    factoryBases[1].Base.RenderBounds = true;
+                    factoryBases[1].Base.CullDraw = true;
+                    factoryBases[1].Base.UpdateBoundsEveryFrame = false;
+                    factoryBases[1].Base.RenderBounds = false;
                     #endregion
-
+                    
                     // Make the map
                     m_map = new Map(MapName.RadientValley, mapParallax, mapTerrain, factoryBases);
                     m_map.AddAvailableUnitType(UnitType.Soldier, UnitType.Vehicle, UnitType.Ship, UnitType.Air, UnitType.Space);
@@ -552,7 +563,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
                 if (i < 15)
                 {
-                    GameFactory.CreateUnit(unit, UnitID.UnanianSoldier,
+                    GameFactory.CreateUnit(unit, UnitID.UnanianSpaceFighter,
                     new Vector3((float)m_map.FactoryBases[0].Base.Transform.WorldPosition.X,
                                 (float)0.0f,
                                 (float)m_map.FactoryBases[0].Base.Transform.WorldPosition.Z + (i * 2.5f))
@@ -560,7 +571,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 }
                 else if (i >= 15)
                 {
-                    GameFactory.CreateUnit(unit, UnitID.UnanianSpaceFighter,
+                    GameFactory.CreateUnit(unit, UnitID.UnanianSoldier,
                     new Vector3((float)m_map.FactoryBases[1].Base.Transform.WorldPosition.X,
                                 (float)0.0f,
                                 (float)m_map.FactoryBases[1].Base.Transform.WorldPosition.Z - (i * 1.2f))
@@ -1130,7 +1141,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 {
                     // Check if it is an Enemy Unit, and if so set the rayIntersects and
                     // issue the attack command
-                    //rayIntersects = true;
+                    rayIntersects = true;
                 }
             }
 
@@ -1140,20 +1151,23 @@ namespace EmpiresOfTheIV.Game.Menus
                 FactoryBase intersectedFactoryBase = null;
                 var result = m_map.IntersectFactoryBase(ray, out intersectedFactoryBase);
 
-                if (result == FactoryBaseRayIntersection.None)
+                if (result == FactoryBaseRayIntersection.FactoryBase)
                 {
-
-                }
-                else if (result == FactoryBaseRayIntersection.FactoryBase)
-                {
-                    // Since it is an empty Factory Base, pop up the UI to build a Factory
                     rayIntersects = true;
+                    // Enable UI To Build Factory
                 }
                 else if (result == FactoryBaseRayIntersection.Factory)
                 {
-                    // Since it is a Factory, check if it is ours, and then pop up the UI to build Units
-                    // or issue an attack command
-                    //rayIntersects = true;
+                    rayIntersects = true;
+
+                    if (intersectedFactoryBase.PlayerID == m_me.ID)
+                    {
+                        // Enable the Build UI
+                    }
+                    else
+                    {
+                        // Try to issue an attack command or move closer
+                    }
                 }
             }
 
@@ -1267,7 +1281,10 @@ namespace EmpiresOfTheIV.Game.Menus
                                 var attackedUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID2);
                                 if (attackedUnit != null)
                                 {
-                                    attackingUnit.Transform.RotateToPoint(gameTime, attackedUnit.Transform.WorldPosition);
+                                    var attackingPosition = attackedUnit.Transform.WorldPosition + attackingUnit.Transform.WorldPosition;
+                                    attackingPosition.Y = attackingUnit.Transform.WorldPosition.Y;
+
+                                    //attackingUnit.Transform.RotateToPoint(gameTime, attackingPosition);
                                 }
                             }
                             else if (command.TargetType == TargetType.Factory)
@@ -1277,7 +1294,7 @@ namespace EmpiresOfTheIV.Game.Menus
                                 {
                                     if (attackedBuilding.Base != null)
                                     {
-                                        attackingUnit.Transform.RotateToPoint(gameTime, attackedBuilding.Base.Transform.WorldPosition);
+                                        //attackingUnit.Transform.RotateToPoint(gameTime, attackedBuilding.Base.Transform.WorldPosition);
                                     }
                                 }
                             }
@@ -1324,14 +1341,14 @@ namespace EmpiresOfTheIV.Game.Menus
                             var killFactoryBase = m_map.GetFactoryBase(command.ID1);
                             if (killFactoryBase != null)
                             {
-                                uint killPreviousOwner = killFactoryBase.Owner;
+                                uint killPreviousOwner = killFactoryBase.PlayerID;
 
-                                killFactoryBase.Owner = uint.MaxValue;
+                                killFactoryBase.PlayerID = uint.MaxValue;
                                 killFactoryBase.Factory = null;
 
                                 foreach (var factory in m_map.FactoryBases)
                                 {
-                                    if (factory.Owner == killPreviousOwner)
+                                    if (factory.PlayerID == killPreviousOwner)
                                     {
                                         // The player still has a factory
                                         break;
@@ -1380,16 +1397,6 @@ namespace EmpiresOfTheIV.Game.Menus
             //m_commandRelay.RemoveAllCompleted();
             #endregion
 
-            #region Singleplayer and Host Only Processing
-            if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer)
-                UpdateGame(gameTime);
-            else
-            {
-                if (m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
-                    UpdateGame(gameTime);
-            }
-            #endregion
-
             // If the Selection was Released, Select the units
             if (selectionReleased)
             {
@@ -1400,8 +1407,15 @@ namespace EmpiresOfTheIV.Game.Menus
             // Set all the active units to be on the terrain then Update Them
             m_unitPool.Update(gameTime);
 
-            // Set the camera to chase the first unit if we want to
-            m_gameCamera.WorldPositionToChase = m_unitPool.m_activeUnits[0].Transform.WorldMatrix;
+            #region Singleplayer and Host Only Processing
+            if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer)
+                UpdateGame(gameTime);
+            else
+            {
+                if (m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
+                    UpdateGame(gameTime);
+            }
+            #endregion
 
             //-- Update the Menu
             base.Update(gameTime);
@@ -1412,25 +1426,45 @@ namespace EmpiresOfTheIV.Game.Menus
             bool breakUnit1 = false;
             foreach (var unit1 in m_unitPool.m_activeUnits)
             {
-                bool breakUnit2 = false;
+                bool unitFoundInRange = false;
                 foreach(var unit2 in m_unitPool.m_activeUnits)
                 {
                     if (unit1.UnitID == unit2.UnitID) continue;
                     if (unit1.PlayerID == unit2.PlayerID) continue;
 
-                    foreach(var bsphere in unit2.BoundingSpheres)
+                    if (unit2.CheckSphereIntersection(unit1.SightRange))
                     {
-                        if (unit1.AttackRange.Intersects(bsphere))
-                        {
-                            // Unit Is automatically attacking Unit
-                            //m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, unit2.UnitID, TargetType.Unit), true);
-                            m_commandRelay.AddCommand(Command.DamageCommand(unit2.UnitID, TargetType.Unit, 1.0f), true);
-                            breakUnit2 = true;
-                            break;
-                        }
+                        // Unit Is automatically attacking Unit
+                        //Debug.WriteLine("Unit {0} is attacking Unit {1}", unit1.UnitID, unit2.UnitID);
+                        m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, unit2.UnitID, TargetType.Unit), true);
+                        m_commandRelay.AddCommand(Command.DamageCommand(unit2.UnitID, TargetType.Unit, unit1.AttackDamage), true);
+                        unitFoundInRange = true;
+                        break;
                     }
 
-                    if (breakUnit2) break;
+                    if (unitFoundInRange) break;
+                }
+
+                if (!unitFoundInRange)
+                {
+                    bool factoryFoundInRange = false;
+                    foreach (var factory in m_map.FactoryBases)
+                    {
+                        if (!factory.HasOwner) continue;
+                        if (unit1.PlayerID == factory.PlayerID) continue;
+
+                        if (factory.CheckSphereIntersection(unit1.SightRange) == FactoryBaseRayIntersection.Factory)
+                        {
+                            // Unit Is automatically attacking Factory
+                            //Debug.WriteLine("Unit {0} is attacking Factory {1}", unit1.UnitID, factory.FactoryBaseID);
+                            m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, factory.FactoryBaseID, TargetType.Factory), true);
+                            m_commandRelay.AddCommand(Command.DamageCommand(factory.FactoryBaseID, TargetType.Factory, unit1.AttackDamage), true);
+                            factoryFoundInRange = true;
+                            break;
+                        }
+
+                        if (factoryFoundInRange) break;
+                    }
                 }
 
                 if (breakUnit1) break;
@@ -1440,6 +1474,13 @@ namespace EmpiresOfTheIV.Game.Menus
             {
                 if (unit.Health.CurrentHealth <= 0.0f)
                     m_commandRelay.AddCommand(Command.KillCommand(unit.UnitID, TargetType.Unit), true);
+            }
+            foreach (var factory in m_map.FactoryBases)
+            {
+                if (!factory.HasOwner) continue;
+
+                if (factory.Factory.Health.CurrentHealth <= 0.0f)
+                    m_commandRelay.AddCommand(Command.KillCommand(factory.FactoryBaseID, TargetType.Factory), true);
             }
         }
 
@@ -1472,6 +1513,7 @@ namespace EmpiresOfTheIV.Game.Menus
         }
    
      #endregion
+
         #region Draw
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics); }
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
@@ -1495,7 +1537,7 @@ namespace EmpiresOfTheIV.Game.Menus
             spriteBatch.Begin();
 
             // Input Forbidden Zone Area
-            spriteBatch.Draw(m_blankTexture, new Rectangle(0, 0, m_guiDistanceFromSide, AnarianConsts.ScreenRectangle.Height), m_forbiddenZoneColor);
+            spriteBatch.Draw(m_blankTexture, new Rectangle(0, 0, m_guiDistanceFromSide, AnarianConsts.ScreenRectangle.Height), m_guiZoneColor);
 
             // Selected GUI Item
             switch (m_inputMode)
@@ -1505,6 +1547,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 case InputMode.CameraPan: spriteBatch.Draw(m_blankTexture, m_guiCameraPanButton.Position, Color.Black * 0.5f); break;
                 case InputMode.IssueCommand: spriteBatch.Draw(m_blankTexture, m_guiIssueCommandButton.Position, Color.Black * 0.5f); break;
             }
+
             spriteBatch.End();
 
             // Individual GUI Buttons
@@ -1512,6 +1555,7 @@ namespace EmpiresOfTheIV.Game.Menus
             m_guiSelectionButton.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
             m_guiCameraPanButton.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
             m_guiIssueCommandButton.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
+
             #endregion
 
             #region Draw Player Economy

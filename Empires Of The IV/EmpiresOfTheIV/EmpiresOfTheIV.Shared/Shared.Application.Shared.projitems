@@ -29,6 +29,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\NetworkStage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GamePausedState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\UnitID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\BuildMenuManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\BuildMenuType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\CommandRelay.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\SelectionManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\UnitPool.cs" />
@@ -235,6 +237,7 @@
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\Sound Effects\" />
     <Folder Include="$(MSBuildThisFileDirectory)Content\Songs\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Game\Menus\Popup Menus\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)Content\Fonts\EmpiresOfTheIVFont.xnb">

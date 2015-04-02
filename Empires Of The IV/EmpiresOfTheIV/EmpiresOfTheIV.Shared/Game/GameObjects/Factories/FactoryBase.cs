@@ -1,5 +1,6 @@
 ﻿using Anarian.DataStructures;
 using Anarian.Interfaces;
+using Anarian.Helpers;
 using EmpiresOfTheIV.Game.Enumerators;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -13,58 +14,73 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
     {
         
         public uint FactoryBaseID { get; private set; }
-        public uint Owner;
+        public uint PlayerID;
 
         public StaticGameObject Base;
         public Factory Factory;
+
+        public BoundingSphere Bounds;
 
         #region Properties
         public bool IsFactoryOnBase { get { return (Factory != null); } }
         #endregion
 
-        public FactoryBase(uint id)
+        public FactoryBase(uint id, BoundingSphere bounds)
             :base()
         {
             FactoryBaseID = id;
-            Owner = uint.MaxValue;
+            PlayerID = uint.MaxValue;
+
+            Bounds = bounds;
         }
 
-        public bool HasOwner()
+        public bool HasOwner
         {
-            if (Owner == uint.MaxValue) return false;
-            return true;
+            get
+            {
+                if (PlayerID == uint.MaxValue) return false;
+                return true;
+            }
         }
 
         public FactoryBaseRayIntersection CheckRayIntersection(Ray ray)
         {
-            bool factoryIntersection = false;
-            bool factoryBaseIntersection = false;
 
-            // Check the collision off of the Factory
-            if (Factory != null)
+            float? result = Bounds.Intersects(ray);
+            if (result.HasValue)
             {
-                factoryIntersection = Factory.CheckRayIntersection(ray);
-                factoryBaseIntersection = Base.CheckRayIntersection(ray);
-
-                if (factoryIntersection || factoryBaseIntersection) return FactoryBaseRayIntersection.Factory;
-                return FactoryBaseRayIntersection.None;
-            }
-                
-            // There is no factory on the base
-            // Check the collison off of the Factory Base
-            if (Base != null)
-            {
-                factoryBaseIntersection = Base.CheckRayIntersection(ray);
-                if (factoryBaseIntersection) return FactoryBaseRayIntersection.FactoryBase;
+                if (HasOwner)
+                    return FactoryBaseRayIntersection.Factory;
+                else
+                    return FactoryBaseRayIntersection.FactoryBase;
             }
 
             // No collision detected
             return FactoryBaseRayIntersection.None; 
         }
+
+        public FactoryBaseRayIntersection CheckSphereIntersection(BoundingSphere sphere)
+        {
+            bool result = Bounds.Intersects(sphere);
+            if (result)
+            {
+                if (HasOwner)
+                    return FactoryBaseRayIntersection.Factory;
+                else
+                    return FactoryBaseRayIntersection.FactoryBase;
+            }
+
+            // No collision detected
+            return FactoryBaseRayIntersection.None;
+        }
+
         public void Update(GameTime gameTime)
         {
             if (Base != null)
+            {
                 Base.Update(gameTime);
+                Bounds.Center = Base.Transform.WorldPosition;
+            }
 
             if (Factory != null)
                 Factory.Update(gameTime);
@@ -76,6 +92,8 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
 
             if (Factory != null)
                 Factory.Draw(gameTime, spriteBatch, graphics, camera);
+
+            //Bounds.RenderBoundingSphere(graphics, camera.World, camera.View, camera.Projection, Color.Red);
         }
     }
 }

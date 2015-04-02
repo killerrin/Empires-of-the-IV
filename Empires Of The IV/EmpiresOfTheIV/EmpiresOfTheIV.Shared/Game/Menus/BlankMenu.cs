@@ -22,7 +22,6 @@ namespace EmpiresOfTheIV.Game.Menus
         public BlankMenu(EmpiresOfTheIVGame game, object parameter)
             : base(game, parameter, GameState.None)
         {
-
         }
 
         public override void MenuLoaded()
