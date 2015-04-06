@@ -1040,6 +1040,8 @@ namespace EmpiresOfTheIV.Game.Menus
                     #region Run the Specific Input Code
                     if (m_inputMode == InputMode.Gesture)
                     {
+                        bool skipSelection = false;
+
                         // Do Input Which only operates when the active pointers are clicked
                         if (m_activePointerClickedEventsThisFrame.Count > 0)
                         {
@@ -1060,7 +1062,31 @@ namespace EmpiresOfTheIV.Game.Menus
                             if (m_activePointerClickedEventsThisFrame.Count == 1 ||
                                 m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
                             {
+                                var selection = m_selectionManager.GetSelection();
+                                if (selection.Width <= 25 && selection.Height <= 25)
+                                {
+                                    var centerOfSelection = selection.Center.ToVector2();
+                                    Ray ray = m_gameCamera.GetMouseRay(
+                                        centerOfSelection,
+                                        m_game.Graphics.GraphicsDevice.Viewport
+                                    );
 
+                                    FactoryBase intersectedFactoryBase = null;
+                                    var result = m_map.IntersectFactoryBase(ray, out intersectedFactoryBase);
+                                    if (result == FactoryBaseRayIntersection.FactoryBase)
+                                    {
+                                        m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildFactory);
+                                        skipSelection = true;
+                                    }
+                                    else if (result == FactoryBaseRayIntersection.Factory)
+                                    {
+                                        if (intersectedFactoryBase.PlayerID == m_me.ID)
+                                        {
+                                            m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildUnit);
+                                            skipSelection = true;
+                                        }
+                                    }
+                                }
                             }
                             #endregion
                         }
@@ -1083,15 +1109,18 @@ namespace EmpiresOfTheIV.Game.Menus
                             #endregion
 
                             #region Selection
-                            if ((m_activePointerEventsThisFrame.Count == 1 && m_activePointerEventsThisFrame[0].Pointer == PointerPress.Touch) ||
-                                m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
+                            if (!skipSelection)
                             {
-                                PointerPressedEventArgs e;
-                                if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
-                                    e = m_activePointerEventsThisFrame[0];
-                                else e = m_activePointerEventsThisFrame[0];
+                                if ((m_activePointerEventsThisFrame.Count == 1 && m_activePointerEventsThisFrame[0].Pointer == PointerPress.Touch) ||
+                                    m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
+                                {
+                                    PointerPressedEventArgs e;
+                                    if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
+                                        e = m_activePointerEventsThisFrame[0];
+                                    else e = m_activePointerEventsThisFrame[0];
 
-                                Input_Selection(e);
+                                    Input_Selection(e);
+                                }
                             }
                             #endregion
                         }
@@ -1308,24 +1337,6 @@ namespace EmpiresOfTheIV.Game.Menus
                             {
                                 item.Selected = false;
                             }
-                        }
-
-                        // If no units were selected, then we check for a factory and enable the UI if possible
-                        if (!anyUnitSelected)
-                        {
-                            var centerOfSelection = m_selectionManager.GetSelection().Center.ToVector2();
-                            Ray ray = m_gameCamera.GetMouseRay(
-                                centerOfSelection,
-                                m_game.Graphics.GraphicsDevice.Viewport
-                            );
-
-                            FactoryBase intersectedFactoryBase = null;
-                            var result = m_map.IntersectFactoryBase(ray, out intersectedFactoryBase);
-                            if (result == FactoryBaseRayIntersection.FactoryBase)
-                                m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildFactory);
-                            else if (result == FactoryBaseRayIntersection.Factory)
-                                if (intersectedFactoryBase.PlayerID == m_me.ID)
-                                    m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildUnit);
                         }
                         break;
                     #endregion
