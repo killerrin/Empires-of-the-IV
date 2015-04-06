@@ -127,9 +127,9 @@ namespace EmpiresOfTheIV.Game.Game_Tools
         {
             switch (unitID)
             {
-                case UnitID.UnanianSoldier:         return new Cost(1000.0, 1500.0, 500.0,  1.0);
-                case UnitID.UnanianMIDAF:           return new Cost(2000.0, 3500.0, 1500.0, 2.0);
-                case UnitID.UnanianSpaceFighter:    return new Cost(5000.0, 5000.0, 4500.0, 2.0);
+                case UnitID.UnanianSoldier:         return new Cost(1000.0, 2000.0, 500.0,  1.0);
+                case UnitID.UnanianMIDAF:           return new Cost(2000.0, 4000.0, 2000.0, 2.0);
+                case UnitID.UnanianSpaceFighter:    return new Cost(5000.0, 5000.0, 5000.0, 2.0);
                 case UnitID.None:
                 default: return new Cost(0.0, 0.0, 0.0, 0.0);
             }

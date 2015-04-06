@@ -9,6 +9,7 @@ using EmpiresOfTheIV.Game.Enumerators;
 using EmpiresOfTheIV.Game.GameObjects;
 using EmpiresOfTheIV.Game.GameObjects.Factories;
 using EmpiresOfTheIV.Game.Players;
+using KillerrinStudiosToolkit.Converters;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -45,6 +46,9 @@ namespace EmpiresOfTheIV.Game.Game_Tools
         AnimatedGameObject m_unit2;
         Cost m_unit2Cost;
 
+        AnimatedGameObject m_unit3;
+        Cost m_unit3Cost;
+
         Model m_factory;
         Cost m_factoryCost;
 
@@ -56,7 +60,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
         public BuildMenuManager(Color guiColor, Player me)
         {
-            SpriteFont = ResourceManager.Instance.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont") as SpriteFont;
+            SpriteFont = ResourceManager.Instance.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont Small") as SpriteFont;
             GuiColor = guiColor;
             
             m_me = me;
@@ -83,6 +87,9 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             m_unit2 = new AnimatedGameObject();
             m_unit2.CullDraw = false;
 
+            m_unit3 = new AnimatedGameObject();
+            m_unit3.CullDraw = false;
+
             switch (m_me.EmpireType)
             {
                 case EmpireType.UnanianEmpire:
@@ -92,10 +99,10 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     //m_unit1.PlayClip((ResourceManager.Instance.GetAsset(typeof(AnimatedModel), UnitID.UnanianSoldier.ToString() + "|" + ModelType.Animation.ToString()) as AnimatedModel).Clips[0]).Looping = true;
                     m_unit1Cost = GameFactory.CreateUnitCost(UnitID.UnanianSoldier);
 
-                    m_unit2.Model3D = ResourceManager.Instance.GetAsset(typeof(AnimatedModel), UnitID.UnanianSpaceFighter.ToString() + "|" + ModelType.AnimatedModel.ToString()) as AnimatedModel;
-                    m_unit2.Transform.Position = new Vector3(150, 0, -600);
-                    m_unit2.Transform.Scale = new Vector3(0.15f);
-                    m_unit2Cost = GameFactory.CreateUnitCost(UnitID.UnanianSpaceFighter);
+                    m_unit3.Model3D = ResourceManager.Instance.GetAsset(typeof(AnimatedModel), UnitID.UnanianSpaceFighter.ToString() + "|" + ModelType.AnimatedModel.ToString()) as AnimatedModel;
+                    m_unit3.Transform.Position = new Vector3(150, 25, -600);
+                    m_unit3.Transform.Scale = new Vector3(0.15f);
+                    m_unit3Cost = GameFactory.CreateUnitCost(UnitID.UnanianSpaceFighter);
 
                     m_factory = ResourceManager.Instance.GetAsset(typeof(Model), "Unanian Factory") as Model;
                     break;
@@ -178,9 +185,11 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             m_rotationMatrix = Matrix.CreateRotationY((float)gameTime.TotalGameTime.TotalSeconds);
             m_unit1.Transform.RotationMatrix = m_rotationMatrix;
             m_unit2.Transform.RotationMatrix = m_rotationMatrix;
-            
+            m_unit3.Transform.RotationMatrix = m_rotationMatrix;
+
             m_unit1.Update(gameTime);
             m_unit2.Update(gameTime);
+            m_unit3.Update(gameTime);
         }
 
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
@@ -198,14 +207,39 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             m_purchaseButton2.Draw(gameTime, spriteBatch, graphics, camera);
             m_purchaseButton3.Draw(gameTime, spriteBatch, graphics, camera);
 
-            spriteBatch.Begin();
             if (m_buildMenuType == BuildMenuType.BuildFactory)
             {
 
             }
             else if (m_buildMenuType == BuildMenuType.BuildUnit)
             {
+                DrawCost(m_unit1Cost, new Vector2(m_purchaseButton1.Position.Left - 20, m_purchaseButton1.Position.Top - 120), gameTime, spriteBatch);
+                //DrawCost(m_unit2Cost, new Vector2(m_purchaseButton2.Position.Left - 20, m_purchaseButton2.Position.Top - 120), gameTime, spriteBatch);
+                DrawCost(m_unit3Cost, new Vector2(m_purchaseButton3.Position.Left - 20, m_purchaseButton3.Position.Top - 120), gameTime, spriteBatch);
             }
+        }
+
+        public void DrawCost(Cost cost, Vector2 position, GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            int xDistanceBetweenItems = 110;
+            int yDistanceBetweenItems = 50;
+
+            int iconWidth = 40;
+            int iconHeight = 40;
+
+            spriteBatch.Begin();
+            spriteBatch.Draw(m_currencyTexture, new Rectangle((int)position.X, (int)position.Y, iconWidth, iconHeight), Color.White);
+            spriteBatch.DrawString(SpriteFont, ShorthandCurrencyConverter.ConvertToShorthand(cost.CurrencyCost), new Vector2(position.X + iconWidth, position.Y), Color.White);
+
+            spriteBatch.Draw(m_metalTexture, new Rectangle((int)position.X, (int)position.Y + yDistanceBetweenItems, iconWidth, iconHeight), Color.White);
+            spriteBatch.DrawString(SpriteFont, ShorthandCurrencyConverter.ConvertToShorthand(cost.MetalCost), new Vector2(position.X + iconWidth, position.Y + yDistanceBetweenItems), Color.White);
+
+            spriteBatch.Draw(m_unitCapTexture, new Rectangle((int)position.X + xDistanceBetweenItems, (int)position.Y + 5, iconWidth - 10, iconHeight - 10), Color.White);
+            spriteBatch.DrawString(SpriteFont, ShorthandCurrencyConverter.ConvertToShorthand(cost.UnitCost), new Vector2(position.X + xDistanceBetweenItems + iconWidth, position.Y), Color.White);
+
+            spriteBatch.Draw(m_energyTexture, new Rectangle((int)position.X + xDistanceBetweenItems, (int)position.Y + yDistanceBetweenItems, iconWidth, iconHeight), Color.White);
+            spriteBatch.DrawString(SpriteFont, ShorthandCurrencyConverter.ConvertToShorthand(cost.EnergyCost), new Vector2(position.X + xDistanceBetweenItems + iconWidth, position.Y + yDistanceBetweenItems), Color.White);
+
             spriteBatch.End();
         }
 
@@ -231,8 +265,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             {
                 m_unit1.Draw(gameTime, spriteBatch, graphics, camera);
                 m_unit2.Draw(gameTime, spriteBatch, graphics, camera);
-                //m_unit1.Draw(Matrix.CreateScale(0.50f) * m_rotationMatrix * Matrix.CreateTranslation(-75, 0, -600), Matrix.Identity, camera.Projection);
-                //m_unit2.Draw(Matrix.CreateScale(0.15f) * m_rotationMatrix * Matrix.CreateTranslation(150, 0, -600), Matrix.Identity, camera.Projection);
+                m_unit3.Draw(gameTime, spriteBatch, graphics, camera);
             }
 
             camera.View = tempView;
