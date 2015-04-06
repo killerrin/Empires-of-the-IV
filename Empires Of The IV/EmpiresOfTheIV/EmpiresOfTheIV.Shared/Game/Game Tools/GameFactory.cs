@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace EmpiresOfTheIV.Game.Game_Tools
@@ -18,7 +19,10 @@ namespace EmpiresOfTheIV.Game.Game_Tools
     {
         public static void CreateFactoryOnFactoryBase(FactoryBase factoryBase, Player owner)
         {
+            Debug.WriteLine("CreateFactoryOnFactoryBase");
+
             factoryBase.PlayerID = owner.ID;
+            factoryBase.CurrentRallyPoint = factoryBase.DefaultRallyPoint;
 
             factoryBase.Factory = new Factory();
             factoryBase.Factory.Transform.Position = factoryBase.Base.Transform.Position;
@@ -50,6 +54,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
         public static void CreateUnit(Unit unitPoolUnit, UnitID unitID, Vector3 spawnPosition)
         {
+            Debug.WriteLine("CreateUnit");
             unitPoolUnit.Reset();
 
             unitPoolUnit.UnitName = unitID;
@@ -127,6 +132,16 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                 case UnitID.UnanianSpaceFighter:    return new Cost(5000.0, 5000.0, 4500.0, 2.0);
                 case UnitID.None:
                 default: return new Cost(0.0, 0.0, 0.0, 0.0);
+            }
+        }
+        public static Cost CreateFactoryCost(EmpireType empireType)
+        {
+            switch (empireType)
+            {
+                case EmpireType.UnanianEmpire:
+                case EmpireType.CrescanianConfederation:
+                case EmpireType.TheKingdomOfEdolas:
+                default: return Cost.Zero;
             }
         }
     }

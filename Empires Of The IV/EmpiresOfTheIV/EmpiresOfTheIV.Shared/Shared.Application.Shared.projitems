@@ -30,6 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GamePausedState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\UnitID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\BuildMenuManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\BuildMenuPurchaseSlot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\BuildMenuType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\CommandRelay.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\SelectionManager.cs" />
@@ -339,6 +340,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="$(MSBuildThisFileDirectory)Content\Textures\UI\Selection UI Icon.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\UI\Purchase Button.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

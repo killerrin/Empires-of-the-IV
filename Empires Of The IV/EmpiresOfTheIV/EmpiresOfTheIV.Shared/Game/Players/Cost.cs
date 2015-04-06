@@ -20,6 +20,10 @@ namespace EmpiresOfTheIV.Game.Players
             UnitCost = unitCost;
         }
 
+        public Cost OnlyEconomyCost() { return Cost.FromEconomyCost(CurrencyCost, MetalCost, EnergyCost); }
+        public Cost OnlyUnitCost() { return Cost.FromUnitCost(UnitCost); }
+
+        public static Cost Zero { get { return new Cost(0.0, 0.0, 0.0, 0.0); } }
         public static Cost FromEconomyCost(double currencyCost, double metalCost, double energyCost) { return new Cost(currencyCost, metalCost, energyCost, 0.0); }
         public static Cost FromUnitCost(double unitCost) { return new Cost(0.0, 0.0, 0.0, unitCost); }
     }

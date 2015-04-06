@@ -28,10 +28,12 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             m_inactiveUnits.Clear();
         }
 
-        public bool SwapPool(uint unitID)
+        public bool SwapPool(uint unitID, out Unit swappedUnit)
         {
             Unit unit;
             PoolStatus poolLocation = FindUnit(unitID, out unit);
+
+            swappedUnit = unit;
 
             switch (poolLocation)
             {
@@ -47,6 +49,16 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                 default:
                     return false;
             }
+        }
+
+        public Unit FirstInactiveOfPlayer(uint playerID)
+        {
+            foreach (var unit in m_inactiveUnits)
+            {
+                if (unit.PlayerID == playerID)
+                    return unit;
+            }
+            return null;
         }
 
         #region Find

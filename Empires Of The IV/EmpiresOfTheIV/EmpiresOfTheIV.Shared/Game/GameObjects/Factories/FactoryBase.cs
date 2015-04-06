@@ -19,17 +19,23 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
         public StaticGameObject Base;
         public Factory Factory;
 
+        public Vector3 DefaultRallyPoint { get; protected set; }
+        public Vector3 CurrentRallyPoint;
+
         public BoundingSphere Bounds;
 
         #region Properties
         public bool IsFactoryOnBase { get { return (Factory != null); } }
         #endregion
 
-        public FactoryBase(uint id, BoundingSphere bounds)
+        public FactoryBase(uint id, Vector3 rallypoint, BoundingSphere bounds)
             :base()
         {
             FactoryBaseID = id;
             PlayerID = uint.MaxValue;
+
+            DefaultRallyPoint = rallypoint;
+            CurrentRallyPoint = DefaultRallyPoint;
 
             Bounds = bounds;
         }

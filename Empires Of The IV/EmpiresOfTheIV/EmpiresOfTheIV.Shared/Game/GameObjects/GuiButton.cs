@@ -11,6 +11,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
     {
         public bool Active;
         public bool Visible;
+        public bool Enabled;
 
         public Texture2D Texture { get; set; }
         public Rectangle Position { get; set; }
@@ -37,10 +38,15 @@ namespace EmpiresOfTheIV.Game.GameObjects
         {
             Active = true;
             Visible = true;
+            Enabled = true;
         }
 
         public bool Intersects(Vector2 position)
         {
+            if (!Active) return false;
+            if (!Enabled) return false;
+            if (!Visible) return false;
+
             return Position.Contains(position);
         }
 
@@ -48,6 +54,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public void Update(GameTime gameTime)
         {
             if (!Active) return;
+            if (!Enabled) return;
         }
 
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics, camera); }

@@ -127,6 +127,14 @@ namespace EmpiresOfTheIV.Game.Commands
             command.Position = positionMoveTo;
             return command;
         }
+        public static Command DemolishCommand(uint targetID, TargetType target)
+        {
+            Command command = new Command();
+            command.CommandType = CommandType.Demolish;
+            command.TargetType = target;
+            command.ID1 = targetID;
+            return command;
+        }
         #endregion
 
         #region Host Only Commands

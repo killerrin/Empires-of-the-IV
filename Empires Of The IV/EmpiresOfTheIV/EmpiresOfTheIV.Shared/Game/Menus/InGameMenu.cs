@@ -92,17 +92,18 @@ namespace EmpiresOfTheIV.Game.Menus
         ChatManager m_chatManager;
         #endregion
 
-        UniversalCamera m_gameCamera;
+        public UniversalCamera m_gameCamera;
         int m_cameraMovementScreenBuffer = 30;
         int m_guiDistanceFromSide = 0;
 
-        InputMode m_inputMode;
+        public InputMode m_inputMode;
 
-        SelectionManager m_selectionManager;
-        UnitPool m_unitPool;
-        CommandRelay m_commandRelay;
+        public SelectionManager m_selectionManager;
+        public UnitPool m_unitPool;
+        public CommandRelay m_commandRelay;
+        public BuildMenuManager m_buildMenuManager;
         
-        Map m_map;
+        public Map m_map;
         #endregion
 
         #region Constructors and Messages
@@ -126,6 +127,7 @@ namespace EmpiresOfTheIV.Game.Menus
             centerOfScreen = new Vector2(AnarianConsts.ScreenRectangle.Width / 2.0f, AnarianConsts.ScreenRectangle.Height / 2.0f);
 
             // Get basic Assets
+            m_blankTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), ResourceManager.EngineReservedAssetNames.blankTextureName) as Texture2D;
             m_empiresOfTheIVFont = m_game.ResourceManager.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont") as SpriteFont;
             m_empiresOfTheIVFontSmall = m_game.ResourceManager.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont Small") as SpriteFont;
 
@@ -222,6 +224,10 @@ namespace EmpiresOfTheIV.Game.Menus
             if (progress != null) progress.Report(new LoadingProgress(0, "Initial Setup"));
 
             m_selectionTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "SelectionBox Icon") as Texture2D;
+            m_currencyTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Currency") as Texture2D;
+            m_metalTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Metal") as Texture2D;
+            m_energyTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Energy") as Texture2D;
+            m_unitCapTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Unit Cap") as Texture2D;
 
             #region Setup GUI
             Rectangle position = new Rectangle(10, 20, 100, 100);
@@ -243,15 +249,9 @@ namespace EmpiresOfTheIV.Game.Menus
             m_guiDistanceFromSide += position.Width + (position.X * 2);
             #endregion
 
-            m_blankTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), ResourceManager.EngineReservedAssetNames.blankTextureName) as Texture2D;
-            m_currencyTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Currency") as Texture2D;
-            m_metalTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Metal") as Texture2D;
-            m_energyTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Energy") as Texture2D;
-            m_unitCapTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Unit Cap") as Texture2D;
-
             #region Setup Variables
             m_gameCamera = new UniversalCamera();
-            m_gameCamera.AspectRatio = m_game.SceneManager.CurrentScene.Camera.AspectRatio;
+            m_gameCamera.AspectRatio = UniversalCamera.Aspect169;// m_game.SceneManager.CurrentScene.Camera.AspectRatio;
             m_gameCamera.Near = 0.2f;
             m_gameCamera.Far = 1000.0f;
             m_gameCamera.Speed = 0.8f;
@@ -374,6 +374,9 @@ namespace EmpiresOfTheIV.Game.Menus
             #endregion
             #endregion
 
+            // We need the factory, so we load the BuildMenuManager Here
+            m_buildMenuManager = new BuildMenuManager(m_guiZoneColor, m_me);
+
             if (progress != null) progress.Report(new LoadingProgress(40, "Loading Map"));
 
             #region Load the Map
@@ -433,7 +436,11 @@ namespace EmpiresOfTheIV.Game.Menus
                     BoundingSphere bound = new BoundingSphere(Vector3.Zero, 11.0f);
 
                     // Factory 1
-                    factoryBases[0] = new FactoryBase(factoryBaseIDManager.GetNewID(), bound);
+                    Vector3 factory1Spawn = new Vector3(-60.0f, 0.0f, -10.0f);
+                    float f1Height = mapTerrain.GetHeightAtPoint(factory1Spawn);
+                    factory1Spawn.Y = f1Height;
+
+                    factoryBases[0] = new FactoryBase(factoryBaseIDManager.GetNewID(), factory1Spawn, bound);
                     factoryBases[0].Base = new StaticGameObject();
                     factoryBases[0].Base.Transform.Position = new Vector3(-70.0f, 0.0f, -10.0f);
                     factoryBases[0].Base.Transform.Scale = new Vector3(0.05f);
@@ -441,12 +448,16 @@ namespace EmpiresOfTheIV.Game.Menus
                     factoryBases[0].Base.Transform.CreateAllMatrices();
                     factoryBases[0].Base.Model3D = factoryBaseModel;
                     factoryBases[0].Base.Active = true;
-                    factoryBases[0].Base.CullDraw = true;
+                    factoryBases[0].Base.CullDraw = false;
                     factoryBases[0].Base.UpdateBoundsEveryFrame = false;
                     factoryBases[0].Base.RenderBounds = false;
                 
                     // Factory 2
-                    factoryBases[1] = new FactoryBase(factoryBaseIDManager.GetNewID(), bound);
+                    Vector3 factory2Spawn = new Vector3(60.0f, 0.0f, 10.0f);
+                    float f2Height = mapTerrain.GetHeightAtPoint(factory1Spawn);
+                    factory2Spawn.Y = f2Height;
+
+                    factoryBases[1] = new FactoryBase(factoryBaseIDManager.GetNewID(), factory2Spawn, bound);
                     factoryBases[1].Base = new StaticGameObject();
                     factoryBases[1].Base.Transform.Position = new Vector3(70.0f, 0.0f, 10.0f);
                     factoryBases[1].Base.Transform.Scale = new Vector3(0.05f);
@@ -454,7 +465,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     factoryBases[1].Base.Transform.CreateAllMatrices();
                     factoryBases[1].Base.Model3D = factoryBaseModel;
                     factoryBases[1].Base.Active = true;
-                    factoryBases[1].Base.CullDraw = true;
+                    factoryBases[1].Base.CullDraw = false;
                     factoryBases[1].Base.UpdateBoundsEveryFrame = false;
                     factoryBases[1].Base.RenderBounds = false;
                     #endregion
@@ -560,40 +571,7 @@ namespace EmpiresOfTheIV.Game.Menus
             for (int i = 0; i < m_unitPool.TotalUnitsInPool; i++)
             {
                 var unit = new Unit(unitIDManager.GetNewID(), UnitType.None);
-
-                if (i < 15)
-                {
-                    GameFactory.CreateUnit(unit, UnitID.UnanianSpaceFighter,
-                    new Vector3((float)m_map.FactoryBases[0].Base.Transform.WorldPosition.X,
-                                (float)0.0f,
-                                (float)m_map.FactoryBases[0].Base.Transform.WorldPosition.Z + (i * 2.5f))
-                    );
-                }
-                else if (i >= 15)
-                {
-                    GameFactory.CreateUnit(unit, UnitID.UnanianSoldier,
-                    new Vector3((float)m_map.FactoryBases[1].Base.Transform.WorldPosition.X,
-                                (float)0.0f,
-                                (float)m_map.FactoryBases[1].Base.Transform.WorldPosition.Z - (i * 1.2f))
-                    );
-                }
-
-                //GameFactory.CreateUnit(unit, UnitID.UnanianSoldier,
-                //    new Vector3((float)Consts.random.NextDouble() * 15.0f,
-                //                (float)0.0f,
-                //                (float)Consts.random.NextDouble())
-                //);
-
-                // Set it on the terrain
-                float height = m_map.Terrain.GetHeightAtPoint(unit.Transform.Position);
-                if (height != float.MaxValue)
-                {
-                    Vector3 pos = unit.Transform.Position;
-                    pos.Y = height + unit.HeightAboveTerrain;
-                    unit.Transform.Position = pos;
-                }
-
-                m_unitPool.m_activeUnits.Add(unit);
+                m_unitPool.m_inactiveUnits.Add(unit);
             }
             #endregion
 
@@ -625,7 +603,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 int minValue = (int)(player.ID * m_pageParameter.maxUnitsPerPlayer);
                 int maxValue = (int)(player.ID * m_pageParameter.maxUnitsPerPlayer + m_pageParameter.maxUnitsPerPlayer);
 
-                foreach (var unit in m_unitPool.m_activeUnits)
+                foreach (var unit in m_unitPool.m_inactiveUnits)
                 {
                     if (unit.UnitID >= minValue &&
                         unit.UnitID < maxValue)
@@ -640,7 +618,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 int minValue = (int)(player.ID * m_pageParameter.maxUnitsPerPlayer);
                 int maxValue = (int)(player.ID * m_pageParameter.maxUnitsPerPlayer + m_pageParameter.maxUnitsPerPlayer);
 
-                foreach (var unit in m_unitPool.m_activeUnits)
+                foreach (var unit in m_unitPool.m_inactiveUnits)
                 {
                     if (unit.UnitID >= minValue &&
                         unit.UnitID < maxValue)
@@ -651,7 +629,6 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             #endregion
 
-            //await Task.Delay(TimeSpan.FromSeconds(0.5));
             if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer)
                 m_pausedState = GamePausedState.Unpaused;
             else
@@ -821,6 +798,7 @@ namespace EmpiresOfTheIV.Game.Menus
         void Keyboard_KeyboardDown(object sender, Anarian.Events.KeyboardPressedEventArgs e)
         {
             if (m_pausedState != GamePausedState.Unpaused) return;
+            if (m_buildMenuManager.Active) return;
 
             switch (e.KeyClicked)
             {
@@ -866,6 +844,7 @@ namespace EmpiresOfTheIV.Game.Menus
             switch (e.KeyClicked)
             {
                 case Keys.LeftControl: Debug.WriteLine("Camera Position: {0}, \n Camera Rotation: {1}", m_gameCamera.Position, m_gameCamera.CameraRotation); break;
+                case Keys.O: m_buildMenuManager.Active = !m_buildMenuManager.Active; break;
             }
         }
         #endregion
@@ -902,171 +881,238 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             #endregion
 
-            // Since Mouse Screen-Edge movement doesn't need a specific mode, we do it here
-            #region Mouse Movement Camera Controls
-#if WINDOWS_APP
-            var previousCamY = m_gameCamera.Position.Y;
-            if (m_lastPointerMovedEventArgs.InputType == InputType.Mouse)
+            if (m_buildMenuManager.Active)
             {
-                if (!middleMouseDown)
+                #region Check Build Manager Code
+                if (m_activePointerClickedEventsThisFrame.Count > 0)
                 {
-                    var deltaPos = m_lastPointerMovedEventArgs.DeltaPosition;
+                    var pointer = m_activePointerClickedEventsThisFrame[0];
+                    bool clickOnMenu = false;
 
-                    if (m_lastPointerMovedEventArgs.Position.X <= (AnarianConsts.ScreenRectangle.X + m_cameraMovementScreenBuffer))
+                    if (pointer.Pointer == PointerPress.Touch ||
+                        pointer.Pointer == PointerPress.LeftMouseButton)
                     {
-                        m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Right);
-                    }
-                    else if (m_lastPointerMovedEventArgs.Position.X >= (AnarianConsts.ScreenRectangle.Width - m_cameraMovementScreenBuffer))
-                    {
-                        m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Right);
-                    }
+                        var purchaseSlot = m_buildMenuManager.CheckPurchaseInput(pointer);
 
-                    if (m_lastPointerMovedEventArgs.Position.Y <= (AnarianConsts.ScreenRectangle.Y + m_cameraMovementScreenBuffer))
-                    {
-                        m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Up);
-                    }
-                    else if (m_lastPointerMovedEventArgs.Position.Y >= (AnarianConsts.ScreenRectangle.Height - m_cameraMovementScreenBuffer))
-                    {
-                        m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Up);
-                    }
-
-                    var camPos = m_gameCamera.Position;
-                    camPos.Y = previousCamY;
-                    m_gameCamera.Position = camPos;
-
-                    var mouseWheelDelta = m_game.InputManager.Mouse.GetMouseWheelDelta();
-
-                    if (mouseWheelDelta > 0)
-                    {
-                        m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Forward * 2.0f);
-                    }
-                    else if (mouseWheelDelta < 0)
-                    {
-                        m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Forward * 2.0f);
-                    }
-                }
-            }
-#endif
-            #endregion
-
-            bool skipInputCode = false;
-            #region Check If Input Mode Changed
-            if (m_activePointerClickedEventsThisFrame.Count > 0)
-            {
-                var pointer = m_activePointerClickedEventsThisFrame[0];
-
-                if (m_guiGestureButton.Intersects(pointer.Position))
-                {
-                    if (m_inputMode != InputMode.Gesture)
-                    {
-                        m_inputMode = InputMode.Gesture;
-                        skipInputCode = true;
-                    }
-                }
-                else if (m_guiSelectionButton.Intersects(pointer.Position))
-                {
-                    if (m_inputMode != InputMode.Selection)
-                    {
-                        m_inputMode = InputMode.Selection;
-                        skipInputCode = true;
-                    }
-                }
-                else if (m_guiCameraPanButton.Intersects(pointer.Position))
-                {
-                    if (m_inputMode != InputMode.CameraPan)
-                    {
-                        m_inputMode = InputMode.CameraPan;
-                        skipInputCode = true;
-                    }
-                }
-                else if (m_guiIssueCommandButton.Intersects(pointer.Position))
-                {
-                    if (m_inputMode != InputMode.IssueCommand)
-                    {
-                        m_inputMode = InputMode.IssueCommand;
-                        skipInputCode = true;
-                    }
-                }
-            }
-
-            if (m_activePointerEventsThisFrame.Count > 0)
-            {
-                if (m_activePointerEventsThisFrame[0].Position.X < m_guiDistanceFromSide)
-                {
-                    skipInputCode = true;
-                }
-            }
-            #endregion
-
-            if (!skipInputCode)
-            {
-                #region Run the Specific Input Code
-                if (m_inputMode == InputMode.Gesture)
-                {
-                    // Do Input Which only operates when the active pointers are clicked
-                    if (m_activePointerClickedEventsThisFrame.Count > 0)
-                    {
-                        #region Issue Command
-                        if (m_activePointerClickedEventsThisFrame.Count == 3 ||
-                            m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
+                        if (purchaseSlot != BuildMenuPurchaseSlot.None)
                         {
-                            PointerPressedEventArgs e;
-                            if (m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
-                                e = m_activePointerClickedEventsThisFrame[0];
-                            else e = m_activePointerClickedEventsThisFrame[1];
+                            //Debug.WriteLine("We asked to purchase something");
+                            clickOnMenu = true;
 
-                            Input_IssueCommand(e);
-                        }
-                        #endregion
-                    }
+                            if (m_buildMenuManager.m_activeFactory.HasOwner)
+                            {
+                                //Debug.WriteLine("The factory has an owner");
 
-                    // Do Input which operates when the active pointers are currently down
-                    if (m_activePointerEventsThisFrame.Count > 0)
-                    {
-                        #region Pointer Down Camera Movement
-                        if (m_activePointerEventsThisFrame.Count == 2 ||
-                            m_activePointerEventsThisFrame[0].Pointer == PointerPress.MiddleMouseButton)
-                        {
-                            PointerPressedEventArgs e;
-                            if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.MiddleMouseButton)
-                                e = m_activePointerEventsThisFrame[0];
+                                var unitID = m_buildMenuManager.PurchaseSlotToUnitID(purchaseSlot);
+                                var cost = GameFactory.CreateUnitCost(unitID);
+
+                                if (m_me.Economy.SubtractCost(cost))
+                                {
+                                    //Debug.WriteLine("We could Successfully purchase the Unit");
+                                    var unit = m_unitPool.FirstInactiveOfPlayer(m_me.ID);
+
+                                    if (unit != null)
+                                        m_commandRelay.AddCommand(Command.BuildUnitCommand(unit.UnitID, unitID, m_buildMenuManager.m_activeFactory.FactoryBaseID), true);
+                                    else
+                                    {
+                                        // Something went wrong, so we refunded the cost
+                                        m_me.Economy.AddCost(cost);
+                                    }
+                                }
+                                else
+                                {
+                                    // Player couldn't afford the item
+                                }
+                            }
                             else
-                                e = m_activePointerEventsThisFrame[1];
+                            {
+                                // Build a Factory
 
-                            Input_PanCamera(e);
+                            }
                         }
-                        #endregion
-
-                        #region Selection
-                        if ((m_activePointerEventsThisFrame.Count == 1 && m_activePointerEventsThisFrame[0].Pointer == PointerPress.Touch) ||
-                            m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
-                        {
-                            PointerPressedEventArgs e;
-                            if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
-                                e = m_activePointerEventsThisFrame[0];
-                            else e = m_activePointerEventsThisFrame[0];
-
-                            Input_Selection(e);
-                        }
-                        #endregion
                     }
-                }
-                else if (m_inputMode == InputMode.Selection)
-                {
-                    if (m_activePointerEventsThisFrame.Count > 0)
-                        Input_Selection(m_activePointerEventsThisFrame[0]);
-                }
-                else if (m_inputMode == InputMode.CameraPan)
-                {
-                    if (m_activePointerEventsThisFrame.Count > 0)
-                        Input_PanCamera(m_activePointerEventsThisFrame[0]);
-                }
-                else if (m_inputMode == InputMode.IssueCommand)
-                {
-                    if (m_activePointerClickedEventsThisFrame.Count > 0)
-                        Input_IssueCommand(m_activePointerClickedEventsThisFrame[0]);
+
+                    if (!clickOnMenu)
+                        m_buildMenuManager.Disable();
                 }
                 #endregion
+            }
+            else
+            {
+                // Since Mouse Screen-Edge movement doesn't need a specific mode, we do it here
+                #region Mouse Movement Camera Controls
+#if WINDOWS_APP
+                var previousCamY = m_gameCamera.Position.Y;
+                if (m_lastPointerMovedEventArgs.InputType == InputType.Mouse)
+                {
+                    if (!middleMouseDown)
+                    {
+                        var deltaPos = m_lastPointerMovedEventArgs.DeltaPosition;
+
+                        if (m_lastPointerMovedEventArgs.Position.X <= (AnarianConsts.ScreenRectangle.X + m_cameraMovementScreenBuffer))
+                        {
+                            m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Right);
+                        }
+                        else if (m_lastPointerMovedEventArgs.Position.X >= (AnarianConsts.ScreenRectangle.Width - m_cameraMovementScreenBuffer))
+                        {
+                            m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Right);
+                        }
+
+                        if (m_lastPointerMovedEventArgs.Position.Y <= (AnarianConsts.ScreenRectangle.Y + m_cameraMovementScreenBuffer))
+                        {
+                            m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Up);
+                        }
+                        else if (m_lastPointerMovedEventArgs.Position.Y >= (AnarianConsts.ScreenRectangle.Height - m_cameraMovementScreenBuffer))
+                        {
+                            m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Up);
+                        }
+
+                        var camPos = m_gameCamera.Position;
+                        camPos.Y = previousCamY;
+                        m_gameCamera.Position = camPos;
+
+                        var mouseWheelDelta = m_game.InputManager.Mouse.GetMouseWheelDelta();
+
+                        if (mouseWheelDelta > 0)
+                        {
+                            m_gameCamera.Move(gameTime, m_gameCamera.CameraRotation.Forward * 2.0f);
+                        }
+                        else if (mouseWheelDelta < 0)
+                        {
+                            m_gameCamera.Move(gameTime, -m_gameCamera.CameraRotation.Forward * 2.0f);
+                        }
+                    }
+                }
+#endif
+                #endregion
+
+                bool skipInputCode = false;
+                #region Check If Input Mode Changed
+                if (m_activePointerClickedEventsThisFrame.Count > 0)
+                {
+                    var pointer = m_activePointerClickedEventsThisFrame[0];
+
+                    if (m_guiGestureButton.Intersects(pointer.Position))
+                    {
+                        if (m_inputMode != InputMode.Gesture)
+                        {
+                            m_inputMode = InputMode.Gesture;
+                            skipInputCode = true;
+                        }
+                    }
+                    else if (m_guiSelectionButton.Intersects(pointer.Position))
+                    {
+                        if (m_inputMode != InputMode.Selection)
+                        {
+                            m_inputMode = InputMode.Selection;
+                            skipInputCode = true;
+                        }
+                    }
+                    else if (m_guiCameraPanButton.Intersects(pointer.Position))
+                    {
+                        if (m_inputMode != InputMode.CameraPan)
+                        {
+                            m_inputMode = InputMode.CameraPan;
+                            skipInputCode = true;
+                        }
+                    }
+                    else if (m_guiIssueCommandButton.Intersects(pointer.Position))
+                    {
+                        if (m_inputMode != InputMode.IssueCommand)
+                        {
+                            m_inputMode = InputMode.IssueCommand;
+                            skipInputCode = true;
+                        }
+                    }
+                }
+
+                if (m_activePointerEventsThisFrame.Count > 0)
+                {
+                    if (m_activePointerEventsThisFrame[0].Position.X < m_guiDistanceFromSide)
+                    {
+                        skipInputCode = true;
+                    }
+                }
+                #endregion
+
+                if (!skipInputCode)
+                {
+                    #region Run the Specific Input Code
+                    if (m_inputMode == InputMode.Gesture)
+                    {
+                        // Do Input Which only operates when the active pointers are clicked
+                        if (m_activePointerClickedEventsThisFrame.Count > 0)
+                        {
+                            #region Issue Command
+                            if (m_activePointerClickedEventsThisFrame.Count == 3 ||
+                                m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
+                            {
+                                PointerPressedEventArgs e;
+                                if (m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
+                                    e = m_activePointerClickedEventsThisFrame[0];
+                                else e = m_activePointerClickedEventsThisFrame[1];
+
+                                Input_IssueCommand(e);
+                            }
+                            #endregion
+
+                            #region Select Factory Only
+                            if (m_activePointerClickedEventsThisFrame.Count == 1 ||
+                                m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
+                            {
+
+                            }
+                            #endregion
+                        }
+
+                        // Do Input which operates when the active pointers are currently down
+                        if (m_activePointerEventsThisFrame.Count > 0)
+                        {
+                            #region Pointer Down Camera Movement
+                            if (m_activePointerEventsThisFrame.Count == 2 ||
+                                m_activePointerEventsThisFrame[0].Pointer == PointerPress.MiddleMouseButton)
+                            {
+                                PointerPressedEventArgs e;
+                                if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.MiddleMouseButton)
+                                    e = m_activePointerEventsThisFrame[0];
+                                else
+                                    e = m_activePointerEventsThisFrame[1];
+
+                                Input_PanCamera(e);
+                            }
+                            #endregion
+
+                            #region Selection
+                            if ((m_activePointerEventsThisFrame.Count == 1 && m_activePointerEventsThisFrame[0].Pointer == PointerPress.Touch) ||
+                                m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
+                            {
+                                PointerPressedEventArgs e;
+                                if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
+                                    e = m_activePointerEventsThisFrame[0];
+                                else e = m_activePointerEventsThisFrame[0];
+
+                                Input_Selection(e);
+                            }
+                            #endregion
+                        }
+                    }
+                    else if (m_inputMode == InputMode.Selection)
+                    {
+                        if (m_activePointerEventsThisFrame.Count > 0)
+                            Input_Selection(m_activePointerEventsThisFrame[0]);
+                    }
+                    else if (m_inputMode == InputMode.CameraPan)
+                    {
+                        if (m_activePointerEventsThisFrame.Count > 0)
+                            Input_PanCamera(m_activePointerEventsThisFrame[0]);
+                    }
+                    else if (m_inputMode == InputMode.IssueCommand)
+                    {
+                        if (m_activePointerClickedEventsThisFrame.Count > 0)
+                            Input_IssueCommand(m_activePointerClickedEventsThisFrame[0]);
+                    }
+                    #endregion
+                }
             }
 
             // Since we are done with the touch input, we can clear the pointers
@@ -1075,7 +1121,7 @@ namespace EmpiresOfTheIV.Game.Menus
             m_gameCamera.Update(gameTime);
         }
 
-        #region Input Handlers
+        #region Standard Input Modes
         public void Input_Selection(PointerPressedEventArgs e)
         {
             // If we're not in the game anymore, we can't issue any more commands
@@ -1127,6 +1173,7 @@ namespace EmpiresOfTheIV.Game.Menus
             // If we're not in the game anymore, we can't issue any more commands
             if (!m_me.Alive) return;
 
+            // Get where we clicked in worldspace
             Ray ray = m_gameCamera.GetMouseRay(
                 e.Position,
                 m_game.Graphics.GraphicsDevice.Viewport
@@ -1141,6 +1188,11 @@ namespace EmpiresOfTheIV.Game.Menus
                 {
                     // Check if it is an Enemy Unit, and if so set the rayIntersects and
                     // issue the attack command
+                    if (m_unitPool.m_activeUnits[i].PlayerID == m_me.ID) { }
+                    else
+                    {
+                    }
+
                     rayIntersects = true;
                 }
             }
@@ -1154,7 +1206,9 @@ namespace EmpiresOfTheIV.Game.Menus
                 if (result == FactoryBaseRayIntersection.FactoryBase)
                 {
                     rayIntersects = true;
+
                     // Enable UI To Build Factory
+                    m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildFactory);
                 }
                 else if (result == FactoryBaseRayIntersection.Factory)
                 {
@@ -1162,7 +1216,8 @@ namespace EmpiresOfTheIV.Game.Menus
 
                     if (intersectedFactoryBase.PlayerID == m_me.ID)
                     {
-                        // Enable the Build UI
+                        // Enable the UI To Build Unit
+                        m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildUnit);
                     }
                     else
                     {
@@ -1179,15 +1234,18 @@ namespace EmpiresOfTheIV.Game.Menus
                 // Since we clicked on empty terrain, simply issue the Move Command for all selected units
                 if (result.HasValue)
                 {
-                    for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
+                    if (result.Value.Y < m_map.Terrain.HeightData.HighestHeight - 1)
                     {
-                        if (m_unitPool.m_activeUnits[i].Selected)
+                        for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
                         {
-                            m_commandRelay.AddCommand(Command.MoveCommand(m_unitPool.m_activeUnits[i].UnitID, result.Value), true);
+                            if (m_unitPool.m_activeUnits[i].Selected)
+                            {
+                                m_commandRelay.AddCommand(Command.MoveCommand(m_unitPool.m_activeUnits[i].UnitID, result.Value), true);
+                            }
                         }
-                    }
 
-                    rayIntersects = true;
+                        rayIntersects = true;
+                    }
                 }
             }
         }
@@ -1236,6 +1294,7 @@ namespace EmpiresOfTheIV.Game.Menus
                         m_commandRelay.Complete(command);
 
                         // Then select the Units
+                        bool anyUnitSelected = false;
                         BoundingFrustum selectionFrustrum = m_gameCamera.UnprojectRectangle(m_selectionManager.GetSelection(), m_game.GraphicsDevice.Viewport);
                         foreach (var item in m_unitPool.m_activeUnits)
                         {
@@ -1243,11 +1302,30 @@ namespace EmpiresOfTheIV.Game.Menus
                                 item.CheckFrustumIntersection(selectionFrustrum))
                             {
                                 item.Selected = true;
+                                anyUnitSelected = true;
                             }
                             else
                             {
                                 item.Selected = false;
                             }
+                        }
+
+                        // If no units were selected, then we check for a factory and enable the UI if possible
+                        if (!anyUnitSelected)
+                        {
+                            var centerOfSelection = m_selectionManager.GetSelection().Center.ToVector2();
+                            Ray ray = m_gameCamera.GetMouseRay(
+                                centerOfSelection,
+                                m_game.Graphics.GraphicsDevice.Viewport
+                            );
+
+                            FactoryBase intersectedFactoryBase = null;
+                            var result = m_map.IntersectFactoryBase(ray, out intersectedFactoryBase);
+                            if (result == FactoryBaseRayIntersection.FactoryBase)
+                                m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildFactory);
+                            else if (result == FactoryBaseRayIntersection.Factory)
+                                if (intersectedFactoryBase.PlayerID == m_me.ID)
+                                    m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildUnit);
                         }
                         break;
                     #endregion
@@ -1273,6 +1351,8 @@ namespace EmpiresOfTheIV.Game.Menus
                         }
                         break;
                     case CommandType.Attack:
+                        bool attackInRange = false;
+
                         var attackingUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
                         if (attackingUnit != null)
                         {
@@ -1300,12 +1380,29 @@ namespace EmpiresOfTheIV.Game.Menus
                             }
                         }
 
-                        m_commandRelay.Complete(command);
+                        // Since we are not in range, we can't complete this attack command
+                        if (!attackInRange)
+                        {
+                            m_commandRelay.Complete(command);
+                        }
+
                         break;
 
                     case CommandType.BuildFactory:
                         break;
                     case CommandType.BuildUnit:
+                        //Debug.WriteLine("Building Unit");
+
+                        Unit buildUnit;
+                        bool buildUnitResult = m_unitPool.SwapPool(command.ID1, out buildUnit);
+                        var buildFactory = m_map.GetFactoryBase(command.ID2);
+
+                        if (buildUnit != null)
+                        {
+                            GameFactory.CreateUnit(buildUnit, command.UnitID, buildFactory.CurrentRallyPoint);
+                        }
+
+                        m_commandRelay.Complete(command);
                         break;
                     case CommandType.SetFactoryRallyPoint:
                         break;
@@ -1380,10 +1477,11 @@ namespace EmpiresOfTheIV.Game.Menus
                             {
                                 if (killUnit.PlayerID == m_me.ID)
                                 {
-                                    m_me.Economy.AddCost(killUnit.UnitCost);
+                                    m_me.Economy.AddCost(killUnit.UnitCost.OnlyUnitCost());
                                 }
 
-                                m_unitPool.SwapPool(command.ID1);
+                                Unit u;
+                                m_unitPool.SwapPool(command.ID1, out u);
                             }
                         }
 
@@ -1406,6 +1504,9 @@ namespace EmpiresOfTheIV.Game.Menus
 
             // Set all the active units to be on the terrain then Update Them
             m_unitPool.Update(gameTime);
+
+            // Update the GUI
+            m_buildMenuManager.Update(gameTime);
 
             #region Singleplayer and Host Only Processing
             if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer)
@@ -1524,6 +1625,16 @@ namespace EmpiresOfTheIV.Game.Menus
                 return;
             }
 
+            RenderTarget2D buildMenu3DModelsRenderTarget = null;
+            if (m_buildMenuManager.Active)
+            {
+                buildMenu3DModelsRenderTarget = new RenderTarget2D(graphics, m_buildMenuManager.m_uiRectBackground.Width, m_buildMenuManager.m_uiRectBackground.Height);
+                graphics.SetRenderTarget(buildMenu3DModelsRenderTarget);
+                graphics.Clear(Color.Transparent);
+                m_buildMenuManager.Draw3DModels(gameTime, spriteBatch, graphics, m_gameCamera);
+                graphics.SetRenderTarget(null);
+            }
+
             // Draw The Map
             m_map.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
 
@@ -1556,6 +1667,17 @@ namespace EmpiresOfTheIV.Game.Menus
             m_guiCameraPanButton.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
             m_guiIssueCommandButton.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
 
+            if (m_buildMenuManager.Active)
+            {
+                m_buildMenuManager.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
+
+                spriteBatch.Begin();
+                spriteBatch.Draw((Texture2D)buildMenu3DModelsRenderTarget, m_buildMenuManager.m_uiRectBackground, Color.White);
+                spriteBatch.End();
+
+                // Now, dispose of the render target to get the memory back
+                buildMenu3DModelsRenderTarget.Dispose();
+            }
             #endregion
 
             #region Draw Player Economy

@@ -24,6 +24,7 @@ namespace EmpiresOfTheIV.Game.Commands
         SetFactoryRallyPoint,
         // Other Commands
         Cancel,
+        Demolish,
 
         //-- Host Commands
         // Attack Commands
