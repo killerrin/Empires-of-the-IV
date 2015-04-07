@@ -96,8 +96,10 @@ namespace EmpiresOfTheIV.Game.Menus
         public RenderPassMode CurrentRenderPassMode;
 
         public UniversalCamera m_gameCamera;
+
         int m_cameraMovementScreenBuffer = 30;
         int m_guiDistanceFromSide = 0;
+        float m_unitSightHeightIncrease = 0.4f;
 
         public InputMode m_inputMode;
 
@@ -1572,11 +1574,21 @@ namespace EmpiresOfTheIV.Game.Menus
             bool breakUnit1 = false;
             foreach (var unit1 in m_unitPool.m_activeUnits)
             {
+                float unitSightChangedBy = 0.0f;
+
                 bool unitFoundInRange = false;
                 foreach(var unit2 in m_unitPool.m_activeUnits)
                 {
                     if (unit1.UnitID == unit2.UnitID) continue;
                     if (unit1.PlayerID == unit2.PlayerID) continue;
+
+                    // If Our Unit is higher than the unit we are checking, then we increase our line of sight
+                    if (unit1.Transform.WorldPosition.Y > unit2.Transform.WorldPosition.Y)
+                    {
+                        var difference = unit1.Transform.WorldPosition.Y - unit2.Transform.WorldPosition.Y;
+                        unitSightChangedBy = difference * m_unitSightHeightIncrease;
+                        unit1.SightRange.Radius += unitSightChangedBy;
+                    }
 
                     if (unit2.CheckSphereIntersection(unit1.SightRange))
                     {
@@ -1585,8 +1597,12 @@ namespace EmpiresOfTheIV.Game.Menus
                         //m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, unit2.UnitID, TargetType.Unit), NetworkTrafficDirection.Outbound);
                         unit2.DamageTakenThisFrame += unit1.AttackDamage;
                         unitFoundInRange = true;
-                        break;
+                        //break;
                     }
+
+                    // Subtract the Unit Sight back to zero
+                    unit1.SightRange.Radius -= unitSightChangedBy;
+                    unitSightChangedBy = 0.0f;
 
                     if (unitFoundInRange) break;
                 }
@@ -1599,6 +1615,14 @@ namespace EmpiresOfTheIV.Game.Menus
                         if (!factory.HasOwner) continue;
                         if (unit1.PlayerID == factory.PlayerID) continue;
 
+                        // If Our Unit is higher than the factory we are checking, then we increase our line of sight
+                        if (unit1.Transform.WorldPosition.Y > factory.Factory.Transform.WorldPosition.Y)
+                        {
+                            var difference = unit1.Transform.WorldPosition.Y - factory.Factory.Transform.WorldPosition.Y;
+                            unitSightChangedBy = difference * m_unitSightHeightIncrease;
+                            unit1.SightRange.Radius += unitSightChangedBy;
+                        }
+
                         if (factory.CheckSphereIntersection(unit1.SightRange) == FactoryBaseRayIntersection.Factory)
                         {
                             // Unit Is automatically attacking Factory
@@ -1606,8 +1630,12 @@ namespace EmpiresOfTheIV.Game.Menus
                             //m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, factory.FactoryBaseID, TargetType.Factory), NetworkTrafficDirection.Outbound);
                             factory.DamageTakenThisFrame += unit1.AttackDamage;
                             factoryFoundInRange = true;
-                            break;
+                            //break;
                         }
+
+                        // Subtract the Unit Sight back to zero
+                        unit1.SightRange.Radius -= unitSightChangedBy;
+                        unitSightChangedBy = 0.0f;
 
                         if (factoryFoundInRange) break;
                     }
