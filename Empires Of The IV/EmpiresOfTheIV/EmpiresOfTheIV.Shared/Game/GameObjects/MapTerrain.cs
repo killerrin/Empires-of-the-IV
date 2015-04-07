@@ -48,6 +48,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
             if (effect is BasicEffect)
             {
                 BasicEffect e = (BasicEffect)effect;
+                //e.LightingEnabled = false;
             }
         }
     }

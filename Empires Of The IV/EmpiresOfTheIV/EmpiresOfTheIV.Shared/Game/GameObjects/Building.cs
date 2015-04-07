@@ -62,12 +62,17 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
         public virtual bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera, bool creatingShadowMap = false)
         {
-            return base.Draw(gameTime, spriteBatch, graphics, camera);;
+            bool result =  base.Draw(gameTime, spriteBatch, graphics, camera);
+            return result;
         }
 
         protected override void SetupEffects(Effect effect, GraphicsDevice graphics, ICamera camera, GameTime gameTime)
         {
             base.SetupEffects(effect, graphics, camera, gameTime);
+            if (effect is BasicEffect)
+            {
+                BasicEffect e = (BasicEffect)effect;
+            }
         }
     }
 }

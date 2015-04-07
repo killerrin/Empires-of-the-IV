@@ -164,17 +164,6 @@
 /processorParam:TextureFormat=Color
 /build:Textures/Maps/Radient Valley MiniMap.png
 
-#begin Textures/Maps/Radient Valley Texture.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:TextureFormat=Color
-/build:Textures/Maps/Radient Valley Texture.png
-
 #begin Models/Units/Spaceship/Unanian Fighter.FBX
 /importer:
 /processor:
@@ -306,4 +295,15 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:TextureFormat=Color
 /build:Textures/UI/Purchase Button.png
+
+#begin Textures/Maps/Radient Valley Texture.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:TextureFormat=Color
+/build:Textures/Maps/Radient Valley Texture.jpg
 

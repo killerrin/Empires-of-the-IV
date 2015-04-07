@@ -76,6 +76,10 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
         protected override void SetupEffects(Effect effect, GraphicsDevice graphics, ICamera camera, GameTime gameTime)
         {
             base.SetupEffects(effect, graphics, camera, gameTime);
+            if (effect is BasicEffect)
+            {
+                BasicEffect e = (BasicEffect)effect;
+            }
         }
     }
 }

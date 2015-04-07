@@ -1652,6 +1652,8 @@ namespace EmpiresOfTheIV.Game.Menus
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics); }
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
+            graphics.Clear(ClearOptions.Target | ClearOptions.DepthBuffer, Color.Black, 1.0f, 0);
+
             if (m_currentLoadingProgress.Progress < 100) { 
                 DrawLoadingMenu(gameTime, spriteBatch, graphics);
                 base.Draw(gameTime, spriteBatch, graphics); 
