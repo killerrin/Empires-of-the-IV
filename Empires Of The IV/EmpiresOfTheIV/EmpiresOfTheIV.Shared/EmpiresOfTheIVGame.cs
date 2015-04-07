@@ -48,8 +48,8 @@ namespace EmpiresOfTheIV
             Content.RootDirectory = "Content";
 
             // Disable the fixed TimeStep
-            //IsFixedTimeStep = true;
-            //TargetElapsedTime = TimeSpan.FromSeconds(1.0 / 30.0);
+            IsFixedTimeStep = true;
+            TargetElapsedTime = TimeSpan.FromSeconds(1.0 / 30.0);
 
             // Set the Current
             Current = this;
