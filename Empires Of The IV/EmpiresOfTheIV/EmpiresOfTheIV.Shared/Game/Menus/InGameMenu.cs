@@ -1195,6 +1195,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     if (m_unitPool.m_activeUnits[i].PlayerID == m_me.ID) { }
                     else
                     {
+                        
                     }
 
                     rayIntersects = true;
@@ -1431,7 +1432,14 @@ namespace EmpiresOfTheIV.Game.Menus
 
                         if (buildUnit != null)
                         {
-                            GameFactory.CreateUnit(buildUnit, command.UnitID, buildFactory.CurrentRallyPoint);
+                            if (buildFactory.Factory != null)
+                            {
+                                // Create the Unit
+                                GameFactory.CreateUnit(buildUnit, command.UnitID, buildFactory.Factory.Transform.WorldPosition);
+
+                                // Then have them move out to the Current Rally Point
+                                m_commandRelay.AddCommand(Command.MoveCommand(buildUnit.UnitID, buildFactory.CurrentRallyPoint), NetworkTrafficDirection.Outbound);
+                            }
                         }
 
                         m_commandRelay.Complete(command);
