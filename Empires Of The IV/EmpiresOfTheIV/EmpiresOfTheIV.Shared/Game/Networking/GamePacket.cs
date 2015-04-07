@@ -11,21 +11,21 @@ namespace EmpiresOfTheIV.Game.Networking
     public class GamePacket : EotIVPacket
     {
         public GamePacketID ID { get; set; }
-        public Command Command { get; set; }
+        public List<Command> Commands { get; set; }
 
 
-        public GamePacket(bool requiresAck, Command command, GamePacketID id)
+        public GamePacket(bool requiresAck, List<Command> commands, GamePacketID id)
             : base(requiresAck, PacketType.GameData)
         {
             ID = id;
-            Command = command;
+            Commands = commands;
         }
 
         public void SetFromOtherPacket(GamePacket o)
         {
             base.SetFromOtherPacket(o);
             ID = o.ID;
-            Command = o.Command;
+            Commands = o.Commands;
         }
 
         public override string ThisToJson()

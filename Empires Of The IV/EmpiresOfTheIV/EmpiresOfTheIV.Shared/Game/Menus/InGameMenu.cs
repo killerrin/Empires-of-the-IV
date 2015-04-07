@@ -32,6 +32,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using EmpiresOfTheIV.Game.GameObjects.Factories;
+using KillerrinStudiosToolkit.Enumerators;
 
 namespace EmpiresOfTheIV.Game.Menus
 {
@@ -724,8 +725,13 @@ namespace EmpiresOfTheIV.Game.Menus
 
             if (gamePacket.ID == GamePacketID.Command)
             {
-                if (gamePacket.Command != null)
-                    m_commandRelay.AddCommand(gamePacket.Command, false);
+                if (gamePacket.Commands != null)
+                {
+                    foreach (var command in gamePacket.Commands)
+                    {
+                        m_commandRelay.AddCommand(command, NetworkTrafficDirection.Inbound);
+                    }
+                }
             }
             else if (gamePacket.ID == GamePacketID.GameSync)
             {
@@ -898,44 +904,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     if (pointer.Pointer == PointerPress.Touch ||
                         pointer.Pointer == PointerPress.LeftMouseButton)
                     {
-                        var purchaseSlot = m_buildMenuManager.CheckPurchaseInput(pointer);
-
-                        if (purchaseSlot != BuildMenuPurchaseSlot.None)
-                        {
-                            //Debug.WriteLine("We asked to purchase something");
-                            clickOnMenu = true;
-
-                            if (m_buildMenuManager.m_activeFactory.HasOwner)
-                            {
-                                //Debug.WriteLine("The factory has an owner");
-
-                                var unitID = m_buildMenuManager.PurchaseSlotToUnitID(purchaseSlot);
-                                var cost = GameFactory.CreateUnitCost(unitID);
-
-                                if (m_me.Economy.SubtractCost(cost))
-                                {
-                                    //Debug.WriteLine("We could Successfully purchase the Unit");
-                                    var unit = m_unitPool.FirstInactiveOfPlayer(m_me.ID);
-
-                                    if (unit != null)
-                                        m_commandRelay.AddCommand(Command.BuildUnitCommand(unit.UnitID, unitID, m_buildMenuManager.m_activeFactory.FactoryBaseID), true);
-                                    else
-                                    {
-                                        // Something went wrong, so we refunded the cost
-                                        m_me.Economy.AddCost(cost);
-                                    }
-                                }
-                                else
-                                {
-                                    // Player couldn't afford the item
-                                }
-                            }
-                            else
-                            {
-                                // Build a Factory
-
-                            }
-                        }
+                        clickOnMenu = Input_BuildMenu(pointer);
                     }
 
                     if (!clickOnMenu)
@@ -1163,8 +1132,8 @@ namespace EmpiresOfTheIV.Game.Menus
             if (!m_me.Alive) return;
 
             if (!m_selectionManager.HasSelection)
-                m_commandRelay.AddCommand(Command.StartSelectionCommand(e.Position), false);
-            m_commandRelay.AddCommand(Command.EndSelectionCommand(e.Position), false);
+                m_commandRelay.AddCommand(Command.StartSelectionCommand(e.Position), NetworkTrafficDirection.Local);
+            m_commandRelay.AddCommand(Command.EndSelectionCommand(e.Position), NetworkTrafficDirection.Local);
         }
         public void Input_PanCamera(PointerPressedEventArgs e)
         {
@@ -1275,7 +1244,7 @@ namespace EmpiresOfTheIV.Game.Menus
                         {
                             if (m_unitPool.m_activeUnits[i].Selected)
                             {
-                                m_commandRelay.AddCommand(Command.MoveCommand(m_unitPool.m_activeUnits[i].UnitID, result.Value), true);
+                                m_commandRelay.AddCommand(Command.MoveCommand(m_unitPool.m_activeUnits[i].UnitID, result.Value), NetworkTrafficDirection.Outbound);
                             }
                         }
 
@@ -1283,6 +1252,52 @@ namespace EmpiresOfTheIV.Game.Menus
                     }
                 }
             }
+        }
+        #endregion
+
+        #region Special Input
+        public bool Input_BuildMenu(PointerPressedEventArgs e)
+        {
+            var purchaseSlot = m_buildMenuManager.CheckPurchaseInput(e);
+
+            if (purchaseSlot != BuildMenuPurchaseSlot.None)
+            {
+                //Debug.WriteLine("We asked to purchase something");
+
+                if (m_buildMenuManager.m_activeFactory.HasOwner)
+                {
+                    //Debug.WriteLine("The factory has an owner");
+
+                    var unitID = m_buildMenuManager.PurchaseSlotToUnitID(purchaseSlot);
+                    var cost = GameFactory.CreateUnitCost(unitID);
+
+                    if (m_me.Economy.SubtractCost(cost))
+                    {
+                        //Debug.WriteLine("We could Successfully purchase the Unit");
+                        var unit = m_unitPool.FirstInactiveOfPlayer(m_me.ID);
+
+                        if (unit != null)
+                            m_commandRelay.AddCommand(Command.BuildUnitCommand(unit.UnitID, unitID, m_buildMenuManager.m_activeFactory.FactoryBaseID), NetworkTrafficDirection.Outbound);
+                        else
+                        {
+                            // Something went wrong, so we refunded the cost
+                            m_me.Economy.AddCost(cost);
+                        }
+                    }
+                    else
+                    {
+                        // Player couldn't afford the item
+                    }
+                }
+                else
+                {
+                    // Build a Factory
+
+                }
+
+                return true;
+            }
+            return false;
         }
         #endregion
         #endregion
@@ -1525,15 +1540,20 @@ namespace EmpiresOfTheIV.Game.Menus
             // Update the GUI
             m_buildMenuManager.Update(gameTime);
 
+
+            UpdateGame(gameTime);
+
             #region Singleplayer and Host Only Processing
-            if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer)
-                UpdateGame(gameTime);
-            else
-            {
-                if (m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
-                    UpdateGame(gameTime);
-            }
+            //if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer)
+            //{ }
+            //else
+            //{
+            //    if (m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
+            //        UpdateGame(gameTime);
+            //}
             #endregion
+
+            m_commandRelay.AggregateAndSendCommands();
 
             //-- Update the Menu
             base.Update(gameTime);
@@ -1554,7 +1574,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     {
                         // Unit Is automatically attacking Unit
                         //Debug.WriteLine("Unit {0} is attacking Unit {1}", unit1.UnitID, unit2.UnitID);
-                        //m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, unit2.UnitID, TargetType.Unit), true);
+                        //m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, unit2.UnitID, TargetType.Unit), NetworkTrafficDirection.Outbound);
                         unit2.DamageTakenThisFrame += unit1.AttackDamage;
                         unitFoundInRange = true;
                         break;
@@ -1575,7 +1595,7 @@ namespace EmpiresOfTheIV.Game.Menus
                         {
                             // Unit Is automatically attacking Factory
                             //Debug.WriteLine("Unit {0} is attacking Factory {1}", unit1.UnitID, factory.FactoryBaseID);
-                            m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, factory.FactoryBaseID, TargetType.Factory), true);
+                            //m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, factory.FactoryBaseID, TargetType.Factory), NetworkTrafficDirection.Outbound);
                             factory.DamageTakenThisFrame += unit1.AttackDamage;
                             factoryFoundInRange = true;
                             break;
@@ -1591,12 +1611,18 @@ namespace EmpiresOfTheIV.Game.Menus
             foreach(var unit in m_unitPool.m_activeUnits)
             {
                 if (unit.Health.CurrentHealth <= 0.0f)
-                    m_commandRelay.AddCommand(Command.KillCommand(unit.UnitID, TargetType.Unit), true);
+                {
+                    if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer ||
+                        m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
+                    {
+                        m_commandRelay.AddCommand(Command.KillCommand(unit.UnitID, TargetType.Unit), NetworkTrafficDirection.Outbound);
+                    }
+                }
                 else
                 {
                     if (unit.DamageTakenThisFrame > 0.0)
                     {
-                        m_commandRelay.AddCommand(Command.DamageCommand(unit.UnitID, TargetType.Unit, unit.DamageTakenThisFrame), true);
+                        m_commandRelay.AddCommand(Command.DamageCommand(unit.UnitID, TargetType.Unit, unit.DamageTakenThisFrame), NetworkTrafficDirection.Local);
                         unit.DamageTakenThisFrame = 0.0;
                     }
                 }
@@ -1605,19 +1631,25 @@ namespace EmpiresOfTheIV.Game.Menus
             {
                 if (!factory.HasOwner) continue;
 
-                if (factory.Factory.Health.CurrentHealth <= 0.0f)
-                    m_commandRelay.AddCommand(Command.KillCommand(factory.FactoryBaseID, TargetType.Factory), true);
+                if (factory.Factory.Health.CurrentHealth <= 0.0f) {
+                    if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer ||
+                        m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
+                    {
+                        m_commandRelay.AddCommand(Command.KillCommand(factory.FactoryBaseID, TargetType.Factory), NetworkTrafficDirection.Outbound);
+                    }
+                }
                 else
                 {
                     if (factory.DamageTakenThisFrame > 0.0)
                     {
-                        m_commandRelay.AddCommand(Command.DamageCommand(factory.FactoryBaseID, TargetType.Factory, factory.DamageTakenThisFrame), true);
+                        m_commandRelay.AddCommand(Command.DamageCommand(factory.FactoryBaseID, TargetType.Factory, factory.DamageTakenThisFrame), NetworkTrafficDirection.Local);
                         factory.DamageTakenThisFrame = 0.0;
                     }
                 }
             }
         }
 
+        #region Mini Menus
         private void UpdatePaused(GameTime gameTime)
         {
             m_overlay.ApplyEffect(gameTime);
@@ -1645,8 +1677,8 @@ namespace EmpiresOfTheIV.Game.Menus
                 }
             }
         }
-   
-     #endregion
+        #endregion
+        #endregion
 
         #region Draw
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics); }
