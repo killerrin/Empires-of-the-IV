@@ -28,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\MapName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\NetworkStage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GamePausedState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\RenderPassMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\UnitID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\BuildMenuManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Game Tools\BuildMenuPurchaseSlot.cs" />
@@ -44,6 +45,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Factories\FactoryBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GUIButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Map.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\MapTerrain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Planet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Loading\LoadingProgress.cs" />

@@ -50,6 +50,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
         public float HeightAboveTerrain;
         public float AttackDamage;
+        public double DamageTakenThisFrame;
         #endregion
 
         public Unit(uint unitID, UnitType unitType)
@@ -98,6 +99,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
             AttackClip = null;
 
             HeightAboveTerrain = 0.0f;
+            DamageTakenThisFrame = 0.0;
 
             SightRange = new BoundingSphere();
 
@@ -130,15 +132,23 @@ namespace EmpiresOfTheIV.Game.GameObjects
             SightRange.Center = m_transform.WorldPosition;
         }
 
-        public override bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
+        public virtual bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera, bool creatingShadowMap = false)
         {
             bool result = base.Draw(gameTime, spriteBatch, graphics, camera);
 
             if (!result) return false;
-            if (m_model == null) return false;
 
             // Render the Attack Range
             //SightRange.RenderBoundingSphere(graphics, Matrix.Identity, camera.View, camera.Projection, Color.Red);
+            
+            if (!creatingShadowMap)
+                return DrawHealth(gameTime, spriteBatch, graphics, camera);
+            return true;
+        }
+
+        public bool DrawHealth(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
+        {
+            if (m_model == null) return false;
 
             #region Draw the Health
             Vector3 screenPos3D = graphics.Viewport.Project(m_transform.WorldPosition, camera.Projection, camera.View, camera.World);
@@ -158,6 +168,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
             spriteBatch.Draw(blankTexture, healthRect, Color.Red);
             spriteBatch.End();
             #endregion
+
             return true;
         }
 

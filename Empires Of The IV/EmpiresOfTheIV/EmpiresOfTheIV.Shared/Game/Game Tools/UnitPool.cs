@@ -138,11 +138,11 @@ namespace EmpiresOfTheIV.Game.Game_Tools
         }
 
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera, bool creatingShadowMap = false)
         {
             foreach (var unit in m_activeUnits)
             {
-                unit.Draw(gameTime, spriteBatch, graphics, camera);
+                unit.Draw(gameTime, spriteBatch, graphics, camera, creatingShadowMap);
             }
         }
     }

@@ -13,11 +13,13 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 	public class CommandRelay
 	{
 		public ThreadSafeList<Command> m_commands;
+		public List<Command> m_commandsSentThisFrame;
 		Command m_previouslyAddedCommand;
 
 		public CommandRelay()
 		{
 			m_commands = new ThreadSafeList<Command>();
+			m_commandsSentThisFrame = new List<Command>();
 			m_previouslyAddedCommand = null;
 		}
 
@@ -27,14 +29,13 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 				return;
 			
 			// Propogate Commands accross Network
-			if (Consts.Game.NetworkManager.IsConnected)
+			// if (Consts.Game.NetworkManager.IsConnected)
+			if (sendOverNetwork)
 			{
-				if (sendOverNetwork)
-				{
-					GamePacket gp = new GamePacket(true, c, GamePacketID.Command);
-					Consts.Game.NetworkManager.SendMessage(gp.ThisToJson());
-				}
+				GamePacket gp = new GamePacket(true, c, GamePacketID.Command);
+				Consts.Game.NetworkManager.SendMessage(gp.ThisToJson());
 			}
+			
 
 			// If the command is a move command, we check to see if our command relay
 			// has other movement commands for that unit. If it does, we remove them
@@ -53,42 +54,42 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 		}
 
 		#region Remove
-        public void RemoveFirstInstanceOf(CommandType commandType, uint id, TargetType targetType = TargetType.None)
-        {
-            List<Command> commandsClone = m_commands.Clone();
-            foreach (var command in commandsClone)
-            {
-                if (command.CommandType == commandType &&
-                    command.ID1 == id)
-                {
-                    if (targetType == TargetType.None) { Complete(command); return; }
-                    else
-                    {
-                        if (command.TargetType == targetType)
-                        {
-                            Complete(command);
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-         
+		public void RemoveFirstInstanceOf(CommandType commandType, uint id, TargetType targetType = TargetType.None)
+		{
+			List<Command> commandsClone = m_commands.Clone();
+			foreach (var command in commandsClone)
+			{
+				if (command.CommandType == commandType &&
+					command.ID1 == id)
+				{
+					if (targetType == TargetType.None) { Complete(command); return; }
+					else
+					{
+						if (command.TargetType == targetType)
+						{
+							Complete(command);
+							return;
+						}
+					}
+				}
+			}
+		}
+		 
 		public void RemoveAllOfRequirements(CommandType commandType, uint id, TargetType targetType = TargetType.None)
 		{
 			List<Command> commandsClone = m_commands.Clone();
 			foreach (var command in commandsClone)
 			{
-                if (command.CommandType == commandType &&
-                    command.ID1 == id)
-                {
-                    if (targetType == TargetType.None) { Complete(command); }
-                    else
-                    {
-                        if (command.TargetType == targetType)
-                            Complete(command);
-                    }
-                }
+				if (command.CommandType == commandType &&
+					command.ID1 == id)
+				{
+					if (targetType == TargetType.None) { Complete(command); }
+					else
+					{
+						if (command.TargetType == targetType)
+							Complete(command);
+					}
+				}
 			}
 		}
 

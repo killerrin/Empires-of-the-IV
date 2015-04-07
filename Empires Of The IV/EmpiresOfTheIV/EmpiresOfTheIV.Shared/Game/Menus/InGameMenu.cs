@@ -92,6 +92,8 @@ namespace EmpiresOfTheIV.Game.Menus
         ChatManager m_chatManager;
         #endregion
 
+        public RenderPassMode CurrentRenderPassMode;
+
         public UniversalCamera m_gameCamera;
         int m_cameraMovementScreenBuffer = 30;
         int m_guiDistanceFromSide = 0;
@@ -116,6 +118,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
             m_pausedState = GamePausedState.WaitingForData;
             m_inputMode = InputMode.Gesture;
+            CurrentRenderPassMode = RenderPassMode.None;
 
             m_currentLoadingProgress = new LoadingProgress(0, "");
             m_loadingProgress = new Progress<LoadingProgress>();
@@ -214,7 +217,9 @@ namespace EmpiresOfTheIV.Game.Menus
         private void StateManager_OnBackButtonPressed(object sender, EventArgs e)
         {
             if (m_currentLoadingProgress.Progress < 100) { return; }
-            return;
+
+            if (m_buildMenuManager.Active)
+                m_buildMenuManager.Disable();
         }
         #endregion
 
@@ -256,9 +261,9 @@ namespace EmpiresOfTheIV.Game.Menus
             m_gameCamera.Far = 1000.0f;
             m_gameCamera.Speed = 0.8f;
 
-            // Since Phone has a smaller screen and a lower TouchScreen input frequency, we double the speed
-            if (KillerrinStudiosToolkit.KillerrinApplicationData.OSType == KillerrinStudiosToolkit.Enumerators.ClientOSType.WindowsPhone81)
-                m_gameCamera.Speed *= 2;
+            //// Since Phone has a smaller screen and a lower TouchScreen input frequency, we double the speed
+            //if (KillerrinStudiosToolkit.KillerrinApplicationData.OSType == KillerrinStudiosToolkit.Enumerators.ClientOSType.WindowsPhone81)
+            //    m_gameCamera.Speed *= 2;
 
             //Camera Position: {X:4.199995 Y:55.02913 Z:15.78831}, 
             m_gameCamera.DefaultCameraPosition = new Vector3(4.20f, 50.03f, 15.79f);
@@ -383,7 +388,7 @@ namespace EmpiresOfTheIV.Game.Menus
             Texture2D heightMap = null;
             Texture2D mapTexture = null;
             Texture2D mapParallax = null;
-            Terrain mapTerrain = null;
+            MapTerrain mapTerrain = null;
 
             Model factoryBaseModel = null;
             FactoryBase[] factoryBases;
@@ -399,7 +404,7 @@ namespace EmpiresOfTheIV.Game.Menus
                         mapTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Valley Texture") as Texture2D;
                         mapParallax = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Radient Valley Parallax") as Texture2D;
 
-                        mapTerrain = m_game.PrefabManager.GetPrefab("Radient Valley Terrain") as Terrain;
+                        mapTerrain = m_game.PrefabManager.GetPrefab("Radient Valley Terrain") as MapTerrain;
 
                         factoryBaseModel = m_game.ResourceManager.GetAsset(typeof(Model), "Radient Valley FactoryBase") as Model;
                     }
@@ -410,8 +415,8 @@ namespace EmpiresOfTheIV.Game.Menus
                         heightMap = m_game.ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Maps/Radient Valley HeightMap") as Texture2D;
                         mapTexture = m_game.ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Maps/Radient Valley Texture") as Texture2D;
                         mapParallax = Color.Black.CreateTextureFromSolidColor(graphics, 1, 1); m_game.ResourceManager.AddAsset(mapParallax, "Radient Valley Parallax");
-                        
-                        mapTerrain = new Terrain(graphics, heightMap, mapTexture);
+
+                        mapTerrain = new MapTerrain(graphics, heightMap, mapTexture);
                         m_game.PrefabManager.AddPrefab(mapTerrain, "Radient Valley Terrain");
 
                         factoryBaseModel = m_game.ResourceManager.LoadAsset(Content, typeof(Model), "Models/Factories/Factory Base", "Radient Valley FactoryBase") as Model;
@@ -441,7 +446,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     factory1Spawn.Y = f1Height;
 
                     factoryBases[0] = new FactoryBase(factoryBaseIDManager.GetNewID(), factory1Spawn, bound);
-                    factoryBases[0].Base = new StaticGameObject();
+                    factoryBases[0].Base = new Building();
                     factoryBases[0].Base.Transform.Position = new Vector3(-70.0f, 0.0f, -10.0f);
                     factoryBases[0].Base.Transform.Scale = new Vector3(0.05f);
                     factoryBases[0].Base.Transform.Rotation = Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(-90.0f), 0.0f, 0.0f);
@@ -458,7 +463,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     factory2Spawn.Y = f2Height;
 
                     factoryBases[1] = new FactoryBase(factoryBaseIDManager.GetNewID(), factory2Spawn, bound);
-                    factoryBases[1].Base = new StaticGameObject();
+                    factoryBases[1].Base = new Building();
                     factoryBases[1].Base.Transform.Position = new Vector3(70.0f, 0.0f, 10.0f);
                     factoryBases[1].Base.Transform.Scale = new Vector3(0.05f);
                     factoryBases[1].Base.Transform.Rotation = Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(90.0f), 0.0f, 0.0f);
@@ -470,6 +475,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     factoryBases[1].Base.RenderBounds = false;
                     #endregion
                     
+                    #region Other
                     // Make the map
                     m_map = new Map(MapName.RadientValley, mapParallax, mapTerrain, factoryBases);
                     m_map.AddAvailableUnitType(UnitType.Soldier, UnitType.Vehicle, UnitType.Ship, UnitType.Air, UnitType.Space);
@@ -516,7 +522,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     // MathHelper.Clamp(gameCameraPosition.Y, 30.0f, 56.0f);
                     m_gameCamera.MinClamp = new Vector3(-92.60f, m_gameCamera.DefaultCameraPosition.Y - 10, -18.35f);
                     m_gameCamera.MaxClamp = new Vector3(85.80f, m_gameCamera.DefaultCameraPosition.Y + 10,  36.74f);
-
+                    #endregion
                     break;
                 #endregion
 
@@ -529,7 +535,7 @@ namespace EmpiresOfTheIV.Game.Menus
                         mapTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Kalia Texture") as Texture2D;
                         mapParallax = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Kalia Parallax") as Texture2D;
 
-                        mapTerrain = mapTerrain = m_game.PrefabManager.GetPrefab("Kalia Terrain") as Terrain;
+                        mapTerrain = mapTerrain = m_game.PrefabManager.GetPrefab("Kalia Terrain") as MapTerrain;
 
                         factoryBaseModel = m_game.ResourceManager.GetAsset(typeof(Model), "Kalia FactoryBase") as Model;
                     }
@@ -540,7 +546,7 @@ namespace EmpiresOfTheIV.Game.Menus
                         mapTexture = Color.Black.CreateTextureFromSolidColor(graphics, 1, 1);  m_game.ResourceManager.AddAsset(mapParallax, "Kalia Texture");
                         mapParallax = Color.Black.CreateTextureFromSolidColor(graphics, 1, 1); m_game.ResourceManager.AddAsset(mapParallax, "Kalia Parallax");
                         
-                        mapTerrain = Terrain.CreateFlatTerrain(graphics, 256, 256, mapTexture);
+                        mapTerrain = MapTerrain.CreateFlatTerrain(graphics, 256, 256, mapTexture);
                         heightMap = mapTerrain.HeightData.HeightMap; m_game.ResourceManager.AddAsset(mapParallax, "Kalia HeightMap");
 
                         m_game.PrefabManager.AddPrefab(mapTerrain, "Kalia Terrain");
@@ -713,7 +719,7 @@ namespace EmpiresOfTheIV.Game.Menus
         }
         void NetworkManager_OnGamePacketRecieved(object sender, EotIVPacketRecievedEventArgs e)
         {
-            Debug.WriteLine("System Packet Recieved");
+            Debug.WriteLine("Game Packet Recieved");
             GamePacket gamePacket = e.Packet as GamePacket;
 
             if (gamePacket.ID == GamePacketID.Command)
@@ -844,7 +850,7 @@ namespace EmpiresOfTheIV.Game.Menus
             switch (e.KeyClicked)
             {
                 case Keys.LeftControl: Debug.WriteLine("Camera Position: {0}, \n Camera Rotation: {1}", m_gameCamera.Position, m_gameCamera.CameraRotation); break;
-                case Keys.O: m_buildMenuManager.Active = !m_buildMenuManager.Active; break;
+                //case Keys.O: m_buildMenuManager.Active = !m_buildMenuManager.Active; break;
             }
         }
         #endregion
@@ -1548,8 +1554,8 @@ namespace EmpiresOfTheIV.Game.Menus
                     {
                         // Unit Is automatically attacking Unit
                         //Debug.WriteLine("Unit {0} is attacking Unit {1}", unit1.UnitID, unit2.UnitID);
-                        m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, unit2.UnitID, TargetType.Unit), true);
-                        m_commandRelay.AddCommand(Command.DamageCommand(unit2.UnitID, TargetType.Unit, unit1.AttackDamage), true);
+                        //m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, unit2.UnitID, TargetType.Unit), true);
+                        unit2.DamageTakenThisFrame += unit1.AttackDamage;
                         unitFoundInRange = true;
                         break;
                     }
@@ -1570,7 +1576,7 @@ namespace EmpiresOfTheIV.Game.Menus
                             // Unit Is automatically attacking Factory
                             //Debug.WriteLine("Unit {0} is attacking Factory {1}", unit1.UnitID, factory.FactoryBaseID);
                             m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, factory.FactoryBaseID, TargetType.Factory), true);
-                            m_commandRelay.AddCommand(Command.DamageCommand(factory.FactoryBaseID, TargetType.Factory, unit1.AttackDamage), true);
+                            factory.DamageTakenThisFrame += unit1.AttackDamage;
                             factoryFoundInRange = true;
                             break;
                         }
@@ -1586,6 +1592,14 @@ namespace EmpiresOfTheIV.Game.Menus
             {
                 if (unit.Health.CurrentHealth <= 0.0f)
                     m_commandRelay.AddCommand(Command.KillCommand(unit.UnitID, TargetType.Unit), true);
+                else
+                {
+                    if (unit.DamageTakenThisFrame > 0.0)
+                    {
+                        m_commandRelay.AddCommand(Command.DamageCommand(unit.UnitID, TargetType.Unit, unit.DamageTakenThisFrame), true);
+                        unit.DamageTakenThisFrame = 0.0;
+                    }
+                }
             }
             foreach (var factory in m_map.FactoryBases)
             {
@@ -1593,6 +1607,14 @@ namespace EmpiresOfTheIV.Game.Menus
 
                 if (factory.Factory.Health.CurrentHealth <= 0.0f)
                     m_commandRelay.AddCommand(Command.KillCommand(factory.FactoryBaseID, TargetType.Factory), true);
+                else
+                {
+                    if (factory.DamageTakenThisFrame > 0.0)
+                    {
+                        m_commandRelay.AddCommand(Command.DamageCommand(factory.FactoryBaseID, TargetType.Factory, factory.DamageTakenThisFrame), true);
+                        factory.DamageTakenThisFrame = 0.0;
+                    }
+                }
             }
         }
 
@@ -1636,6 +1658,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 return;
             }
 
+            #region BuildMenu Render Target
             RenderTarget2D buildMenu3DModelsRenderTarget = null;
             if (m_buildMenuManager.Active)
             {
@@ -1645,19 +1668,37 @@ namespace EmpiresOfTheIV.Game.Menus
                 m_buildMenuManager.Draw3DModels(gameTime, spriteBatch, graphics, m_gameCamera);
                 graphics.SetRenderTarget(null);
             }
+            #endregion
 
+            DrawScene(gameTime, spriteBatch, graphics, false);
+            DrawGUI(gameTime, spriteBatch, graphics, ref buildMenu3DModelsRenderTarget, false);
+
+            switch (m_pausedState)
+            {
+                case GamePausedState.Paused:            DrawPaused(gameTime, spriteBatch, graphics);           break;                             
+                case GamePausedState.WaitingForData:    DrawWaitingForData(gameTime, spriteBatch, graphics);   break;
+            }
+
+            base.Draw(gameTime, spriteBatch, graphics);
+        }
+
+        public bool DrawScene(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, bool creatingShadowMap)
+        {
             // Draw The Map
-            m_map.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
+            m_map.Draw(gameTime, spriteBatch, graphics, m_gameCamera, creatingShadowMap);
 
             // Draw the Units
-            m_unitPool.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
+            m_unitPool.Draw(gameTime, spriteBatch, graphics, m_gameCamera, creatingShadowMap);
 
+            return true;
+        }
+
+        public bool DrawGUI(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ref RenderTarget2D buildMenu3DModelsRenderTarget, bool creatingShadowMap)
+        {
             // Draw SelectionBox
             m_selectionManager.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
 
-            #region Draw the GUI
             spriteBatch.Begin();
-
             // Input Forbidden Zone Area
             spriteBatch.Draw(m_blankTexture, new Rectangle(0, 0, m_guiDistanceFromSide, AnarianConsts.ScreenRectangle.Height), m_guiZoneColor);
 
@@ -1689,9 +1730,8 @@ namespace EmpiresOfTheIV.Game.Menus
                 // Now, dispose of the render target to get the memory back
                 buildMenu3DModelsRenderTarget.Dispose();
             }
-            #endregion
 
-            #region Draw Player Economy
+            #region Player Economy
             {
                 int distanceBetweenElements = 160;
                 int xOffset = (AnarianConsts.ScreenRectangle.Width) - distanceBetweenElements;
@@ -1716,15 +1756,10 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             #endregion
 
-            switch (m_pausedState)
-            {
-                case GamePausedState.Paused:            DrawPaused(gameTime, spriteBatch, graphics);           break;                             
-                case GamePausedState.WaitingForData:    DrawWaitingForData(gameTime, spriteBatch, graphics);   break;
-            }
-
-            base.Draw(gameTime, spriteBatch, graphics);
+            return true;
         }
 
+        #region Mini Menus
         public void DrawLoadingMenu(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics)
         {
             //graphics.Clear(Color.Black);
@@ -1789,6 +1824,7 @@ namespace EmpiresOfTheIV.Game.Menus
             spriteBatch.DrawString(m_empiresOfTheIVFont, "Waiting for Data", new Vector2(centerOfScreen.X - (waitingTextSize.X * 0.3f), AnarianConsts.ScreenRectangle.Height * 0.15f), Color.Wheat);
             spriteBatch.End();
         }
+        #endregion
         #endregion
     }
 }

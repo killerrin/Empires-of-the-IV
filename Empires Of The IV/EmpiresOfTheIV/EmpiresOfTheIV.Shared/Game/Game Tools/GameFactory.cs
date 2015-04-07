@@ -23,6 +23,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
             factoryBase.PlayerID = owner.ID;
             factoryBase.CurrentRallyPoint = factoryBase.DefaultRallyPoint;
+            factoryBase.DamageTakenThisFrame = 0.0;
 
             factoryBase.Factory = new Factory();
             factoryBase.Factory.Transform.Position = factoryBase.Base.Transform.Position;
@@ -92,7 +93,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     unitPoolUnit.UnitType = UnitType.Soldier;
 
                     unitPoolUnit.HeightAboveTerrain = 0.0f;
-                    unitPoolUnit.AttackDamage = 0.15f;
+                    unitPoolUnit.AttackDamage = 0.100f;
                     unitPoolUnit.Health.MaxHealth = 100.0f;
 
                     unitPoolUnit.Transform.MovementSpeed = 0.005f;
@@ -104,7 +105,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     unitPoolUnit.UnitType = UnitType.Space;
 
                     unitPoolUnit.HeightAboveTerrain = 10.0f;
-                    unitPoolUnit.AttackDamage = 0.5f;
+                    unitPoolUnit.AttackDamage = 0.200f;
                     unitPoolUnit.Health.MaxHealth = 100.0f;
 
                     unitPoolUnit.Transform.MovementSpeed = 0.006f;
@@ -118,9 +119,6 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
             unitPoolUnit.Transform.Position = spawnPosition;
             unitPoolUnit.Transform.CreateAllMatrices();
-
-            unitPoolUnit.Health.Reset();
-            unitPoolUnit.Mana.Reset();
         }
 
         public static Cost CreateUnitCost(UnitID unitID)

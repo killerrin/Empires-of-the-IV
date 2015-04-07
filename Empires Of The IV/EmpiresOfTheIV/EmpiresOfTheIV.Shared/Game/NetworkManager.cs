@@ -221,6 +221,7 @@ namespace EmpiresOfTheIV.Game
         public void SendMessage(string message)
         {
             if (NetworkType == NetworkType.None) return;
+            if (!IsConnected) return;
 
             if (NetworkType == NetworkType.LAN)
             {

@@ -12,19 +12,20 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
 {
     public class FactoryBase : AnarianObject, IUpdatable, IRenderable
     {
-        
+
+        #region Fields/Properties
         public uint FactoryBaseID { get; private set; }
         public uint PlayerID;
 
-        public StaticGameObject Base;
+        public Building Base;
         public Factory Factory;
 
         public Vector3 DefaultRallyPoint { get; protected set; }
         public Vector3 CurrentRallyPoint;
 
+        public double DamageTakenThisFrame;
         public BoundingSphere Bounds;
 
-        #region Properties
         public bool IsFactoryOnBase { get { return (Factory != null); } }
         #endregion
 
@@ -80,6 +81,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
             return FactoryBaseRayIntersection.None;
         }
 
+        void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         public void Update(GameTime gameTime)
         {
             if (Base != null)
@@ -91,13 +93,14 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
             if (Factory != null)
                 Factory.Update(gameTime);
         }
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
+        void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics, camera, false); }
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera, bool creatingShadowMap = false)
         {
             if (Base != null)
-                Base.Draw(gameTime, spriteBatch, graphics, camera);
+                Base.Draw(gameTime, spriteBatch, graphics, camera, creatingShadowMap);
 
             if (Factory != null)
-                Factory.Draw(gameTime, spriteBatch, graphics, camera);
+                Factory.Draw(gameTime, spriteBatch, graphics, camera, creatingShadowMap);
 
             //Bounds.RenderBoundingSphere(graphics, camera.World, camera.View, camera.Projection, Color.Red);
         }

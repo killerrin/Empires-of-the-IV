@@ -19,12 +19,12 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public Vector2 Size { get { return new Vector2(Terrain.HeightData.TerrainWidth, Terrain.HeightData.TerrainHeight); } }
 
         public Texture2D BackgroundImage;
-        public Terrain Terrain;
+        public MapTerrain Terrain;
         public List<FactoryBase> FactoryBases;
 
         public List<UnitType> AvailableUnitTypes { get; protected set; }
 
-        public Map(MapName mapName, Texture2D backgroundImage, Terrain terrain, params FactoryBase[] bases)
+        public Map(MapName mapName, Texture2D backgroundImage, MapTerrain terrain, params FactoryBase[] bases)
             :base()
         {
             Name = mapName;
@@ -104,9 +104,10 @@ namespace EmpiresOfTheIV.Game.GameObjects
                 i.Update(gameTime);
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera, bool creatingShadowMap = false)
         {
-            if (BackgroundImage != null)
+            if (BackgroundImage != null &&
+                !creatingShadowMap)
             {
                 try
                 {
@@ -117,9 +118,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
                 catch (Exception) { }
             }
 
-            Terrain.Draw(gameTime, spriteBatch, graphics, camera);
+            Terrain.Draw(gameTime, spriteBatch, graphics, camera, creatingShadowMap);
             foreach (var i in FactoryBases)
-                i.Draw(gameTime, spriteBatch, graphics, camera);
+                i.Draw(gameTime, spriteBatch, graphics, camera, creatingShadowMap);
         }
         #endregion
     }
