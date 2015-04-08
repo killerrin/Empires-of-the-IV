@@ -16,6 +16,25 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
         public Rectangle PreviousSelection;
 
+
+        public Point MinimumWidthHeightToIssueCommand;
+        public Rectangle MinimumSelection
+        {
+            get
+            {
+                if (StartingPosition.HasValue)
+                {
+                    return new Rectangle((int)(StartingPosition.Value.X) - MinimumWidthHeightToIssueCommand.X,
+                                         (int)(StartingPosition.Value.Y) - MinimumWidthHeightToIssueCommand.Y,
+                                         MinimumWidthHeightToIssueCommand.X * 2,
+                                         MinimumWidthHeightToIssueCommand.Y * 2);
+                }
+
+                return Rectangle.Empty;
+            }
+        }
+
+
         public bool HasSelection
         {
             get { return (StartingPosition.HasValue && EndingPosition.HasValue); }
@@ -24,6 +43,8 @@ namespace EmpiresOfTheIV.Game.Game_Tools
         public SelectionManager()
         {
             SelectionTexture = null;
+            MinimumWidthHeightToIssueCommand = new Point(25, 25);
+
             Deselect();
         }
 

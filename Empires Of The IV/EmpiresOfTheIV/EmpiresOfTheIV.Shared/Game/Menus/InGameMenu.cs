@@ -1023,45 +1023,21 @@ namespace EmpiresOfTheIV.Game.Menus
                         if (m_activePointerClickedEventsThisFrame.Count > 0)
                         {
                             #region Issue Command
-                            if (m_activePointerClickedEventsThisFrame.Count == 3 ||
+                            if ((m_activePointerClickedEventsThisFrame.Count == 1 && m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.Touch) ||
                                 m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
                             {
                                 PointerPressedEventArgs e;
+                                e = m_activePointerClickedEventsThisFrame[0];
+
                                 if (m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
-                                    e = m_activePointerClickedEventsThisFrame[0];
-                                else e = m_activePointerClickedEventsThisFrame[1];
-
-                                Input_IssueCommand(e);
-                            }
-                            #endregion
-
-                            #region Select Factory Only
-                            if (m_activePointerClickedEventsThisFrame.Count == 1 ||
-                                m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
-                            {
-                                var selection = m_selectionManager.GetSelection();
-                                if (selection.Width <= 25 && selection.Height <= 25)
                                 {
-                                    var centerOfSelection = selection.Center.ToVector2();
-                                    Ray ray = m_gameCamera.GetMouseRay(
-                                        centerOfSelection,
-                                        m_game.Graphics.GraphicsDevice.Viewport
-                                    );
-
-                                    FactoryBase intersectedFactoryBase = null;
-                                    var result = m_map.IntersectFactoryBase(ray, out intersectedFactoryBase);
-                                    if (result == FactoryBaseRayIntersection.FactoryBase)
+                                    skipSelection = Input_IssueCommand(e);
+                                }
+                                else
+                                {
+                                    if (m_selectionManager.MinimumSelection.Contains(e.Position))
                                     {
-                                        m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildFactory);
-                                        skipSelection = true;
-                                    }
-                                    else if (result == FactoryBaseRayIntersection.Factory)
-                                    {
-                                        if (intersectedFactoryBase.PlayerID == m_me.ID)
-                                        {
-                                            m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildUnit);
-                                            skipSelection = true;
-                                        }
+                                        skipSelection = Input_IssueCommand(e);
                                     }
                                 }
                             }
@@ -1115,7 +1091,10 @@ namespace EmpiresOfTheIV.Game.Menus
                     else if (m_inputMode == InputMode.IssueCommand)
                     {
                         if (m_activePointerClickedEventsThisFrame.Count > 0)
+                        {
                             Input_IssueCommand(m_activePointerClickedEventsThisFrame[0]);
+                            m_inputMode = InputMode.Gesture;
+                        }
                     }
                     #endregion
                 }
@@ -1128,16 +1107,18 @@ namespace EmpiresOfTheIV.Game.Menus
         }
 
         #region Standard Input Modes
-        public void Input_Selection(PointerPressedEventArgs e)
+        public bool Input_Selection(PointerPressedEventArgs e)
         {
             // If we're not in the game anymore, we can't issue any more commands
-            if (!m_me.Alive) return;
+            if (!m_me.Alive) return false;
 
             if (!m_selectionManager.HasSelection)
                 m_commandRelay.AddCommand(Command.StartSelectionCommand(e.Position), NetworkTrafficDirection.Local);
             m_commandRelay.AddCommand(Command.EndSelectionCommand(e.Position), NetworkTrafficDirection.Local);
+
+            return true;
         }
-        public void Input_PanCamera(PointerPressedEventArgs e)
+        public bool Input_PanCamera(PointerPressedEventArgs e)
         {
             bool inverseX = true;
             bool inverseY = true;
@@ -1173,11 +1154,13 @@ namespace EmpiresOfTheIV.Game.Menus
                 else yAccel = -m_gameCamera.CameraRotation.Up;
                 m_gameCamera.Move(e.GameTime, yAccel);
             }
+
+            return true;
         }
-        public void Input_IssueCommand(PointerPressedEventArgs e)
+        public bool Input_IssueCommand(PointerPressedEventArgs e)
         {
             // If we're not in the game anymore, we can't issue any more commands
-            if (!m_me.Alive) return;
+            if (!m_me.Alive) return false;
 
             // Get where we clicked in worldspace
             Ray ray = m_gameCamera.GetMouseRay(
@@ -1192,15 +1175,24 @@ namespace EmpiresOfTheIV.Game.Menus
             {
                 if (m_unitPool.m_activeUnits[i].CheckRayIntersection(ray))
                 {
+                    rayIntersects = true;
+
+                    if (m_unitPool.m_activeUnits[i].PlayerID == m_me.ID) 
+                    {
+                        // Single Unit Selection
+                        if (!m_unitPool.m_activeUnits[i].Selected)
+                        {
+                            m_unitPool.m_activeUnits[i].Selected = true;
+                            break;
+                        }
+                        else { continue; }
+                    }
                     // Check if it is an Enemy Unit, and if so set the rayIntersects and
                     // issue the attack command
-                    if (m_unitPool.m_activeUnits[i].PlayerID == m_me.ID) { }
                     else
                     {
-                        
+                        continue;
                     }
-
-                    rayIntersects = true;
                 }
             }
 
@@ -1241,6 +1233,8 @@ namespace EmpiresOfTheIV.Game.Menus
                 // Since we clicked on empty terrain, simply issue the Move Command for all selected units
                 if (result.HasValue)
                 {
+                    rayIntersects = true;
+
                     if (result.Value.Y < m_map.Terrain.HeightData.HighestHeight - 1)
                     {
                         for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
@@ -1250,11 +1244,11 @@ namespace EmpiresOfTheIV.Game.Menus
                                 m_commandRelay.AddCommand(Command.MoveCommand(m_unitPool.m_activeUnits[i].UnitID, result.Value), NetworkTrafficDirection.Outbound);
                             }
                         }
-
-                        rayIntersects = true;
                     }
                 }
             }
+
+            return rayIntersects;
         }
         #endregion
 
@@ -1346,20 +1340,25 @@ namespace EmpiresOfTheIV.Game.Menus
                         m_selectionManager.EndingPosition = new Vector2(command.Position.X, command.Position.Y);
                         m_commandRelay.Complete(command);
 
-                        // Then select the Units
-                        bool anyUnitSelected = false;
-                        BoundingFrustum selectionFrustrum = m_gameCamera.UnprojectRectangle(m_selectionManager.GetSelection(), m_game.GraphicsDevice.Viewport);
-                        foreach (var item in m_unitPool.m_activeUnits)
+                        // If our selection is greater than the minimums required to select, then we will select
+                        if (!m_selectionManager.MinimumSelection.Contains(m_selectionManager.EndingPosition.Value))
                         {
-                            if (item.PlayerID == m_me.ID &&
-                                item.CheckFrustumIntersection(selectionFrustrum))
+                            // Then select the Units
+                            m_unitPool.AreAnyUnitsCurrentlySelected = false;
+
+                            BoundingFrustum selectionFrustrum = m_gameCamera.UnprojectRectangle(m_selectionManager.GetSelection(), m_game.GraphicsDevice.Viewport);
+                            foreach (var item in m_unitPool.m_activeUnits)
                             {
-                                item.Selected = true;
-                                anyUnitSelected = true;
-                            }
-                            else
-                            {
-                                item.Selected = false;
+                                if (item.PlayerID == m_me.ID &&
+                                    item.CheckFrustumIntersection(selectionFrustrum))
+                                {
+                                    item.Selected = true;
+                                    m_unitPool.AreAnyUnitsCurrentlySelected = true;
+                                }
+                                else
+                                {
+                                    item.Selected = false;
+                                }
                             }
                         }
                         break;

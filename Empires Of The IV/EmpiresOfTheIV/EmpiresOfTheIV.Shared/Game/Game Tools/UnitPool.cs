@@ -11,15 +11,30 @@ namespace EmpiresOfTheIV.Game.Game_Tools
     public class UnitPool : IUpdatable, IRenderable
     {
         public int TotalUnitsInPool { get; protected set; }
-
         public List<Unit> m_activeUnits;
         public List<Unit> m_inactiveUnits;
+
+        public bool AreAnyUnitsCurrentlySelected;
 
         public UnitPool(int totalUnitsInPool)
         {
             TotalUnitsInPool = totalUnitsInPool;
             m_activeUnits = new List<Unit>(TotalUnitsInPool);
             m_inactiveUnits = new List<Unit>(TotalUnitsInPool);
+
+            AreAnyUnitsCurrentlySelected = false;
+        }
+
+        public List<Unit> GetAllSelectedUnits()
+        {
+            List<Unit> selectedUnits = new List<Unit>();
+            foreach (var unit in m_activeUnits)
+            {
+                if (unit.Selected)
+                    selectedUnits.Add(unit);
+            }
+
+            return selectedUnits;
         }
 
         public void Clear()
@@ -128,6 +143,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
         }
         #endregion
 
+        #region Update/Draw
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         public void Update(GameTime gameTime)
         {
@@ -145,5 +161,6 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                 unit.Draw(gameTime, spriteBatch, graphics, camera, creatingShadowMap);
             }
         }
+        #endregion
     }
 }
