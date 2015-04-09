@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Xna.Framework.Audio;
 
 namespace EmpiresOfTheIV.Game.GameObjects.Factories
 {
@@ -25,6 +26,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
 
         public double DamageTakenThisFrame;
         public BoundingSphere Bounds;
+        public AudioEmitter FactoryBaseAudioEmitter { get { return Base.BuildingAudioEmitter; } }
 
         public bool IsFactoryOnBase { get { return (Factory != null); } }
         #endregion

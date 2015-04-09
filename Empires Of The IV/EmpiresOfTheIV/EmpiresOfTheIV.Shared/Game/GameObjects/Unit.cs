@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using EmpiresOfTheIV.Game.Players;
+using Microsoft.Xna.Framework.Audio;
 
 namespace EmpiresOfTheIV.Game.GameObjects
 {
@@ -26,7 +27,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public Cost UnitCost;
 
         public BoundingSphere SightRange;
-
+        public AudioEmitter UnitAudioEmitter;
 
         bool m_selected;
         public bool Selectable { get; set; }
@@ -83,6 +84,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
             AttackDamage = 1.0f;
 
             SightRange = new BoundingSphere();
+            UnitAudioEmitter = new AudioEmitter();
+
             UnitCost = Cost.FromUnitCost(0.0);
         }
 
@@ -129,7 +132,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
             base.Update(gameTime);
 
             // Update the center of our attack radius with our position
-            SightRange.Center = m_transform.WorldPosition;
+            var worldPos = m_transform.WorldPosition;
+            SightRange.Center = worldPos;
+            UnitAudioEmitter.Position = worldPos;
         }
 
         public virtual bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera, bool creatingShadowMap = false)

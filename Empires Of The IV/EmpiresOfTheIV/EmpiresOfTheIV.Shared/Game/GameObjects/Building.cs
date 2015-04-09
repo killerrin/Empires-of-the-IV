@@ -3,6 +3,7 @@ using Anarian.DataStructures;
 using Anarian.DataStructures.Components;
 using Anarian.Interfaces;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
             get { return m_selected; }
             set { m_selected = value; }
         }
+
+        public AudioEmitter BuildingAudioEmitter;
         #endregion
 
         public Building()
@@ -35,6 +38,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
         {
             Selectable = true;
             Selected = false;
+
+            BuildingAudioEmitter = new AudioEmitter();
         }
 
         #region Interface Implimentations
@@ -58,6 +63,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
         {
             //Debug.WriteLine("Building");
             base.Update(gameTime);
+
+            // Update the Positions of elements
+            BuildingAudioEmitter.Position = m_transform.WorldPosition;
         }
 
         public virtual bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera, bool creatingShadowMap = false)
