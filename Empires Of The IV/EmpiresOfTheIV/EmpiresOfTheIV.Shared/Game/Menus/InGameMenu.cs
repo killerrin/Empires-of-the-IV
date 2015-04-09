@@ -238,23 +238,27 @@ namespace EmpiresOfTheIV.Game.Menus
             m_unitCapTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), "Unit Cap") as Texture2D;
 
             #region Setup GUI
-            Rectangle position = new Rectangle(10, 20, 100, 100);
+            Rectangle buttonRect = new Rectangle(10, 20, 100, 100);
             int yDistanceBetweenItems = 20;
             Color guiColor = Color.White;
 
-            m_guiGestureButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Gesture UI Icon") as Texture2D, position, guiColor);
-            position.Y += yDistanceBetweenItems + position.Height;
+            // Setup the UI Deadzone
+            m_guiDistanceFromSide += buttonRect.Width + (buttonRect.X * 2);
 
-            m_guiSelectionButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Selection UI Icon") as Texture2D, position, guiColor);
-            position.Y += yDistanceBetweenItems + position.Height;
+            // Setup the Left Bar
+            m_guiGestureButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Gesture UI Icon") as Texture2D, buttonRect, guiColor);
 
-            m_guiCameraPanButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Camera Movement UI Icon") as Texture2D, position, guiColor);
-            position.Y += yDistanceBetweenItems + position.Height;
+            buttonRect.Y = AnarianConsts.ScreenRectangle.Height - buttonRect.Height - yDistanceBetweenItems;
+            m_guiCameraPanButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Camera Movement UI Icon") as Texture2D, buttonRect, guiColor);
 
-            m_guiIssueCommandButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Issue Command UI Icon") as Texture2D, position, guiColor);
+            buttonRect.Y -= yDistanceBetweenItems + buttonRect.Height;
+            m_guiSelectionButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Selection UI Icon") as Texture2D, buttonRect, guiColor);
 
-            // Setup the side buffer
-            m_guiDistanceFromSide += position.Width + (position.X * 2);
+            // Setup the Bottom Bar
+            buttonRect.X = AnarianConsts.ScreenRectangle.Width - buttonRect.Width - yDistanceBetweenItems;
+            buttonRect.Y += yDistanceBetweenItems + buttonRect.Height;
+            m_guiIssueCommandButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Issue Command UI Icon") as Texture2D, buttonRect, guiColor);
+            m_guiIssueCommandButton.Active = false;
             #endregion
 
             #region Setup Variables
@@ -965,6 +969,14 @@ namespace EmpiresOfTheIV.Game.Menus
 
                 bool skipInputCode = false;
                 #region Check If Input Mode Changed
+                #region Enable And Disable Dynamic Buttons
+                // If any units are currently selected, we turn on the issue command button
+                if (m_unitPool.AreAnyUnitsCurrentlySelected)
+                    m_guiIssueCommandButton.Active = true;
+                else
+                    m_guiIssueCommandButton.Active = false;
+                #endregion
+
                 if (m_activePointerClickedEventsThisFrame.Count > 0)
                 {
                     var pointer = m_activePointerClickedEventsThisFrame[0];
@@ -1015,6 +1027,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 if (!skipInputCode)
                 {
                     #region Run the Specific Input Code
+                    #region Gesture Mode
                     if (m_inputMode == InputMode.Gesture)
                     {
                         bool skipSelection = false;
@@ -1082,9 +1095,7 @@ namespace EmpiresOfTheIV.Game.Menus
                                     m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
                                 {
                                     PointerPressedEventArgs e;
-                                    if (m_activePointerEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
-                                        e = m_activePointerEventsThisFrame[0];
-                                    else e = m_activePointerEventsThisFrame[0];
+                                    e = m_activePointerEventsThisFrame[0];
 
                                     Input_Selection(e);
                                 }
@@ -1092,11 +1103,36 @@ namespace EmpiresOfTheIV.Game.Menus
                             #endregion
                         }
                     }
+                    #endregion
+
+                    #region Selection Only Mode
                     else if (m_inputMode == InputMode.Selection)
                     {
-                        if (m_activePointerEventsThisFrame.Count > 0)
-                            Input_Selection(m_activePointerEventsThisFrame[0]);
+                        bool skipSelection = false;
+                        if (m_activePointerClickedEventsThisFrame.Count > 0)
+                        {
+                            if ((m_activePointerClickedEventsThisFrame.Count == 1 && m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.Touch) ||
+                                m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
+                            {
+                                PointerPressedEventArgs e;
+                                e = m_activePointerClickedEventsThisFrame[0];
+
+                                if (m_selectionManager.MinimumSelection.Contains(e.Position))
+                                {
+                                    skipSelection = Input_SelectSingleUnitOrFactory(e);
+                                }
+                            }
+                        }
+
+
+                        if (!skipSelection)
+                        {
+                            if (m_activePointerEventsThisFrame.Count > 0)
+                                Input_Selection(m_activePointerEventsThisFrame[0]);
+                        }
                     }
+                    #endregion
+
                     else if (m_inputMode == InputMode.CameraPan)
                     {
                         if (m_activePointerEventsThisFrame.Count > 0)
@@ -1306,8 +1342,9 @@ namespace EmpiresOfTheIV.Game.Menus
                             {
                                 unit.Selected = false;    
                             }
-                            m_unitPool.AreAnyUnitsCurrentlySelected = true;
+
                             m_unitPool.m_activeUnits[i].Selected = true;
+                            m_unitPool.AreAnyUnitsCurrentlySelected = true;
                             return true;
                         }
                     }
