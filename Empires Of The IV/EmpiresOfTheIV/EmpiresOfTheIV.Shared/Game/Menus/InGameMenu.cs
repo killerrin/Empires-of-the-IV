@@ -259,10 +259,10 @@ namespace EmpiresOfTheIV.Game.Menus
 
             #region Setup Variables
             m_gameCamera = new UniversalCamera();
-            m_gameCamera.AspectRatio = UniversalCamera.Aspect169;// m_game.SceneManager.CurrentScene.Camera.AspectRatio;
+            m_gameCamera.AspectRatio = UniversalCamera.Aspect16x9;
             m_gameCamera.Near = 0.2f;
             m_gameCamera.Far = 1000.0f;
-            m_gameCamera.Speed = 0.8f;
+            m_gameCamera.Speed = 1.0f;
 
             //// Since Phone has a smaller screen and a lower TouchScreen input frequency, we double the speed
             //if (KillerrinStudiosToolkit.KillerrinApplicationData.OSType == KillerrinStudiosToolkit.Enumerators.ClientOSType.WindowsPhone81)
@@ -1024,7 +1024,8 @@ namespace EmpiresOfTheIV.Game.Menus
                         {
                             #region Issue Command
                             if ((m_activePointerClickedEventsThisFrame.Count == 1 && m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.Touch) ||
-                                m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.RightMouseButton)
+                                m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.RightMouseButton ||
+                                m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
                             {
                                 PointerPressedEventArgs e;
                                 e = m_activePointerClickedEventsThisFrame[0];
@@ -1033,11 +1034,24 @@ namespace EmpiresOfTheIV.Game.Menus
                                 {
                                     skipSelection = Input_IssueCommand(e);
                                 }
-                                else
+                                else if (m_activePointerClickedEventsThisFrame[0].Pointer == PointerPress.LeftMouseButton)
                                 {
                                     if (m_selectionManager.MinimumSelection.Contains(e.Position))
                                     {
-                                        skipSelection = Input_IssueCommand(e);
+                                        skipSelection = Input_SelectSingleUnitOrFactory(e);
+                                    }
+                                }
+                                else // Touch
+                                {
+                                    if (m_selectionManager.MinimumSelection.Contains(e.Position))
+                                    {
+                                        // Since Touch will handle both the selection of a single unit or factory
+                                        // We will run the code to try selecting a single one
+                                        skipSelection = Input_SelectSingleUnitOrFactory(e);
+
+                                        // If nothing is discovered, then we go direcly to Command Mode
+                                        if (!skipSelection)
+                                            skipSelection = Input_IssueCommand(e);
                                     }
                                 }
                             }
@@ -1168,87 +1182,58 @@ namespace EmpiresOfTheIV.Game.Menus
                 m_game.Graphics.GraphicsDevice.Viewport
             );
 
-            bool rayIntersects = false;
-
             // First we check if our ray intersects with a Unit
             for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
             {
                 if (m_unitPool.m_activeUnits[i].CheckRayIntersection(ray))
                 {
-                    rayIntersects = true;
-
-                    if (m_unitPool.m_activeUnits[i].PlayerID == m_me.ID) 
+                    // Check if it is an Enemy Unit
+                    // If it is, issue the Attack Command
+                    if (m_unitPool.m_activeUnits[i].PlayerID != m_me.ID) 
                     {
-                        // Single Unit Selection
-                        if (!m_unitPool.m_activeUnits[i].Selected)
-                        {
-                            m_unitPool.m_activeUnits[i].Selected = true;
-                            break;
-                        }
-                        else { continue; }
+                    
+                    
                     }
-                    // Check if it is an Enemy Unit, and if so set the rayIntersects and
-                    // issue the attack command
-                    else
-                    {
-                        continue;
-                    }
+                    return true;
                 }
             }
 
             // If a unit isn't intersected, then we check to see if we collided with a factoryBase
-            if (!rayIntersects)
+            FactoryBase intersectedFactoryBase = null;
+            var factoryResult = m_map.IntersectFactoryBase(ray, out intersectedFactoryBase);
+            if (factoryResult == FactoryBaseRayIntersection.Factory)
             {
-                FactoryBase intersectedFactoryBase = null;
-                var result = m_map.IntersectFactoryBase(ray, out intersectedFactoryBase);
-
-                if (result == FactoryBaseRayIntersection.FactoryBase)
+                if (intersectedFactoryBase.PlayerID != m_me.ID)
                 {
-                    rayIntersects = true;
-
-                    // Enable UI To Build Factory
-                    m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildFactory);
+                    // Try to issue an attack command or move closer
                 }
-                else if (result == FactoryBaseRayIntersection.Factory)
-                {
-                    rayIntersects = true;
 
-                    if (intersectedFactoryBase.PlayerID == m_me.ID)
-                    {
-                        // Enable the UI To Build Unit
-                        m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildUnit);
-                    }
-                    else
-                    {
-                        // Try to issue an attack command or move closer
-                    }
-                }
+                return true;
             }
 
-            // If we still haven't intersected, then we go off of the map terrain
-            if (!rayIntersects)
+            // If we still haven't intersected, we finally move onto the terrain
+            var terrainResult = m_map.IntersectTerrain(ray);
+
+            // If we clicked on empty terrain...
+            if (terrainResult.HasValue)
             {
-                var result = m_map.IntersectTerrain(ray);
-
-                // Since we clicked on empty terrain, simply issue the Move Command for all selected units
-                if (result.HasValue)
+                // Check if we are within bounds
+                if (terrainResult.Value.Y < m_map.Terrain.HeightData.HighestHeight - 1)
                 {
-                    rayIntersects = true;
-
-                    if (result.Value.Y < m_map.Terrain.HeightData.HighestHeight - 1)
+                    // Then move all selected units
+                    for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
                     {
-                        for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
+                        if (m_unitPool.m_activeUnits[i].Selected)
                         {
-                            if (m_unitPool.m_activeUnits[i].Selected)
-                            {
-                                m_commandRelay.AddCommand(Command.MoveCommand(m_unitPool.m_activeUnits[i].UnitID, result.Value), NetworkTrafficDirection.Outbound);
-                            }
+                            m_commandRelay.AddCommand(Command.MoveCommand(m_unitPool.m_activeUnits[i].UnitID, terrainResult.Value), NetworkTrafficDirection.Outbound);
                         }
                     }
                 }
+
+                return true;
             }
 
-            return rayIntersects;
+            return false;
         }
         #endregion
 
@@ -1296,6 +1281,60 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             return false;
         }
+        public bool Input_SelectSingleUnitOrFactory(PointerPressedEventArgs e)
+        {
+            // If we're not in the game anymore, we can't issue any more commands
+            if (!m_me.Alive) return false;
+
+            // Get where we clicked in worldspace
+            Ray ray = m_gameCamera.GetMouseRay(
+                e.Position,
+                m_game.Graphics.GraphicsDevice.Viewport
+            );
+
+            // First we check if our ray intersects with a Unit
+            for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
+            {
+                if (m_unitPool.m_activeUnits[i].CheckRayIntersection(ray))
+                {
+                    if (m_unitPool.m_activeUnits[i].PlayerID == m_me.ID)
+                    {
+                        // Single Unit Selection
+                        if (!m_unitPool.m_activeUnits[i].Selected)
+                        {
+                            foreach (var unit in m_unitPool.m_activeUnits)
+                            {
+                                unit.Selected = false;    
+                            }
+                            m_unitPool.AreAnyUnitsCurrentlySelected = true;
+                            m_unitPool.m_activeUnits[i].Selected = true;
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            FactoryBase intersectedFactoryBase = null;
+            var result = m_map.IntersectFactoryBase(ray, out intersectedFactoryBase);
+
+            if (result == FactoryBaseRayIntersection.FactoryBase)
+            {
+                // Enable UI To Build Factory
+                m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildFactory);
+                return true;
+            }
+            else if (result == FactoryBaseRayIntersection.Factory)
+            {
+                if (intersectedFactoryBase.PlayerID == m_me.ID)
+                {
+                    // Enable the UI To Build Unit
+                    m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildUnit);
+                    return true;
+                }
+            }
+
+            return false;
+        }
         #endregion
         #endregion
 
@@ -1303,6 +1342,7 @@ namespace EmpiresOfTheIV.Game.Menus
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         public override void Update(GameTime gameTime)
         {
+            // Update the Network Timer so that we can continue to send out Network Tics
             m_networkTimer.Update(gameTime);
 
             // Check if the game is fully loaded
@@ -1321,7 +1361,7 @@ namespace EmpiresOfTheIV.Game.Menus
             // Then the Map
             m_map.Update(gameTime);
 
-            // If it is not, we can proceed to update the game
+            // Then our Economy
             m_pageParameter.me.Update(gameTime);
 
             #region Do Commands
@@ -1536,32 +1576,33 @@ namespace EmpiresOfTheIV.Game.Menus
             //m_commandRelay.RemoveAllCompleted();
             #endregion
 
-            // If the Selection was Released, Select the units
+            // If the Selection was Released, reset the Selection Manager
             if (selectionReleased)
             {
                 selectionReleased = false;
                 m_selectionManager.Deselect();
             }
 
-            // Set all the active units to be on the terrain then Update Them
+            // Update all the Active Units
             m_unitPool.Update(gameTime);
 
             // Update the GUI
             m_buildMenuManager.Update(gameTime);
 
-
+            // Run Game Logic
             UpdateGame(gameTime);
 
             #region Singleplayer and Host Only Processing
-            //if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer)
-            //{ }
-            //else
-            //{
-            //    if (m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
-            //        UpdateGame(gameTime);
-            //}
+            if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer ||
+                m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
+            { 
+            }
+            else
+            {
+            }
             #endregion
 
+            // Lastly, Aggregate all the commands to the current Command Pool, then Send all Outgoing
             m_commandRelay.AggregateAndSendCommands();
 
             //-- Update the Menu

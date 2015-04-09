@@ -191,25 +191,25 @@ namespace EmpiresOfTheIV
 
             // Update the SceneNodes
             base.Update(gameTime);
-
+            
             // First, Update the StateManager
             m_stateManager.Update(gameTime);
-
+            
             // Update any required GameManager Data
             switch (m_stateManager.CurrentState)
             {
                 case GameState.SplashScreen: break;
-
+            
                 case GameState.MainMenu: break;
                 case GameState.Options: break;
                 case GameState.Credits: break;
-
+            
                 case GameState.BluetoothMultiplayer: break;
                 case GameState.LanMultiplayer: break;
-
+            
                 case GameState.GameLobby: break;
                 case GameState.EmpireSelection: break;
-
+            
                 case GameState.InGame: break;
                 case GameState.GameOver: break;
                 default: break;
@@ -235,26 +235,26 @@ namespace EmpiresOfTheIV
 
             // Call Draw on the Anarian Game Engine to render the Scene
             base.Draw(gameTime);
-
+            
             switch (m_stateManager.CurrentState)
             {
                 case GameState.SplashScreen: GraphicsDevice.Clear(Color.Black); break;
-
+            
                 case GameState.MainMenu: break;
                 case GameState.Options: break;
                 case GameState.Credits: break;
-
+            
                 case GameState.BluetoothMultiplayer: break;
                 case GameState.LanMultiplayer: break;
-
+            
                 case GameState.GameLobby: break;
                 case GameState.EmpireSelection: break;
-
+            
                 case GameState.InGame: break;
                 case GameState.GameOver: break;
                 default: break;
             }
-
+            
             // Finally, Draw the StateManager over everything else
             m_stateManager.Draw(gameTime, spriteBatch, GraphicsDevice);
 

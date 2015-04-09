@@ -53,6 +53,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
         Cost m_factoryCost;
 
         Matrix m_rotationMatrix;
+        Camera m_basicCamera = new Camera();
         #endregion
 
         Player m_me;
@@ -74,13 +75,14 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                                                (int)(screenRect.Width * 0.5),
                                                (int)(screenRect.Height * 0.5));
             int distanceBetweenButtons = 50;
-            var purchaseButtonRect = new Rectangle(m_uiRectBackground.X + distanceBetweenButtons, (int)(screenRect.Height * 0.7), 150, 75);
+            var widthHeight = new Point(160, 80);
+            var purchaseButtonRect = new Rectangle(m_uiRectBackground.X + distanceBetweenButtons, (int)((m_uiRectBackground.Bottom - widthHeight.Y) * 0.98), widthHeight.X, widthHeight.Y);
 
             if (m_uiRectBackground.Width < ((purchaseButtonRect.Width * 3) + (distanceBetweenButtons * 3)))
                 m_uiRectBackground.Width = ((purchaseButtonRect.Width * 3) + (distanceBetweenButtons * 3));
 
             m_purchaseButton1 = new GUIButton(buttonTexture, purchaseButtonRect, Color.White);  purchaseButtonRect.X += purchaseButtonRect.Width + distanceBetweenButtons;
-            m_purchaseButton2 = new GUIButton(buttonTexture, purchaseButtonRect, Color.White);  purchaseButtonRect.X += purchaseButtonRect.Width + distanceBetweenButtons;
+            m_purchaseButton2 = new GUIButton(buttonTexture, purchaseButtonRect, Color.White); purchaseButtonRect.X = m_uiRectBackground.Right - purchaseButtonRect.Width - distanceBetweenButtons;
             m_purchaseButton3 = new GUIButton(buttonTexture, purchaseButtonRect, Color.White);
 
             m_unit1 = new AnimatedGameObject();
@@ -91,6 +93,8 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
             m_unit3 = new AnimatedGameObject();
             m_unit3.CullDraw = false;
+
+            ((ICamera)m_basicCamera).View = Matrix.CreateTranslation(0, 20, 0);
 
             switch (m_me.EmpireType)
             {
@@ -218,7 +222,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             }
             else if (m_buildMenuType == BuildMenuType.BuildUnit)
             {
-                int distanceLeftOfButton = 20;
+                int distanceLeftOfButton = 10;
                 int heightAboveButton = 100;
                 DrawCost(m_unit1Cost, new Vector2(m_purchaseButton1.Position.Left - distanceLeftOfButton, m_purchaseButton1.Position.Top - heightAboveButton), gameTime, spriteBatch);
                 //DrawCost(m_unit2Cost, new Vector2(m_purchaseButton2.Position.Left - distanceLeftOfButton, m_purchaseButton2.Position.Top - heightAboveButton), gameTime, spriteBatch);
@@ -228,7 +232,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
         public void DrawCost(Cost cost, Vector2 position, GameTime gameTime, SpriteBatch spriteBatch)
         {
-            int xDistanceBetweenItems = 110;
+            int xDistanceBetweenItems = 100;
             int yDistanceBetweenItems = 50;
 
             int iconWidth = 40;
@@ -259,7 +263,9 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             //graphics.BlendState = BlendState.Opaque;
             //graphics.DepthStencilState = DepthStencilState.Default;
             //graphics.SamplerStates[0] = SamplerState.LinearWrap;
-            graphics.RasterizerState.CullMode = CullMode.None;// CullCounterClockwiseFace;// CullClockwiseFace;
+            graphics.RasterizerState = RasterizerState.CullNone; //graphics.RasterizerState.CullMode = CullMode.None;
+
+            ((ICamera)m_basicCamera).Projection = camera.Projection;
 
             var tempView = camera.View;
             camera.View = Matrix.Identity;
@@ -270,9 +276,9 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             }
             else if (m_buildMenuType == BuildMenuType.BuildUnit)
             {
-                m_unit1.Draw(gameTime, spriteBatch, graphics, camera);
-                m_unit2.Draw(gameTime, spriteBatch, graphics, camera);
-                m_unit3.Draw(gameTime, spriteBatch, graphics, camera);
+                m_unit1.Draw(gameTime, spriteBatch, graphics, m_basicCamera);
+                m_unit2.Draw(gameTime, spriteBatch, graphics, m_basicCamera);
+                m_unit3.Draw(gameTime, spriteBatch, graphics, m_basicCamera);
             }
 
             camera.View = tempView;
