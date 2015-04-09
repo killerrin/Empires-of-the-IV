@@ -33,6 +33,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EmpiresOfTheIV.Game.GameObjects.Factories;
 using KillerrinStudiosToolkit.Enumerators;
+using Microsoft.Xna.Framework.Audio;
 
 namespace EmpiresOfTheIV.Game.Menus
 {
@@ -96,6 +97,7 @@ namespace EmpiresOfTheIV.Game.Menus
         public RenderPassMode CurrentRenderPassMode;
 
         public UniversalCamera m_gameCamera;
+        public AudioListener m_audioListener;
 
         int m_cameraMovementScreenBuffer = 30;
         int m_guiDistanceFromSide = 0;
@@ -282,6 +284,9 @@ namespace EmpiresOfTheIV.Game.Menus
                                                             0, 0, 0, 1);
 
             m_gameCamera.ResetViewToDefaults();
+
+            m_audioListener = new AudioListener();
+            m_audioListener.Position = m_gameCamera.Position;
 
             m_unitPool = new UnitPool((int)(m_pageParameter.maxUnitsPerPlayer * (m_team1.PlayerCount + m_team2.PlayerCount)));
             m_commandRelay = new CommandRelay();
@@ -1153,7 +1158,10 @@ namespace EmpiresOfTheIV.Game.Menus
             // Since we are done with the touch input, we can clear the pointers
             m_activePointerEventsThisFrame.Clear();
             m_activePointerClickedEventsThisFrame.Clear();
+
+            // Update the Camera and AudioListener
             m_gameCamera.Update(gameTime);
+            m_audioListener.Position = m_gameCamera.Position;
         }
 
         #region Standard Input Modes
