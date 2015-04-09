@@ -43,7 +43,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
         public SelectionManager()
         {
             SelectionTexture = null;
-            MinimumWidthHeightToIssueCommand = new Point(25, 25);
+            MinimumWidthHeightToIssueCommand = new Point(10, 10);
 
             Deselect();
         }

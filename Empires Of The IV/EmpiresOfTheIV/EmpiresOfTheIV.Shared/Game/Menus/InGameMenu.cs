@@ -1445,10 +1445,16 @@ namespace EmpiresOfTheIV.Game.Menus
                         Unit moveUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
                         if (moveUnit != null)
                         {
-                            var moveNewPos = (command.Position + new Vector3(0.0f, moveUnit.HeightAboveTerrain, 0.0f));
+                            bool smoothHeight = true;
 
+                            var moveNewPos = (command.Position + new Vector3(0.0f, moveUnit.HeightAboveTerrain, 0.0f));
                             var moveResult = moveUnit.Transform.MoveToPosition(gameTime, moveNewPos, 1.2f);
-                            if (moveResult) m_commandRelay.Complete(command); //command.Complete();
+
+                            if (moveResult)
+                            {
+                                m_commandRelay.Complete(command);
+                                smoothHeight = false;
+                            }
 
                             // Since this is the only spot where units will move
                             // We will set the unit to be on top of the terrain
@@ -1456,7 +1462,17 @@ namespace EmpiresOfTheIV.Game.Menus
                             if (moveHeight != float.MaxValue)
                             {
                                 Vector3 movePos = moveUnit.Transform.Position;
-                                movePos.Y = moveHeight + moveUnit.HeightAboveTerrain;
+                                float targetHeight = moveHeight + moveUnit.HeightAboveTerrain;
+
+                                if (smoothHeight)
+                                {
+                                    float currentHeight = MathHelper.SmoothStep(movePos.Y, targetHeight, (float)gameTime.ElapsedGameTime.TotalMilliseconds);
+                                    movePos.Y = currentHeight;
+                                }
+                                else
+                                {
+                                    movePos.Y = targetHeight;
+                                }
                                 moveUnit.Transform.Position = movePos;
                             }
                         }
