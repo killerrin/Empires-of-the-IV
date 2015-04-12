@@ -23,6 +23,7 @@ using EmpiresOfTheIV.Game;
 using EmpiresOfTheIV.Game.GameObjects;
 using Anarian.DataStructures.ScreenEffects;
 using EmpiresOfTheIV.Game.Enumerators;
+using Microsoft.Xna.Framework.Audio;
 
 namespace EmpiresOfTheIV
 {
@@ -31,7 +32,7 @@ namespace EmpiresOfTheIV
     /// </summary>
     public class EmpiresOfTheIVGame : AnarianGameEngine
     {
-        public static EmpiresOfTheIVGame Current { get; private set; }
+        public static EmpiresOfTheIVGame Instance { get; private set; }
 
         #region Managers 
         protected StateManager m_stateManager;
@@ -39,6 +40,9 @@ namespace EmpiresOfTheIV
 
         protected NetworkManager m_networkManager;
         public NetworkManager NetworkManager { get { return m_networkManager; } set { m_networkManager = value; } }
+
+        protected AudioManager m_audioManager;
+        public AudioManager AudioManager { get { return m_audioManager; } set { m_audioManager = value; } }
         #endregion
 
         public EmpiresOfTheIVGame()
@@ -52,7 +56,7 @@ namespace EmpiresOfTheIV
             TargetElapsedTime = TimeSpan.FromSeconds(1.0 / 30.0);
 
             // Set the Current
-            Current = this;
+            Instance = this;
         }
 
         /// <summary>
@@ -115,6 +119,21 @@ namespace EmpiresOfTheIV
             ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Economy/Metal");
             ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Economy/Energy");
             ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Economy/Unit Cap");
+
+            SoundEffect spaceGun06 = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Weapons/Space Gun 06", SoundName.SpaceGun06.ToString()) as SoundEffect;
+            SoundEffect spaceGun07 = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Weapons/Space Gun 07", SoundName.SpaceGun07.ToString()) as SoundEffect;
+            SoundEffect spaceGun08 = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Weapons/Space Gun 08", SoundName.SpaceGun08.ToString()) as SoundEffect;
+            SoundEffect spaceGun09 = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Weapons/Space Gun 09", SoundName.SpaceGun09.ToString()) as SoundEffect;
+
+            SoundEffect menuError01 = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Other/menu_error", SoundName.MenuError.ToString()) as SoundEffect;
+
+            m_audioManager = AudioManager.Instance;
+            m_audioManager.MaxVolume = 1.0f;
+            m_audioManager.SoundEffects.Add(SoundName.SpaceGun06, spaceGun06);
+            m_audioManager.SoundEffects.Add(SoundName.SpaceGun07, spaceGun07);
+            m_audioManager.SoundEffects.Add(SoundName.SpaceGun08, spaceGun08);
+            m_audioManager.SoundEffects.Add(SoundName.SpaceGun09, spaceGun09);
+            m_audioManager.SoundEffects.Add(SoundName.MenuError, menuError01);
 
             // Load the Content
             m_stateManager.LoadStateManager(Color.Black);

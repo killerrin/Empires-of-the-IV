@@ -40,7 +40,8 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             factoryBase.Factory.Health.Alive = true;
             factoryBase.Factory.Health.Invincible = false;
             factoryBase.Factory.Health.RegenerateHealth = true;
-            factoryBase.Factory.Health.RegenerationRate = 0.001f;
+            factoryBase.Factory.Health.RegenerationRate = 0.0001f;
+            factoryBase.Factory.Health.RegenerationTimer.Interval = TimeSpan.FromSeconds(5.0);
             factoryBase.Factory.Health.MaxHealth = 300.0f;
 
             switch (owner.EmpireType)
@@ -75,8 +76,10 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     unitPoolUnit.UnitType = UnitType.Soldier;
 
                     unitPoolUnit.HeightAboveTerrain = 0.0f;
-                    unitPoolUnit.AttackDamage = 0.075f;
-                    unitPoolUnit.Health.MaxHealth = 100.0f;
+
+                    unitPoolUnit.AttackTimer.Interval = TimeSpan.FromSeconds(0.8);
+                    unitPoolUnit.AttackDamage = 1.0f;
+                    unitPoolUnit.Health.MaxHealth = 50.0f;
 
                     unitPoolUnit.Transform.MovementSpeed = 0.004f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.015f);
@@ -93,8 +96,10 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     unitPoolUnit.UnitType = UnitType.Soldier;
 
                     unitPoolUnit.HeightAboveTerrain = 0.0f;
-                    unitPoolUnit.AttackDamage = 0.100f;
-                    unitPoolUnit.Health.MaxHealth = 100.0f;
+                    
+                    unitPoolUnit.AttackTimer.Interval = TimeSpan.FromSeconds(0.7);
+                    unitPoolUnit.AttackDamage = 1.5f;
+                    unitPoolUnit.Health.MaxHealth = 75.0f;
 
                     unitPoolUnit.Transform.MovementSpeed = 0.005f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.015f);
@@ -105,7 +110,9 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     unitPoolUnit.UnitType = UnitType.Space;
 
                     unitPoolUnit.HeightAboveTerrain = 10.0f;
-                    unitPoolUnit.AttackDamage = 0.200f;
+
+                    unitPoolUnit.AttackTimer.Interval = TimeSpan.FromSeconds(0.6);
+                    unitPoolUnit.AttackDamage = 2.0f;
                     unitPoolUnit.Health.MaxHealth = 100.0f;
 
                     unitPoolUnit.Transform.MovementSpeed = 0.006f;
@@ -132,6 +139,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                 default: return new Cost(0.0, 0.0, 0.0, 0.0);
             }
         }
+
         public static Cost CreateFactoryCost(EmpireType empireType)
         {
             switch (empireType)

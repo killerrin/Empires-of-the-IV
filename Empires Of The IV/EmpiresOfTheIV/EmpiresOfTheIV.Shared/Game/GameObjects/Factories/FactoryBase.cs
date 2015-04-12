@@ -83,6 +83,15 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
             return FactoryBaseRayIntersection.None;
         }
 
+        public bool TakeDamage(float damage)
+        {
+            if (!HasOwner) return false;
+            if (Factory == null) return false;
+
+            Factory.Health.DecreaseHealth(damage);
+            return true;
+        }
+
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
         public void Update(GameTime gameTime)
         {

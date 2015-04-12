@@ -97,7 +97,10 @@ namespace EmpiresOfTheIV.Game.Menus
         public RenderPassMode CurrentRenderPassMode;
 
         public UniversalCamera m_gameCamera;
+
         public AudioListener m_audioListener;
+        public AudioEmitter m_audioEmitter;
+        public List<SoundEffectInstance> m_activeSoundEffectInstances;
 
         int m_cameraMovementScreenBuffer = 30;
         int m_guiDistanceFromSide = 0;
@@ -111,6 +114,7 @@ namespace EmpiresOfTheIV.Game.Menus
         public BuildMenuManager m_buildMenuManager;
         
         public Map m_map;
+
         #endregion
 
         #region Constructors and Messages
@@ -286,7 +290,11 @@ namespace EmpiresOfTheIV.Game.Menus
             m_gameCamera.ResetViewToDefaults();
 
             m_audioListener = new AudioListener();
+            m_audioEmitter = new AudioEmitter();
             m_audioListener.Position = m_gameCamera.Position;
+            m_audioEmitter.Position = m_gameCamera.Position;
+
+            m_activeSoundEffectInstances = new List<SoundEffectInstance>();
 
             m_unitPool = new UnitPool((int)(m_pageParameter.maxUnitsPerPlayer * (m_team1.PlayerCount + m_team2.PlayerCount)));
             m_commandRelay = new CommandRelay();
@@ -973,7 +981,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 #endregion
 
                 bool skipInputCode = false;
-                #region Check If Input Mode Changed
+                #region UI: Check If Input Mode Changed
                 #region Enable And Disable Dynamic Buttons
                 // If any units are currently selected, we turn on the issue command button
                 if (m_unitPool.AreAnyUnitsCurrentlySelected)
@@ -1031,7 +1039,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
                 if (!skipInputCode)
                 {
-                    #region Run the Specific Input Code
+                    #region Inputs
                     #region Gesture Mode
                     if (m_inputMode == InputMode.Gesture)
                     {
@@ -1162,6 +1170,7 @@ namespace EmpiresOfTheIV.Game.Menus
             // Update the Camera and AudioListener
             m_gameCamera.Update(gameTime);
             m_audioListener.Position = m_gameCamera.Position;
+            m_audioEmitter.Position = m_gameCamera.Position;
         }
 
         #region Standard Input Modes
@@ -1178,9 +1187,6 @@ namespace EmpiresOfTheIV.Game.Menus
         }
         public bool Input_PanCamera(PointerPressedEventArgs e)
         {
-            bool inverseX = true;
-            bool inverseY = true;
-
             var delta = e.DeltaPosition;
             delta.Normalize();
             Vector2 deltaBuffer = new Vector2(0.2f, 0.2f);
@@ -1188,13 +1194,13 @@ namespace EmpiresOfTheIV.Game.Menus
             Vector3 xAccel;
             if (delta.X < 0 - deltaBuffer.X)
             {
-                if (inverseX) xAccel = m_gameCamera.CameraRotation.Right;
+                if (GameConsts.Settings.InverseCameraX) xAccel = m_gameCamera.CameraRotation.Right;
                 else xAccel = -m_gameCamera.CameraRotation.Right;
                 m_gameCamera.Move(e.GameTime, xAccel);
             }
             else if (delta.X > 0 + deltaBuffer.X)
             {
-                if (inverseX) xAccel = -m_gameCamera.CameraRotation.Right;
+                if (GameConsts.Settings.InverseCameraX) xAccel = -m_gameCamera.CameraRotation.Right;
                 else xAccel = m_gameCamera.CameraRotation.Right;
                 m_gameCamera.Move(e.GameTime, xAccel);
             }
@@ -1202,13 +1208,13 @@ namespace EmpiresOfTheIV.Game.Menus
             Vector3 yAccel;
             if (delta.Y < 0 - deltaBuffer.Y)
             {
-                if (inverseY) yAccel = -m_gameCamera.CameraRotation.Up;
+                if (GameConsts.Settings.InverseCameraY) yAccel = -m_gameCamera.CameraRotation.Up;
                 else yAccel = m_gameCamera.CameraRotation.Up;
                 m_gameCamera.Move(e.GameTime, yAccel);
             }
             else if (delta.Y > 0 + deltaBuffer.Y)
             {
-                if (inverseY) yAccel = m_gameCamera.CameraRotation.Up;
+                if (GameConsts.Settings.InverseCameraY) yAccel = m_gameCamera.CameraRotation.Up;
                 else yAccel = -m_gameCamera.CameraRotation.Up;
                 m_gameCamera.Move(e.GameTime, yAccel);
             }
@@ -1308,11 +1314,13 @@ namespace EmpiresOfTheIV.Game.Menus
                         {
                             // Something went wrong, so we refunded the cost
                             m_me.Economy.AddCost(cost);
+                            m_game.AudioManager.PlaySoundEffect(SoundName.MenuError, 0.5f);
                         }
                     }
                     else
                     {
                         // Player couldn't afford the item
+                        m_game.AudioManager.PlaySoundEffect(SoundName.MenuError, 0.5f);
                     }
                 }
                 else
@@ -1491,12 +1499,17 @@ namespace EmpiresOfTheIV.Game.Menus
                         var attackingUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
                         if (attackingUnit != null)
                         {
+                            // Play Attacking Sound Effect and
+                            int selection = Consts.random.Next((int)SoundName.SpaceGun06, (int)SoundName.SpaceGun09 + 1);
+                            SoundName weaponSoundEffect = (SoundName)selection;
+                            m_activeSoundEffectInstances.Add(AudioManager.Instance.Play3DSoundEffect(m_audioListener, attackingUnit.AudioEmitter, weaponSoundEffect));
+
                             if (command.TargetType == TargetType.Unit)
                             {
-                                var attackedUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID2);
-                                if (attackedUnit != null)
+                                var defendingUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID2);
+                                if (defendingUnit != null)
                                 {
-                                    var attackingPosition = attackedUnit.Transform.WorldPosition + attackingUnit.Transform.WorldPosition;
+                                    var attackingPosition = defendingUnit.Transform.WorldPosition + attackingUnit.Transform.WorldPosition;
                                     attackingPosition.Y = attackingUnit.Transform.WorldPosition.Y;
 
                                     //attackingUnit.Transform.RotateToPoint(gameTime, attackingPosition);
@@ -1504,12 +1517,12 @@ namespace EmpiresOfTheIV.Game.Menus
                             }
                             else if (command.TargetType == TargetType.Factory)
                             {
-                                var attackedBuilding = m_map.GetFactoryBase(command.ID2);
-                                if (attackedBuilding != null)
+                                var defendingBuilding = m_map.GetFactoryBase(command.ID2);
+                                if (defendingBuilding != null)
                                 {
-                                    if (attackedBuilding.Base != null)
+                                    if (defendingBuilding.Base != null)
                                     {
-                                        //attackingUnit.Transform.RotateToPoint(gameTime, attackedBuilding.Base.Transform.WorldPosition);
+                                        //attackingUnit.Transform.RotateToPoint(gameTime, defendingBuilding.Base.Transform.WorldPosition);
                                     }
                                 }
                             }
@@ -1559,7 +1572,7 @@ namespace EmpiresOfTheIV.Game.Menus
                             {
                                 if (damageFactoryBase.Factory != null)
                                 {
-                                    damageFactoryBase.Factory.Health.DecreaseHealth((float)command.Damage);
+                                    damageFactoryBase.TakeDamage((float)command.Damage); //damageFactoryBase.Factory.Health.DecreaseHealth((float)command.Damage);
                                 }
                             }
                         }
@@ -1568,7 +1581,7 @@ namespace EmpiresOfTheIV.Game.Menus
                             var damageUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
                             if (damageUnit != null)
                             {
-                                damageUnit.Health.DecreaseHealth((float)command.Damage);
+                                damageUnit.TakeDamage((float)command.Damage); //damageUnit.Health.DecreaseHealth((float)command.Damage);
                             }
                         }
 
@@ -1644,8 +1657,19 @@ namespace EmpiresOfTheIV.Game.Menus
                 m_selectionManager.Deselect();
             }
 
-            // Update all the Active Units
-            m_unitPool.Update(gameTime);
+            #region Remove All Stopped or Paused SoundEffect Instances
+            for (int i = m_activeSoundEffectInstances.Count - 1; i > -1; i--)
+            {
+                if (m_activeSoundEffectInstances[i].State != SoundState.Playing)
+                {
+                    m_activeSoundEffectInstances[i].Dispose();
+                    m_activeSoundEffectInstances.RemoveAt(i);
+                }
+            }
+            #endregion
+
+                // Update all the Active Units
+                m_unitPool.Update(gameTime);
 
             // Update the GUI
             m_buildMenuManager.Update(gameTime);
@@ -1693,18 +1717,22 @@ namespace EmpiresOfTheIV.Game.Menus
 
                     if (unit2.CheckSphereIntersection(unit1.SightRange))
                     {
-                        // Unit Is automatically attacking Unit
-                        //Debug.WriteLine("Unit {0} is attacking Unit {1}", unit1.UnitID, unit2.UnitID);
-                        //m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, unit2.UnitID, TargetType.Unit), NetworkTrafficDirection.Outbound);
-                        unit2.DamageTakenThisFrame += unit1.AttackDamage;
+                        Debug.WriteLine("Unit {0} is attacking Unit {1}", unit1.UnitID, unit2.UnitID);
+                        if (unit1.Attack())
+                        {
+                            // Unit Is automatically attacking Unit
+                            m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, unit2.UnitID, TargetType.Unit), NetworkTrafficDirection.Local);
+                            unit2.DamageTakenThisFrame += unit1.AttackDamage;
+                        }
+
                         unitFoundInRange = true;
-                        //break;
                     }
 
                     // Subtract the Unit Sight back to zero
                     unit1.SightRange.Radius -= unitSightChangedBy;
                     unitSightChangedBy = 0.0f;
 
+                    // Check for exit
                     if (unitFoundInRange) break;
                 }
 
@@ -1728,10 +1756,14 @@ namespace EmpiresOfTheIV.Game.Menus
                         {
                             // Unit Is automatically attacking Factory
                             //Debug.WriteLine("Unit {0} is attacking Factory {1}", unit1.UnitID, factory.FactoryBaseID);
-                            //m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, factory.FactoryBaseID, TargetType.Factory), NetworkTrafficDirection.Outbound);
-                            factory.DamageTakenThisFrame += unit1.AttackDamage;
+
+                            if (unit1.Attack())
+                            {
+                                m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, factory.FactoryBaseID, TargetType.Factory), NetworkTrafficDirection.Local);
+                                factory.DamageTakenThisFrame += unit1.AttackDamage;
+                            }
+
                             factoryFoundInRange = true;
-                            //break;
                         }
 
                         // Subtract the Unit Sight back to zero

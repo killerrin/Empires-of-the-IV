@@ -30,5 +30,11 @@ namespace EmpiresOfTheIV.Game
             public static LoadingStatus Map_Kalia                               = LoadingStatus.NotLoaded;
         }
 
+        public static class Settings
+        {
+            // Camera Controls
+            public static bool InverseCameraX = true;
+            public static bool InverseCameraY = true;
+        }
     }
 }

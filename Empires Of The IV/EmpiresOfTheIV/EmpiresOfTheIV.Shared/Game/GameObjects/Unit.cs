@@ -27,7 +27,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public Cost UnitCost;
 
         public BoundingSphere SightRange;
-        public AudioEmitter UnitAudioEmitter;
+        public AudioEmitter AudioEmitter;
+
+        public Timer AttackTimer;
 
         bool m_selected;
         public bool Selectable { get; set; }
@@ -84,13 +86,16 @@ namespace EmpiresOfTheIV.Game.GameObjects
             AttackDamage = 1.0f;
 
             SightRange = new BoundingSphere();
-            UnitAudioEmitter = new AudioEmitter();
+            AudioEmitter = new AudioEmitter();
+            AttackTimer = new Timer(TimeSpan.FromSeconds(1.0));
 
             UnitCost = Cost.FromUnitCost(0.0);
         }
 
         public override void Reset()
         {
+            //base.Reset();
+
             UnitType = Enumerators.UnitType.None;
             UnitName = Enumerators.UnitID.None;
             
@@ -105,6 +110,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
             DamageTakenThisFrame = 0.0;
 
             SightRange = new BoundingSphere();
+            AttackTimer.Reset();
 
             Health.Reset();
             Mana.Reset();
@@ -127,14 +133,45 @@ namespace EmpiresOfTheIV.Game.GameObjects
         }
         #endregion
 
+        #region Helper Methods
+        public bool InAttackRange(BoundingSphere o)
+        {
+            return SightRange.Intersects(o);
+        }
+
+        public bool CanAttack()
+        {
+            if (!Health.Alive) return false;
+
+            return AttackTimer.Progress == Anarian.Enumerators.ProgressStatus.Completed;
+        }
+
+        public bool Attack()
+        {
+            if (!CanAttack()) return false;
+
+            AttackTimer.Reset();
+            return true;
+        }
+
+        public bool TakeDamage(float damage)
+        {
+            Health.DecreaseHealth(damage);
+            return true;
+        }
+        #endregion
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 
-            // Update the center of our attack radius with our position
+            // Update our positions in the SightRange and Audio Emitter
             var worldPos = m_transform.WorldPosition;
             SightRange.Center = worldPos;
-            UnitAudioEmitter.Position = worldPos;
+            AudioEmitter.Position = worldPos;
+
+            // Update Attack Timer
+            AttackTimer.Update(gameTime);
         }
 
         public virtual bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera, bool creatingShadowMap = false)
