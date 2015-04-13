@@ -46,6 +46,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public Mana Mana { get { return GetComponent(typeof(Mana)) as Mana; } }
 
         private Texture2D blankTexture;
+        public Point HealthBarOffset;
 
         public AnimationClip MovementClip;
         public AnimationClip IdleClip;
@@ -84,6 +85,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
             HeightAboveTerrain = 0.0f;
             AttackDamage = 1.0f;
+            HealthBarOffset = new Point(75, 25);
 
             SightRange = new BoundingSphere();
             AudioEmitter = new AudioEmitter();
@@ -108,6 +110,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
             HeightAboveTerrain = 0.0f;
             DamageTakenThisFrame = 0.0;
+            HealthBarOffset = new Point(60, 30);
 
             SightRange = new BoundingSphere();
             AttackTimer.Reset();
@@ -195,8 +198,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
             #region Draw the Health
             Vector3 screenPos3D = graphics.Viewport.Project(m_transform.WorldPosition, camera.Projection, camera.View, camera.World);
             Vector2 screenPos2D = new Vector2(screenPos3D.X, screenPos3D.Y);
-            Rectangle healthRectOutline = new Rectangle((int)(screenPos2D.X - graphics.Viewport.X) - 75,
-                                                        (int)(screenPos2D.Y - graphics.Viewport.Y) + 25,
+            Rectangle healthRectOutline = new Rectangle((int)(screenPos2D.X - graphics.Viewport.X) + HealthBarOffset.X,
+                                                        (int)(screenPos2D.Y - graphics.Viewport.Y) + HealthBarOffset.Y,
                                                         (int)Health.MaxHealth + 2,
                                                         5);
             Rectangle healthRect = new Rectangle(healthRectOutline.X + 1,

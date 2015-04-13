@@ -17,12 +17,14 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
 
         public Health Health { get { return GetComponent(typeof(Health)) as Health; } }
         private Texture2D blankTexture;
+        public Point HealthBarOffset;
 
         public Factory()
             :base()
         {
             // Cash the refrences to textures
             blankTexture = ResourceManager.Instance.GetAsset(typeof(Texture2D), ResourceManager.EngineReservedAssetNames.blankTextureName) as Texture2D;
+            HealthBarOffset = new Point(-100, 25);
 
             // Add Building Specific Components
             AddComponent(typeof(Health));
@@ -54,8 +56,8 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
             #region Draw the Health
             Vector3 screenPos3D = graphics.Viewport.Project(m_transform.WorldPosition, camera.Projection, camera.View, camera.World);
             Vector2 screenPos2D = new Vector2(screenPos3D.X, screenPos3D.Y);
-            Rectangle healthRectOutline = new Rectangle((int)(screenPos2D.X - graphics.Viewport.X) - 100,
-                                                        (int)(screenPos2D.Y - graphics.Viewport.Y) + 25,
+            Rectangle healthRectOutline = new Rectangle((int)(screenPos2D.X - graphics.Viewport.X) + HealthBarOffset.X,
+                                                        (int)(screenPos2D.Y - graphics.Viewport.Y) + HealthBarOffset.Y,
                                                         (int)Health.MaxHealth + 2,
                                                         5);
             Rectangle healthRect = new Rectangle(healthRectOutline.X + 1,

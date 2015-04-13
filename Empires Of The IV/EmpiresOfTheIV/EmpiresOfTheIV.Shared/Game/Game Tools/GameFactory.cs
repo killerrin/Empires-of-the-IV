@@ -42,7 +42,8 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             factoryBase.Factory.Health.RegenerateHealth = true;
             factoryBase.Factory.Health.RegenerationRate = 0.0001f;
             factoryBase.Factory.Health.RegenerationTimer.Interval = TimeSpan.FromSeconds(5.0);
-            factoryBase.Factory.Health.MaxHealth = 300.0f;
+            factoryBase.Factory.Health.MaxHealth = 400.0f;
+            factoryBase.Factory.HealthBarOffset.X -= 100;
 
             switch (owner.EmpireType)
             {
@@ -77,13 +78,14 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
                     unitPoolUnit.HeightAboveTerrain = 0.0f;
 
-                    unitPoolUnit.AttackTimer.Interval = TimeSpan.FromSeconds(0.8);
-                    unitPoolUnit.AttackDamage = 1.0f;
-                    unitPoolUnit.Health.MaxHealth = 50.0f;
+                    unitPoolUnit.AttackTimer.Interval = TimeSpan.FromSeconds(0.7);
+                    unitPoolUnit.AttackDamage = 1.5f;
+                    unitPoolUnit.Health.MaxHealth = 15.0f;
 
                     unitPoolUnit.Transform.MovementSpeed = 0.004f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.015f);
-                    
+                    unitPoolUnit.HealthBarOffset.X = -30;
+
                     unitPoolUnit.Model3D = ResourceManager.Instance.GetAsset(typeof(AnimatedModel), UnitID.UnanianSoldier.ToString() + "|" + ModelType.AnimatedModel.ToString()) as AnimatedModel;
                     unitPoolUnit.MovementClip = (ResourceManager.Instance.GetAsset(typeof(AnimatedModel), UnitID.UnanianSoldier.ToString() + "|" + ModelType.Animation.ToString()) as AnimatedModel).Clips[0];
                     
@@ -97,12 +99,13 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
                     unitPoolUnit.HeightAboveTerrain = 0.0f;
                     
-                    unitPoolUnit.AttackTimer.Interval = TimeSpan.FromSeconds(0.7);
-                    unitPoolUnit.AttackDamage = 1.5f;
-                    unitPoolUnit.Health.MaxHealth = 75.0f;
+                    unitPoolUnit.AttackTimer.Interval = TimeSpan.FromSeconds(0.6);
+                    unitPoolUnit.AttackDamage = 3f;
+                    unitPoolUnit.Health.MaxHealth = 35.0f;
 
                     unitPoolUnit.Transform.MovementSpeed = 0.005f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.015f);
+                    unitPoolUnit.HealthBarOffset.X = -40;
 
                     unitPoolUnit.SightRange.Radius = 10.0f;
                     break;
@@ -111,12 +114,13 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
                     unitPoolUnit.HeightAboveTerrain = 10.0f;
 
-                    unitPoolUnit.AttackTimer.Interval = TimeSpan.FromSeconds(0.6);
-                    unitPoolUnit.AttackDamage = 2.0f;
-                    unitPoolUnit.Health.MaxHealth = 100.0f;
+                    unitPoolUnit.AttackTimer.Interval = TimeSpan.FromSeconds(0.5);
+                    unitPoolUnit.AttackDamage = 6.0f;
+                    unitPoolUnit.Health.MaxHealth = 75.0f;
 
                     unitPoolUnit.Transform.MovementSpeed = 0.006f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.005f);
+                    unitPoolUnit.HealthBarOffset.X = -50;
 
                     unitPoolUnit.Model3D = ResourceManager.Instance.GetAsset(typeof(AnimatedModel), UnitID.UnanianSpaceFighter.ToString() + "|" + ModelType.AnimatedModel.ToString()) as AnimatedModel;
 
@@ -126,6 +130,19 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
             unitPoolUnit.Transform.Position = spawnPosition;
             unitPoolUnit.Transform.CreateAllMatrices();
+            unitPoolUnit.Health.Reset();
+        }
+
+        public static SoundName SoundNameFromUnitID(UnitID unitID)
+        {
+            switch (unitID)
+            {
+                case UnitID.UnanianSoldier:         return SoundName.DeathUnanianSoldier;
+                case UnitID.UnanianMIDAF:           return SoundName.DeathUnanianSoldier;
+                case UnitID.UnanianSpaceFighter:    return SoundName.DeathUnanianSpaceFighter;
+                case UnitID.None:
+                default: return SoundName.None;
+            }
         }
 
         public static Cost CreateUnitCost(UnitID unitID)

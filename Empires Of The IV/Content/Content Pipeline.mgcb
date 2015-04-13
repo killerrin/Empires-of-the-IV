@@ -351,3 +351,21 @@
 /processorParam:Quality=Best
 /build:Sound Effects/Other/menu_error.wav
 
+#begin Sound Effects/Kill/Explosion with Metal Debris.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sound Effects/Kill/Explosion with Metal Debris.wav
+
+#begin Sound Effects/Kill/Explosion 02.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sound Effects/Kill/Explosion 02.wav
+
+#begin Sound Effects/Kill/Screams Male 04.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sound Effects/Kill/Screams Male 04.wav
+

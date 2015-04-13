@@ -54,12 +54,15 @@ namespace EmpiresOfTheIV.Game
         public SoundEffectInstance Play3DSoundEffect(AudioListener listener, AudioEmitter emitter, SoundName name, float volume = 1.0f, bool isLooped = false)
         {
             var instance = CreateInstanceOfSoundEffect(name);
-
             instance.Volume = MathHelper.Clamp(volume, 0.0f, MaxVolume);
-
             instance.IsLooped = isLooped;
-            instance.Apply3D(listener, emitter);
-            instance.Play();
+
+            try
+            {
+                instance.Apply3D(listener, emitter);
+                instance.Play();
+            }
+            catch (Exception) { }
 
             return instance;
         }

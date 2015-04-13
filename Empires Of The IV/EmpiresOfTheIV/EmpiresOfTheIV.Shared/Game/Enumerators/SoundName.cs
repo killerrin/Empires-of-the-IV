@@ -14,7 +14,14 @@ namespace EmpiresOfTheIV.Game.Enumerators
         SpaceGun08,
         SpaceGun09,
 
-        // Other
+        // Factory Explosions
+        BuildingExplosion,
+       
+        // Unit Deaths
+        DeathUnanianSoldier,
+        DeathUnanianSpaceFighter,
+
+        // Menus
         MenuError
     }
 }

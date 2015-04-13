@@ -125,6 +125,11 @@ namespace EmpiresOfTheIV
             SoundEffect spaceGun08 = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Weapons/Space Gun 08", SoundName.SpaceGun08.ToString()) as SoundEffect;
             SoundEffect spaceGun09 = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Weapons/Space Gun 09", SoundName.SpaceGun09.ToString()) as SoundEffect;
 
+            SoundEffect buildingExplosion = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Kill/Explosion with Metal Debris", SoundName.BuildingExplosion.ToString()) as SoundEffect;
+
+            SoundEffect unanianSoldierDeath = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Kill/Screams Male 04", SoundName.DeathUnanianSoldier.ToString()) as SoundEffect;
+            SoundEffect unanianSpaceFighterDeath = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Kill/Explosion 02", SoundName.DeathUnanianSpaceFighter.ToString()) as SoundEffect;
+
             SoundEffect menuError01 = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Other/menu_error", SoundName.MenuError.ToString()) as SoundEffect;
 
             m_audioManager = AudioManager.Instance;
@@ -133,6 +138,12 @@ namespace EmpiresOfTheIV
             m_audioManager.SoundEffects.Add(SoundName.SpaceGun07, spaceGun07);
             m_audioManager.SoundEffects.Add(SoundName.SpaceGun08, spaceGun08);
             m_audioManager.SoundEffects.Add(SoundName.SpaceGun09, spaceGun09);
+
+            m_audioManager.SoundEffects.Add(SoundName.BuildingExplosion, buildingExplosion);
+
+            m_audioManager.SoundEffects.Add(SoundName.DeathUnanianSoldier, unanianSoldierDeath);
+            m_audioManager.SoundEffects.Add(SoundName.DeathUnanianSpaceFighter, unanianSpaceFighterDeath);
+
             m_audioManager.SoundEffects.Add(SoundName.MenuError, menuError01);
 
             // Load the Content

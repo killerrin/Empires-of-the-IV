@@ -1582,54 +1582,66 @@ namespace EmpiresOfTheIV.Game.Menus
                             if (damageUnit != null)
                             {
                                 damageUnit.TakeDamage((float)command.Damage); //damageUnit.Health.DecreaseHealth((float)command.Damage);
+                                Debug.WriteLine("Unit {0} took {1} Damage and has {2} Health Left", damageUnit.UnitID, command.Damage, damageUnit.Health.CurrentHealth);
                             }
                         }
 
                         m_commandRelay.Complete(command);
                         break;
                     case CommandType.Kill:
+                        #region Kill Factory
                         if (command.TargetType == TargetType.Factory)
                         {
                             var killFactoryBase = m_map.GetFactoryBase(command.ID1);
                             if (killFactoryBase != null)
                             {
+                                // Play Explosion Sound Effect
+                                m_activeSoundEffectInstances.Add(AudioManager.Instance.Play3DSoundEffect(m_audioListener, killFactoryBase.FactoryBaseAudioEmitter, SoundName.BuildingExplosion));
+
+                                #region Kill Code
                                 uint killPreviousOwner = killFactoryBase.PlayerID;
 
                                 killFactoryBase.PlayerID = uint.MaxValue;
                                 killFactoryBase.Factory = null;
+
+                                bool foundOtherFactoryForPlayer = false;
 
                                 foreach (var factory in m_map.FactoryBases)
                                 {
                                     if (factory.PlayerID == killPreviousOwner)
                                     {
                                         // The player still has a factory
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        // Uh-oh, that was the players last factory!
-                                        if (m_team1.Exists(killPreviousOwner))
-                                        {
-                                            var killPlayer = m_team1.GetPlayer(killPreviousOwner);
-                                            killPlayer.Alive = false;
-                                        }
-                                        else if (m_team2.Exists(killPreviousOwner))
-                                        {
-                                            var killPlayer = m_team2.GetPlayer(killPreviousOwner);
-                                            killPlayer.Alive = false;
-                                        }
-
+                                        foundOtherFactoryForPlayer = true;
                                         break;
                                     }
                                 }
 
+                                if (!foundOtherFactoryForPlayer)
+                                {
+                                    // Uh-oh, that was the players last factory!
+                                    if (m_team1.Exists(killPreviousOwner))
+                                    {
+                                        var killPlayer = m_team1.GetPlayer(killPreviousOwner);
+                                        killPlayer.Alive = false;
+                                    }
+                                    else if (m_team2.Exists(killPreviousOwner))
+                                    {
+                                        var killPlayer = m_team2.GetPlayer(killPreviousOwner);
+                                        killPlayer.Alive = false;
+                                    }
+                                }
+                                #endregion
                             }
                         }
+                        #endregion
+                        #region Kill Unit
                         else if (command.TargetType == TargetType.Unit)
                         {
                             var killUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
                             if (killUnit != null)
                             {
+                                m_activeSoundEffectInstances.Add(AudioManager.Instance.Play3DSoundEffect(m_audioListener, killUnit.AudioEmitter, GameFactory.SoundNameFromUnitID(killUnit.UnitName)));
+
                                 if (killUnit.PlayerID == m_me.ID)
                                 {
                                     m_me.Economy.AddCost(killUnit.UnitCost.OnlyUnitCost());
@@ -1639,6 +1651,7 @@ namespace EmpiresOfTheIV.Game.Menus
                                 m_unitPool.SwapPool(command.ID1, out u);
                             }
                         }
+                        #endregion
 
                         m_commandRelay.Complete(command);
                         break;
@@ -1717,10 +1730,9 @@ namespace EmpiresOfTheIV.Game.Menus
 
                     if (unit2.CheckSphereIntersection(unit1.SightRange))
                     {
-                        Debug.WriteLine("Unit {0} is attacking Unit {1}", unit1.UnitID, unit2.UnitID);
                         if (unit1.Attack())
                         {
-                            // Unit Is automatically attacking Unit
+                            //Debug.WriteLine("Unit {0} is attacking Unit {1}", unit1.UnitID, unit2.UnitID);
                             m_commandRelay.AddCommand(Command.AttackCommand(unit1.UnitID, unit2.UnitID, TargetType.Unit), NetworkTrafficDirection.Local);
                             unit2.DamageTakenThisFrame += unit1.AttackDamage;
                         }
