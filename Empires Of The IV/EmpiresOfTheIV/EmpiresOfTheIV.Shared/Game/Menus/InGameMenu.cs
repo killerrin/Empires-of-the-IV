@@ -779,7 +779,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 if (i == e.ID)
                     return;
 
-            Debug.WriteLine("{0}, Pressed", e.ToString());
+            //Debug.WriteLine("{0}, Pressed", e.ToString());
             m_activePointerEventsThisFrame.Add(e);
             
             if (e.Pointer == PointerPress.Touch) { touchDown = true; }
@@ -797,7 +797,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 if (i == e.ID)
                     return;
 
-            Debug.WriteLine("{0}, Clicked", e.ToString());
+            //Debug.WriteLine("{0}, Clicked", e.ToString());
             m_activePointerClickedEventsThisFrame.Add(e);
 
             if (e.Pointer == PointerPress.Touch) { touchDown = false; }
@@ -851,21 +851,6 @@ namespace EmpiresOfTheIV.Game.Menus
 
                 case Keys.PageDown:
                 case Keys.E: m_gameCamera.Move(e.GameTime, m_gameCamera.CameraRotation.Forward); break;
-
-                //case Keys.Up:   case Keys.NumPad8: m_gameCamera.Pitch = m_gameCamera.Pitch + MathHelper.ToRadians(2); break;
-                //case Keys.Down: case Keys.NumPad2: m_gameCamera.Pitch = m_gameCamera.Pitch + MathHelper.ToRadians(-2); break;
-                //
-                //case Keys.Left:  case Keys.NumPad4: m_gameCamera.Yaw = m_gameCamera.Yaw + MathHelper.ToRadians(2); break;
-                //case Keys.Right: case Keys.NumPad6: m_gameCamera.Yaw = m_gameCamera.Yaw + MathHelper.ToRadians(-2); break;
-                //
-                //case Keys.P: case Keys.NumPad1:
-                //case Keys.NumPad7: m_gameCamera.Roll = m_gameCamera.Roll + MathHelper.ToRadians(2); break;
-                //
-                //case Keys.O: case Keys.NumPad3:
-                //case Keys.NumPad9: m_gameCamera.Roll = m_gameCamera.Roll + MathHelper.ToRadians(-2); break;
-
-                //case Keys.D0: case Keys.NumPad0: m_gameCamera.ResetCamera(); break;
-                //case Keys.D5: case Keys.NumPad5: m_gameCamera.ResetRotations(); break;
             }
         }
         void Keyboard_KeyboardPressed(object sender, Anarian.Events.KeyboardPressedEventArgs e)
@@ -1232,7 +1217,6 @@ namespace EmpiresOfTheIV.Game.Menus
                 m_game.Graphics.GraphicsDevice.Viewport
             );
 
-            // First we check if our ray intersects with a Unit
             for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
             {
                 if (m_unitPool.m_activeUnits[i].CheckRayIntersection(ray))
@@ -1271,11 +1255,11 @@ namespace EmpiresOfTheIV.Game.Menus
                 if (terrainResult.Value.Y < m_map.Terrain.HeightData.HighestHeight - 1)
                 {
                     // Then move all selected units
-                    for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
+                    foreach (var unit in m_unitPool.m_myActiveUnits)
                     {
-                        if (m_unitPool.m_activeUnits[i].Selected)
+                        if (unit.Selected)
                         {
-                            m_commandRelay.AddCommand(Command.MoveCommand(m_unitPool.m_activeUnits[i].UnitID, terrainResult.Value), NetworkTrafficDirection.Outbound);
+                            m_commandRelay.AddCommand(Command.MoveCommand(unit.UnitID, terrainResult.Value), NetworkTrafficDirection.Outbound);
                         }
                     }
                 }
@@ -1345,21 +1329,21 @@ namespace EmpiresOfTheIV.Game.Menus
             );
 
             // First we check if our ray intersects with a Unit
-            for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
+            foreach (var unit in m_unitPool.m_myActiveUnits)
             {
-                if (m_unitPool.m_activeUnits[i].CheckRayIntersection(ray))
+                if (unit.CheckRayIntersection(ray))
                 {
-                    if (m_unitPool.m_activeUnits[i].PlayerID == m_me.ID)
+                    if (unit.PlayerID == m_me.ID)
                     {
                         // Single Unit Selection
-                        if (!m_unitPool.m_activeUnits[i].Selected)
+                        if (!unit.Selected)
                         {
-                            foreach (var unit in m_unitPool.m_activeUnits)
+                            foreach (var u in m_unitPool.m_myActiveUnits)
                             {
-                                unit.Selected = false;    
+                                u.Selected = false;    
                             }
 
-                            m_unitPool.m_activeUnits[i].Selected = true;
+                            unit.Selected = true;
                             m_unitPool.AreAnyUnitsCurrentlySelected = true;
                             return true;
                         }
@@ -1440,7 +1424,7 @@ namespace EmpiresOfTheIV.Game.Menus
                             m_unitPool.AreAnyUnitsCurrentlySelected = false;
 
                             BoundingFrustum selectionFrustrum = m_gameCamera.UnprojectRectangle(m_selectionManager.GetSelection(), m_game.GraphicsDevice.Viewport);
-                            foreach (var item in m_unitPool.m_activeUnits)
+                            foreach (var item in m_unitPool.m_myActiveUnits)
                             {
                                 if (item.PlayerID == m_me.ID &&
                                     item.CheckFrustumIntersection(selectionFrustrum))
@@ -1659,8 +1643,6 @@ namespace EmpiresOfTheIV.Game.Menus
                         break;
                 }
             }
-            
-            //m_commandRelay.RemoveAllCompleted();
             #endregion
 
             // If the Selection was Released, reset the Selection Manager
@@ -1681,8 +1663,9 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             #endregion
 
-                // Update all the Active Units
-                m_unitPool.Update(gameTime);
+            // Update all the Active Units
+            m_unitPool.Update(gameTime);
+            m_unitPool.GetAllMyActiveUnits(m_me.ID);
 
             // Update the GUI
             m_buildMenuManager.Update(gameTime);
@@ -1791,7 +1774,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
             foreach(var unit in m_unitPool.m_activeUnits)
             {
-                if (unit.Health.CurrentHealth <= 0.0f)
+                if (!unit.Health.Alive)
                 {
                     if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer ||
                         m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
@@ -1812,7 +1795,7 @@ namespace EmpiresOfTheIV.Game.Menus
             {
                 if (!factory.HasOwner) continue;
 
-                if (factory.Factory.Health.CurrentHealth <= 0.0f) {
+                if (!factory.Factory.Health.Alive) {
                     if (m_pageParameter.GameConnectionType == GameConnectionType.Singleplayer ||
                         m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
                     {

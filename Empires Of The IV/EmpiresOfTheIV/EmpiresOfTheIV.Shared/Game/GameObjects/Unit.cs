@@ -26,6 +26,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public UnitID UnitName;
         public Cost UnitCost;
 
+        GameObjectLifeState LifeState;
         public BoundingSphere SightRange;
         public AudioEmitter AudioEmitter;
 
@@ -91,6 +92,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
             AudioEmitter = new AudioEmitter();
             AttackTimer = new Timer(TimeSpan.FromSeconds(1.0));
 
+            LifeState = GameObjectLifeState.Alive;
+
             UnitCost = Cost.FromUnitCost(0.0);
         }
 
@@ -100,6 +103,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
             UnitType = Enumerators.UnitType.None;
             UnitName = Enumerators.UnitID.None;
+
+            LifeState = GameObjectLifeState.Alive;
             
             Selectable = true;
             Selected = false;
@@ -145,6 +150,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public bool CanAttack()
         {
             if (!Health.Alive) return false;
+            if (LifeState != GameObjectLifeState.Alive) return false;
 
             return AttackTimer.Progress == Anarian.Enumerators.ProgressStatus.Completed;
         }
@@ -166,6 +172,12 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
         public override void Update(GameTime gameTime)
         {
+            if (LifeState == GameObjectLifeState.Dying)
+            {
+                // Update Particles
+                return;
+            }
+            
             base.Update(gameTime);
 
             // Update our positions in the SightRange and Audio Emitter
@@ -188,12 +200,14 @@ namespace EmpiresOfTheIV.Game.GameObjects
             
             if (!creatingShadowMap)
                 return DrawHealth(gameTime, spriteBatch, graphics, camera);
+
             return true;
         }
 
         public bool DrawHealth(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
             if (m_model == null) return false;
+            if (LifeState != GameObjectLifeState.Alive) return false;
 
             #region Draw the Health
             Vector3 screenPos3D = graphics.Viewport.Project(m_transform.WorldPosition, camera.Projection, camera.View, camera.World);

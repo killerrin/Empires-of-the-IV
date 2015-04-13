@@ -11,8 +11,10 @@ namespace EmpiresOfTheIV.Game.Game_Tools
     public class UnitPool : IUpdatable, IRenderable
     {
         public int TotalUnitsInPool { get; protected set; }
+
         public List<Unit> m_activeUnits;
         public List<Unit> m_inactiveUnits;
+        public List<Unit> m_myActiveUnits;
 
         public bool AreAnyUnitsCurrentlySelected;
 
@@ -21,6 +23,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             TotalUnitsInPool = totalUnitsInPool;
             m_activeUnits = new List<Unit>(TotalUnitsInPool);
             m_inactiveUnits = new List<Unit>(TotalUnitsInPool);
+            m_myActiveUnits = new List<Unit>(TotalUnitsInPool / 2);
 
             AreAnyUnitsCurrentlySelected = false;
         }
@@ -35,6 +38,18 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             }
 
             return selectedUnits;
+        }
+
+        public List<Unit> GetAllMyActiveUnits(uint myPlayerID)
+        {
+            m_myActiveUnits.Clear();
+            foreach (var unit in m_activeUnits)
+            {
+                if (unit.PlayerID == myPlayerID)
+                    m_myActiveUnits.Add(unit);
+            }
+
+            return m_myActiveUnits;
         }
 
         public void Clear()

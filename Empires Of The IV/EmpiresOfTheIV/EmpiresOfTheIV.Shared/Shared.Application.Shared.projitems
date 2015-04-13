@@ -23,6 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Commands\TargetType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\FactoryBaseRayIntersection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameObjectLifeState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\GameConnectionType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Enumerators\InputMode.cs" />

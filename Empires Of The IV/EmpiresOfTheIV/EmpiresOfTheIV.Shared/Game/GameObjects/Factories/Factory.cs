@@ -2,6 +2,7 @@
 using Anarian.DataStructures;
 using Anarian.DataStructures.Components;
 using Anarian.Interfaces;
+using EmpiresOfTheIV.Game.Enumerators;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -16,6 +17,8 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
         //List<FactoryPlot> m_factoryPlots;
 
         public Health Health { get { return GetComponent(typeof(Health)) as Health; } }
+
+        GameObjectLifeState LifeState;
         private Texture2D blankTexture;
         public Point HealthBarOffset;
 
@@ -25,6 +28,8 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
             // Cash the refrences to textures
             blankTexture = ResourceManager.Instance.GetAsset(typeof(Texture2D), ResourceManager.EngineReservedAssetNames.blankTextureName) as Texture2D;
             HealthBarOffset = new Point(-100, 25);
+
+            LifeState = GameObjectLifeState.Alive;
 
             // Add Building Specific Components
             AddComponent(typeof(Health));
@@ -36,10 +41,14 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
         }
         public override void Update(GameTime gameTime)
         {
-            //Debug.WriteLine("Factory");
-            base.Update(gameTime);
+            if (LifeState == GameObjectLifeState.Dying)
+            {
+                // Update Particles
+                return;
+            }
 
-            Health.Update(gameTime);
+            base.Update(gameTime);
+            //Health.Update(gameTime);
         }
         public override bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera, bool creatingShadowMap = false)
         {
@@ -53,6 +62,8 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
 
         public bool DrawHealth(GameTime gametime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
+            if (LifeState != GameObjectLifeState.Alive) return false;
+
             #region Draw the Health
             Vector3 screenPos3D = graphics.Viewport.Project(m_transform.WorldPosition, camera.Projection, camera.View, camera.World);
             Vector2 screenPos2D = new Vector2(screenPos3D.X, screenPos3D.Y);
