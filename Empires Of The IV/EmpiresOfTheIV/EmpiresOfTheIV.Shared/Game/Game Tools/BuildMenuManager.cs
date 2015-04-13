@@ -69,14 +69,19 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             var buttonTexture = ResourceManager.Instance.GetAsset(typeof(Texture2D), "Purchase Button") as Texture2D;
             m_blankTexture = ResourceManager.Instance.GetAsset(typeof(Texture2D), ResourceManager.EngineReservedAssetNames.blankTextureName) as Texture2D;
 
-            var screenRect = AnarianConsts.ScreenRectangle;
-            m_uiRectBackground = new Rectangle((int)(screenRect.Width * 0.3),
-                                               (int)(screenRect.Height * 0.3),
-                                               (int)(screenRect.Width * 0.5),
-                                               (int)(screenRect.Height * 0.5));
+            var centerScreenRect = AnarianConsts.ScreenRectangle.Center;
             int distanceBetweenButtons = 50;
-            var widthHeight = new Point(160, 80);
-            var purchaseButtonRect = new Rectangle(m_uiRectBackground.X + distanceBetweenButtons, (int)((m_uiRectBackground.Bottom - widthHeight.Y) * 0.98), widthHeight.X, widthHeight.Y);
+
+            var buttonWidthHeight = new Point(160, 80);
+            var menuWidthHeight = new Point((distanceBetweenButtons * 4) + (buttonWidthHeight.X * 3),
+                                            400);
+
+            m_uiRectBackground = new Rectangle(centerScreenRect.X - (menuWidthHeight.X / 2),
+                                               centerScreenRect.Y - (menuWidthHeight.Y / 2), 
+                                               menuWidthHeight.X,
+                                               menuWidthHeight.Y);
+
+            var purchaseButtonRect = new Rectangle(m_uiRectBackground.X + distanceBetweenButtons, (int)((m_uiRectBackground.Bottom - buttonWidthHeight.Y) * 0.98), buttonWidthHeight.X, buttonWidthHeight.Y);
 
             if (m_uiRectBackground.Width < ((purchaseButtonRect.Width * 3) + (distanceBetweenButtons * 3)))
                 m_uiRectBackground.Width = ((purchaseButtonRect.Width * 3) + (distanceBetweenButtons * 3));
@@ -94,19 +99,19 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             m_unit3 = new AnimatedGameObject();
             m_unit3.CullDraw = false;
 
-            ((ICamera)m_basicCamera).View = Matrix.CreateTranslation(0, 20, 0);
+            ((ICamera)m_basicCamera).View = Matrix.CreateTranslation(0, 30, 0);
 
             switch (m_me.EmpireType)
             {
                 case EmpireType.UnanianEmpire:
                     m_unit1.Model3D = ResourceManager.Instance.GetAsset(typeof(AnimatedModel), UnitID.UnanianSoldier.ToString() + "|" + ModelType.AnimatedModel.ToString()) as AnimatedModel;
                     m_unit1.Transform.Position = new Vector3(-150, 0, -600);
-                    m_unit1.Transform.Scale = new Vector3(0.50f);
+                    m_unit1.Transform.Scale = new Vector3(0.60f);
                     //m_unit1.PlayClip((ResourceManager.Instance.GetAsset(typeof(AnimatedModel), UnitID.UnanianSoldier.ToString() + "|" + ModelType.Animation.ToString()) as AnimatedModel).Clips[0]).Looping = true;
                     m_unit1Cost = GameFactory.CreateUnitCost(UnitID.UnanianSoldier);
 
                     m_unit3.Model3D = ResourceManager.Instance.GetAsset(typeof(AnimatedModel), UnitID.UnanianSpaceFighter.ToString() + "|" + ModelType.AnimatedModel.ToString()) as AnimatedModel;
-                    m_unit3.Transform.Position = new Vector3(160, 25, -600);
+                    m_unit3.Transform.Position = new Vector3(150, 25, -600);
                     m_unit3.Transform.Scale = new Vector3(0.10f);
                     m_unit3Cost = GameFactory.CreateUnitCost(UnitID.UnanianSpaceFighter);
 
@@ -216,14 +221,15 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             //m_purchaseButton2.Draw(gameTime, spriteBatch, graphics, camera);
             m_purchaseButton3.Draw(gameTime, spriteBatch, graphics, camera);
 
+            int distanceLeftOfButton = 10;
+            int heightAboveButton = 100;
+
             if (m_buildMenuType == BuildMenuType.BuildFactory)
             {
 
             }
             else if (m_buildMenuType == BuildMenuType.BuildUnit)
             {
-                int distanceLeftOfButton = 10;
-                int heightAboveButton = 100;
                 DrawCost(m_unit1Cost, new Vector2(m_purchaseButton1.Position.Left - distanceLeftOfButton, m_purchaseButton1.Position.Top - heightAboveButton), gameTime, spriteBatch);
                 //DrawCost(m_unit2Cost, new Vector2(m_purchaseButton2.Position.Left - distanceLeftOfButton, m_purchaseButton2.Position.Top - heightAboveButton), gameTime, spriteBatch);
                 DrawCost(m_unit3Cost, new Vector2(m_purchaseButton3.Position.Left - distanceLeftOfButton, m_purchaseButton3.Position.Top - heightAboveButton), gameTime, spriteBatch);

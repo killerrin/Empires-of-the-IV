@@ -86,7 +86,12 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
             HeightAboveTerrain = 0.0f;
             AttackDamage = 1.0f;
+
             HealthBarOffset = new Point(75, 25);
+            BoundingSphereColor = Color.DarkBlue;
+
+            // Yellow
+            // Dark Blue
 
             SightRange = new BoundingSphere();
             AudioEmitter = new AudioEmitter();
