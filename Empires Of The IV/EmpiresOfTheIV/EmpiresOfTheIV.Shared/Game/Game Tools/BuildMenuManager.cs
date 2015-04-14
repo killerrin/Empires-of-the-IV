@@ -49,7 +49,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
         AnimatedGameObject m_unit3;
         Cost m_unit3Cost;
 
-        Model m_factory;
+        StaticGameObject m_factory;
         Cost m_factoryCost;
 
         Matrix m_rotationMatrix;
@@ -99,6 +99,9 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             m_unit3 = new AnimatedGameObject();
             m_unit3.CullDraw = false;
 
+            m_factory = new StaticGameObject();
+            m_factory.CullDraw = false;
+
             ((ICamera)m_basicCamera).View = Matrix.CreateTranslation(0, 30, 0);
 
             switch (m_me.EmpireType)
@@ -115,7 +118,9 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     m_unit3.Transform.Scale = new Vector3(0.10f);
                     m_unit3Cost = GameFactory.CreateUnitCost(UnitID.UnanianSpaceFighter);
 
-                    m_factory = ResourceManager.Instance.GetAsset(typeof(Model), "Unanian Factory") as Model;
+                    m_factory.Model3D = ResourceManager.Instance.GetAsset(typeof(Model), "Unanian Factory") as Model;
+                    m_factory.Transform.Position = new Vector3(0, 25, -600);
+                    m_factory.Transform.Scale = new Vector3(1.0f);
                     break;
                 case EmpireType.CrescanianConfederation:
                     break;
@@ -138,10 +143,14 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
             switch (m_buildMenuType)
             {
-                case BuildMenuType.BuildFactory:    m_purchaseButton1.Active = true;    break;
+                case BuildMenuType.BuildFactory:
+                    m_purchaseButton1.Active = false;
+                    m_purchaseButton2.Active = true;
+                    m_purchaseButton3.Active = false;
+                    break;
                 case BuildMenuType.BuildUnit:       
                     m_purchaseButton1.Active = true;
-                    m_purchaseButton2.Active = true;
+                    m_purchaseButton2.Active = false;
                     m_purchaseButton3.Active = true;
                     break;
             }
@@ -197,10 +206,12 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             m_unit1.Transform.RotationMatrix = m_rotationMatrix;
             m_unit2.Transform.RotationMatrix = m_rotationMatrix;
             m_unit3.Transform.RotationMatrix = m_rotationMatrix;
+            m_factory.Transform.RotationMatrix = m_rotationMatrix;
 
             m_unit1.Update(gameTime);
             m_unit2.Update(gameTime);
             m_unit3.Update(gameTime);
+            m_factory.Update(gameTime);
         }
 
         void IRenderable.Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera) { Draw(gameTime, spriteBatch, graphics, camera); }
@@ -211,14 +222,17 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             spriteBatch.Begin();
             Rectangle backRect = new Rectangle(m_purchaseButton1.Position.X - 50, m_purchaseButton1.Position.Y - 300, 550, 400);
             spriteBatch.Draw(m_blankTexture, m_uiRectBackground, Color.Black * 0.5f);
-
-            spriteBatch.Draw(m_blankTexture, m_purchaseButton1.Position, GuiColor);
-            //spriteBatch.Draw(m_blankTexture, m_purchaseButton2.Position, GuiColor);
-            spriteBatch.Draw(m_blankTexture, m_purchaseButton3.Position, GuiColor);
+            
+            if (m_purchaseButton1.Active)
+                spriteBatch.Draw(m_blankTexture, m_purchaseButton1.Position, GuiColor);
+            if (m_purchaseButton2.Active)
+                spriteBatch.Draw(m_blankTexture, m_purchaseButton2.Position, GuiColor);
+            if (m_purchaseButton3.Active)
+                spriteBatch.Draw(m_blankTexture, m_purchaseButton3.Position, GuiColor);
             spriteBatch.End();
 
             m_purchaseButton1.Draw(gameTime, spriteBatch, graphics, camera);
-            //m_purchaseButton2.Draw(gameTime, spriteBatch, graphics, camera);
+            m_purchaseButton2.Draw(gameTime, spriteBatch, graphics, camera);
             m_purchaseButton3.Draw(gameTime, spriteBatch, graphics, camera);
 
             int distanceLeftOfButton = 10;
@@ -226,13 +240,16 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
             if (m_buildMenuType == BuildMenuType.BuildFactory)
             {
-
+                DrawCost(m_factoryCost, new Vector2(m_purchaseButton2.Position.Left - distanceLeftOfButton, m_purchaseButton2.Position.Top - heightAboveButton), gameTime, spriteBatch);
             }
             else if (m_buildMenuType == BuildMenuType.BuildUnit)
             {
-                DrawCost(m_unit1Cost, new Vector2(m_purchaseButton1.Position.Left - distanceLeftOfButton, m_purchaseButton1.Position.Top - heightAboveButton), gameTime, spriteBatch);
-                //DrawCost(m_unit2Cost, new Vector2(m_purchaseButton2.Position.Left - distanceLeftOfButton, m_purchaseButton2.Position.Top - heightAboveButton), gameTime, spriteBatch);
-                DrawCost(m_unit3Cost, new Vector2(m_purchaseButton3.Position.Left - distanceLeftOfButton, m_purchaseButton3.Position.Top - heightAboveButton), gameTime, spriteBatch);
+                if (m_purchaseButton1.Active)
+                    DrawCost(m_unit1Cost, new Vector2(m_purchaseButton1.Position.Left - distanceLeftOfButton, m_purchaseButton1.Position.Top - heightAboveButton), gameTime, spriteBatch);
+                if (m_purchaseButton2.Active)
+                    DrawCost(m_unit2Cost, new Vector2(m_purchaseButton2.Position.Left - distanceLeftOfButton, m_purchaseButton2.Position.Top - heightAboveButton), gameTime, spriteBatch);
+                if (m_purchaseButton3.Active)
+                    DrawCost(m_unit3Cost, new Vector2(m_purchaseButton3.Position.Left - distanceLeftOfButton, m_purchaseButton3.Position.Top - heightAboveButton), gameTime, spriteBatch);
             }
         }
 
@@ -263,7 +280,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
         public void Draw3DModels(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
             if (!Active) return;
-            
+
             //// Since we are also using 2D, Reset the
             //// Graphics Device to Render 3D Models properly
             //graphics.BlendState = BlendState.Opaque;
@@ -278,7 +295,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
             if (m_buildMenuType == BuildMenuType.BuildFactory)
             {
-                m_factory.Draw(Matrix.Identity, Matrix.Identity, camera.Projection);
+                m_factory.Draw(gameTime, spriteBatch, graphics, m_basicCamera);
             }
             else if (m_buildMenuType == BuildMenuType.BuildUnit)
             {
