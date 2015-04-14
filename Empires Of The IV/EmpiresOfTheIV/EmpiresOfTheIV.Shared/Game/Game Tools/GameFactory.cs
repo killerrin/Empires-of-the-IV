@@ -92,7 +92,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     var usp = unitPoolUnit.PlayClip(unitPoolUnit.MovementClip);
                     usp.Looping = true;
 
-                    unitPoolUnit.SightRange.Radius = 8.0f;
+                    unitPoolUnit.SightRange.Radius = 10.0f;
                     break;
                 case UnitID.UnanianMIDAF:
                     unitPoolUnit.UnitType = UnitType.Soldier;
@@ -107,7 +107,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     unitPoolUnit.Transform.Scale = new Vector3(0.015f);
                     unitPoolUnit.HealthBarOffset.X = -40;
 
-                    unitPoolUnit.SightRange.Radius = 10.0f;
+                    unitPoolUnit.SightRange.Radius = 12.0f;
                     break;
                 case UnitID.UnanianSpaceFighter:
                     unitPoolUnit.UnitType = UnitType.Space;

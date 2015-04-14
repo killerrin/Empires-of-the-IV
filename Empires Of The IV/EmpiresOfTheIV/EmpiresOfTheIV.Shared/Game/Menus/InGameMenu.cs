@@ -116,8 +116,6 @@ namespace EmpiresOfTheIV.Game.Menus
         
         public Map m_map;
 
-        SmokePlumeParticleSystem particleSmoke;
-
         #endregion
 
         #region Constructors and Messages
@@ -145,8 +143,6 @@ namespace EmpiresOfTheIV.Game.Menus
             m_blankTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), ResourceManager.EngineReservedAssetNames.blankTextureName) as Texture2D;
             m_empiresOfTheIVFont = m_game.ResourceManager.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont") as SpriteFont;
             m_empiresOfTheIVFontSmall = m_game.ResourceManager.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont Small") as SpriteFont;
-
-            particleSmoke = new SmokePlumeParticleSystem(Vector2.Zero, 50, Vector3.Zero);
 
             // Subscribe to Events
             m_networkManager.OnConnected += NetworkManager_OnConnected;
@@ -1460,8 +1456,13 @@ namespace EmpiresOfTheIV.Game.Menus
 
                             if (moveResult)
                             {
+                                moveUnit.IgnoreAttackRotation = false;
                                 m_commandRelay.Complete(command);
                                 smoothHeight = false;
+                            }
+                            else
+                            {
+                                moveUnit.IgnoreAttackRotation = true;
                             }
 
                             // Since this is the only spot where units will move
@@ -1501,10 +1502,12 @@ namespace EmpiresOfTheIV.Game.Menus
                                 var defendingUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID2);
                                 if (defendingUnit != null)
                                 {
-                                    var attackingPosition = defendingUnit.Transform.WorldPosition + attackingUnit.Transform.WorldPosition;
-                                    attackingPosition.Y = attackingUnit.Transform.WorldPosition.Y;
-
-                                    //attackingUnit.Transform.RotateToPoint(gameTime, attackingPosition);
+                                    if (!attackingUnit.IgnoreAttackRotation)
+                                    {
+                                        Vector3 direction = attackingUnit.Transform.WorldPosition - defendingUnit.Transform.WorldPosition;
+                                        direction.Y = attackingUnit.Transform.WorldPosition.Y;
+                                        attackingUnit.Transform.RotateToPoint(gameTime, direction);
+                                    }
                                 }
                             }
                             else if (command.TargetType == TargetType.Factory)
@@ -1514,7 +1517,12 @@ namespace EmpiresOfTheIV.Game.Menus
                                 {
                                     if (defendingBuilding.Base != null)
                                     {
-                                        //attackingUnit.Transform.RotateToPoint(gameTime, defendingBuilding.Base.Transform.WorldPosition);
+                                        if (!attackingUnit.IgnoreAttackRotation)
+                                        {
+                                            Vector3 direction = attackingUnit.Transform.WorldPosition - defendingBuilding.Base.Transform.WorldPosition;
+                                            direction.Y = attackingUnit.Transform.WorldPosition.Y;
+                                            attackingUnit.Transform.RotateToPoint(gameTime, direction);
+                                        }
                                     }
                                 }
                             }
@@ -1695,9 +1703,6 @@ namespace EmpiresOfTheIV.Game.Menus
                 }
             }
             #endregion
-
-            particleSmoke.Update(gameTime);
-            particleSmoke.WorldPosition = m_map.FactoryBases[0].Factory.Transform.WorldPosition;
 
             // Update all the Active Units
             m_unitPool.Update(gameTime);
@@ -1995,8 +2000,6 @@ namespace EmpiresOfTheIV.Game.Menus
                 spriteBatch.End();
             }
             #endregion
-
-            particleSmoke.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
 
             return true;
         }

@@ -57,6 +57,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public float HeightAboveTerrain;
         public float AttackDamage;
         public double DamageTakenThisFrame;
+
+        public bool IgnoreAttackRotation;
         #endregion
 
         public Unit(uint unitID, UnitType unitType)
@@ -97,6 +99,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
             SightRange = new BoundingSphere();
             AudioEmitter = new AudioEmitter();
             AttackTimer = new Timer(TimeSpan.FromSeconds(1.0));
+            IgnoreAttackRotation = false;
 
             LifeState = GameObjectLifeState.Alive;
 
@@ -125,6 +128,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
             SightRange = new BoundingSphere();
             AttackTimer.Reset();
+            IgnoreAttackRotation = false;
 
             Health.Reset();
             Mana.Reset();
