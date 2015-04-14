@@ -109,17 +109,8 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
-            Vector2 projectedWorldSpace = camera.ProjectToScreenCoordinates(WorldPosition, graphics.Viewport);
-            
-            spriteBatch.Begin(SpriteSortMode.Deferred, blendState);
-            foreach (var particle in m_activeParticles)
-            {
-                if (!particle.Alive) continue;
-
-                spriteBatch.Draw(particle.Texture, particle.Position + projectedWorldSpace, null, particle.Colour,
-                                 particle.Rotation, particle.Origin, particle.Scale, SpriteEffects.None, 0.0f);
-            }
-            spriteBatch.End();
+            ProjectedWorldPosition = camera.ProjectToScreenCoordinates(WorldPosition, graphics.Viewport);
+            base.Draw(gameTime, spriteBatch, graphics, camera);
         }
     }
 }

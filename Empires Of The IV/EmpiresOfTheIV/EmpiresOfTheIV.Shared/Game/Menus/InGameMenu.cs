@@ -1697,7 +1697,7 @@ namespace EmpiresOfTheIV.Game.Menus
             #endregion
 
             particleSmoke.Update(gameTime);
-            //particleSmoke.WorldPosition = m_map.FactoryBases[1].Factory.Transform.WorldPosition;
+            particleSmoke.WorldPosition = m_map.FactoryBases[0].Factory.Transform.WorldPosition;
 
             // Update all the Active Units
             m_unitPool.Update(gameTime);
@@ -1996,7 +1996,7 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             #endregion
 
-            //particleSmoke.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
+            particleSmoke.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
 
             return true;
         }
