@@ -1468,12 +1468,16 @@ namespace EmpiresOfTheIV.Game.Menus
 
                             if (moveResult)
                             {
+                                if (moveUnit.CurrentAnimationPlayer != null)
+                                    moveUnit.CurrentAnimationPlayer.Paused = true;
                                 moveUnit.IgnoreAttackRotation = false;
                                 m_commandRelay.Complete(command);
                                 smoothHeight = false;
                             }
                             else
                             {
+                                if (moveUnit.CurrentAnimationPlayer != null)
+                                    moveUnit.CurrentAnimationPlayer.Paused = false;
                                 moveUnit.IgnoreAttackRotation = true;
                             }
 
