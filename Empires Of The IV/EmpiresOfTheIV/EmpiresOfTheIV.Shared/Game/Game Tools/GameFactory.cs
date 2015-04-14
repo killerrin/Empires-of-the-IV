@@ -82,7 +82,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     unitPoolUnit.AttackTimer.Interval = TimeSpan.FromSeconds(0.7);
                     unitPoolUnit.AttackDamage = 1.5f;
                     unitPoolUnit.Health.MaxHealth = 15.0f;
-                    unitPoolUnit.DeathParticleEmitter = new ExplosionParticleSystem(Vector2.Zero, 20, unitPoolUnit.Transform.WorldPosition);
+                    unitPoolUnit.DeathParticleEmitter = new BloodSplatterParticleSystem(Vector2.Zero, 20, unitPoolUnit.Transform.WorldPosition);
 
                     unitPoolUnit.Transform.MovementSpeed = 0.004f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.015f);
@@ -104,7 +104,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     unitPoolUnit.AttackTimer.Interval = TimeSpan.FromSeconds(0.6);
                     unitPoolUnit.AttackDamage = 3f;
                     unitPoolUnit.Health.MaxHealth = 35.0f;
-                    unitPoolUnit.DeathParticleEmitter = new ExplosionParticleSystem(Vector2.Zero, 20, unitPoolUnit.Transform.WorldPosition);
+                    unitPoolUnit.DeathParticleEmitter = new BloodSplatterParticleSystem(Vector2.Zero, 20, unitPoolUnit.Transform.WorldPosition);
 
                     unitPoolUnit.Transform.MovementSpeed = 0.005f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.015f);

@@ -1400,9 +1400,9 @@ namespace EmpiresOfTheIV.Game.Menus
             m_map.Update(gameTime);
 
             // Then our Economy
-            m_pageParameter.me.Economy.Metal.Infinite = true;
-            m_pageParameter.me.Economy.Energy.Infinite = true;
-            m_pageParameter.me.Economy.Currency.Infinite = true;
+            //m_pageParameter.me.Economy.Metal.Infinite = true;
+            //m_pageParameter.me.Economy.Energy.Infinite = true;
+            //m_pageParameter.me.Economy.Currency.Infinite = true;
             m_pageParameter.me.Update(gameTime);
 
             #region Do Commands
