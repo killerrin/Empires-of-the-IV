@@ -1535,7 +1535,7 @@ namespace EmpiresOfTheIV.Game.Menus
                                         if (!attackingUnit.IgnoreAttackRotation)
                                         {
                                             Vector3 direction = attackingUnit.Transform.WorldPosition - defendingBuilding.Base.Transform.WorldPosition;
-                                            direction.Y = attackingUnit.Transform.WorldPosition.Y;
+                                            //direction.Y = attackingUnit.Transform.WorldPosition.Y;
                                             attackingUnit.Transform.RotateToPoint(gameTime, direction);
                                         }
                                     }

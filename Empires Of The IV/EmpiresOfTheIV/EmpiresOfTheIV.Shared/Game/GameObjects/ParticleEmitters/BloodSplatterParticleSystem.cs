@@ -51,7 +51,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
         }
         void ExplosionParticleSystem_OnNoActiveParticlesRemaining(object sender, Anarian.Events.AnarianEventArgs e)
         {
-            //EmissionSettings.Active = false;
+            EmissionSettings.Active = false;
             OnNoActiveParticlesRemaining -= ExplosionParticleSystem_OnNoActiveParticlesRemaining;
         }
         #endregion
@@ -69,7 +69,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
             maxAcceleration = 0;
 
             minScale = 0.15f;
-            maxScale = 0.5f;
+            maxScale = 0.50f;
 
             minRotationSpeed = -MathHelper.PiOver4;
             maxRotationSpeed = MathHelper.PiOver4;
@@ -102,7 +102,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
-            //ProjectedWorldPosition = camera.ProjectToScreenCoordinates(WorldPosition, graphics.Viewport);
+            ProjectedWorldPosition = camera.ProjectToScreenCoordinates(WorldPosition, graphics.Viewport);
             base.Draw(gameTime, spriteBatch, graphics, camera);
         }
     }
