@@ -29,8 +29,10 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
             OnNoActiveParticlesRemaining += ExplosionParticleSystem_OnNoActiveParticlesRemaining;
 
             // Add one Time assets
-            //ParticleTextures.Add(ResourceManager.Instance.GetAsset(typeof(Texture2D), ParticleNames.SmokeParticleEffect.ToString()) as Texture2D);
-            ParticleTextures.Add(ResourceManager.Instance.GetAsset(typeof(Texture2D), ParticleNames.ExplosionParticleEffect.ToString()) as Texture2D);
+            ParticleTextures.Add(new TextureColorPair(
+                                    ResourceManager.Instance.GetAsset(typeof(Texture2D), ParticleNames.ExplosionParticleEffect.ToString()) as Texture2D,
+                                    Color.White)
+                                );
 
             ParticleModifiersPostUpdate.Add(new OpacityLifespanParticleModifier());
             ParticleModifiersPostUpdate.Add(new ScaleLifespanParticleModifier(0.75f, 0.25f));

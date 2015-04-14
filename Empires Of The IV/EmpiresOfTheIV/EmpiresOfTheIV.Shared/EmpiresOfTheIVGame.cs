@@ -123,6 +123,8 @@ namespace EmpiresOfTheIV
 
             ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Effects/smoke", ParticleNames.SmokeParticleEffect.ToString());
             ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Effects/explosion", ParticleNames.ExplosionParticleEffect.ToString());
+            ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Effects/blood", ParticleNames.BloodParticleEffect.ToString());
+            ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Effects/standard", ParticleNames.StandardParticleEffect.ToString());
 
             SoundEffect spaceGun06 = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Weapons/Space Gun 06", SoundName.SpaceGun06.ToString()) as SoundEffect;
             SoundEffect spaceGun07 = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Weapons/Space Gun 07", SoundName.SpaceGun07.ToString()) as SoundEffect;

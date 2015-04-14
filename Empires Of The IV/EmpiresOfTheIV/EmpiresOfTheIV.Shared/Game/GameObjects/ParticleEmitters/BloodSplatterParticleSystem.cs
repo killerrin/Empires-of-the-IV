@@ -20,7 +20,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
         public Vector3 WorldPosition;
 
         public BloodSplatterParticleSystem(Vector2 position, uint maxNumberOfParticles, Vector3 worldposition)
-            : base(maxNumberOfParticles, new OneTimeParticleEmitter(), new TimebasedParticleLifespan(0.5f, 1.0f))
+            : base(maxNumberOfParticles, new ContinuousParticleEmitter(TimeSpan.FromSeconds(3.0)), new TimebasedParticleLifespan(0.5f, 1.0f))
         {                     
             Position = position;
             WorldPosition = worldposition;
@@ -29,11 +29,15 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
             OnNoActiveParticlesRemaining += ExplosionParticleSystem_OnNoActiveParticlesRemaining;
 
             // Add one Time assets
-            //ParticleTextures.Add(ResourceManager.Instance.GetAsset(typeof(Texture2D), ParticleNames.SmokeParticleEffect.ToString()) as Texture2D);
-            ParticleTextures.Add(ResourceManager.Instance.GetAsset(typeof(Texture2D), ParticleNames.ExplosionParticleEffect.ToString()) as Texture2D);
+            ParticleTextures.Add(new TextureColorPair(ResourceManager.Instance.GetAsset(typeof(Texture2D), ParticleNames.BloodParticleEffect.ToString()) as Texture2D,
+                                                      Color.White)
+                                );
+            ParticleTextures.Add(new TextureColorPair(ResourceManager.Instance.GetAsset(typeof(Texture2D), ParticleNames.StandardParticleEffect.ToString()) as Texture2D,
+                                                      Color.DarkRed)
+                                );
 
             ParticleModifiersPostUpdate.Add(new OpacityLifespanParticleModifier());
-            ParticleModifiersPostUpdate.Add(new ScaleLifespanParticleModifier(0.75f, 0.25f));
+            ParticleModifiersPostUpdate.Add(new ScaleLifespanParticleModifier(0.10f, 0.05f));
         }
 
         public override void Reset()
@@ -47,7 +51,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
         }
         void ExplosionParticleSystem_OnNoActiveParticlesRemaining(object sender, Anarian.Events.AnarianEventArgs e)
         {
-            EmissionSettings.Active = false;
+            //EmissionSettings.Active = false;
             OnNoActiveParticlesRemaining -= ExplosionParticleSystem_OnNoActiveParticlesRemaining;
         }
         #endregion
@@ -56,16 +60,16 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
         {
             // high initial speed with lots of variance.  make the values closer
             // together to have more consistently circular explosions.
-            minInitialSpeed = 40;
-            maxInitialSpeed = 500;
+            minInitialSpeed = 50;
+            maxInitialSpeed = 150;
 
             // doesn't matter what these values are set to, acceleration is tweaked in
             // the override of InitializeParticle.
             minAcceleration = 0;
             maxAcceleration = 0;
 
-            minScale = .3f;
-            maxScale = 1.0f;
+            minScale = 0.15f;
+            maxScale = 0.5f;
 
             minRotationSpeed = -MathHelper.PiOver4;
             maxRotationSpeed = MathHelper.PiOver4;
@@ -98,7 +102,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
-            ProjectedWorldPosition = camera.ProjectToScreenCoordinates(WorldPosition, graphics.Viewport);
+            //ProjectedWorldPosition = camera.ProjectToScreenCoordinates(WorldPosition, graphics.Viewport);
             base.Draw(gameTime, spriteBatch, graphics, camera);
         }
     }

@@ -29,8 +29,9 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
             OnNoActiveParticlesRemaining += SmokePlumeParticleSystem_OnNoActiveParticlesRemaining;
 
             // Add one Time assets
-            ParticleTextures.Add(ResourceManager.Instance.GetAsset(typeof(Texture2D), ParticleNames.SmokeParticleEffect.ToString()) as Texture2D);
-            //ParticleTextures.Add(ResourceManager.Instance.GetAsset(typeof(Texture2D), ParticleNames.ExplosionParticleEffect.ToString()) as Texture2D);
+            ParticleTextures.Add(new TextureColorPair(ResourceManager.Instance.GetAsset(typeof(Texture2D), ParticleNames.SmokeParticleEffect.ToString()) as Texture2D,
+                                                      Color.White)
+                                );
 
             ParticleModifiersPostUpdate.Add(new OpacityLifespanParticleModifier());
             ParticleModifiersPostUpdate.Add(new ScaleLifespanParticleModifier(0.75f, 0.25f));
@@ -103,8 +104,6 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
             // the base is mostly good, but we want to simulate a little bit of wind
             // heading to the right.
             particle.Acceleration.X += ParticleHelpers.RandomBetween(10, 50);
-
-            particle.Colour = Color.Transparent;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)

@@ -8,7 +8,10 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
     {
         None,
 
+        StandardParticleEffect,
+
         ExplosionParticleEffect,
-        SmokeParticleEffect
+        BloodParticleEffect,
+        SmokeParticleEffect,
     }
 }

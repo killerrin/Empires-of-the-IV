@@ -115,6 +115,7 @@ namespace EmpiresOfTheIV.Game.Menus
         public BuildMenuManager m_buildMenuManager;
         
         public Map m_map;
+        BloodSplatterParticleSystem bsps;
 
         #endregion
 
@@ -138,7 +139,7 @@ namespace EmpiresOfTheIV.Game.Menus
             m_overlay.FadePercentage = 0.75f;
 
             centerOfScreen = new Vector2(AnarianConsts.ScreenRectangle.Width / 2.0f, AnarianConsts.ScreenRectangle.Height / 2.0f);
-
+            bsps = new BloodSplatterParticleSystem(centerOfScreen, 20, Vector3.Zero);
             // Get basic Assets
             m_blankTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), ResourceManager.EngineReservedAssetNames.blankTextureName) as Texture2D;
             m_empiresOfTheIVFont = m_game.ResourceManager.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont") as SpriteFont;
@@ -1741,6 +1742,8 @@ namespace EmpiresOfTheIV.Game.Menus
             // Lastly, Aggregate all the commands to the current Command Pool, then Send all Outgoing
             m_commandRelay.AggregateAndSendCommands();
 
+            bsps.Update(gameTime);
+
             //-- Update the Menu
             base.Update(gameTime);
         }
@@ -2014,6 +2017,8 @@ namespace EmpiresOfTheIV.Game.Menus
                 spriteBatch.End();
             }
             #endregion
+
+            bsps.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
 
             return true;
         }
