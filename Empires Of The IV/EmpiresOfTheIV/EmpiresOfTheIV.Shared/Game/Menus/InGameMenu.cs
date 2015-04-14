@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 using EmpiresOfTheIV.Game.GameObjects.Factories;
 using KillerrinStudiosToolkit.Enumerators;
 using Microsoft.Xna.Framework.Audio;
+using EmpiresOfTheIV.Game.GameObjects.ParticleEmitters;
 
 namespace EmpiresOfTheIV.Game.Menus
 {
@@ -115,6 +116,8 @@ namespace EmpiresOfTheIV.Game.Menus
         
         public Map m_map;
 
+        SmokePlumeParticleSystem particleSmoke;
+
         #endregion
 
         #region Constructors and Messages
@@ -142,6 +145,8 @@ namespace EmpiresOfTheIV.Game.Menus
             m_blankTexture = m_game.ResourceManager.GetAsset(typeof(Texture2D), ResourceManager.EngineReservedAssetNames.blankTextureName) as Texture2D;
             m_empiresOfTheIVFont = m_game.ResourceManager.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont") as SpriteFont;
             m_empiresOfTheIVFontSmall = m_game.ResourceManager.GetAsset(typeof(SpriteFont), "EmpiresOfTheIVFont Small") as SpriteFont;
+
+            particleSmoke = new SmokePlumeParticleSystem(AnarianConsts.ScreenRectangle.Center.ToVector2(), 50);
 
             // Subscribe to Events
             m_networkManager.OnConnected += NetworkManager_OnConnected;
@@ -1663,6 +1668,8 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             #endregion
 
+            particleSmoke.Update(gameTime);
+
             // Update all the Active Units
             m_unitPool.Update(gameTime);
             m_unitPool.GetAllMyActiveUnits(m_me.ID);
@@ -1953,6 +1960,8 @@ namespace EmpiresOfTheIV.Game.Menus
                 spriteBatch.End();
             }
             #endregion
+
+            particleSmoke.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
 
             return true;
         }

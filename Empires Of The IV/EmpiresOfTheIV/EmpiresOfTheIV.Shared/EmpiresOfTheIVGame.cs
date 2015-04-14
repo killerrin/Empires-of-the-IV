@@ -24,6 +24,7 @@ using EmpiresOfTheIV.Game.GameObjects;
 using Anarian.DataStructures.ScreenEffects;
 using EmpiresOfTheIV.Game.Enumerators;
 using Microsoft.Xna.Framework.Audio;
+using EmpiresOfTheIV.Game.GameObjects.ParticleEmitters;
 
 namespace EmpiresOfTheIV
 {
@@ -119,6 +120,9 @@ namespace EmpiresOfTheIV
             ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Economy/Metal");
             ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Economy/Energy");
             ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Economy/Unit Cap");
+
+            ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Effects/smoke", ParticleNames.SmokeParticleEffect.ToString());
+            ResourceManager.LoadAsset(Content, typeof(Texture2D), "Textures/Effects/explosion", ParticleNames.ExplosionParticleEffect.ToString());
 
             SoundEffect spaceGun06 = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Weapons/Space Gun 06", SoundName.SpaceGun06.ToString()) as SoundEffect;
             SoundEffect spaceGun07 = ResourceManager.LoadAsset(Content, typeof(SoundEffect), "Sound Effects/Weapons/Space Gun 07", SoundName.SpaceGun07.ToString()) as SoundEffect;

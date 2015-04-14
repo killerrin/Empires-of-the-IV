@@ -49,6 +49,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GUIButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Map.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\MapTerrain.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\ParticleEmitters\ParticleNames.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\ParticleEmitters\SmokePlumeParticleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Planet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Loading\LoadingProgress.cs" />
@@ -383,6 +385,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)Content\Sound Effects\Kill\Screams Male 04.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Effects\explosion.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Content\Textures\Effects\smoke.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
