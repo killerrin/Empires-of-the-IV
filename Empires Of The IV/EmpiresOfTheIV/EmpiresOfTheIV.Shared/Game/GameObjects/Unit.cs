@@ -13,6 +13,8 @@ using System.Text;
 using EmpiresOfTheIV.Game.Players;
 using Microsoft.Xna.Framework.Audio;
 using System.Diagnostics;
+using EmpiresOfTheIV.Game.GameObjects.ParticleEmitters;
+using Anarian.Particles.Particle2D;
 
 namespace EmpiresOfTheIV.Game.GameObjects
 {
@@ -27,11 +29,13 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public UnitID UnitName;
         public Cost UnitCost;
 
-        public GameObjectLifeState LifeState;
         public BoundingSphere SightRange;
+        public Timer AttackTimer;
         public AudioEmitter AudioEmitter;
 
-        public Timer AttackTimer;
+        public GameObjectLifeState LifeState;
+        public ParticleEmitter2D DeathParticleEmitter;
+        Timer DeathVisibilityTimer;
 
         bool m_selected;
         public bool Selectable { get; set; }
@@ -102,6 +106,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
             IgnoreAttackRotation = false;
 
             LifeState = GameObjectLifeState.Alive;
+            DeathVisibilityTimer = new Timer(TimeSpan.FromSeconds(0.2));
+            DeathParticleEmitter = null;
 
             UnitCost = Cost.FromUnitCost(0.0);
         }
@@ -114,6 +120,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
             UnitName = Enumerators.UnitID.None;
 
             LifeState = GameObjectLifeState.Alive;
+            DeathVisibilityTimer.Reset();
+            DeathParticleEmitter = null;
             
             Selectable = true;
             Selected = false;
@@ -133,6 +141,14 @@ namespace EmpiresOfTheIV.Game.GameObjects
             Health.Reset();
             Mana.Reset();
         }
+
+        #region Event Handlers
+        public void ExplosionParticleEmitter_OnNoActiveParticlesRemaining(object sender, Anarian.Events.AnarianEventArgs e)
+        {
+            LifeState = GameObjectLifeState.Dead;
+            DeathParticleEmitter.OnNoActiveParticlesRemaining -= ExplosionParticleEmitter_OnNoActiveParticlesRemaining;
+        }
+        #endregion
 
         #region Interface Implimentations
         void IUpdatable.Update(GameTime gameTime) { Update(gameTime); }
@@ -186,9 +202,15 @@ namespace EmpiresOfTheIV.Game.GameObjects
         {
             if (LifeState == GameObjectLifeState.Dying)
             {
-                // Update Particles
+                DeathVisibilityTimer.Update(gameTime);
 
-                //return;
+                // Update Particles
+                if (DeathParticleEmitter is ExplosionParticleSystem)
+                    ((ExplosionParticleSystem)DeathParticleEmitter).WorldPosition = m_transform.WorldPosition;
+                if (DeathParticleEmitter is BloodSplatterParticleSystem)
+                    ((BloodSplatterParticleSystem)DeathParticleEmitter).WorldPosition = m_transform.WorldPosition;
+
+                DeathParticleEmitter.Update(gameTime);
             }
             
             base.Update(gameTime);
@@ -204,9 +226,11 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
         public virtual bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera, bool creatingShadowMap = false)
         {
-            bool result = base.Draw(gameTime, spriteBatch, graphics, camera);
-
-            if (!result) return false;
+            if (DeathVisibilityTimer.Progress != Anarian.Enumerators.ProgressStatus.Completed)
+            {
+                bool result = base.Draw(gameTime, spriteBatch, graphics, camera);
+                if (!result) return false;
+            }
 
             // Render the Attack Range
             //SightRange.RenderBoundingSphere(graphics, Matrix.Identity, camera.View, camera.Projection, Color.Red);
@@ -246,7 +270,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
 
             if (LifeState == GameObjectLifeState.Dying)
             {
-                
+                DeathParticleEmitter.Draw(gameTime, spriteBatch, graphics, camera);
             }
 
             return true;

@@ -5,6 +5,7 @@ using Anarian.Enumerators;
 using EmpiresOfTheIV.Game.Enumerators;
 using EmpiresOfTheIV.Game.GameObjects;
 using EmpiresOfTheIV.Game.GameObjects.Factories;
+using EmpiresOfTheIV.Game.GameObjects.ParticleEmitters;
 using EmpiresOfTheIV.Game.Players;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -81,6 +82,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     unitPoolUnit.AttackTimer.Interval = TimeSpan.FromSeconds(0.7);
                     unitPoolUnit.AttackDamage = 1.5f;
                     unitPoolUnit.Health.MaxHealth = 15.0f;
+                    unitPoolUnit.DeathParticleEmitter = new ExplosionParticleSystem(Vector2.Zero, 20, unitPoolUnit.Transform.WorldPosition);
 
                     unitPoolUnit.Transform.MovementSpeed = 0.004f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.015f);
@@ -102,6 +104,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     unitPoolUnit.AttackTimer.Interval = TimeSpan.FromSeconds(0.6);
                     unitPoolUnit.AttackDamage = 3f;
                     unitPoolUnit.Health.MaxHealth = 35.0f;
+                    unitPoolUnit.DeathParticleEmitter = new ExplosionParticleSystem(Vector2.Zero, 20, unitPoolUnit.Transform.WorldPosition);
 
                     unitPoolUnit.Transform.MovementSpeed = 0.005f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.015f);
@@ -117,6 +120,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                     unitPoolUnit.AttackTimer.Interval = TimeSpan.FromSeconds(0.5);
                     unitPoolUnit.AttackDamage = 6.0f;
                     unitPoolUnit.Health.MaxHealth = 75.0f;
+                    unitPoolUnit.DeathParticleEmitter = new ExplosionParticleSystem(Vector2.Zero, 20, unitPoolUnit.Transform.WorldPosition);
 
                     unitPoolUnit.Transform.MovementSpeed = 0.006f;
                     unitPoolUnit.Transform.Scale = new Vector3(0.005f);
@@ -131,6 +135,8 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             unitPoolUnit.Transform.Position = spawnPosition;
             unitPoolUnit.Transform.CreateAllMatrices();
             unitPoolUnit.Health.Reset();
+
+            unitPoolUnit.DeathParticleEmitter.OnNoActiveParticlesRemaining += unitPoolUnit.ExplosionParticleEmitter_OnNoActiveParticlesRemaining;
         }
 
         public static SoundName SoundNameFromUnitID(UnitID unitID)

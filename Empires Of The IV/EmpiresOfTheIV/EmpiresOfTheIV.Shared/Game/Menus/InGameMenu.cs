@@ -1430,6 +1430,12 @@ namespace EmpiresOfTheIV.Game.Menus
                             BoundingFrustum selectionFrustrum = m_gameCamera.UnprojectRectangle(m_selectionManager.GetSelection(), m_game.GraphicsDevice.Viewport);
                             foreach (var item in m_unitPool.m_myActiveUnits)
                             {
+                                if (item.LifeState != GameObjectLifeState.Alive)
+                                {
+                                    item.Selected = false;
+                                    continue;
+                                }
+
                                 if (item.PlayerID == m_me.ID &&
                                     item.CheckFrustumIntersection(selectionFrustrum))
                                 {
@@ -1449,6 +1455,13 @@ namespace EmpiresOfTheIV.Game.Menus
                         Unit moveUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
                         if (moveUnit != null)
                         {
+                            if (moveUnit.LifeState != GameObjectLifeState.Alive)
+                            {
+                                moveUnit.IgnoreAttackRotation = false;
+                                m_commandRelay.Complete(command);
+                                continue;
+                            }
+
                             bool smoothHeight = true;
 
                             var moveNewPos = (command.Position + new Vector3(0.0f, moveUnit.HeightAboveTerrain, 0.0f));
@@ -1504,8 +1517,9 @@ namespace EmpiresOfTheIV.Game.Menus
                                 {
                                     if (!attackingUnit.IgnoreAttackRotation)
                                     {
+                                        //var currentUnitY = attackingUnit.Transform.WorldPosition.Y;
                                         Vector3 direction = attackingUnit.Transform.WorldPosition - defendingUnit.Transform.WorldPosition;
-                                        direction.Y = attackingUnit.Transform.WorldPosition.Y;
+                                        //direction.Y = currentUnitY;
                                         attackingUnit.Transform.RotateToPoint(gameTime, direction);
                                     }
                                 }

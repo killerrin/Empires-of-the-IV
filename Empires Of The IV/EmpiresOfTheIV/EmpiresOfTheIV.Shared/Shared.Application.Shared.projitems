@@ -49,6 +49,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GUIButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Map.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\MapTerrain.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\ParticleEmitters\BloodSplatterParticleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\ParticleEmitters\ParticleNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\ParticleEmitters\ExplosionParticleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\ParticleEmitters\SmokePlumeParticleSystem.cs" />
