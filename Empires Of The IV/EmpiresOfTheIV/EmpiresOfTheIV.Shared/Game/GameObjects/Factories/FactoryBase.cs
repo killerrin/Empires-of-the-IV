@@ -29,6 +29,9 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
         public AudioEmitter FactoryBaseAudioEmitter { get { return Base.BuildingAudioEmitter; } }
 
         public bool IsFactoryOnBase { get { return (Factory != null); } }
+        public bool HasOwner { get { return (PlayerID != uint.MaxValue); } }
+                //if (PlayerID == uint.MaxValue) return false;
+                //return true;
         #endregion
 
         public FactoryBase(uint id, Vector3 rallypoint, BoundingSphere bounds)
@@ -43,14 +46,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
             Bounds = bounds;
         }
 
-        public bool HasOwner
-        {
-            get
-            {
-                if (PlayerID == uint.MaxValue) return false;
-                return true;
-            }
-        }
+
 
         public FactoryBaseRayIntersection CheckRayIntersection(Ray ray)
         {

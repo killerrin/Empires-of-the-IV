@@ -50,6 +50,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Map.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\MapTerrain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\ParticleEmitters\ParticleNames.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\ParticleEmitters\ExplosionParticleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\ParticleEmitters\SmokePlumeParticleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Planet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GameMenu.cs" />

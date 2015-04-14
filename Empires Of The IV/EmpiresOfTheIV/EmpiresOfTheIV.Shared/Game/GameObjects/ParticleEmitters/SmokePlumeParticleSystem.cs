@@ -1,4 +1,5 @@
 ﻿using Anarian;
+using Anarian.Interfaces;
 using Anarian.Particles;
 using Anarian.Particles.Particle2D;
 using Anarian.Particles.Particle2D.Modifiers;
@@ -16,11 +17,16 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
 {
     public class SmokePlumeParticleSystem : ParticleEmitter2D
     {
-        public SmokePlumeParticleSystem(Vector2 position, uint maxNumberOfParticles)
+        public Vector3 WorldPosition;
+
+        public SmokePlumeParticleSystem(Vector2 position, uint maxNumberOfParticles, Vector3 worldPosition)
             : base(maxNumberOfParticles, new ContinuousParticleEmitter(TimeSpan.FromSeconds(0.3)), new TimebasedParticleLifespan(5.0f, 10.0f))
-        {
+        {                     
             Position = position;
+            WorldPosition = worldPosition;
+
             OnEmission += SmokePlumeParticleSystem_OnEmission;
+            OnNoActiveParticlesRemaining += SmokePlumeParticleSystem_OnNoActiveParticlesRemaining;
 
             // Add one Time assets
             ParticleTextures.Add(ResourceManager.Instance.GetAsset(typeof(Texture2D), ParticleNames.SmokeParticleEffect.ToString()) as Texture2D);
@@ -30,9 +36,12 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
             ParticleModifiersPostUpdate.Add(new ScaleLifespanParticleModifier(0.75f, 0.25f));
         }
 
+        void SmokePlumeParticleSystem_OnNoActiveParticlesRemaining(object sender, Anarian.Events.AnarianEventArgs e)
+        {
+        }
+
         void SmokePlumeParticleSystem_OnEmission(object sender, Anarian.Events.AnarianEventArgs e)
         {
-            Debug.WriteLine("Particles Emitted");
         }
 
         public override void Reset()
@@ -96,6 +105,21 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
             particle.Acceleration.X += ParticleHelpers.RandomBetween(10, 50);
 
             particle.Colour = Color.Transparent;
+        }
+
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
+        {
+            Vector2 projectedWorldSpace = camera.ProjectToScreenCoordinates(WorldPosition, graphics.Viewport);
+            
+            spriteBatch.Begin(SpriteSortMode.Deferred, blendState);
+            foreach (var particle in m_activeParticles)
+            {
+                if (!particle.Alive) continue;
+
+                spriteBatch.Draw(particle.Texture, particle.Position + projectedWorldSpace, null, particle.Colour,
+                                 particle.Rotation, particle.Origin, particle.Scale, SpriteEffects.None, 0.0f);
+            }
+            spriteBatch.End();
         }
     }
 }

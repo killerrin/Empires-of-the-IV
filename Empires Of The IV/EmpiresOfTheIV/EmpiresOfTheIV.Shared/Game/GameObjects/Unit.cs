@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Text;
 using EmpiresOfTheIV.Game.Players;
 using Microsoft.Xna.Framework.Audio;
+using System.Diagnostics;
 
 namespace EmpiresOfTheIV.Game.GameObjects
 {
@@ -26,7 +27,7 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public UnitID UnitName;
         public Cost UnitCost;
 
-        GameObjectLifeState LifeState;
+        public GameObjectLifeState LifeState;
         public BoundingSphere SightRange;
         public AudioEmitter AudioEmitter;
 
@@ -149,6 +150,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
         #region Helper Methods
         public bool InAttackRange(BoundingSphere o)
         {
+            if (LifeState != GameObjectLifeState.Alive) return false;
+
             return SightRange.Intersects(o);
         }
 
@@ -180,7 +183,8 @@ namespace EmpiresOfTheIV.Game.GameObjects
             if (LifeState == GameObjectLifeState.Dying)
             {
                 // Update Particles
-                return;
+
+                //return;
             }
             
             base.Update(gameTime);
@@ -204,34 +208,42 @@ namespace EmpiresOfTheIV.Game.GameObjects
             //SightRange.RenderBoundingSphere(graphics, Matrix.Identity, camera.View, camera.Projection, Color.Red);
             
             if (!creatingShadowMap)
-                return DrawHealth(gameTime, spriteBatch, graphics, camera);
+                return DrawEffects(gameTime, spriteBatch, graphics, camera);
 
             return true;
         }
 
-        public bool DrawHealth(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
+        public bool DrawEffects(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
             if (m_model == null) return false;
-            if (LifeState != GameObjectLifeState.Alive) return false;
 
-            #region Draw the Health
-            Vector3 screenPos3D = graphics.Viewport.Project(m_transform.WorldPosition, camera.Projection, camera.View, camera.World);
-            Vector2 screenPos2D = new Vector2(screenPos3D.X, screenPos3D.Y);
-            Rectangle healthRectOutline = new Rectangle((int)(screenPos2D.X - graphics.Viewport.X) + HealthBarOffset.X,
-                                                        (int)(screenPos2D.Y - graphics.Viewport.Y) + HealthBarOffset.Y,
-                                                        (int)Health.MaxHealth + 2,
-                                                        5);
-            Rectangle healthRect = new Rectangle(healthRectOutline.X + 1,
-                                                 healthRectOutline.Y + 1,
-                                                 (int)(MathHelper.Clamp(Health.CurrentHealth, 0, healthRectOutline.Width - 2)),
-                                                 healthRectOutline.Height - 2);
+            if (LifeState == GameObjectLifeState.Dead) return false;
 
-            // Draw the Health rectangle
-            spriteBatch.Begin();
-            spriteBatch.Draw(blankTexture, healthRectOutline, Color.Black);
-            spriteBatch.Draw(blankTexture, healthRect, Color.Red);
-            spriteBatch.End();
-            #endregion
+            if (LifeState == GameObjectLifeState.Alive)
+            {
+                #region Draw the Health
+                Vector2 screenPos2D = camera.ProjectToScreenCoordinates(m_transform.WorldPosition, graphics.Viewport);
+                Rectangle healthRectOutline = new Rectangle((int)(screenPos2D.X - graphics.Viewport.X) + HealthBarOffset.X,
+                                                            (int)(screenPos2D.Y - graphics.Viewport.Y) + HealthBarOffset.Y,
+                                                            (int)Health.MaxHealth + 2,
+                                                            5);
+                Rectangle healthRect = new Rectangle(healthRectOutline.X + 1,
+                                                     healthRectOutline.Y + 1,
+                                                     (int)(MathHelper.Clamp(Health.CurrentHealth, 0, healthRectOutline.Width - 2)),
+                                                     healthRectOutline.Height - 2);
+
+                // Draw the Health rectangle
+                spriteBatch.Begin();
+                spriteBatch.Draw(blankTexture, healthRectOutline, Color.Black);
+                spriteBatch.Draw(blankTexture, healthRect, Color.Red);
+                spriteBatch.End();
+                #endregion
+            }
+
+            if (LifeState == GameObjectLifeState.Dying)
+            {
+                
+            }
 
             return true;
         }
