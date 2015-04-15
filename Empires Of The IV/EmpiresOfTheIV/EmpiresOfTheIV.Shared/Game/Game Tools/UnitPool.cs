@@ -28,16 +28,12 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             AreAnyUnitsCurrentlySelected = false;
         }
 
-        public List<Unit> GetAllSelectedUnits()
+        public void Clear()
         {
-            List<Unit> selectedUnits = new List<Unit>();
-            foreach (var unit in m_activeUnits)
-            {
-                if (unit.Selected)
-                    selectedUnits.Add(unit);
-            }
+            m_activeUnits.Clear();
+            m_inactiveUnits.Clear();
 
-            return selectedUnits;
+            m_myActiveUnits.Clear();
         }
 
         public List<Unit> GetAllMyActiveUnits(uint myPlayerID)
@@ -51,11 +47,16 @@ namespace EmpiresOfTheIV.Game.Game_Tools
 
             return m_myActiveUnits;
         }
-
-        public void Clear()
+        public List<Unit> GetAllSelectedUnits()
         {
-            m_activeUnits.Clear();
-            m_inactiveUnits.Clear();
+            List<Unit> selectedUnits = new List<Unit>();
+            foreach (var unit in m_myActiveUnits)
+            {
+                if (unit.Selected)
+                    selectedUnits.Add(unit);
+            }
+
+            return selectedUnits;
         }
 
         public bool SwapPool(uint unitID, out Unit swappedUnit)

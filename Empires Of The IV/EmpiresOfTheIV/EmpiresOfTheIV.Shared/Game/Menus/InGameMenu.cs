@@ -1254,13 +1254,41 @@ namespace EmpiresOfTheIV.Game.Menus
                 // Check if we are within bounds
                 if (terrainResult.Value.Y < m_map.Terrain.HeightData.HighestHeight - 1)
                 {
-                    // Then move all selected units
-                    foreach (var unit in m_unitPool.m_myActiveUnits)
+                    List<Unit> selectedUnits = m_unitPool.GetAllSelectedUnits();
+                    if (selectedUnits.Count == 1)
                     {
-                        if (unit.Selected)
+                        m_commandRelay.AddCommand(Command.MoveCommand(selectedUnits[0].UnitID, terrainResult.Value), NetworkTrafficDirection.Outbound);
+                    }
+                    else if (selectedUnits.Count > 1)
+                    {
+                        // Get the Center of Mass which will be used to move the units in their current formation
+                        Vector3 centerOfMass = Vector3.Zero;
+                        foreach (var unit in selectedUnits)
                         {
-                            m_commandRelay.AddCommand(Command.MoveCommand(unit.UnitID, terrainResult.Value), NetworkTrafficDirection.Outbound);
+                            centerOfMass += unit.Transform.WorldPosition;
                         }
+                        centerOfMass = centerOfMass / selectedUnits.Count;
+
+                        // Then move all selected units
+                        foreach (var unit in selectedUnits)
+                        {
+                            Vector3 difference = unit.Transform.Position - centerOfMass;
+                            Vector3 movementPosition = terrainResult.Value + difference;
+
+                            float terrainHeightAtPosition = m_map.Terrain.GetHeightAtPoint(movementPosition);
+                            movementPosition.Y = terrainHeightAtPosition;
+
+                            m_commandRelay.AddCommand(Command.MoveCommand(unit.UnitID, movementPosition), NetworkTrafficDirection.Outbound);
+                        }
+
+
+                        //foreach (var unit in m_unitPool.m_myActiveUnits)
+                        //{
+                        //    if (unit.Selected)
+                        //    {
+                        //        m_commandRelay.AddCommand(Command.MoveCommand(unit.UnitID, terrainResult.Value), NetworkTrafficDirection.Outbound);
+                        //    }
+                        //}
                     }
                 }
 
