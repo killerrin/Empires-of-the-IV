@@ -22,6 +22,9 @@ namespace EmpiresOfTheIV.Game.GameObjects
         public MapTerrain Terrain;
         public List<FactoryBase> FactoryBases;
 
+        public Vector3 MinimumMapBounds;
+        public Vector3 MaximumMapBounds;
+
         public List<UnitType> AvailableUnitTypes { get; protected set; }
 
         public Map(MapName mapName, Texture2D backgroundImage, MapTerrain terrain, params FactoryBase[] bases)
@@ -38,6 +41,10 @@ namespace EmpiresOfTheIV.Game.GameObjects
                 FactoryBases.Add(i);
 
             AvailableUnitTypes = new List<UnitType>();
+
+            MinimumMapBounds = Vector3.Zero;
+            MaximumMapBounds = Vector3.Zero;
+
         }
 
         #region Buildable Unit Types
@@ -123,5 +130,21 @@ namespace EmpiresOfTheIV.Game.GameObjects
                 i.Draw(gameTime, spriteBatch, graphics, camera, creatingShadowMap);
         }
         #endregion
+
+        public Vector3 ResolveBounds(Vector3 movementPosition)
+        {
+            Vector3 modifiedMovementPosition = movementPosition;
+            if (movementPosition.X < MinimumMapBounds.X)
+                modifiedMovementPosition.X = MinimumMapBounds.X + 1;
+            if (movementPosition.X > MaximumMapBounds.X)
+                modifiedMovementPosition.X = MaximumMapBounds.X - 1;
+
+            if (movementPosition.Z < MinimumMapBounds.Z)
+                modifiedMovementPosition.Z = MinimumMapBounds.Z + 1;
+            if (movementPosition.Z > MaximumMapBounds.Z)
+                modifiedMovementPosition.Z = MaximumMapBounds.Z - 1;
+
+           return modifiedMovementPosition;
+        }
     }
 }

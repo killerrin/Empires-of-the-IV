@@ -542,6 +542,9 @@ namespace EmpiresOfTheIV.Game.Menus
                     // MathHelper.Clamp(gameCameraPosition.Y, 30.0f, 56.0f);
                     m_gameCamera.MinClamp = new Vector3(-92.60f, m_gameCamera.DefaultCameraPosition.Y - 10, -18.35f);
                     m_gameCamera.MaxClamp = new Vector3(85.80f, m_gameCamera.DefaultCameraPosition.Y + 10,  36.74f);
+
+                    m_map.MinimumMapBounds = new Vector3(-94.64308f, 12.90819f, -34.61902f);
+                    m_map.MaximumMapBounds = new Vector3(93.01296f, 12.60246f, 35.42957f);
                     #endregion
                     break;
                 #endregion
@@ -796,8 +799,7 @@ namespace EmpiresOfTheIV.Game.Menus
             foreach (var i in ignorePointerIDs)
                 if (i == e.ID)
                     return;
-
-            //Debug.WriteLine("{0}, Clicked", e.ToString());
+            
             m_activePointerClickedEventsThisFrame.Add(e);
 
             if (e.Pointer == PointerPress.Touch) { touchDown = false; }
@@ -1261,7 +1263,8 @@ namespace EmpiresOfTheIV.Game.Menus
                     }
                     else if (selectedUnits.Count > 1)
                     {
-                        // Get the Center of Mass which will be used to move the units in their current formation
+                        // Get the Center of Mass from all selected units
+                        // which will be used to move the units in their current formation
                         Vector3 centerOfMass = Vector3.Zero;
                         foreach (var unit in selectedUnits)
                         {
@@ -1274,21 +1277,19 @@ namespace EmpiresOfTheIV.Game.Menus
                         {
                             Vector3 difference = unit.Transform.Position - centerOfMass;
                             Vector3 movementPosition = terrainResult.Value + difference;
+                            movementPosition = m_map.ResolveBounds(movementPosition);
 
                             float terrainHeightAtPosition = m_map.Terrain.GetHeightAtPoint(movementPosition);
-                            movementPosition.Y = terrainHeightAtPosition;
+                            if (terrainHeightAtPosition != float.MaxValue)
+                            {
+                                movementPosition.Y = terrainHeightAtPosition;
+                                //else {
+                                //    movementPosition = m_map.Terrain.NearestPoint(movementPosition);
+                                //}
 
-                            m_commandRelay.AddCommand(Command.MoveCommand(unit.UnitID, movementPosition), NetworkTrafficDirection.Outbound);
+                                m_commandRelay.AddCommand(Command.MoveCommand(unit.UnitID, movementPosition), NetworkTrafficDirection.Outbound);
+                            }
                         }
-
-
-                        //foreach (var unit in m_unitPool.m_myActiveUnits)
-                        //{
-                        //    if (unit.Selected)
-                        //    {
-                        //        m_commandRelay.AddCommand(Command.MoveCommand(unit.UnitID, terrainResult.Value), NetworkTrafficDirection.Outbound);
-                        //    }
-                        //}
                     }
                 }
 
