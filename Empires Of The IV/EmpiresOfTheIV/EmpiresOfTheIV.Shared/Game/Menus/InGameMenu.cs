@@ -325,9 +325,9 @@ namespace EmpiresOfTheIV.Game.Menus
             m_guiSelectionButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Selection UI Icon") as Texture2D, buttonRect, guiColor);
 
             // Setup the Bottom Bar
-            buttonRect.X = AnarianConsts.ScreenRectangle.Width - buttonRect.Width - yDistanceBetweenItems;
+            buttonRect.X = m_guiDistanceFromSide + yDistanceBetweenItems;
             buttonRect.Y += yDistanceBetweenItems + buttonRect.Height;
-            m_guiIssueCommandButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Issue Command UI Icon") as Texture2D, buttonRect, guiColor);
+            m_guiIssueCommandButton = new GUIButton(m_game.ResourceManager.GetAsset(typeof(Texture2D), "Issue Command UI Icon") as Texture2D, buttonRect, Color.DarkRed);
             m_guiIssueCommandButton.Active = false;
             #endregion
 
@@ -634,13 +634,12 @@ namespace EmpiresOfTheIV.Game.Menus
                         mapTexture = Color.Black.CreateTextureFromSolidColor(graphics, 1, 1);  m_game.ResourceManager.AddAsset(mapParallax, "Kalia Texture");
                         mapParallax = Color.Black.CreateTextureFromSolidColor(graphics, 1, 1); m_game.ResourceManager.AddAsset(mapParallax, "Kalia Parallax");
                         
-                        mapTerrain = MapTerrain.CreateFlatTerrain(graphics, 256, 256, mapTexture);
+                        mapTerrain = MapTerrain.CreateFlatTerrain(graphics, 200, 128, mapTexture);
                         heightMap = mapTerrain.HeightData.HeightMap; m_game.ResourceManager.AddAsset(mapParallax, "Kalia HeightMap");
 
                         m_game.PrefabManager.AddPrefab(mapTerrain, "Kalia Terrain");
 
-                        factoryBaseModel = m_game.ResourceManager.LoadAsset(Content, typeof(Model), "Kalia Factory Base", "Kalia FactoryBase") as Model;
-
+                        factoryBaseModel = m_game.ResourceManager.LoadAsset(Content, typeof(Model), "Models/Factories/Factory Base", "Kalia FactoryBase") as Model;
                         GameConsts.Loading.Map_Kalia = LoadingStatus.Loaded;
                     }
 #endregion
@@ -1383,20 +1382,24 @@ namespace EmpiresOfTheIV.Game.Menus
                 if (m_buildMenuManager.m_activeFactory.HasOwner)
                 {
                     var unitID = m_buildMenuManager.PurchaseSlotToUnitID(purchaseSlot);
-                    var cost = GameFactory.CreateUnitCost(unitID);
+                    var unitType = GameFactory.UnitTypeFromUnitID(unitID);
 
-                    if (m_me.Economy.SubtractCost(cost))
+                    if (m_map.IsUnitTypeBuildable(unitType))
                     {
-                        var unit = m_unitPool.FirstInactiveOfPlayer(m_me.ID);
-
-                        if (unit != null)
+                        var cost = GameFactory.CreateUnitCost(unitID);
+                        if (m_me.Economy.SubtractCost(cost))
                         {
-                            m_commandRelay.AddCommand(Command.BuildUnitCommand(unit.UnitID, unitID, m_buildMenuManager.m_activeFactory.FactoryBaseID), NetworkTrafficDirection.Outbound);
-                            purchasedSuccessfully = true;
+                            var unit = m_unitPool.FirstInactiveOfPlayer(m_me.ID);
+
+                            if (unit != null)
+                            {
+                                m_commandRelay.AddCommand(Command.BuildUnitCommand(unit.UnitID, unitID, m_buildMenuManager.m_activeFactory.FactoryBaseID), NetworkTrafficDirection.Outbound);
+                                purchasedSuccessfully = true;
+                            }
+                            // Something went wrong, so we refunded the cost
+                            else
+                                m_me.Economy.AddCost(cost);
                         }
-                        // Something went wrong, so we refunded the cost
-                        else
-                            m_me.Economy.AddCost(cost);
                     }
                 }
                 else

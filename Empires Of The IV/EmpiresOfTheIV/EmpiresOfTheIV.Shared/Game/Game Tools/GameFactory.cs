@@ -141,6 +141,18 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             unitPoolUnit.DeathParticleEmitter.OnNoActiveParticlesRemaining += unitPoolUnit.ExplosionParticleEmitter_OnNoActiveParticlesRemaining;
         }
 
+        public static UnitType UnitTypeFromUnitID(UnitID unitID)
+        {
+            switch (unitID)
+            {
+                case UnitID.UnanianSoldier:         return UnitType.Soldier;
+                case UnitID.UnanianMIDAF:           return UnitType.Soldier;
+                case UnitID.UnanianSpaceFighter:    return UnitType.Space;
+                case UnitID.None:
+                default: return UnitType.None;
+            }
+        }
+
         public static SoundName SoundNameFromUnitID(UnitID unitID)
         {
             switch (unitID)
