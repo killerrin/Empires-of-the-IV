@@ -30,7 +30,8 @@ namespace EmpiresOfTheIV.Game.Networking
         Resume,                     // Sent by the Host to notify the players to change GameState to Resumed
 
         GameSync,                   // Sent by the Host to notify everyone of a GameSync
-        
+        Gameover,                   // Sent by the Host to notify everyone of GameOver
+
         // Anyone
         Chat,
         WaitingForData,             // A General Waiting for Data state

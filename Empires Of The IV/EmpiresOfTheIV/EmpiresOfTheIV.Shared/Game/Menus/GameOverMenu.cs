@@ -22,12 +22,15 @@ namespace EmpiresOfTheIV.Game.Menus
         public GameOverMenu(EmpiresOfTheIVGame game, object parameter)
             :base(game, parameter, GameState.GameOver)
         {
-
         }
 
         public override void MenuLoaded()
         {
             base.MenuLoaded();
+
+            // Turn off the Unified Menu
+            m_game.StateManager.HandleBackButtonPressed = true;
+            m_game.SceneManager.Active = true;
         }
 
         #region Interface Implimentations

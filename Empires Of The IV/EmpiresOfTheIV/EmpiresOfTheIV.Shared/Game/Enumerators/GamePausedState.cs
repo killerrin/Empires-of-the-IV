@@ -8,6 +8,8 @@ namespace EmpiresOfTheIV.Game.Enumerators
     {
         Paused,
         Unpaused,
-        WaitingForData
+        WaitingForData,
+
+        GameOver
     }
 }

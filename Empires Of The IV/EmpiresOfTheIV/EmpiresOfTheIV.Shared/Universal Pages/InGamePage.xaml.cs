@@ -24,6 +24,7 @@ namespace EmpiresOfTheIV
     {
         public InGamePage()
         {
+            this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Disabled;
             this.InitializeComponent();
         }
     }

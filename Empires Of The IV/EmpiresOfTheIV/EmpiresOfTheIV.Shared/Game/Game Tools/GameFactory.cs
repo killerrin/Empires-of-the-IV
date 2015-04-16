@@ -23,6 +23,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             Debug.WriteLine("CreateFactoryOnFactoryBase");
 
             factoryBase.PlayerID = owner.ID;
+
             factoryBase.CurrentRallyPoint = factoryBase.DefaultRallyPoint;
             factoryBase.DamageTakenThisFrame = 0.0;
 

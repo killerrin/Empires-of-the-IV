@@ -100,12 +100,13 @@ namespace EmpiresOfTheIV.Game.Commands
             command.ID1 = targetID;
             return command;
         }
-        public static Command BuildFactoryCommand(uint factoryID)
+        public static Command BuildFactoryCommand(uint factoryID, uint playerID)
         {
             Command command = new Command();
             command.CommandType = CommandType.BuildFactory;
             command.TargetType = TargetType.Factory;
             command.ID1 = factoryID;
+            command.ID2 = playerID;
             return command;
         }
         public static Command BuildUnitCommand(uint unitpoolID, UnitID unitID, uint factoryID)

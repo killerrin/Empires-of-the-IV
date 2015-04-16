@@ -56,12 +56,12 @@ namespace EmpiresOfTheIV
 
         public GameLobbyPage()
         {
-            this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Required;
+            this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Disabled;
             Loaded += GameLobbyPage_Loaded;
             
             this.InitializeComponent();
 
-            Debug.WriteLine("GameLobbyPage loaded");
+            Debug.WriteLine("GameLobbyPage Loaded");
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -77,6 +77,8 @@ namespace EmpiresOfTheIV
             GameConnectionType? connType = e.Parameter as GameConnectionType?;
             pageparam = connType.Value;
 
+
+            Debug.WriteLine("GameLobbyPage OnNavigatedTo");
             base.OnNavigatedTo(e);
         }
 

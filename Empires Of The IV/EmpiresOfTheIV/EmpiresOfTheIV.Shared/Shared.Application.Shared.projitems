@@ -62,6 +62,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\GameOverMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\BlankMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\LanMultiplayerMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\PageParameters\GameOverPageParameter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\PageParameters\InGamePageParameter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\InGameMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\Menus\EmpireSelectionMenu.cs" />

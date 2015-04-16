@@ -23,12 +23,14 @@ namespace EmpiresOfTheIV.Game.Players
         public int Count { get { return PlayerCount; } }
 
         public bool Winner;
+        public bool Dead;
 
         public Team(TeamID teamID)
         {
             TeamID = teamID;
             Players = new List<Player>();
             Winner = false;
+            Dead = false;
         }
 
         #region Collection Settings

@@ -124,7 +124,17 @@ namespace EmpiresOfTheIV
 
             Consts.Game.StateManager.RemovePreviousOnCompleted = true;
             Consts.Game.StateManager.Navigate(GameState.InGame, parameter);
-        }
+        }        
+        #endregion
+
+        #region GameOverMenu
+        public static void GameOverMenu_OK_Click()
+        {
+            if (Consts.EarlyExitCheck()) return;
+
+            Consts.Game.StateManager.RemovePreviousOnCompleted = true;
+            Consts.Game.StateManager.Navigate(GameState.MainMenu);
+        }   
         #endregion
     }
 }

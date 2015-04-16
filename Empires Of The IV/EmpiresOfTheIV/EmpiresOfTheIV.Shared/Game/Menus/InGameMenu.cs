@@ -112,21 +112,27 @@ namespace EmpiresOfTheIV.Game.Menus
 
         public InputMode m_inputMode;
 
+
         public SelectionManager m_selectionManager;
         public UnitPool m_unitPool;
         public CommandRelay m_commandRelay;
         public BuildMenuManager m_buildMenuManager;
         
         public Map m_map;
+
+        public Timer m_gameOverTransition;
         #endregion
 
-        #region Constructors and Messages
+        #region Constructor, PageSettings
         public InGameMenu(EmpiresOfTheIVGame game, object parameter)
             :base(game, parameter, GameState.InGame)
         {
             m_networkManager = m_game.NetworkManager;
             m_networkTimer = new Timer(m_networkManager.ConnectionPreventTimeoutTick);
             m_networkTimer.Completed += m_networkTimer_Completed;
+
+            m_gameOverTransition = new Timer(TimeSpan.FromSeconds(2.0));
+            m_gameOverTransition.Completed += m_gameOverTransition_Completed;
 
             m_pausedState = GamePausedState.WaitingForData;
             m_inputMode = InputMode.Gesture;
@@ -210,6 +216,20 @@ namespace EmpiresOfTheIV.Game.Menus
         {
             base.MenuExited();
 
+            m_game.InputManager.PointerDown -= InputManager_PointerDown;
+            m_game.InputManager.PointerPressed -= InputManager_PointerClicked;
+            m_game.InputManager.PointerMoved -= InputManager_PointerMoved;
+            m_game.InputManager.Keyboard.KeyboardDown -= Keyboard_KeyboardDown;
+            m_game.InputManager.Keyboard.KeyboardPressed -= Keyboard_KeyboardPressed;
+
+            m_networkManager.OnConnected -= NetworkManager_OnConnected;
+            m_networkManager.OnDisconnected -= NetworkManager_OnDisconnected;
+            m_networkManager.OnMessageRecieved -= NetworkManager_OnMessageRecieved;
+            m_networkManager.OnSystemPacketRecieved -= NetworkManager_OnSystemPacketRecieved;
+            m_networkManager.OnGamePacketRecieved -= NetworkManager_OnGamePacketRecieved;
+
+            Consts.Game.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
+
             // De-Subscribe to our Events
             // Pointer
             m_game.InputManager.PointerDown -= InputManager_PointerDown;
@@ -232,6 +252,48 @@ namespace EmpiresOfTheIV.Game.Menus
 
             if (m_buildMenuManager.Active)
                 m_buildMenuManager.Disable();
+        }
+
+
+        void m_gameOverTransition_Completed(object sender, EventArgs e)
+        {
+            NavigateGameOver();
+        }
+        public void NavigateGameOver()
+        {
+            if (m_networkManager.HostSettings == KillerrinStudiosToolkit.Enumerators.HostType.Host)
+            {
+                SystemPacket sp = new SystemPacket(true, SystemPacketID.Gameover, "");
+                m_networkManager.SendMessage(sp.ThisToJson());
+            }
+
+            GameOverPageParameter pageParam = new GameOverPageParameter();
+            pageParam.GameConnectionType = m_pageParameter.GameConnectionType;
+            pageParam.GameType = m_pageParameter.GameType;
+            pageParam.MapName = m_pageParameter.MapName;
+            pageParam.maxUnitsPerPlayer = m_pageParameter.maxUnitsPerPlayer;
+            pageParam.team1 = m_pageParameter.team1;
+            pageParam.team2 = m_pageParameter.team2;
+            pageParam.me = m_pageParameter.me;
+
+            // Describe from Events
+            m_game.InputManager.PointerDown -= InputManager_PointerDown;
+            m_game.InputManager.PointerPressed -= InputManager_PointerClicked;
+            m_game.InputManager.PointerMoved -= InputManager_PointerMoved;
+            m_game.InputManager.Keyboard.KeyboardDown -= Keyboard_KeyboardDown;
+            m_game.InputManager.Keyboard.KeyboardPressed -= Keyboard_KeyboardPressed;
+
+            m_networkManager.OnConnected -= NetworkManager_OnConnected;
+            m_networkManager.OnDisconnected -= NetworkManager_OnDisconnected;
+            m_networkManager.OnMessageRecieved -= NetworkManager_OnMessageRecieved;
+            m_networkManager.OnSystemPacketRecieved -= NetworkManager_OnSystemPacketRecieved;
+            m_networkManager.OnGamePacketRecieved -= NetworkManager_OnGamePacketRecieved;
+
+            Consts.Game.StateManager.OnBackButtonPressed -= StateManager_OnBackButtonPressed;
+
+            // Lets Go!
+            m_game.StateManager.RemovePreviousOnCompleted = true;
+            m_game.StateManager.Navigate(GameState.GameOver, pageParam);
         }
         #endregion
 
@@ -698,7 +760,6 @@ namespace EmpiresOfTheIV.Game.Menus
                 // Send an ACK to keep the connection opened
                 SystemPacket sp = new SystemPacket(true, SystemPacketID.ConnectionTick, "");
                 m_networkManager.SendMessage(sp.ThisToJson());
-
             }
 
             // Reset the timer
@@ -742,6 +803,10 @@ namespace EmpiresOfTheIV.Game.Menus
             {
                 m_pausedState = GamePausedState.Unpaused;
                 waitingForDataState = WaitingForDataState.InGame;
+            }
+            else if (systemPacket.ID == SystemPacketID.Gameover)
+            {
+                NavigateGameOver();
             }
         }
         void NetworkManager_OnGamePacketRecieved(object sender, EotIVPacketRecievedEventArgs e)
@@ -1346,7 +1411,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
                             if (m_me.Economy.SubtractCost(cost))
                             {
-                                m_commandRelay.AddCommand(Command.BuildFactoryCommand(m_buildMenuManager.m_activeFactory.FactoryBaseID), NetworkTrafficDirection.Outbound);
+                                m_commandRelay.AddCommand(Command.BuildFactoryCommand(m_buildMenuManager.m_activeFactory.FactoryBaseID, m_me.ID), NetworkTrafficDirection.Outbound);
                                 purchasedSuccessfully = true;
                             }
                         }
@@ -1444,6 +1509,7 @@ namespace EmpiresOfTheIV.Game.Menus
             {
                 case GamePausedState.Paused: UpdatePaused(gameTime); base.Update(gameTime); return;
                 case GamePausedState.WaitingForData: UpdateWaitingForData(gameTime); base.Update(gameTime); return;
+                case GamePausedState.GameOver: m_gameOverTransition.Update(gameTime); break;
             }
 
             // Update our Input
@@ -1453,9 +1519,9 @@ namespace EmpiresOfTheIV.Game.Menus
             m_map.Update(gameTime);
 
             // Then our Economy
-            //m_pageParameter.me.Economy.Metal.Infinite = true;
-            //m_pageParameter.me.Economy.Energy.Infinite = true;
-            //m_pageParameter.me.Economy.Currency.Infinite = true;
+            m_pageParameter.me.Economy.Metal.Infinite = true;
+            m_pageParameter.me.Economy.Energy.Infinite = true;
+            m_pageParameter.me.Economy.Currency.Infinite = true;
             m_pageParameter.me.Update(gameTime);
 
             #region Do Commands
@@ -1616,9 +1682,22 @@ namespace EmpiresOfTheIV.Game.Menus
                         var buildFactory = m_map.GetFactoryBase(command.ID1);
                         if (buildFactory != null)
                         {
-                            GameFactory.CreateFactoryOnFactoryBase(buildFactory, m_me);
-                            buildFactory.FactoryBuildTimer.Reset();
-                            m_buildMenuManager.Disable();
+                            Player player = null;
+                            if (m_team1.Exists(command.ID2))
+                            {
+                                player = m_team1[command.ID2];
+                            }
+                            else if (m_team2.Exists(command.ID2))
+                            {
+                                player = m_team2[command.ID2];
+                            }
+
+                            if (player != null)
+                            {
+                                GameFactory.CreateFactoryOnFactoryBase(buildFactory, player);
+                                buildFactory.FactoryBuildTimer.Reset();
+                                m_buildMenuManager.Disable();
+                            }
                         }
 
                         m_commandRelay.Complete(command);
@@ -1667,7 +1746,7 @@ namespace EmpiresOfTheIV.Game.Menus
                             if (damageUnit != null)
                             {
                                 damageUnit.TakeDamage((float)command.Damage); //damageUnit.Health.DecreaseHealth((float)command.Damage);
-                                Debug.WriteLine("Unit {0} took {1} Damage and has {2} Health Left", damageUnit.UnitID, command.Damage, damageUnit.Health.CurrentHealth);
+                                //Debug.WriteLine("Unit {0} took {1} Damage and has {2} Health Left", damageUnit.UnitID, command.Damage, damageUnit.Health.CurrentHealth);
                             }
                         }
 
@@ -1694,6 +1773,12 @@ namespace EmpiresOfTheIV.Game.Menus
                                     #region Kill Code
                                     if (killFactoryBase.Factory.LifeState == GameObjectLifeState.Dead)
                                     {
+                                        if (m_buildMenuManager.m_activeFactory != null)
+                                        {
+                                            if (m_buildMenuManager.m_activeFactory.FactoryBaseID == killFactoryBase.FactoryBaseID)
+                                                m_buildMenuManager.Disable();
+                                        }
+
                                         uint killPreviousOwner = killFactoryBase.PlayerID;
 
                                         // Disable the Smoke Emitter so that it will allow itself to complete
@@ -1803,8 +1888,8 @@ namespace EmpiresOfTheIV.Game.Menus
             }
             #endregion
 
-                // Update all the Active Units
-                m_unitPool.Update(gameTime);
+            // Update all the Active Units
+            m_unitPool.Update(gameTime);
             m_unitPool.GetAllMyActiveUnits(m_me.ID);
 
             // Update the GUI
@@ -1832,6 +1917,9 @@ namespace EmpiresOfTheIV.Game.Menus
 
         private void UpdateGame(GameTime gameTime)
         {
+            if (m_pausedState != GamePausedState.Unpaused) return;
+
+            #region Parse all Units
             bool breakUnit1 = false;
             foreach (var unit1 in m_unitPool.m_activeUnits)
             {
@@ -1925,8 +2013,10 @@ namespace EmpiresOfTheIV.Game.Menus
 
                 if (breakUnit1) break;
             }
+            #endregion
 
-            foreach(var unit in m_unitPool.m_activeUnits)
+            #region Damage/Kill Units/Factories
+            foreach (var unit in m_unitPool.m_activeUnits)
             {
                 if (unit.LifeState != GameObjectLifeState.Alive) continue;
 
@@ -1968,6 +2058,46 @@ namespace EmpiresOfTheIV.Game.Menus
                     }
                 }
             }
+            #endregion
+
+            #region Check if a Team has Won yet
+            m_team1.Dead = true;
+            foreach (var player in m_team1.Players)
+            {
+                if (player.Alive)
+                    m_team1.Dead = false;
+            }
+
+            m_team2.Dead = true;
+            foreach (var player in m_team2.Players)
+            {
+                if (player.Alive)
+                    m_team2.Dead = false;
+            }
+
+            // Set the Winners
+            if (m_team1.Dead && m_team2.Dead)
+            {
+                m_team1.Winner = true;
+                m_team2.Winner = true;
+            }
+            else if (m_team1.Dead && !m_team2.Dead)
+            {
+                m_team1.Winner = false;
+                m_team2.Winner = true;
+            }
+            else if (!m_team1.Dead && m_team2.Dead)
+            {
+                m_team1.Winner = true;
+                m_team2.Winner = false;
+            }
+
+            if (m_team1.Dead ||
+                m_team2.Dead)
+            {
+                m_pausedState = GamePausedState.GameOver;
+            }
+            #endregion
         }
 
         #region Mini Menus

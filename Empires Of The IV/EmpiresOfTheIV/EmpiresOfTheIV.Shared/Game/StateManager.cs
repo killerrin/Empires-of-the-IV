@@ -376,6 +376,11 @@ namespace EmpiresOfTheIV.Game
                     // Now go back
                     if (m_removePreviousOnCompleted) {
                         m_gameStates.Pop();
+
+                        if (MainPage.PageFrame.CanGoBack)
+                        {
+                            MainPage.PageFrame.BackStack.RemoveAt(0);
+                        }
                     }
 
                     // Add in the new menu
