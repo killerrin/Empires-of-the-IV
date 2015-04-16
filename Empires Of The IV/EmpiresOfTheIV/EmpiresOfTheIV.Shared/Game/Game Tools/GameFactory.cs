@@ -43,8 +43,9 @@ namespace EmpiresOfTheIV.Game.Game_Tools
             factoryBase.Factory.Health.RegenerateHealth = true;
             factoryBase.Factory.Health.RegenerationRate = 0.0001f;
             factoryBase.Factory.Health.RegenerationTimer.Interval = TimeSpan.FromSeconds(5.0);
-            factoryBase.Factory.Health.MaxHealth = 400.0f;
-            factoryBase.Factory.HealthBarOffset.X -= 100;
+            factoryBase.Factory.Health.MaxHealth = 500.0f;
+            factoryBase.Factory.HealthBarOffset.X -= 150;
+            factoryBase.Factory.HealthBarOffset.Y += 80;
 
             switch (owner.EmpireType)
             {
@@ -170,7 +171,7 @@ namespace EmpiresOfTheIV.Game.Game_Tools
                 case EmpireType.UnanianEmpire:
                 case EmpireType.CrescanianConfederation:
                 case EmpireType.TheKingdomOfEdolas:
-                default: return Cost.Zero;
+                default: return Cost.FromEconomyCost(50000, 50000, 50000);
             }
         }
     }

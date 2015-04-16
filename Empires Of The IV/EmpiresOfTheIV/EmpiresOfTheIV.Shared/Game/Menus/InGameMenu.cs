@@ -35,6 +35,7 @@ using EmpiresOfTheIV.Game.GameObjects.Factories;
 using KillerrinStudiosToolkit.Enumerators;
 using Microsoft.Xna.Framework.Audio;
 using EmpiresOfTheIV.Game.GameObjects.ParticleEmitters;
+using Anarian.Particles.Particle2D;
 
 namespace EmpiresOfTheIV.Game.Menus
 {
@@ -101,7 +102,9 @@ namespace EmpiresOfTheIV.Game.Menus
 
         public AudioListener m_audioListener;
         public AudioEmitter m_audioEmitter;
+
         public List<SoundEffectInstance> m_activeSoundEffectInstances;
+        public List<ParticleEmitter2D> m_activeParticleEmitters;
 
         int m_cameraMovementScreenBuffer = 30;
         int m_guiDistanceFromSide = 0;
@@ -295,6 +298,7 @@ namespace EmpiresOfTheIV.Game.Menus
             m_audioEmitter.Position = m_gameCamera.Position;
 
             m_activeSoundEffectInstances = new List<SoundEffectInstance>();
+            m_activeParticleEmitters = new List<ParticleEmitter2D>();
 
             m_unitPool = new UnitPool((int)(m_pageParameter.maxUnitsPerPlayer * (m_team1.PlayerCount + m_team2.PlayerCount)));
             m_commandRelay = new CommandRelay();
@@ -1219,6 +1223,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 m_game.Graphics.GraphicsDevice.Viewport
             );
 
+            #region Did we Click on Enemy Unit?
             for (int i = 0; i < m_unitPool.m_activeUnits.Count; i++)
             {
                 if (m_unitPool.m_activeUnits[i].CheckRayIntersection(ray))
@@ -1226,27 +1231,28 @@ namespace EmpiresOfTheIV.Game.Menus
                     // Check if it is an Enemy Unit
                     // If it is, issue the Attack Command
                     if (m_unitPool.m_activeUnits[i].PlayerID != m_me.ID) 
-                    {
-                    
-                    
+                    {                    
                     }
                     return true;
                 }
             }
+            #endregion
 
+            #region Did we Click on Enemy Factory?
             // If a unit isn't intersected, then we check to see if we collided with a factoryBase
             FactoryBase intersectedFactoryBase = null;
             var factoryResult = m_map.IntersectFactoryBase(ray, out intersectedFactoryBase);
             if (factoryResult == FactoryBaseRayIntersection.Factory)
             {
-                if (intersectedFactoryBase.PlayerID != m_me.ID)
+                if (intersectedFactoryBase.PlayerID == m_me.ID)
                 {
                     // Try to issue an attack command or move closer
                 }
-
                 return true;
             }
+            #endregion
 
+            #region Move Units
             // If we still haven't intersected, we finally move onto the terrain
             var terrainResult = m_map.IntersectTerrain(ray);
 
@@ -1295,6 +1301,7 @@ namespace EmpiresOfTheIV.Game.Menus
 
                 return true;
             }
+            #endregion
 
             return false;
         }
@@ -1307,39 +1314,49 @@ namespace EmpiresOfTheIV.Game.Menus
 
             if (purchaseSlot != BuildMenuPurchaseSlot.None)
             {
-                //Debug.WriteLine("We asked to purchase something");
+                bool purchasedSuccessfully = false;
 
                 if (m_buildMenuManager.m_activeFactory.HasOwner)
                 {
-                    //Debug.WriteLine("The factory has an owner");
-
                     var unitID = m_buildMenuManager.PurchaseSlotToUnitID(purchaseSlot);
                     var cost = GameFactory.CreateUnitCost(unitID);
 
                     if (m_me.Economy.SubtractCost(cost))
                     {
-                        //Debug.WriteLine("We could Successfully purchase the Unit");
                         var unit = m_unitPool.FirstInactiveOfPlayer(m_me.ID);
 
                         if (unit != null)
-                            m_commandRelay.AddCommand(Command.BuildUnitCommand(unit.UnitID, unitID, m_buildMenuManager.m_activeFactory.FactoryBaseID), NetworkTrafficDirection.Outbound);
-                        else
                         {
-                            // Something went wrong, so we refunded the cost
-                            m_me.Economy.AddCost(cost);
-                            m_game.AudioManager.PlaySoundEffect(SoundName.MenuError, 0.5f);
+                            m_commandRelay.AddCommand(Command.BuildUnitCommand(unit.UnitID, unitID, m_buildMenuManager.m_activeFactory.FactoryBaseID), NetworkTrafficDirection.Outbound);
+                            purchasedSuccessfully = true;
                         }
-                    }
-                    else
-                    {
-                        // Player couldn't afford the item
-                        m_game.AudioManager.PlaySoundEffect(SoundName.MenuError, 0.5f);
+                        // Something went wrong, so we refunded the cost
+                        else
+                            m_me.Economy.AddCost(cost);
                     }
                 }
                 else
                 {
                     // Build a Factory
+                    if (m_buildMenuManager.m_activeFactory.FactoryBuildTimer.Progress == ProgressStatus.Completed)
+                    {
+                        if (m_buildMenuManager.m_activeFactory != null)
+                        {
+                            var cost = GameFactory.CreateFactoryCost(m_me.EmpireType);
 
+                            if (m_me.Economy.SubtractCost(cost))
+                            {
+                                m_commandRelay.AddCommand(Command.BuildFactoryCommand(m_buildMenuManager.m_activeFactory.FactoryBaseID), NetworkTrafficDirection.Outbound);
+                                purchasedSuccessfully = true;
+                            }
+                        }
+
+                    }
+                }
+
+                if (!purchasedSuccessfully)
+                {
+                    m_game.AudioManager.PlaySoundEffect(SoundName.MenuError, 0.5f);
                 }
 
                 return true;
@@ -1385,8 +1402,16 @@ namespace EmpiresOfTheIV.Game.Menus
 
             if (result == FactoryBaseRayIntersection.FactoryBase)
             {
-                // Enable UI To Build Factory
-                m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildFactory);
+                if (intersectedFactoryBase.FactoryBuildTimer.Progress == ProgressStatus.Completed)
+                {
+                    // Enable UI To Build Factory
+                    m_buildMenuManager.Enable(intersectedFactoryBase, BuildMenuType.BuildFactory);
+                }
+                else
+                {
+                    // The cooldown timer hasn't completed yet
+                    m_game.AudioManager.PlaySoundEffect(SoundName.MenuError, 0.5f);
+                }
                 return true;
             }
             else if (result == FactoryBaseRayIntersection.Factory)
@@ -1479,6 +1504,7 @@ namespace EmpiresOfTheIV.Game.Menus
                         break;
                     #endregion
 
+                    #region Move
                     case CommandType.Move:
                         Unit moveUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID1);
                         if (moveUnit != null)
@@ -1531,6 +1557,8 @@ namespace EmpiresOfTheIV.Game.Menus
                             }
                         }
                         break;
+                    #endregion
+                    #region Attack
                     case CommandType.Attack:
                         bool attackInRange = false;
 
@@ -1581,25 +1609,34 @@ namespace EmpiresOfTheIV.Game.Menus
                         }
 
                         break;
+                    #endregion
 
+                    #region Building Management
                     case CommandType.BuildFactory:
+                        var buildFactory = m_map.GetFactoryBase(command.ID1);
+                        if (buildFactory != null)
+                        {
+                            GameFactory.CreateFactoryOnFactoryBase(buildFactory, m_me);
+                            buildFactory.FactoryBuildTimer.Reset();
+                            m_buildMenuManager.Disable();
+                        }
+
+                        m_commandRelay.Complete(command);
                         break;
                     case CommandType.BuildUnit:
-                        //Debug.WriteLine("Building Unit");
-
                         Unit buildUnit;
                         bool buildUnitResult = m_unitPool.SwapPool(command.ID1, out buildUnit);
-                        var buildFactory = m_map.GetFactoryBase(command.ID2);
+                        var buildUnitFactory = m_map.GetFactoryBase(command.ID2);
 
                         if (buildUnit != null)
                         {
-                            if (buildFactory.Factory != null)
+                            if (buildUnitFactory.Factory != null)
                             {
                                 // Create the Unit
-                                GameFactory.CreateUnit(buildUnit, command.UnitID, buildFactory.Factory.Transform.WorldPosition);
+                                GameFactory.CreateUnit(buildUnit, command.UnitID, buildUnitFactory.Factory.Transform.WorldPosition);
 
                                 // Then have them move out to the Current Rally Point
-                                m_commandRelay.AddCommand(Command.MoveCommand(buildUnit.UnitID, buildFactory.CurrentRallyPoint), NetworkTrafficDirection.Outbound);
+                                m_commandRelay.AddCommand(Command.MoveCommand(buildUnit.UnitID, buildUnitFactory.CurrentRallyPoint), NetworkTrafficDirection.Outbound);
                             }
                         }
 
@@ -1609,7 +1646,9 @@ namespace EmpiresOfTheIV.Game.Menus
                         break;
                     case CommandType.Cancel:
                         break;
+                    #endregion
 
+                    #region Damage/Kill
                     case CommandType.Damage:
                         if (command.TargetType == TargetType.Factory)
                         {
@@ -1657,16 +1696,19 @@ namespace EmpiresOfTheIV.Game.Menus
                                     {
                                         uint killPreviousOwner = killFactoryBase.PlayerID;
 
+                                        // Disable the Smoke Emitter so that it will allow itself to complete
+                                        killFactoryBase.Factory.SmokePlumeParticleEmitter.EmissionSettings.Active = false;
+                                        m_activeParticleEmitters.Add(killFactoryBase.Factory.SmokePlumeParticleEmitter);
+
                                         killFactoryBase.PlayerID = uint.MaxValue;
                                         killFactoryBase.Factory = null;
 
+                                        // Now we check if the other player still has a Factory left
                                         bool foundOtherFactoryForPlayer = false;
-
                                         foreach (var factory in m_map.FactoryBases)
                                         {
                                             if (factory.PlayerID == killPreviousOwner)
                                             {
-                                                // The player still has a factory
                                                 foundOtherFactoryForPlayer = true;
                                                 break;
                                             }
@@ -1726,6 +1768,8 @@ namespace EmpiresOfTheIV.Game.Menus
                         if (killSafeToComplete)
                             m_commandRelay.Complete(command);
                         break;
+                    #endregion
+
                     default:
                         break;
                 }
@@ -1739,7 +1783,7 @@ namespace EmpiresOfTheIV.Game.Menus
                 m_selectionManager.Deselect();
             }
 
-            #region Remove All Stopped or Paused SoundEffect Instances
+            #region Remove All Completed Instances of Objects
             for (int i = m_activeSoundEffectInstances.Count - 1; i > -1; i--)
             {
                 if (m_activeSoundEffectInstances[i].State != SoundState.Playing)
@@ -1748,10 +1792,19 @@ namespace EmpiresOfTheIV.Game.Menus
                     m_activeSoundEffectInstances.RemoveAt(i);
                 }
             }
+            for (int i = m_activeParticleEmitters.Count - 1; i > -1; i-- )
+            {
+                if (m_activeParticleEmitters[i].Progress == ProgressStatus.Completed)
+                {
+                    m_activeParticleEmitters.RemoveAt(i);
+                }
+                else
+                    m_activeParticleEmitters[i].Update(gameTime);
+            }
             #endregion
 
-            // Update all the Active Units
-            m_unitPool.Update(gameTime);
+                // Update all the Active Units
+                m_unitPool.Update(gameTime);
             m_unitPool.GetAllMyActiveUnits(m_me.ID);
 
             // Update the GUI
@@ -1828,6 +1881,17 @@ namespace EmpiresOfTheIV.Game.Menus
                         if (!factory.HasOwner) continue;
                         if (unit1.PlayerID == factory.PlayerID) continue;
                         if (factory.Factory.LifeState != GameObjectLifeState.Alive) continue;
+
+                        if (m_team1.Exists(unit1.PlayerID))
+                        {
+                            if (!m_team1[unit1.PlayerID].Alive)
+                                continue;
+                        }
+                        else if (m_team2.Exists(unit1.PlayerID))
+                        {
+                            if (!m_team2[unit1.PlayerID].Alive)
+                                continue;
+                        }
 
                         // If Our Unit is higher than the factory we are checking, then we increase our line of sight
                         if (unit1.Transform.WorldPosition.Y > factory.Factory.Transform.WorldPosition.Y)
@@ -1981,11 +2045,27 @@ namespace EmpiresOfTheIV.Game.Menus
             // Draw the Units
             m_unitPool.Draw(gameTime, spriteBatch, graphics, m_gameCamera, creatingShadowMap);
 
+
+            if (!creatingShadowMap)
+            {
+            }
+
             return true;
         }
 
         public bool DrawGUI(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ref RenderTarget2D buildMenu3DModelsRenderTarget, bool creatingShadowMap)
         {
+            //-- Render before the GUI
+            // Do conditional rendering which doens't use the Shadow Map
+            if (!creatingShadowMap)
+            {
+                foreach (var particleEffect in m_activeParticleEmitters)
+                {
+                    particleEffect.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
+                }
+            }
+
+            //-- Now Render GUI
             // Draw SelectionBox
             m_selectionManager.Draw(gameTime, spriteBatch, graphics, m_gameCamera);
 

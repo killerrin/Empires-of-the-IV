@@ -24,6 +24,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
         public Point HealthBarOffset;
 
         Timer DeathVisibilityTimer;
+        public SmokePlumeParticleSystem SmokePlumeParticleEmitter;
         public ExplosionParticleSystem ExplosionParticleEmitter;
 
         public Factory()
@@ -38,6 +39,9 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
             DeathVisibilityTimer = new Timer(TimeSpan.FromSeconds(0.3));
             ExplosionParticleEmitter = new ExplosionParticleSystem(Vector2.Zero, 20, m_transform.WorldPosition);
             ExplosionParticleEmitter.OnNoActiveParticlesRemaining += ExplosionParticleEmitter_OnNoActiveParticlesRemaining;
+
+            SmokePlumeParticleEmitter = new SmokePlumeParticleSystem(Vector2.Zero, 20, m_transform.WorldPosition);
+            SmokePlumeParticleEmitter.Progress = Anarian.Enumerators.ProgressStatus.InProgress;
 
             // Add Building Specific Components
             AddComponent(typeof(Health));
@@ -67,6 +71,15 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
             }
 
             base.Update(gameTime);
+
+            if (Health.CurrentHealth <= Health.MaxHealth * 0.7)
+                SmokePlumeParticleEmitter.EmissionSettings.Active = true;
+            else 
+                SmokePlumeParticleEmitter.EmissionSettings.Active = false;
+
+            SmokePlumeParticleEmitter.WorldPosition = m_transform.WorldPosition + new Vector3(0.0f, 0.0f, -5.0f);
+            SmokePlumeParticleEmitter.Update(gameTime);
+            
             //Health.Update(gameTime);
         }
         public override bool Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera, bool creatingShadowMap = false)
@@ -85,6 +98,8 @@ namespace EmpiresOfTheIV.Game.GameObjects.Factories
         public bool DrawEffects(GameTime gametime, SpriteBatch spriteBatch, GraphicsDevice graphics, ICamera camera)
         {
             if (LifeState == GameObjectLifeState.Dead) return false;
+
+            SmokePlumeParticleEmitter.Draw(gametime, spriteBatch, graphics, camera);
 
             if (LifeState == GameObjectLifeState.Alive)
             {

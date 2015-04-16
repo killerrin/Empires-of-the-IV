@@ -52,6 +52,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\ParticleEmitters\BloodSplatterParticleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\ParticleEmitters\ParticleNames.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\ParticleEmitters\ExplosionParticleSystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\ParticleEmitters\LaserParticleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\ParticleEmitters\SmokePlumeParticleSystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\Planet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game\GameObjects\GameMenu.cs" />

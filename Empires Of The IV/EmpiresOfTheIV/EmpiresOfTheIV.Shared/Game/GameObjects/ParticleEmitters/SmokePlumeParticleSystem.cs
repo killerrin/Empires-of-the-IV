@@ -20,7 +20,7 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
         public Vector3 WorldPosition;
 
         public SmokePlumeParticleSystem(Vector2 position, uint maxNumberOfParticles, Vector3 worldPosition)
-            : base(maxNumberOfParticles, new ContinuousParticleEmitter(TimeSpan.FromSeconds(0.3)), new TimebasedParticleLifespan(5.0f, 10.0f))
+            : base(maxNumberOfParticles, new ContinuousParticleEmitter(TimeSpan.FromSeconds(0.3)), new TimebasedParticleLifespan(1.5f, 6.0f))
         {                     
             Position = position;
             WorldPosition = worldPosition;
@@ -39,10 +39,12 @@ namespace EmpiresOfTheIV.Game.GameObjects.ParticleEmitters
 
         void SmokePlumeParticleSystem_OnNoActiveParticlesRemaining(object sender, Anarian.Events.AnarianEventArgs e)
         {
+            OnNoActiveParticlesRemaining -= SmokePlumeParticleSystem_OnNoActiveParticlesRemaining;
         }
 
         void SmokePlumeParticleSystem_OnEmission(object sender, Anarian.Events.AnarianEventArgs e)
         {
+            OnEmission -= SmokePlumeParticleSystem_OnEmission;
         }
 
         public override void Reset()
