@@ -101,7 +101,10 @@ namespace EmpiresOfTheIV
 
         private void StateManager_OnBackButtonPressed(object sender, EventArgs e)
         {
-            
+            if (pageparam == GameConnectionType.Singleplayer)
+            {
+                Consts.Game.StateManager.HandleBackButtonPressed = true;
+            }
         }
 
         void GameLobbyPage_Loaded(object sender, RoutedEventArgs e)
