@@ -36,6 +36,7 @@ using KillerrinStudiosToolkit.Enumerators;
 using Microsoft.Xna.Framework.Audio;
 using EmpiresOfTheIV.Game.GameObjects.ParticleEmitters;
 using Anarian.Particles.Particle2D;
+using Anarian.DataStructures.Components;
 
 namespace EmpiresOfTheIV.Game.Menus
 {
@@ -106,12 +107,10 @@ namespace EmpiresOfTheIV.Game.Menus
         public List<SoundEffectInstance> m_activeSoundEffectInstances;
         public List<ParticleEmitter2D> m_activeParticleEmitters;
 
+        public InputMode m_inputMode;
         int m_cameraMovementScreenBuffer = 30;
         int m_guiDistanceFromSide = 0;
         float m_unitSightHeightIncrease = 0.4f;
-
-        public InputMode m_inputMode;
-
 
         public SelectionManager m_selectionManager;
         public UnitPool m_unitPool;
@@ -1519,9 +1518,9 @@ namespace EmpiresOfTheIV.Game.Menus
             m_map.Update(gameTime);
 
             // Then our Economy
-            m_pageParameter.me.Economy.Metal.Infinite = true;
-            m_pageParameter.me.Economy.Energy.Infinite = true;
-            m_pageParameter.me.Economy.Currency.Infinite = true;
+            //m_pageParameter.me.Economy.Metal.Infinite = true;
+            //m_pageParameter.me.Economy.Energy.Infinite = true;
+            //m_pageParameter.me.Economy.Currency.Infinite = true;
             m_pageParameter.me.Update(gameTime);
 
             #region Do Commands
@@ -1636,18 +1635,14 @@ namespace EmpiresOfTheIV.Game.Menus
                             SoundName weaponSoundEffect = (SoundName)selection;
                             m_activeSoundEffectInstances.Add(AudioManager.Instance.Play3DSoundEffect(m_audioListener, attackingUnit.AudioEmitter, weaponSoundEffect));
 
+                            Transform defendingTransform = null;
+
                             if (command.TargetType == TargetType.Unit)
                             {
                                 var defendingUnit = m_unitPool.FindUnit(PoolStatus.Active, command.ID2);
                                 if (defendingUnit != null)
                                 {
-                                    if (!attackingUnit.IgnoreAttackRotation)
-                                    {
-                                        //var currentUnitY = attackingUnit.Transform.WorldPosition.Y;
-                                        Vector3 direction = attackingUnit.Transform.WorldPosition - defendingUnit.Transform.WorldPosition;
-                                        //direction.Y = currentUnitY;
-                                        attackingUnit.Transform.RotateToPoint(gameTime, direction);
-                                    }
+                                    defendingTransform = defendingUnit.Transform;
                                 }
                             }
                             else if (command.TargetType == TargetType.Factory)
@@ -1657,14 +1652,32 @@ namespace EmpiresOfTheIV.Game.Menus
                                 {
                                     if (defendingBuilding.Base != null)
                                     {
-                                        if (!attackingUnit.IgnoreAttackRotation)
-                                        {
-                                            Vector3 direction = attackingUnit.Transform.WorldPosition - defendingBuilding.Base.Transform.WorldPosition;
-                                            //direction.Y = attackingUnit.Transform.WorldPosition.Y;
-                                            attackingUnit.Transform.RotateToPoint(gameTime, direction);
-                                        }
+                                        defendingTransform = defendingBuilding.Base.Transform;
                                     }
                                 }
+                            }
+
+                            if (defendingTransform != null)
+                            {
+                                if (!attackingUnit.IgnoreAttackRotation)
+                                {
+                                    Vector3 direction = attackingUnit.Transform.WorldPosition - defendingTransform.WorldPosition;
+                                    attackingUnit.Transform.RotateToPoint(gameTime, direction);
+                                }
+
+                                var bulletParticle = new BulletParticleSystem(Vector2.Zero, 1, Vector3.Zero);
+
+                                Vector2 attackingProjected = m_gameCamera.ProjectToScreenCoordinates(attackingUnit.Transform.WorldPosition, m_game.GraphicsDevice.Viewport);
+                                Vector2 defendingProjected = m_gameCamera.ProjectToScreenCoordinates(defendingTransform.WorldPosition, m_game.GraphicsDevice.Viewport);
+
+                                bulletParticle.Position = attackingProjected;
+                                bulletParticle.WorldPosition = attackingUnit.Transform.WorldPosition;
+                                bulletParticle.TargetWorldPosition = defendingTransform.WorldPosition;
+
+                                bulletParticle.DistanceLifespan.TargetPosition = defendingProjected;
+                                bulletParticle.MoveToPositionModifier.TargetPosition = defendingProjected;
+
+                                m_activeParticleEmitters.Add(bulletParticle);
                             }
                         }
 
@@ -1884,7 +1897,9 @@ namespace EmpiresOfTheIV.Game.Menus
                     m_activeParticleEmitters.RemoveAt(i);
                 }
                 else
+                {
                     m_activeParticleEmitters[i].Update(gameTime);
+                }
             }
             #endregion
 
@@ -2174,7 +2189,6 @@ namespace EmpiresOfTheIV.Game.Menus
 
             // Draw the Units
             m_unitPool.Draw(gameTime, spriteBatch, graphics, m_gameCamera, creatingShadowMap);
-
 
             if (!creatingShadowMap)
             {
