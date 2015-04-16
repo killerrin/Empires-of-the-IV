@@ -526,7 +526,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     BoundingSphere bound = new BoundingSphere(Vector3.Zero, 11.0f);
 
                     // Factory 1
-                    Vector3 factory1Spawn = new Vector3(-60.0f, 0.0f, -10.0f);
+                    Vector3 factory1Spawn = new Vector3(-55.0f, 0.0f, -10.0f);
                     float f1Height = mapTerrain.GetHeightAtPoint(factory1Spawn);
                     factory1Spawn.Y = f1Height;
 
@@ -543,7 +543,7 @@ namespace EmpiresOfTheIV.Game.Menus
                     factoryBases[0].Base.RenderBounds = false;
                 
                     // Factory 2
-                    Vector3 factory2Spawn = new Vector3(60.0f, 0.0f, 10.0f);
+                    Vector3 factory2Spawn = new Vector3(55.0f, 0.0f, 10.0f);
                     float f2Height = mapTerrain.GetHeightAtPoint(factory1Spawn);
                     factory2Spawn.Y = f2Height;
 
@@ -1393,7 +1393,22 @@ namespace EmpiresOfTheIV.Game.Menus
 
                             if (unit != null)
                             {
-                                m_commandRelay.AddCommand(Command.BuildUnitCommand(unit.UnitID, unitID, m_buildMenuManager.m_activeFactory.FactoryBaseID), NetworkTrafficDirection.Outbound);
+                                // Randomize the Current Rallypoint
+                                Vector3 movePosition = m_buildMenuManager.m_activeFactory.CurrentRallyPoint;
+                                Vector3 randomizedPosition = new Vector3(Anarian.Particles.ParticleHelpers.RandomBetween(-5.0f, 5.0f),
+                                                                         0.0f,
+                                                                         Anarian.Particles.ParticleHelpers.RandomBetween(-5.0f, 5.0f));
+                                movePosition += randomizedPosition;
+                                movePosition = m_map.ResolveBounds(movePosition);
+                                float moveHeight = m_map.Terrain.GetHeightAtPoint(movePosition);
+
+                                if (moveHeight != float.MaxValue)
+                                    movePosition.Y = moveHeight;
+                                else
+                                    movePosition = m_buildMenuManager.m_activeFactory.CurrentRallyPoint;
+
+                                // Fire Off the Command
+                                m_commandRelay.AddCommand(Command.BuildUnitCommand(unit.UnitID, unitID, m_buildMenuManager.m_activeFactory.FactoryBaseID, movePosition), NetworkTrafficDirection.Outbound);
                                 purchasedSuccessfully = true;
                             }
                             // Something went wrong, so we refunded the cost
@@ -1731,7 +1746,7 @@ namespace EmpiresOfTheIV.Game.Menus
                                 GameFactory.CreateUnit(buildUnit, command.UnitID, buildUnitFactory.Factory.Transform.WorldPosition);
 
                                 // Then have them move out to the Current Rally Point
-                                m_commandRelay.AddCommand(Command.MoveCommand(buildUnit.UnitID, buildUnitFactory.CurrentRallyPoint), NetworkTrafficDirection.Outbound);
+                                m_commandRelay.AddCommand(Command.MoveCommand(buildUnit.UnitID, command.Position), NetworkTrafficDirection.Outbound);
                             }
                         }
 

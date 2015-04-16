@@ -109,7 +109,7 @@ namespace EmpiresOfTheIV.Game.Commands
             command.ID2 = playerID;
             return command;
         }
-        public static Command BuildUnitCommand(uint unitpoolID, UnitID unitID, uint factoryID)
+        public static Command BuildUnitCommand(uint unitpoolID, UnitID unitID, uint factoryID, Vector3 currentRallyPoint)
         {
             Command command = new Command();
             command.CommandType = CommandType.BuildUnit;
@@ -117,6 +117,7 @@ namespace EmpiresOfTheIV.Game.Commands
             command.ID1 = unitpoolID;
             command.UnitID = unitID;
             command.ID2 = factoryID;
+            command.Position = currentRallyPoint;
             return command;
         }
         public static Command SetFactoryRallyPointCommand(uint factoryID, Vector3 positionMoveTo)
