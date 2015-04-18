@@ -214,11 +214,5 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
-Empires Of The IV/EmpiresOfTheIV/EmpiresOfTheIV.Shared/Content/Planet Textures/Tyril Texture.xnb
-Empires Of The IV/EmpiresOfTheIV/EmpiresOfTheIV.Shared/Content/Planet Textures/Hope Texture.xnb
-Empires Of The IV/EmpiresOfTheIV/EmpiresOfTheIV.Shared/Content/Planet Textures/Lura Texture.xnb
-Empires Of The IV/EmpiresOfTheIV/EmpiresOfTheIV.Shared/Content/Planet Textures/Yol Texture.xnb
-Empires Of The IV/Content/HeightMaps/Radient Flatlands MiniMap.psd
-Empires Of The IV/Content/Textures/Maps/Radient Flatlands MiniMap.psd
-Empires Of The IV/Content/Models/Planets/Tyril.FBX
-Empires Of The IV/Content/Textures/Maps/Radient Valley MiniMap.psd
+Content/Models/Planets/Tyril.FBX
+Content/Textures/Maps/Radient Valley MiniMap.psd
