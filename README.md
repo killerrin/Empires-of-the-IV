@@ -1,6 +1,6 @@
 Empires of the IV
 =================
-Empires of the IV is a 3D Cross Platform, Multiplater RTS for Windows 8 and Windows Phone.
+Empires of the IV is a 3D Cross Platform, Multiplater RTS for Windows 8 and Windows Phone. This project was made in 4 months as part of a capstone and was written in C# with MonoGame. The game utilizes my own Game Engine and Cross Platform framework
 
 
 #Summary
